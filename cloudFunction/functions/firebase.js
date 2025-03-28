@@ -1,23 +1,23 @@
 const admin = require("firebase-admin");
 
 const defaultConfig = {
-  apiKey: "AIzaSyAHBeUeD6yvtmOJLSB-13n4JXAS9eHVgxE",
-  authDomain: "shopnimbus-ec7fe.firebaseapp.com",
+  apiKey: "AIzaSyC064Ksp5pi_1Gz9IRHyXa3B6YXGlJ5hFc",
+  authDomain: "qa-ultimate-jewelry.firebaseapp.com",
   // databaseURL: defaultDbUrl,
-  projectId: "shopnimbus-ec7fe",
-  messagingSenderId: "756187023654",
-  appId: "1:756187023654:web:0a64754f933d9c2e00d9e7",
+  projectId: "qa-ultimate-jewelry",
+  messagingSenderId: "721532326526",
+  appId: "1:721532326526:web:488d4ee1257c6bc849fe2f",
 };
 
 const defaultApp = admin.initializeApp({
   ...defaultConfig,
-  databaseURL: "https://shopnimbus-ec7fe-default-rtdb.firebaseio.com",
+  databaseURL: "https://qa-ultimate-jewelry-default-rtdb.firebaseio.com",
 });
 
 const cmsApp = admin.initializeApp(
   {
     ...defaultConfig,
-    databaseURL: "https://shopnimbus-cms.firebaseio.com",
+    databaseURL: "https://qa-ultimate-jewelry-cms.firebaseio.com",
   },
   "cmsApp"
 );
@@ -25,7 +25,7 @@ const cmsApp = admin.initializeApp(
 const amsApp = admin.initializeApp(
   {
     ...defaultConfig,
-    databaseURL: "https://shopnimbus-ams.firebaseio.com",
+    databaseURL: "https://qa-ultimate-jewelry-ams.firebaseio.com",
   },
   "amsApp"
 );
@@ -33,7 +33,7 @@ const amsApp = admin.initializeApp(
 const productsApp = admin.initializeApp(
   {
     ...defaultConfig,
-    databaseURL: "https://shopnimbus-products.firebaseio.com",
+    databaseURL: "https://qa-ultimate-jewelry-products.firebaseio.com",
   },
   "productsApp"
 );
@@ -41,7 +41,7 @@ const productsApp = admin.initializeApp(
 const cartsApp = admin.initializeApp(
   {
     ...defaultConfig,
-    databaseURL: "https://shopnimbus-carts.firebaseio.com",
+    databaseURL: "https://qa-ultimate-jewelry-carts.firebaseio.com",
   },
   "cartsApp"
 );
@@ -49,7 +49,7 @@ const cartsApp = admin.initializeApp(
 const ordersApp = admin.initializeApp(
   {
     ...defaultConfig,
-    databaseURL: "https://shopnimbus-orders.firebaseio.com",
+    databaseURL: "https://qa-ultimate-jewelry-orders.firebaseio.com",
   },
   "ordersApp"
 );
@@ -57,7 +57,7 @@ const ordersApp = admin.initializeApp(
 const reviewAndRatingApp = admin.initializeApp(
   {
     ...defaultConfig,
-    databaseURL: "https://shopnimbus-reviewandrating.firebaseio.com",
+    databaseURL: "https://qa-ultimate-jewelry-reviewandrating.firebaseio.com",
   },
   "reviewAndRatingApp"
 );
@@ -65,7 +65,7 @@ const reviewAndRatingApp = admin.initializeApp(
 const appointmentApp = admin.initializeApp(
   {
     ...defaultConfig,
-    databaseURL: "https://shopnimbus-appointment.firebaseio.com",
+    databaseURL: "https://qa-ultimate-jewelry-appointment.firebaseio.com",
   },
   "appointmentApp"
 );
@@ -73,7 +73,7 @@ const appointmentApp = admin.initializeApp(
 const customJewelryApp = admin.initializeApp(
   {
     ...defaultConfig,
-    databaseURL: "https://shopnimbus-customjewelry.firebaseio.com",
+    databaseURL: "https://qa-ultimate-jewelry-customjewelry.firebaseio.com",
   },
   "customJewelryApp"
 );
@@ -81,7 +81,7 @@ const customJewelryApp = admin.initializeApp(
 const subscribersApp = admin.initializeApp(
   {
     ...defaultConfig,
-    databaseURL: "https://shopnimbus-subscribers.firebaseio.com",
+    databaseURL: "https://qa-ultimate-jewelry-subscribers.firebaseio.com",
   },
   "subscribersApp"
 );
@@ -89,7 +89,7 @@ const subscribersApp = admin.initializeApp(
 const returnsApp = admin.initializeApp(
   {
     ...defaultConfig,
-    databaseURL: "https://shopnimbus-returns.firebaseio.com",
+    databaseURL: "https://qa-ultimate-jewelry-returns.firebaseio.com",
   },
   "returnsApp"
 );
@@ -97,7 +97,7 @@ const returnsApp = admin.initializeApp(
 const storageApp = admin.initializeApp(
   {
     ...defaultConfig,
-    storageBucket: "shopnimbus-ec7fe.appspot.com",
+    storageBucket: "qa-ultimate-jewelry.firebasestorage.app",
   },
   "storageApp"
 );

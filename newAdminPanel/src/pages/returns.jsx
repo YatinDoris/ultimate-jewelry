@@ -8,7 +8,7 @@ export default function Returns() {
   return (
     <>
       <Helmet>
-        <title> Returns | High Definition Jewelry </title>
+        <title> Returns | Ultimate Jewelry </title>
       </Helmet>
 
       <ReturnsPage />

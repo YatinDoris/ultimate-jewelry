@@ -8,7 +8,7 @@ export default function AppPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard | High Definition Jewelry </title>
+        <title> Dashboard | Ultimate Jewelry </title>
       </Helmet>
 
       <AppView />

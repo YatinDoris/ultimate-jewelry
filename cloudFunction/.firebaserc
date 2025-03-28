@@ -1,8 +1,5 @@
 {
   "projects": {
-    "default": "shopnimbus-ec7fe",
-    "shopnimbus": "shopnimbus-ec7fe"
-  },
-  "targets": {},
-  "etags": {}
+    "default": "qa-ultimate-jewelry"
+  }
 }

@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2021 High Definition Jewelry ([https://minimals.cc/](https://minimals.cc/))
+Copyright (c) 2021 Ultimate Jewelry ([https://minimals.cc/](https://minimals.cc/))
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -8,7 +8,7 @@ export default function ProductsPage() {
   return (
     <>
       <Helmet>
-        <title> Products | High Definition Jewelry </title>
+        <title> Products | Ultimate Jewelry </title>
       </Helmet>
 
       <ProductsView />

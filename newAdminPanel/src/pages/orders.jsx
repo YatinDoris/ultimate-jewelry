@@ -8,7 +8,7 @@ export default function Orders() {
   return (
     <>
       <Helmet>
-        <title> Orders | High Definition Jewelry </title>
+        <title> Orders | Ultimate Jewelry </title>
       </Helmet>
 
       <OrdersPage />

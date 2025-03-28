@@ -8,7 +8,7 @@ export default function AppPage() {
   return (
     <>
       <Helmet>
-        <title> Customization | High Definition Jewelry </title>
+        <title> Customization | Ultimate Jewelry </title>
       </Helmet>
 
       <Customization />
