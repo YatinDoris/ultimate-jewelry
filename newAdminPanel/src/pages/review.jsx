@@ -8,7 +8,7 @@ export default function AppPage() {
   return (
     <>
       <Helmet>
-        <title> Reviews | High Definition Jewelry </title>
+        <title> Reviews | Ultimate Jewelry </title>
       </Helmet>
 
       <Review />

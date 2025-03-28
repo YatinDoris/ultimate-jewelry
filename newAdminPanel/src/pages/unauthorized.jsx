@@ -8,7 +8,7 @@ export default function UnauthorizedPage() {
   return (
     <>
       <Helmet>
-        <title> Unauthorized | High Definition Jewelry </title>
+        <title> Unauthorized | Ultimate Jewelry </title>
       </Helmet>
 
       <Unauthorized />

@@ -8,7 +8,7 @@ export default function DiamondShapePage() {
   return (
     <>
       <Helmet>
-        <title> Diamond shape | High Definition Jewelry </title>
+        <title> Diamond shape | Ultimate Jewelry </title>
       </Helmet>
 
       <DiamondShape />

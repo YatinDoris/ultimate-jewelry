@@ -8,7 +8,7 @@ export default function MenuPage() {
   return (
     <>
       <Helmet>
-        <title> Menu | High Definition Jewelry </title>
+        <title> Menu | Ultimate Jewelry </title>
       </Helmet>
 
       <MenuView />

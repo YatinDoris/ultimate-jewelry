@@ -29,7 +29,7 @@ const footerTemplate = () => `
         </div>
 
         <div style="padding: 20px; text-align: center; color: #a5a5a5; font-size: 0.7vw;">
-            <p style="margin: 0; font-family: IBM Plex Mono, monospace; font-style: normal;">© 2024 Your High Defination Jewellery. All rights reserved.</p>
+            <p style="margin: 0; font-family: IBM Plex Mono, monospace; font-style: normal;">© 2024 Your Ultimate Jewelry. All rights reserved.</p>
             <p style="margin: 0;"><a href="mailto:${COMPANY_EMAIL}" style="font-family: IBM Plex Mono, monospace; font-style: normal; color: #a5a5a5; text-decoration: none;">Mail us: ${COMPANY_EMAIL}</a></p>
         </div>
 	</div>
@@ -234,7 +234,7 @@ const emailOtpVerification = (otp) => {
 			<p>
 				Thank you for your attention!
 			</p>
-			<p style="margin-bottom : 10px; ">Best Regards,<br />High Definition Jewelry</p>
+			<p style="margin-bottom : 10px; ">Best Regards,<br />Ultimate Jewelry</p>
       	</div>`;
 
   return { subject, description: html(body) };
@@ -267,7 +267,7 @@ const forgotPasswordOtpVerification = (username, otp) => {
 		<p>
 			Thank you for your attention!
 		</p>
-		<p style="margin-bottom : 10px; ">Best Regards,<br />High Definition Jewelry</p>
+		<p style="margin-bottom : 10px; ">Best Regards,<br />Ultimate Jewelry</p>
       </div>`;
 
   return { subject, description: html(body) };
@@ -303,7 +303,7 @@ const getMailTemplateForOrderStatus = (userName, orderNumber, orderStatus) => {
 	<p style=" margin-bottom : 10px;">Dear ${userName},</p>	
 	${
     orderStatus === "pending"
-      ? `<p>Thank you for choosing High Definition Jewelry! We're happy to confirm that we’ve received your payment for ${boldOrderNumber}.</p>
+      ? `<p>Thank you for choosing Ultimate Jewelry! We're happy to confirm that we’ve received your payment for ${boldOrderNumber}.</p>
 			<div style="margin : 10px;">
 				<p style="color : #58a4bd; margin : 0px;">Order Summary</p>
 				<ul>
@@ -314,7 +314,7 @@ const getMailTemplateForOrderStatus = (userName, orderNumber, orderStatus) => {
 			</div>
 			<p>Our team is reviewing your order, and we’ll keep you updated once it’s ready for the next steps. Should you have any questions or need further information, feel free to reach out to us at <a href="mailto:${COMPANY_EMAIL}" style="color : #58a4bd;"> ${COMPANY_EMAIL}</a> or <a href="tel:${COMPANY_MOBILE_NO}" style="color: #58a4bd;">${COMPANY_MOBILE_NO}</a>.</p>
 			<p>We appreciate your trust in
-High Definition Jewelry
+Ultimate Jewelry
 and look forward to completing your order soon.</p>
 			`
       : ""
@@ -342,7 +342,7 @@ has been canceled. We understand this may be disappointing, and we apologize for
 	  
 	  ${
       orderStatus === "confirmed"
-        ? `<p>Thank you for your purchase with High Definition Jewelry! We’re excited to confirm that your ${boldOrderNumber} has been successfully placed, and we’ve received your payment.
+        ? `<p>Thank you for your purchase with Ultimate Jewelry! We’re excited to confirm that your ${boldOrderNumber} has been successfully placed, and we’ve received your payment.
  </p>
 			<div style="margin : 10px;">
 				<p style="color : #58a4bd; margin : 0px;">Order Summary</p>
@@ -353,7 +353,7 @@ has been canceled. We understand this may be disappointing, and we apologize for
 				</ul>
 			</div>
 			<p>We are now preparing your order and will notify you once it has been shipped. If you have any questions in the meantime, feel free to reach out to us at <a href="mailto:${COMPANY_EMAIL}" style="color : #58a4bd;"> ${COMPANY_EMAIL}</a> or call us at <a href="tel:${COMPANY_MOBILE_NO}" style="color: #58a4bd;">${COMPANY_MOBILE_NO}</a>.</p>
-			<p>Thank you for choosing High Definition Jewelry. We look forward to delivering your order soon!</p>`
+			<p>Thank you for choosing Ultimate Jewelry. We look forward to delivering your order soon!</p>`
         : ""
     }
 		 ${
@@ -369,10 +369,10 @@ has been canceled. We understand this may be disappointing, and we apologize for
         ? `<p>We’re happy to let you know that your ${boldOrderNumber} has been successfully delivered.</p>
 			
 			<p>We hope you enjoy your purchase. If you have any questions or concerns about your order, please feel free to contact us at <a href="mailto:${COMPANY_EMAIL}" style="color : #58a4bd;"> ${COMPANY_EMAIL}</a> or call us at <a href="tel:${COMPANY_MOBILE_NO}" style="color: #58a4bd;">${COMPANY_MOBILE_NO}</a>.</p>
-			<p>Thank you for shopping with High Definition Jewelry!. We look forward to serving you again soon!</p>`
+			<p>Thank you for shopping with Ultimate Jewelry!. We look forward to serving you again soon!</p>`
         : ""
     }
-	<p style = "margin-bottom : 10px; " >Best Regards, <br />High Definition Jewelry</p>
+	<p style = "margin-bottom : 10px; " >Best Regards, <br />Ultimate Jewelry</p>
 	</div >
       </div >
 	`;
@@ -404,19 +404,19 @@ const getMailTemplateForAppointmentStatus = (
 			
 				${
           appointmentStatus === "approved"
-            ? `<p>We’re pleased to confirm your appointment with High Definition Jewelry!</p> <div style="margin : 10px;">
+            ? `<p>We’re pleased to confirm your appointment with Ultimate Jewelry!</p> <div style="margin : 10px;">
 				<p style="color : #58a4bd; margin : 0px;">Appointment Details :</p>
 				<ul>
 					<li>Date & Time: ${dateTime}</li>
 				</ul>
 			</div>
 			<p>We look forward to seeing you then. If you have any questions or need to reschedule, please feel free to reach out to us at <a href="mailto:${COMPANY_EMAIL}" style="color : #58a4bd;"> ${COMPANY_EMAIL}</a> or call us at <a href="tel:${COMPANY_MOBILE_NO}" style="color: #58a4bd;">${COMPANY_MOBILE_NO}</a>.</p>
-			<p>Thank you for choosing High Definition Jewelry!</p>`
+			<p>Thank you for choosing Ultimate Jewelry!</p>`
             : ""
         }
 					${
             appointmentStatus === "rejected"
-              ? `	<p>Thank you for reaching out to us regarding your appointment request. We appreciate your interest in High Definition Jewelry.</p>
+              ? `	<p>Thank you for reaching out to us regarding your appointment request. We appreciate your interest in Ultimate Jewelry.</p>
 				<p>Unfortunately, we must decline your appointment request for ${dateTime}${
                   rejectReason ? `, ${rejectReason}` : ""
                 }. We apologize for any inconvenience this may cause.</p>
@@ -424,7 +424,7 @@ const getMailTemplateForAppointmentStatus = (
 				<p>Thank you for your understanding, and we hope to connect with you soon!</p>`
               : ""
           }
-			<p style="margin-bottom : 10px;">Best Regards,<br />High Definition Jewelry</p>
+			<p style="margin-bottom : 10px;">Best Regards,<br />Ultimate Jewelry</p>
 		</div>
       </div>
 	`;
@@ -509,8 +509,8 @@ const getMailTemplateForReturnStatus = (
           : ""
       }
 			  
-				<p style = "color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;" > Thank you for choosing <a href="${WEBSITE_URL}" style="color: #58a4bd;" target="_blank" >High Definition Jewelry<a/> Please Visit Again.</p>
-		<p style = "color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;" > Best Regards, <br />High Definition Jewelry</p>
+				<p style = "color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;" > Thank you for choosing <a href="${WEBSITE_URL}" style="color: #58a4bd;" target="_blank" >Ultimate Jewelry<a/> Please Visit Again.</p>
+		<p style = "color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;" > Best Regards, <br />Ultimate Jewelry</p>
 		</div >
       </div >
 	`;
@@ -591,7 +591,7 @@ Order ${boldOrderNumber}.</p>`;
           ? "<p>We apologize for any inconvenience and appreciate your patience as we work to resolve this.</p>"
           : "<p>Thank you for your understanding and patience.</p>"
       }
-		<p style="color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;">Best Regards,<br />High Definition Jewelry</p>
+		<p style="color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;">Best Regards,<br />Ultimate Jewelry</p>
 		</div >
       </div >
 	`;

@@ -8,7 +8,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Report & Analysis | High Definition Jewelry </title>
+        <title> Report & Analysis | Ultimate Jewelry </title>
       </Helmet>
 
       <ReportAnalysisPage />

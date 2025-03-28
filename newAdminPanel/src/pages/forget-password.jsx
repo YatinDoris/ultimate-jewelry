@@ -8,7 +8,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Signup | High Definition Jewelry </title>
+        <title> Signup | Ultimate Jewelry </title>
       </Helmet>
 
       <ForgetPassword />

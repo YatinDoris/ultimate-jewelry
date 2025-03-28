@@ -8,7 +8,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Order Detail | High Definition Jewelry </title>
+        <title> Order Detail | Ultimate Jewelry </title>
       </Helmet>
 
       <OrderDetailPage />

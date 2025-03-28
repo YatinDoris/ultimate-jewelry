@@ -8,7 +8,7 @@ export default function SettingStylePage() {
   return (
     <>
       <Helmet>
-        <title> Setting style | High Definition Jewelry </title>
+        <title> Setting style | Ultimate Jewelry </title>
       </Helmet>
 
       <SettingStyle />
