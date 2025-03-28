@@ -30,3 +30,31 @@ body {
   color: var(--baseblack);
   font-family: "Figtree", sans-serif;
 }
+.progressive-img-loading {
+  opacity: 0.25;
+  clip-path: inset(0);
+  animation: fade-in 2s linear infinite;
+  width: 50% !important;
+  height: 50% !important;
+  min-width: 30px;
+  min-height: 30px;
+  max-width: 130px;
+  max-height: 130px;
+}
+
+.progressive-img-loaded {
+  opacity: 1;
+  transition: all 0.5s linear;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.8;
+  }
+}
