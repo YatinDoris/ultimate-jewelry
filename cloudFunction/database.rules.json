@@ -1,0 +1,69 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "cms": {
+      "address": {
+        ".indexOn": [
+          "id",
+          "userId"
+        ]
+      },
+      "reviewandrating": {
+        ".indexOn": [
+          "id",
+          "productId"
+        ]
+      },
+      "authentication": {
+        "admins": {
+          ".indexOn": "email"
+        },
+        "user": {
+          ".indexOn": "email"
+        }
+      },
+      "cart": {
+        ".indexOn": [
+          "userId"
+        ]
+      },
+      "customization": {
+        "customizationSubType": {
+          ".indexOn": [
+            "customizationTypeId"
+          ]
+        }
+      },
+      "menu": {
+        "subCategories": {
+          ".indexOn": "categoryId"
+        },
+        "productType": {
+          ".indexOn": [
+            "categoryId",
+            "subCategoryId"
+          ]
+        }
+      },
+      "products": {
+        ".indexOn": [
+          "id",
+          "createdDate",
+          "productName",
+          "active",
+          "categoryId",
+          "subCategoryId",
+          "productTypeId",
+          "collectionId"
+        ]
+      },
+      "subscribers": {
+        ".indexOn": [
+          "id",
+          "email"
+        ]
+      }
+    }
+  }
+}

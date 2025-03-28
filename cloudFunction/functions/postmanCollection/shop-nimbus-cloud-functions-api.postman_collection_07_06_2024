@@ -1,0 +1,785 @@
+{
+	"info": {
+		"_postman_id": "525462f2-9257-47db-9a17-f047c144b26f",
+		"name": "shop-nimbus-cloud-functions-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35050545"
+	},
+	"item": [
+		{
+			"name": "stripe",
+			"item": [
+				{
+					"name": "createPaymentIntent",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"countryName\" : \"India\",\r\n\"firstName\" : \"test firstName\",\r\n\"lastName\" : \"test lastName\",\r\n\"address\" : \"test address\",\r\n\"city\" : \"test city\",\r\n\"state\" : \"test state\",\r\n\"pinCode\" : 12345,\r\n\"mobile\" : 1234567890,\r\n\"email\" : \"vulezappenou-1391@yopmail.com\",\r\n\"companyName\" : \"companyName\", //optional\r\n\"apartment\" : \"apartment\", //optional\r\n\"shippingCharge\":0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/stripe/create-payment-intent",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"stripe",
+								"create-payment-intent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refundPayment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/stripe/refundPayment",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"stripe",
+								"refundPayment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refundPaymentForReturn",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"returnId\":\"\",\r\n    \"refundDescription\":\"\",\r\n    \"refundAmount\":12 // in USD\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/stripe/refundPaymentForReturn",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"stripe",
+								"refundPaymentForReturn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cancelPaymentIntent",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\" : \"\",\r\n    \"paymentIntentId\" : \"pi_3OJxswSJ1GH8FZ7s0J4DEzF9\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/stripe/cancel-payment-intent",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"stripe",
+								"cancel-payment-intent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "webhook",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/stripe/webhook",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"stripe",
+								"webhook"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "checkPaymentIntentStatus",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"paymentIntentId\" : \"pi_3OL0rcSJ1GH8FZ7s03cjUQoc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/stripe/check-payment-intent-status",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"stripe",
+								"check-payment-intent-status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "sendOtpForEmailVerification",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"email\" : \"gressenaddoippo-1722@yopmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/user/sendOtpForEmailVerification",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"user",
+								"sendOtpForEmailVerification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verifyOtp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"email\" : \"gressenaddoippo-1722@yopmail.com\",\r\n\"otp\" : \"908768\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/user/verifyOtp",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"user",
+								"verifyOtp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sendWelcomeMail",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"email\" : \"gressenaddoippo-1722@yopmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/user/sendWelcomeMail",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"user",
+								"sendWelcomeMail"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "adminLogin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"superadmin@gmail.com\",\r\n    \"password\" : \"superadmin@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/admin/adminLogin",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"admin",
+								"adminLogin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "address",
+			"item": [
+				{
+					"name": "validateAddress",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"regionCode\" : \"US\",\r\n    \"addressLine\" : \"1600 Amphitheatre Parkway, Mountain View, CA\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/address/validateAddress",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"address",
+								"validateAddress"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "order",
+			"item": [
+				{
+					"name": "insertOrder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"countryName\" : \"India\",\r\n\"firstName\" : \"test firstName\",\r\n\"lastName\" : \"test lastName\",\r\n\"address\" : \"test address\",\r\n\"city\" : \"test city\",\r\n\"state\" : \"test state\",\r\n\"pinCode\" : 12345,\r\n\"mobile\" : 1234567890,\r\n\"email\" : \"test@gmail.com\",\r\n\"companyName\" : \"companyName\", //optional\r\n\"apartment\" : \"apartment\", //optional\r\n\"shippingCharge\":0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/order/insertOrder",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"order",
+								"insertOrder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updatePaymentStatus",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"0212d56f20b\",\r\n    \"paymentStatus\" : \"success\",\r\n    \"cartIds\" :[\"9fd522798f4\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/order/updatePaymentStatus",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"order",
+								"updatePaymentStatus"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateOrderStatus",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"9b2f87b8d2d\",\r\n    \"orderStatus\" : \"delivered\",  // 'pending','confirmed', 'shipped', 'delivered', 'cancelled'\r\n    \"cancelReason\" :\"\",\r\n    \"trackingNumber\" : \"dvcdsf\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/order/updateOrderStatus",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"order",
+								"updateOrderStatus"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cancelOrder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"47715b72a2a\",\r\n    \"cancelReason\" :\" i am not interested in this product\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/order/cancelOrder",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"order",
+								"cancelOrder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sendPendingOrderMail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"5fdd3ed5e04\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/order/sendPendingOrderMail",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"order",
+								"sendPendingOrderMail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteOrder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/order/68bb678fa22",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"order",
+								"68bb678fa22"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllOrderList",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/order/list",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"order",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "return",
+			"item": [
+				{
+					"name": "rejectReturn",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"returnId\":\"47715b72a2a\",\r\n    \"adminNote\" :\" i am not interested in this product\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/returns/rejectReturn",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"returns",
+								"rejectReturn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sendReturnStatusMail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"returnId\" : \"gressenaddoippo-1722@yopmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/returns/sendReturnStatusMail",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"returns",
+								"sendReturnStatusMail"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "appointment",
+			"item": [
+				{
+					"name": "updateAppointmentStatus",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"appointmentId\":\"94ae39bf702\",\r\n    \"appointmentStatus\" : \"approved\",  // 'pending','approved', 'rejected'\r\n    \"rejectReason\" :\"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/appointments/updateAppointmentStatus",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"appointments",
+								"updateAppointmentStatus"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
