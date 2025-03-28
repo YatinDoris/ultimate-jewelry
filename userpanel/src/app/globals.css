@@ -1,0 +1,60 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+:root {
+  --primary: #9e371e;
+  --offwhite: #fafaf8;
+  --baseblack: #2b2b2b;
+}
+
+@font-face {
+  font-family: "Castoro";
+  src: url("/fonts/Castoro/Castoro-Regular.ttf") format("woff2"),
+    url("/fonts/Castoro/Castoro-Regular.ttf") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf")
+      format("woff2"),
+    url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+body {
+  background: var(--offwhite);
+  color: var(--baseblack);
+  font-family: "Figtree", sans-serif;
+}
+.progressive-img-loading {
+  opacity: 0.25;
+  clip-path: inset(0);
+  animation: fade-in 2s linear infinite;
+  width: 50% !important;
+  height: 50% !important;
+  min-width: 30px;
+  min-height: 30px;
+  max-width: 130px;
+  max-height: 130px;
+}
+
+.progressive-img-loaded {
+  opacity: 1;
+  transition: all 0.5s linear;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.8;
+  }
+}
