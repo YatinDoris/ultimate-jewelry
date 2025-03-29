@@ -7,6 +7,8 @@ import {
   productsUrl,
   sanitizeObject,
   sanitizeValue,
+  sapphireTreeProductListApiUrl,
+  sapphireTreeSecretKey,
   showCaseBannerUrl,
 } from '../_helpers';
 import fileSettings from '../_utils/fileSettings';
@@ -618,7 +620,7 @@ const updateProductVideo = (params) => {
               });
           }
 
-          const videoUrl = deletedVideo ? '' : productData?.video ?? '';
+          const videoUrl = deletedVideo ? '' : (productData?.video ?? '');
 
           const payload = {
             video: videoFile.length ? uploadedVideo : videoUrl,
@@ -929,7 +931,7 @@ const updateProduct = (params) => {
                 ? getVariComboWithQuantityArray(variComboWithQuantity)
                 : productData.variComboWithQuantity;
 
-            const videoUrl = deletedVideo ? '' : productData?.video ?? '';
+            const videoUrl = deletedVideo ? '' : (productData?.video ?? '');
             const payload = {
               productName,
               images: imagesArray,
@@ -1278,18 +1280,9 @@ const getOrCreateMenuCategory = async (categoryTitle) => {
 
 const processBulkProductsWithApi = async () => {
   try {
-    const startTime = Date.now(); // ⏳ Start tracking time
-
-    // const productListApiUrl =
-    //   'https://us-central1-sapphire-tree.cloudfunctions.net/cloudFunctionsApi/products/list';
-    const productListApiUrl =
-      'https://us-central1-sapphire-tree.cloudfunctions.net/cloudFunctionsApi/products/list?styleNo=SB1339';
-    // const productListApiUrl =
-    //   'https://us-central1-sapphire-tree.cloudfunctions.net/cloudFunctionsApi/products/list?title=SP-583-O&styleNo=SP-583-O&mainStyleNo=SP-583&category=PENDENT&gender=MALE&gemStones=Natural Diamond, Cubic Zerconia&metal=10K, 14K&metalColor=Yellow Gold, White Gold, Rose Gold&length=2.00IN&width=1.00IN&depth=0.50IN&size=&minPrice=2354&maxPrice=2601&mode=jeweler&sortBy=new_to_old';
-
-    const response = await axios.get(productListApiUrl, {
+    const response = await axios.get(sapphireTreeProductListApiUrl, {
       headers: {
-        secretKey: 'U2FsdGVkX1932rGUD7DnoNpbg/HxfyyAp1bfen+z0JEed+nomwPJxKfUnotSu/5l', // Replace with the actual secret key
+        secretKey: sapphireTreeSecretKey, // Replace with the actual secret key
         authorization: '',
       },
     });
@@ -1307,7 +1300,8 @@ const processBulkProductsWithApi = async () => {
         const specifications = generateSpecification(item);
         const imageFolder = `${productsUrl}/compressed/images`;
         const videoFolder = `${productsUrl}/compressed/videos`;
-
+        const uploadedImageUrls = [];
+        const uploadedVideoUrl = '';
         // // 🔹 Upload Images to Firebase
         // const uploadedImageUrls = await Promise.all(
         //   item.compressedImages.map(async (img) => {
@@ -1349,10 +1343,10 @@ const processBulkProductsWithApi = async () => {
         return {
           id: uuid,
           productName,
-          // images: uploadedImageUrls, // Extract image URLs
-          // video: uploadedVideoUrl, // Use empty string if no video
-          images: item?.compressedImages.map((img) => ({ image: img.image })) || [], // Extract image URLs
-          video: item?.compressedVideo || '', // Use empty string if no video
+          images: uploadedImageUrls, // Extract image URLs
+          video: uploadedVideoUrl, // Use empty string if no video
+          // images: item?.compressedImages.map((img) => ({ image: img.image })) || [], // Extract image URLs
+          // video: item?.compressedVideo || '', // Use empty string if no video
           sku: item.styleNo,
           saltSKU,
           shortDescription,
@@ -1379,12 +1373,7 @@ const processBulkProductsWithApi = async () => {
         };
       })
     );
-
-    const endTime = Date.now(); // ⏳ End tracking time
-
-    console.log(`Processing Time: ${(endTime - startTime) / 1000} seconds`);
-    console.log('Processed Products:', products);
-
+    console.log(products, 'products');
     return products;
   } catch (error) {
     console.log(error, 'error');
