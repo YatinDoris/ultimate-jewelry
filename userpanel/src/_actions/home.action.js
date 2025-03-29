@@ -3,9 +3,9 @@ import { setMenuList } from "@/store/slices/commonSlice";
 
 export const getMenuList = () => async (dispatch) => {
     try {
-        const response = await getAllMenuData()
+        const response = await getAllMenuList()
         if (response) {
-            dispatch(setMenuList([response]));
+            dispatch(setMenuList(response));
         }
     } catch (e) {
         console.error(e);

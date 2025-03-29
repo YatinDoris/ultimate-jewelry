@@ -39,6 +39,7 @@ import { CustomImg } from "@/components/dynamiComponents";
 import Link from "next/link";
 import { useState } from "react";
 
+
 const diamondShapes = [
   { image: diamondPear, titleAttr: "", altAttr: "", title: "PEAR" },
   { image: diamondRound, titleAttr: "", altAttr: "", title: "ROUND" },
