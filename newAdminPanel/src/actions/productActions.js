@@ -51,7 +51,7 @@ export const processBulkProductsWithApi = () => async (dispatch) => {
     toastError(e);
     return false;
   } finally {
-    dispatch(setCrudProductLoading(true));
+    dispatch(setCrudProductLoading(false));
   }
 };
 

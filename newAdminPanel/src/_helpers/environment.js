@@ -58,3 +58,7 @@ export const firstName = process.env.REACT_APP_FIRSTNAME;
 export const confirmPassword = process.env.REACT_APP_CONFIRMED_PASSWORD;
 
 export const reCaptchaSiteKey = process.env.REACT_APP_RE_CAPTCHA_SITE_KEY;
+
+export const sapphireTreeProductListApiUrl =
+  process.env.REACT_APP_SAPPHIRE_TREE_PRODUCT_LIST_API_URL;
+export const sapphireTreeSecretKey = process.env.REACT_APP_SAPPHIRE_TREE_SECRET_KEY;
