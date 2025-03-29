@@ -18,8 +18,7 @@
 
 @font-face {
   font-family: "Figtree";
-  src: url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf")
-      format("woff2"),
+  src: url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf") format("woff2"),
     url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf") format("woff");
   font-weight: 400;
   font-style: normal;
@@ -30,6 +29,7 @@ body {
   color: var(--baseblack);
   font-family: "Figtree", sans-serif;
 }
+
 .progressive-img-loading {
   opacity: 0.25;
   clip-path: inset(0);
