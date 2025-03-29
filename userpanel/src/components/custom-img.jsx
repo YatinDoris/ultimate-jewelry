@@ -6,7 +6,7 @@ const commonAltAttr =
 const commonTitleAttr =
   "Tele Gold Jewelers | Diamond Jewelry, Coin, Gold, Silver, Platinum";
 
-export default function CustomIimg({
+export default function CustomImg({
   altAttr = commonAltAttr,
   titleAttr = commonTitleAttr,
   srcAttr,
