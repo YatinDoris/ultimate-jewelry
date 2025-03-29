@@ -17,3 +17,7 @@ export const Lenis = dynamic(() => import("./lenis"), { ssr: false });
 export const StoreProvider = dynamic(() => import("@/store/provider"), {
   ssr: false,
 });
+
+export const NavigationHeader = dynamic(() => import("./navigationHeader"), {
+  ssr: false,
+});

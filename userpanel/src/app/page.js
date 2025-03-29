@@ -22,9 +22,10 @@ import diamondPear from "@/assets/images/home/diamond-pear.webp";
 import diamondPrincess from "@/assets/images/home/diamond-princess.webp";
 import diamondRadiant from "@/assets/images/home/diamond-radiant.webp";
 import diamondRound from "@/assets/images/home/diamond-round.webp";
-import CustomImg from "./components/custom-img";
+
 import { LinkButton } from "./components/button";
 import Image from "next/image";
+import { CustomImg } from "@/components/dynamiComponents";
 
 const diamondShapes = [
   { image: diamondPear, titleAttr: "", altAttr: "", title: "PEAR" },

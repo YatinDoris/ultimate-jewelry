@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   menuList: [],
-  isMenuDropDownOpen: false
+  openDropdown: false,
+  isMenuOpen: false,
 };
 
 const commonSlice = createSlice({
@@ -12,15 +13,21 @@ const commonSlice = createSlice({
     setMenuList: (state, action) => {
       state.menuList = action.payload;
     },
-    setMenuDropDownOpen: (state, action) => {
-      state.isMenuDropDownOpen = action.payload;
+
+    setIsMenuOpen: (state, action) => {
+      state.isMenuOpen = action.payload;
+    },
+    setOpenDropdown: (state, action) => {
+      state.openDropdown = action.payload;
     },
   },
 });
 
 export const {
   setMenuList,
-  setMenuDropDownOpen 
+  setIsMenuOpen,
+  setOpenDropdown,
+
 } = commonSlice.actions;
 
 export default commonSlice.reducer;
