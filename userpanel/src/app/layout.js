@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Layout } from "./components/dynamiComponents";
+import { Layout } from "@/components/dynamiComponents";
 
 
 
