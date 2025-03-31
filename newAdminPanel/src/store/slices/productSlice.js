@@ -12,10 +12,13 @@ export const initDiamondFilters = {
 export const productInitDetails = {
   videoFile: [],
   imageFiles: [],
+  thumbnailImageFile: [],
   previewVideo: [],
   previewImages: [],
+  previewThumbnailImage: [],
   deleteUploadedVideo: [],
   uploadedDeletedImages: [],
+  uploadedDeletedThumbnailImage: [],
   productName: '',
   sku: '',
   saltSKU: '',

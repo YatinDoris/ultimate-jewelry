@@ -148,7 +148,7 @@ const DuplicateProductDialog = ({ open, setOpen, loading }) => {
     initialValues: {
       productName: selectedProduct.productName + ' copy',
       sku: selectedProduct.sku + '-copy',
-      saltSKU: `HDJ-${selectedProduct.sku}-copy-${randomNumber}`,
+      saltSKU: `UJ-${selectedProduct.sku}-copy-${randomNumber}`,
     },
   });
 
@@ -156,7 +156,7 @@ const DuplicateProductDialog = ({ open, setOpen, loading }) => {
     (val) => {
       const lastDigits = randomNumber;
       setFieldValue('sku', val);
-      const saltSKU = val ? `HDJ-${val}-${lastDigits}` : '';
+      const saltSKU = val ? `UJ-${val}-${lastDigits}` : '';
       setFieldValue('saltSKU', saltSKU);
     },
     [randomNumber]

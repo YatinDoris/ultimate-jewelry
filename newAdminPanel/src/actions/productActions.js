@@ -142,6 +142,24 @@ export const getSingleProduct = (productId) => async (dispatch) => {
         };
       }
 
+      const thumbnailImageUrl = res?.thumbnailImage;
+      if (thumbnailImageUrl) {
+        const url = new URL(thumbnailImageUrl);
+        const fileExtension = url.pathname.split('.').pop();
+
+        const previewThumbnailImageObj = {
+          type: 'old',
+          mimeType: `image/${fileExtension}`,
+          image: thumbnailImageUrl,
+        };
+        product = {
+          ...product,
+          thumbnailImageFile: [],
+          uploadedDeletedThumbnailImage: [],
+          previewThumbnailImage: [previewThumbnailImageObj],
+        };
+      }
+
       const videoUrl = res?.video;
       if (videoUrl) {
         const url = new URL(videoUrl);
@@ -205,6 +223,25 @@ export const updateProductPhotosAction = (payload) => async (dispatch) => {
   try {
     dispatch(setCrudProductLoading(true));
     const res = await productService.updateProductPhotos(payload);
+
+    if (res) {
+      toast.success('Product updated successfully');
+      return true;
+    }
+  } catch (e) {
+    toastError(e);
+    return false;
+  } finally {
+    dispatch(setCrudProductLoading(false));
+  }
+};
+
+
+
+export const updateProductThumbnailPhotoAction = (payload) => async (dispatch) => {
+  try {
+    dispatch(setCrudProductLoading(true));
+    const res = await productService.updateProductThumbnailPhoto(payload);
 
     if (res) {
       toast.success('Product updated successfully');

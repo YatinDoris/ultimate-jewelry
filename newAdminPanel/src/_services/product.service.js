@@ -141,6 +141,7 @@ const insertProduct = (params) => {
       let {
         productName,
         imageFiles,
+        thumbnailImageFile,
         videoFile,
         sku,
         saltSKU,
@@ -162,6 +163,7 @@ const insertProduct = (params) => {
 
       productName = productName ? productName.trim() : null;
       imageFiles = Array.isArray(imageFiles) ? imageFiles : [];
+      thumbnailImageFile = typeof thumbnailImageFile === 'object' ? [thumbnailImageFile] : [];
       videoFile = typeof videoFile === 'object' ? [videoFile] : [];
       sku = sku ? sku.trim() : null;
       saltSKU = saltSKU ? saltSKU.trim() : null;
@@ -183,10 +185,11 @@ const insertProduct = (params) => {
       if (
         productName &&
         imageFiles.length &&
+        thumbnailImageFile.length &&
         sku &&
         categoryId &&
-        subCategoryId &&
-        productTypeIds?.length &&
+        // subCategoryId &&
+        // productTypeIds?.length &&
         description &&
         variations.length &&
         variComboWithQuantity.length &&
@@ -267,6 +270,14 @@ const insertProduct = (params) => {
               new Error(`You can only ${fileSettings.PRODUCT_IMAGE_FILE_LIMIT} image upload here`)
             );
             return;
+          } else if (!thumbnailImageFile.length) {
+            reject(new Error(`It's necessary to have a thumbnail image`));
+            return;
+          } else if (thumbnailImageFile.length > fileSettings.PRODUCT_THUMBNAIL_IMAGE_FILE_LIMIT) {
+            reject(
+              new Error(`You can only ${fileSettings.PRODUCT_THUMBNAIL_IMAGE_FILE_LIMIT} thumbnail image upload here`)
+            );
+            return;
           } else if (videoFile.length && videoFile.length > fileSettings.PRODUCT_VIDEO_FILE_LIMIT) {
             reject(
               new Error(`You can only ${fileSettings.PRODUCT_VIDEO_FILE_LIMIT} video upload here`)
@@ -274,13 +285,15 @@ const insertProduct = (params) => {
             return;
           } else {
             const imageValidFileType = isValidFileType(fileSettings.IMAGE_FILE_NAME, imageFiles);
-            if (!imageValidFileType) {
+            const thumbnailImageValidFileType = isValidFileType(fileSettings.IMAGE_FILE_NAME, thumbnailImageFile);
+            if (!imageValidFileType || !thumbnailImageValidFileType) {
               reject(new Error('Invalid file! (Only JPG, JPEG, PNG, WEBP files are allowed!)'));
               return;
             }
 
             const imageValidFileSize = isValidFileSize(fileSettings.IMAGE_FILE_NAME, imageFiles);
-            if (!imageValidFileSize) {
+            const thumbnailImageValidFileSize = isValidFileSize(fileSettings.IMAGE_FILE_NAME, thumbnailImageFile);
+            if (!imageValidFileSize || !thumbnailImageValidFileSize) {
               reject(new Error('Invalid File Size! (Only 5 MB are allowed!)'));
               return;
             }
@@ -299,13 +312,14 @@ const insertProduct = (params) => {
               }
             }
 
-            const filesPayload = [...imageFiles, ...videoFile];
+            const filesPayload = [...thumbnailImageFile, ...imageFiles, ...videoFile];
             await uploadFile(productsUrl, filesPayload)
               .then((fileNames) => {
                 let videoUrl = '';
                 if (videoFile.length) {
                   videoUrl = fileNames.pop();
                 }
+                const thumbnailImage = fileNames.shift();
                 const imagesArray = fileNames.map((url) => {
                   return { image: url };
                 });
@@ -313,6 +327,7 @@ const insertProduct = (params) => {
                   id: uuid,
                   productName: productName,
                   images: imagesArray,
+                  thumbnailImage,
                   video: videoUrl,
                   sku,
                   saltSKU,
@@ -438,6 +453,9 @@ const deleteProduct = (productId) => {
           if (productData?.video) {
             deleteFile(productsUrl, productData?.video);
           }
+          if (productData?.thumbnailImage) {
+            deleteFile(productsUrl, productData?.thumbnailImage);
+          }
           resolve(true);
         } else {
           reject(new Error('Product does not exist'));
@@ -478,7 +496,6 @@ const updateProductPhotos = (params) => {
   return new Promise(async (resolve, reject) => {
     try {
       let { productId, imageFiles, deletedImages } = sanitizeObject(params);
-
       imageFiles = Array.isArray(imageFiles) ? imageFiles : [];
       deletedImages = Array.isArray(deletedImages) ? deletedImages : [];
 
@@ -565,6 +582,86 @@ const updateProductPhotos = (params) => {
           } else {
             reject(new Error('At least one image is required'));
           }
+        } else {
+          reject(new Error('Product does not exists'));
+        }
+      } else {
+        reject(new Error('productId is required'));
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const updateProductThumbnailPhoto = (params) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let { productId, thumbnailImageFile, deletedThumbnailImage } = sanitizeObject(params);
+      thumbnailImageFile = typeof thumbnailImageFile === 'object' ? [thumbnailImageFile] : [];
+      deletedThumbnailImage = deletedThumbnailImage ? deletedThumbnailImage.trim() : null;
+
+      if (productId) {
+        const productData = await fetchWrapperService.findOne(productsUrl, {
+          id: productId,
+        });
+        if (productData) {
+          let uploadedThumbnailImage = '';
+          if (thumbnailImageFile.length && thumbnailImageFile.length > fileSettings.CUSTOMIZATION_SUB_TYPE_IMAGE_FILE_LIMIT) {
+            reject(
+              new Error(`You can only ${fileSettings.CUSTOMIZATION_SUB_TYPE_IMAGE_FILE_LIMIT} thumbnail upload here`)
+            );
+            return;
+          }
+          if (thumbnailImageFile.length) {
+            const videoValidFileType = isValidFileType(fileSettings.THUMBNAIL_IMAGE_FILE_NAME, thumbnailImageFile);
+            if (!videoValidFileType) {
+              reject(new Error('Invalid file! (Only JPG, JPEG PNG, WEBP files are allowed!)'));
+              return;
+            }
+
+            const videoValidFileSize = isValidFileSize(fileSettings.THUMBNAIL_IMAGE_FILE_NAME, thumbnailImageFile);
+            if (!videoValidFileSize) {
+              reject(new Error('Invalid File Size! (Only 5 MB are allowed!'));
+              return;
+            }
+
+            const filesPayload = [...thumbnailImageFile];
+            await uploadFile(productsUrl, filesPayload)
+              .then((fileNames) => {
+                uploadedThumbnailImage = fileNames[0];
+              })
+              .catch((e) => {
+                reject(new Error('An error occurred during product video uploading.'));
+              });
+          }
+
+          const thumbnailImageUrl = deletedThumbnailImage ? '' : (productData?.thumbnailImage ?? '');
+
+          const payload = {
+            thumbnailImage: thumbnailImageFile.length ? uploadedThumbnailImage : thumbnailImageUrl,
+            updatedDate: Date.now(),
+          };
+          const updatePattern = {
+            url: `${productsUrl}/${productId}`,
+            payload: payload,
+          };
+          fetchWrapperService
+            ._update(updatePattern)
+            .then((response) => {
+              // Whenever a new file is uploaded for a product, the old file will be deleted.
+              if (deletedThumbnailImage) {
+                deleteFile(productsUrl, deletedThumbnailImage);
+              }
+              resolve(true);
+            })
+            .catch((e) => {
+              reject(new Error('An error occurred during update product video.'));
+              // whenever an error occurs for updating a product video the uploaded file is deleted
+              if (uploadedThumbnailImage) {
+                deleteFile(productsUrl, uploadedThumbnailImage);
+              }
+            });
         } else {
           reject(new Error('Product does not exists'));
         }
@@ -927,7 +1024,7 @@ const updateProduct = (params) => {
               : [];
             const variComboWithQuantityArray =
               variComboWithQuantity.length &&
-              !isInValidVariComboWithQuantityArray(variComboWithQuantity)
+                !isInValidVariComboWithQuantityArray(variComboWithQuantity)
                 ? getVariComboWithQuantityArray(variComboWithQuantity)
                 : productData.variComboWithQuantity;
 
@@ -946,7 +1043,8 @@ const updateProduct = (params) => {
                 ? settingStyleIds?.map((id) => id?.trim())
                 : productData.settingStyleIds,
               categoryId: categoryId ? categoryId.trim() : productData.categoryId,
-              subCategoryId: subCategoryId ? subCategoryId.trim() : productData.subCategoryId,
+              // subCategoryId: subCategoryId ? subCategoryId.trim() : productData.subCategoryId,
+              subCategoryId,
               productTypeIds: Array.isArray(productTypeIds)
                 ? productTypeIds?.map((id) => id?.trim())
                 : productData.productTypeIds,
@@ -1074,7 +1172,7 @@ const updateProductQtyForReturn = async (products) => {
 const generateSaltSKU = ({ styleNo, saltSKU }) => {
   const randomNumber = helperFunctions.getRandomNumberLimitedDigits();
   const lastDigits = saltSKU ? saltSKU?.split('-')?.pop() : randomNumber;
-  return `HDJ-${styleNo}-${lastDigits}`;
+  return `UJ-${styleNo}-${lastDigits}`;
 };
 
 const generateSpecification = (item) => {
@@ -1373,10 +1471,8 @@ const processBulkProductsWithApi = async () => {
         };
       })
     );
-    console.log(products, 'products');
     return products;
   } catch (error) {
-    console.log(error, 'error');
     throw error;
   }
 };
@@ -1388,6 +1484,7 @@ export const productService = {
   deleteProduct,
   getSingleProduct,
   updateProductPhotos,
+  updateProductThumbnailPhoto,
   activeDeactiveProduct,
   updateProduct,
   searchProducts,

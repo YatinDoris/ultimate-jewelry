@@ -132,7 +132,7 @@ export default function ProductCard({
           justifyContent: 'center',
           transition: 'all 1s ease',
           backdropFilter: 'blur(50px)',
-          bgcolor: 'rgba(24, 119, 242, 0.16)',
+          bgcolor: 'rgba(33, 43, 54, 0.8)',
         }}
         className="group-hover:!flex"
       >
