@@ -1,5 +1,5 @@
 "use client";
-import { HeaderLinkButton } from "@/app/components/button";
+import { HeaderLinkButton } from "@/components/button";
 import { setIsMenuOpen, setOpenDropdown } from "@/store/slices/commonSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";

@@ -35,7 +35,7 @@ import diamondPear from "@/assets/images/home/diamond-pear.webp";
 import diamondPrincess from "@/assets/images/home/diamond-princess.webp";
 import diamondRadiant from "@/assets/images/home/diamond-radiant.webp";
 import diamondRound from "@/assets/images/home/diamond-round.webp";
-import { LinkButton } from "./components/button";
+import { LinkButton } from "../components/button";
 import { CustomImg } from "@/components/dynamiComponents";
 import Link from "next/link";
 import { useState } from "react";
@@ -173,6 +173,10 @@ const Home = () => {
         <CustomImg srcAttr={home3} altAttr="" className="w-full object-cover" />
       </div>
 
+      <section className="container  mt-10 md:mt-20 2xl:mt-24 ">
+        <CategoryGallery />
+      </section>
+
       <section className="bg-[#FFF9EF] w-full  px-6 md:px-16 flex flex-col md:flex-row items-center justify-center container mt-10 md:mt-20 2xl:mt-36">
         <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0">
           <CustomImg
@@ -206,9 +210,6 @@ const Home = () => {
             </Link>
           </div>
         </div>
-      </section>
-      <section className="container  mt-10 md:mt-20 2xl:mt-24 ">
-        <CategoryGallery />
       </section>
 
       <section className="container  mt-10 md:mt-20 2xl:mt-24 ">
