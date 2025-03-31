@@ -22,6 +22,7 @@ import home16 from "@/assets/images/home/home-16.webp";
 import home17 from "@/assets/images/home/home-17.webp";
 import home18 from "@/assets/images/home/home-18.webp";
 import home19 from "@/assets/images/home/home-19.webp";
+import home20 from "@/assets/images/home/home-20.webp";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import diamondAsscher from "@/assets/images/home/diamond-asscher.webp";
@@ -38,7 +39,6 @@ import { LinkButton } from "./components/button";
 import { CustomImg } from "@/components/dynamiComponents";
 import Link from "next/link";
 import { useState } from "react";
-
 
 const diamondShapes = [
   { image: diamondPear, titleAttr: "", altAttr: "", title: "PEAR" },
@@ -105,8 +105,8 @@ const Home = () => {
             altAttr=""
             className="absolute inset-0 w-full h-full object-cover "
           />
-          <div className="relative z-20 h-full flex items-center px-6 md:px-20">
-            <div className="text-white max-w-xl flex flex-col md:justify-center md:text-center">
+          <div className="relative z-20 h-full flex items-center px-6 md:px-20 justify-center ">
+            <div className="text-white max-w-3xl flex flex-col md:justify-start md:text-center">
               <h1 className="text-3xl md:text-4xl  leading-tight font-castoro">
                 Diamonds that <br />
                 Deserve You.
@@ -117,13 +117,13 @@ const Home = () => {
               <div className="mt-6 flex flex-col md:flex-row gap-4">
                 <LinkButton
                   href=""
-                  className=" lg:!h-[2.3rem] w-fit !py-6 !bg-transparent font-medium hover:!bg-primary hover:!text-white"
+                  className=" lg:!h-[2.3rem] w-fit !py-6 !bg-transparent font-medium hover:!border-primary hover:!bg-primary hover:!text-white"
                 >
                   SHOP ENGAGEMENT
                 </LinkButton>
                 <LinkButton
                   href=""
-                  className=" lg:!h-[2.3rem] w-fit !py-6 font-medium !bg-transparent hover:!bg-primary hover:!text-white"
+                  className=" lg:!h-[2.3rem] w-fit !py-6 font-medium !bg-transparent hover:!border-primary hover:!bg-primary hover:!text-white"
                 >
                   SHOP ALL JEWELRY
                 </LinkButton>
@@ -133,24 +133,47 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="pt-10 md:pt-20 2xl:pt-24">
-        <h2 className="items-center justify-center flex text-xl md:text-2xl 2xl:text-3xl font-medium">
-          SHOP FOR LAB GROWN DIAMONDS
-        </h2>
-        <div className="pt-4 md:pt-6 2xl:pt-8">
-          <DiamondShapeSelector />
-        </div>
-        <div className="pt-4 md:pt-6 2xl:pt-8 ">
+      <section className="pt-10 md:pt-20 2xl:pt-36 grid grid-cols-1 lg:grid-cols-[0.7fr_1fr] items-center justify-center gap-10 container">
+        <div className="flex flex-col items-center text-center bg-transparent">
           <CustomImg
-            srcAttr={home3}
+            srcAttr={home20}
             altAttr=""
-            className="w-full object-cover"
+            className="w-40 md:w-48 2xl:w-56"
           />
+          <h2 className="text-xl 2xl:text-2xl font-medium mt-4 text-center">
+            SHOP FOR LAB GROWN
+            <span className="lg:hidden"> </span>
+            <br className="hidden lg:block" />
+            DIAMOND PRODUCTS
+          </h2>
+
+          <div className="w-12 h-[2px] bg-black mt-2"></div>
+        </div>
+
+        <div className="grid grid-cols-2 xss:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-8 md:gap-12 text-center">
+          {diamondShapes.map((shape, idx) => (
+            <div
+              key={shape.title || idx}
+              className="group !flex flex-col items-center justify-center h-32 cursor-pointer rounded-md transition-colors duration-200"
+            >
+              <CustomImg
+                src={shape.image}
+                alt={shape.title}
+                className="w-16 h-16 object-contain"
+              />
+              <span className="text-[16px] pt-4 transition-colors duration-200 group-hover:font-semibold group-hover:text-black text-[#2B2B2B]">
+                {shape.title}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="bg-[#FFF9EF] w-full  px-6 md:px-16 flex flex-col md:flex-row items-center justify-center container mt-10 md:mt-20 2xl:mt-24">
-        {/* Left: Ring Image */}
+      <div className="pt-4 md:pt-6 2xl:pt-36 ">
+        <CustomImg srcAttr={home3} altAttr="" className="w-full object-cover" />
+      </div>
+
+      <section className="bg-[#FFF9EF] w-full  px-6 md:px-16 flex flex-col md:flex-row items-center justify-center container mt-10 md:mt-20 2xl:mt-36">
         <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0">
           <CustomImg
             srcAttr={home2}
@@ -161,7 +184,6 @@ const Home = () => {
           />
         </div>
 
-        {/* Right: Text Content */}
         <div className="w-full md:w-1/2 flex flex-col items-center  pb-12 md:pb-0 text-center  justify-center align-middle">
           <h2 className="text-3xl md:text-4xl xl:text-5xl font-medium mb-2 font-castoro">
             Design Your Engagement Ring
@@ -170,7 +192,6 @@ const Home = () => {
             Receive a Free Matching Wedding Band*
           </p>
 
-          {/* Description */}
           <p className="text-gray pt-6 text-md  mb-6">
             With our easy-to-use ring design feature, you can create the
             engagement ring of your dreams.
@@ -197,64 +218,6 @@ const Home = () => {
   );
 };
 export default Home;
-
-const DiamondShapeSelector = () => {
-  return (
-    <div className="relative w-full px-4 md:px-12 py-8 container ">
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-        <div className="swiper-button-prev-custom p-2  cursor-pointer text-gray-400 hover:text-black">
-          <ChevronLeft size={24} />
-        </div>
-      </div>
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-        <div className="swiper-button-next-custom p-2 cursor-pointer text-gray-400 hover:text-black">
-          <ChevronRight size={24} />
-        </div>
-      </div>
-
-      <Swiper
-        modules={[Navigation]}
-        spaceBetween={30}
-        slidesPerView={5}
-        navigation={{
-          nextEl: ".swiper-button-next-custom",
-          prevEl: ".swiper-button-prev-custom",
-        }}
-        breakpoints={{
-          0: { slidesPerView: 2 },
-          440: { slidesPerView: 3 },
-          640: { slidesPerView: 5 },
-          1200: { slidesPerView: 7 },
-          1600: { slidesPerView: 9 },
-        }}
-      >
-        {diamondShapes.map((shape, idx) => {
-          return (
-            <SwiperSlide
-              key={idx}
-              className="!flex flex-col items-center justify-center h-32"
-            >
-              <Link href={shape.link || "#"} passHref>
-                <div className="group !flex flex-col items-center justify-center h-32 cursor-pointer rounded-md transition-colors duration-200">
-                  <CustomImg
-                    srcAttr={shape.image}
-                    altAttr={shape.title}
-                    width={64}
-                    height={64}
-                    className="object-contain transition-transform duration-300 ease-in-out group-hover:scale-110"
-                  />
-                  <span className="text-sm pt-4 transition-colors duration-200 group-hover:font-semibold group-hover:text-black text-[#2B2B2B]">
-                    {shape.title}
-                  </span>
-                </div>
-              </Link>
-            </SwiperSlide>
-          );
-        })}
-      </Swiper>
-    </div>
-  );
-};
 
 const CategoryGallery = () => {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
