@@ -527,7 +527,7 @@ export default function ProductsView() {
                       openDialog={openDialog}
                       setOpenDialog={setOpenDialog}
                       setActiveProduct={setActiveProduct}
-                      imagePath={product?.images?.[0]?.image}
+                      imagePath={product?.thumbnailImage}
                     />
                   </Grid>
                 ))}

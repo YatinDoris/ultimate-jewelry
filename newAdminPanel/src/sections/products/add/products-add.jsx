@@ -35,6 +35,7 @@ import {
   updateProductVideoAction,
   getSettingStyleList,
   getDiamondShapeList,
+  updateProductThumbnailPhotoAction,
 } from 'src/actions';
 import {
   productInitDetails,
@@ -67,6 +68,7 @@ import { ALLOW_MAX_CARAT_WEIGHT, ALLOW_MIN_CARAT_WEIGHT } from 'src/_helpers/con
 
 const validationSchema = Yup.object({
   previewImages: Yup.array().min(1, 'At least one image is required'),
+  previewThumbnailImage: Yup.array().min(1, 'ThumbnailImage is required'),
   productName: Yup.string()
     .required('Product name is required')
     .max(60, 'Product name should not exceed 60 characters.')
@@ -77,9 +79,9 @@ const validationSchema = Yup.object({
   sku: Yup.string().required('Sku is required'),
   discount: Yup.number().min(0, 'Discount must be positive').max(100, 'Maximum discount is 100'),
   categoryId: Yup.string().required('Category is required'),
-  subCategoryId: Yup.string().required('SubCategory is required'),
+  // subCategoryId: Yup.string().required('SubCategory is required'),
   description: Yup.string().required('Description is required'),
-  productTypeIds: Yup.array().min(1, 'ProductType is required'),
+  // productTypeIds: Yup.array().min(1, 'ProductType is required'),
   variations: Yup.array()
     .min(1, 'Variation is required')
     .of(
@@ -177,7 +179,7 @@ export default function AddProductPage() {
     (val, formik) => {
       const lastDigits = productId ? selectedProduct?.saltSKU?.split('-')?.pop() : randomNumber;
       formik.setFieldValue('sku', val);
-      const saltSKU = val ? `HDJ-${val}-${lastDigits}` : '';
+      const saltSKU = val ? `UJ-${val}-${lastDigits}` : '';
       formik.setFieldValue('saltSKU', saltSKU);
     },
     [randomNumber, productId, selectedProduct?.saltSKU]
@@ -235,7 +237,6 @@ export default function AddProductPage() {
       toast.error('At least one image is required');
       return;
     }
-
     const payload = {
       productId,
       imageFiles: formik.values.imageFiles,
@@ -244,6 +245,17 @@ export default function AddProductPage() {
 
     const res = await dispatch(updateProductPhotosAction(payload));
     if (res) dispatch(getSingleProduct(productId));
+  };
+  const updateProductThumbnailImage = async (formik) => {
+    const payload = {
+      productId,
+      thumbnailImageFile: formik.values.thumbnailImageFile?.[0],
+      deletedThumbnailImage: formik.values.uploadedDeletedThumbnailImage?.[0]?.image,
+    };
+    const res = await dispatch(updateProductThumbnailPhotoAction(payload));
+    if (res) {
+      dispatch(getSingleProduct(productId));
+    }
   };
 
   const updateProductVideo = async (formik) => {
@@ -330,6 +342,21 @@ export default function AddProductPage() {
                     formik.setFieldValue('imageFiles', []);
                     formik.setFieldValue('previewImages', imagesArray);
                     formik.setFieldValue('uploadedDeletedImages', []);
+
+                    const thumbnailImageUrl = product?.thumbnailImage;
+                    if (thumbnailImageUrl) {
+                      const url = new URL(thumbnailImageUrl);
+                      const fileExtension = url.pathname.split('.').pop();
+
+                      const previewImageObj = {
+                        type: 'old',
+                        mimeType: `image/${fileExtension}`,
+                        image: thumbnailImageUrl,
+                      };
+                      formik.setFieldValue('previewThumbnailImage', [previewImageObj]);
+                    }
+                    formik.setFieldValue('thumbnailImageFile', []);
+                    formik.setFieldValue('uploadedDeletedThumbnailImage', []);
 
                     const videoUrl = product?.video;
                     if (videoUrl) {
@@ -507,6 +534,38 @@ export default function AddProductPage() {
 
                               <Stack sx={{ my: 1 }}>
                                 <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                  Thumbnail Images
+                                </Typography>
+                                <FileDrop
+                                  mediaLimit={1}
+                                  formik={formik}
+                                  productId={productId}
+                                  fileKey={'thumbnailImageFile'}
+                                  previewKey={'previewThumbnailImage'}
+                                  deleteKey={'uploadedDeletedThumbnailImage'}
+                                  loading={crudProductLoading || productLoading}
+                                />
+                                {productId && (
+                                  <Stack sx={{ my: 0 }} justifyContent={'end'} direction={'row'}>
+                                    <LoadingButton
+                                      variant="contained"
+                                      loading={crudProductLoading}
+                                      disabled={
+                                        formik.values?.thumbnailImageFile?.length === 0 ||
+                                        crudProductLoading
+                                      }
+                                      onClick={() => {
+                                        updateProductThumbnailImage(formik);
+                                      }}
+                                      startIcon={<Iconify icon="line-md:upload-loop" />}
+                                    >
+                                      Upload
+                                    </LoadingButton>
+                                  </Stack>
+                                )}
+                              </Stack>
+                              <Stack sx={{ my: 1 }}>
+                                <Typography variant="subtitle2" sx={{ mb: 1 }}>
                                   Images
                                 </Typography>
                                 <FileDrop
@@ -518,20 +577,20 @@ export default function AddProductPage() {
                                   deleteKey={'uploadedDeletedImages'}
                                   loading={crudProductLoading || productLoading}
                                 />
+                                {productId && (
+                                  <Stack sx={{ my: 0 }} justifyContent={'end'} direction={'row'}>
+                                    <LoadingButton
+                                      variant="contained"
+                                      loading={crudProductLoading}
+                                      disabled={crudProductLoading}
+                                      onClick={() => updateProductPhotos(formik)}
+                                      startIcon={<Iconify icon="line-md:upload-loop" />}
+                                    >
+                                      Upload
+                                    </LoadingButton>
+                                  </Stack>
+                                )}
                               </Stack>
-                              {productId && (
-                                <Stack sx={{ my: 0 }} justifyContent={'end'} direction={'row'}>
-                                  <LoadingButton
-                                    variant="contained"
-                                    loading={crudProductLoading}
-                                    disabled={crudProductLoading}
-                                    onClick={() => updateProductPhotos(formik)}
-                                    startIcon={<Iconify icon="line-md:upload-loop" />}
-                                  >
-                                    Upload
-                                  </LoadingButton>
-                                </Stack>
-                              )}
 
                               <Stack sx={{ my: 1 }}>
                                 <Typography variant="subtitle2" sx={{ mb: 1 }}>

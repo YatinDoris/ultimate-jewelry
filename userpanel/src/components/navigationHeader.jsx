@@ -5,8 +5,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { HiOutlineShoppingBag, HiOutlineUser } from "react-icons/hi2";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-
 export default function NavigationHeader() {
   const dispatch = useDispatch();
   const { menuList, openDropdown, isMenuOpen } = useSelector(
@@ -133,7 +133,11 @@ export default function NavigationHeader() {
                       {item.title}
                       {hasSubCategories && (
                         <span className="text-lg">
-                          {isDropdownOpen ? "▲" : "▼"}
+                          {isDropdownOpen ? (
+                            <IoIosArrowUp />
+                          ) : (
+                            <IoIosArrowDown />
+                          )}
                         </span>
                       )}
                     </button>

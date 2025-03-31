@@ -3,10 +3,10 @@ import fileSettings from "./fileSettings";
 const fileTypeWiseFileMimeType = (fileType) => {
   if (fileType === "IMAGE_FILE") {
     return fileSettings.IMAGE_ALLOW_MIME_TYPE;
-  }else if (fileType === "VIDEO_FILE") {
+  } else if (fileType === "VIDEO_FILE") {
     return fileSettings.VIDEO_ALLOW_MIME_TYPE;
-  } 
-   else {
+  }
+  else {
     return [
       ...fileSettings.OTHER_ALLOW_MIME_TYPE,
     ];
@@ -16,6 +16,8 @@ const fileTypeWiseFileMimeType = (fileType) => {
 const fileTypeWiseFileSize = (fileType) => {
   if (fileType === "IMAGE_FILE") {
     return fileSettings.IMAGE_ALLOW_FILE_SIZE; // byte format is used for this size.
+  } else if (fileType === "THUMBNAIL_IMAGE_FILE") {
+    return fileSettings.IMAGE_ALLOW_FILE_SIZE;
   } else if (fileType === "VIDEO_FILE") {
     return fileSettings.VIDEO_ALLOW_FILE_SIZE; // byte format is used for this size.
   } else {
