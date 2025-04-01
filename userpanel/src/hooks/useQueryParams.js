@@ -1,12 +1,10 @@
-// hooks/useQueryParams.js
-import { useLocation } from "react-router-dom";
+
+import { useSearchParams } from 'next/navigation';
 
 const useQueryParams = () => {
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
+  const searchParams = useSearchParams();
 
-  // Convert the query parameters into an object
-  const queryParams = Object.fromEntries(params.entries());
+  const queryParams = Object.fromEntries(searchParams.entries());
 
   return queryParams;
 };
