@@ -5,19 +5,32 @@ import { useDispatch, useSelector } from "react-redux";
 import { getMenuList } from "@/_actions/home.action";
 import { useEffect } from "react";
 import { NavigationHeader } from "./dynamiComponents";
-import { setIsMenuOpen } from "@/store/slices/commonSlice";
+import { setIsMenuOpen, setLastScrollY } from "@/store/slices/commonSlice";
 import { IoMenu } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 
 export default function Header() {
   const dispatch = useDispatch();
-  const { isMenuOpen } = useSelector(({ common }) => common);
-  const toggleMenu = () => dispatch(setIsMenuOpen(!isMenuOpen));
+  const { isMenuOpen, lastScrollY } = useSelector(({ common }) => common);
 
+  const toggleMenu = () => dispatch(setIsMenuOpen(!isMenuOpen));
   useEffect(() => {
     dispatch(getMenuList());
   }, [dispatch]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      dispatch(setLastScrollY(currentScrollY));
+
+      if (currentScrollY > lastScrollY && currentScrollY > 300) {
+        dispatch(setIsMenuOpen(false));
+      }
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   return (
     <div>
       {/* Announcement Bar */}
@@ -29,7 +42,11 @@ export default function Header() {
       </div>
 
       {/* Header */}
-      <header className=" shadow bg-white">
+      <header
+        className={`fixed ${
+          lastScrollY > 0 ? "!top-0" : "top-10"
+        } lg:static left-0 z-50 w-full shadow transition-all duration-300 bg-white`}
+      >
         <div className="flex justify-between items-center py-4 px-6 lg:px-20">
           <Link href={"/contact-us"} className="hidden lg:flex gap-2">
             <SlDiamond className="text-lg text-baseblack" />
@@ -48,9 +65,9 @@ export default function Header() {
           </button>
           <Link
             href={"/"}
-            className="uppercase text-2xl lg:text-4xl font-castoro tracking-wider text-black"
+            className="text-2xl lg:text-4xl font-castoro tracking-wider text-black"
           >
-            Ultimate Jewelry
+            Katanoff
           </Link>
 
           <div className="text-xl flex items-center gap-5">

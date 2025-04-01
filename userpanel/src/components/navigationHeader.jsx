@@ -3,10 +3,12 @@ import { HeaderLinkButton } from "@/components/button";
 import { setIsMenuOpen, setOpenDropdown } from "@/store/slices/commonSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
+import ringJewelry from "@/assets/images/ring.webp";
 import { useCallback, useEffect, useState } from "react";
 import { HiOutlineShoppingBag, HiOutlineUser } from "react-icons/hi2";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
+import { CustomImg } from "./dynamiComponents";
 export default function NavigationHeader() {
   const dispatch = useDispatch();
   const { menuList, openDropdown, isMenuOpen } = useSelector(
@@ -35,7 +37,6 @@ export default function NavigationHeader() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
   return (
     <header
       className={`fixed top-0 left-0 w-full bg-white shadow-md z-50 transition-transform duration-300 ${
@@ -71,21 +72,54 @@ export default function NavigationHeader() {
 
                 {/* Dropdown for Desktop */}
                 {hasSubCategories && openDropdown === item.title && (
-                  <div className="fixed left-0 right-0 top-[50px] bg-white shadow-lg z-50 border-t-2 border-primary">
-                    <div className="container flex justify-center mx-auto p-6">
-                      {item.subCategories.map((subItem) => (
-                        <HeaderLinkButton
-                          key={subItem.title}
-                          href={subItem.href}
-                          className="block text-gray-700 hover:text-black"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            closeAllDropdown();
-                          }}
-                        >
-                          {subItem.title}
-                        </HeaderLinkButton>
-                      ))}
+                  <div className="fixed left-0 right-0 top-[45px] bg-white shadow-lg z-50 border-t-2 border-primary">
+                    <div className="container flex justify-between p-6">
+                      <div>
+                        {item.subCategories.map((subItem) => (
+                          <HeaderLinkButton
+                            key={subItem.title}
+                            href={subItem.href}
+                            className="block !font-semibold"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              closeAllDropdown();
+                            }}
+                          >
+                            {subItem.title}
+                          </HeaderLinkButton>
+                        ))}
+                        <div className="mt-2">
+                          {item?.subCategories[0]?.productTypes &&
+                            item?.subCategories[0]?.productTypes.map(
+                              (productType) => {
+                                return (
+                                  <HeaderLinkButton
+                                    key={productType.title}
+                                    href={productType.href}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      closeAllDropdown();
+                                    }}
+                                  >
+                                    {productType.title}
+                                  </HeaderLinkButton>
+                                );
+                              }
+                            )}
+                        </div>
+                      </div>
+                      <div>
+                        <CustomImg srcAttr={ringJewelry} className="w-80" />
+                        <div className="text-sm mt-3">
+                          <h3>Pure Value Diamonds</h3>
+                          <Link
+                            href={"#"}
+                            className="underline hover:text-primary transition-all duration-300"
+                          >
+                            Shop Now
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -144,12 +178,12 @@ export default function NavigationHeader() {
 
                     {/* Dropdown for Mobile */}
                     {hasSubCategories && isDropdownOpen && (
-                      <div className="ml-4 flex flex-col gap-2">
+                      <div className="ml-4 gap-2 flex flex-col">
                         {item.subCategories.map((subItem) => (
                           <HeaderLinkButton
                             key={subItem.title}
                             href={subItem.href}
-                            className="block text-gray-700 hover:text-black"
+                            className="block !font-semibold"
                             onClick={() => {
                               dispatch(setIsMenuOpen(false));
                               closeAllDropdown();
@@ -158,6 +192,25 @@ export default function NavigationHeader() {
                             {subItem.title}
                           </HeaderLinkButton>
                         ))}
+                        <div className="mt-1">
+                          {item?.subCategories[0]?.productTypes &&
+                            item?.subCategories[0]?.productTypes.map(
+                              (productType) => {
+                                return (
+                                  <HeaderLinkButton
+                                    key={productType.title}
+                                    href={productType.href}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      closeAllDropdown();
+                                    }}
+                                  >
+                                    {productType.title}
+                                  </HeaderLinkButton>
+                                );
+                              }
+                            )}
+                        </div>
                       </div>
                     )}
                   </div>

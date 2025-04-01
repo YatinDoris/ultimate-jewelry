@@ -54,7 +54,7 @@ export const HeaderLinkButton = ({
     <Link
       href={href}
       rel="noopener noreferrer"
-      className={`uppercase text-sm  tracking-widest 2xl:text-base px-4 hover:text-primary hover:font-semibold transition-all duration-300 ${isActive} ${className}`}
+      className={`uppercase text-sm  tracking-widest 2xl:text-base px-4 hover:text-primary  transition-all duration-300 ${isActive} ${className}`}
       {...rest}
     >
       {rest.children}

@@ -21,3 +21,30 @@ export const StoreProvider = dynamic(() => import("@/store/provider"), {
 export const NavigationHeader = dynamic(() => import("./navigationHeader"), {
   ssr: false,
 });
+
+export const ProductGrid = dynamic(() => import("./productGrid"), {
+  ssr: false,
+});
+
+export const MarqueeBrandsHome = dynamic(() => import("./MarqueeBrandsHome"), {
+  ssr: false,
+});
+
+export const AnimatedSection = dynamic(() => import("./AnimatedSection"), {
+  ssr: false,
+});
+
+export const SwipperHomePageBig = dynamic(
+  () => import("./SwipperHomePageBig"),
+  {
+    ssr: false,
+  }
+);
+
+export const TestimonialSlider = dynamic(() => import("./TestimonialSlider"), {
+  ssr: false,
+});
+
+export const AccordionDropdown = dynamic(() => import("./AccordionDropdown"), {
+  ssr: false,
+});
