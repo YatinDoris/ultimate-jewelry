@@ -47,14 +47,14 @@ export const HeaderLinkButton = ({
   const pathname = usePathname();
   const isActive =
     pathname === href || activeItem
-      ? "text-primary font-medium"
+      ? "text-primary font-semibold"
       : "!font-normal";
 
   return (
     <Link
       href={href}
       rel="noopener noreferrer"
-      className={`uppercase text-sm  tracking-widest 2xl:text-base px-4 hover:text-primary  transition-all duration-300 ${isActive} ${className}`}
+      className={`uppercase text-sm  tracking-widest 2xl:text-base px-4 hover:text-primary   transition-all duration-300 ${isActive} ${className}`}
       {...rest}
     >
       {rest.children}

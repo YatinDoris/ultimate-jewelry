@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   productLoading: false,
-  latestProductList: []
+  latestProductList: [],
+  collectionTypeProductList: []
 };
 
 const productSlice = createSlice({
@@ -15,12 +16,16 @@ const productSlice = createSlice({
     setLatestProductList: (state, action) => {
       state.latestProductList = action.payload;
     },
+    setCollectionTypeProductList: (state, action) => {
+      state.collectionTypeProductList = action.payload;
+    }
   },
 });
 
 export const {
   setProductLoading,
-  setLatestProductList
+  setLatestProductList,
+  setCollectionTypeProductList
 } = productSlice.actions;
 
 export default productSlice.reducer;

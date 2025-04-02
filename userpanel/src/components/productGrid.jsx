@@ -7,7 +7,13 @@ import ProductCard from "./productCard";
 import SkeletonLoader from "./skeletonLoader";
 
 const ProductGrid = memo(
-  ({ productList, isLoading, noDataFoundMsg, isDiamondSettingPage }) => {
+  ({
+    productList,
+    isLoading,
+    noDataFoundMsg,
+    isDiamondSettingPage,
+    className,
+  }) => {
     const queryParams = useQueryParams();
     const { columnCount } = useWindowSize();
 
@@ -24,7 +30,9 @@ const ProductGrid = memo(
     return (
       <>
         {isLoading ? (
-          <div className="mx-5 md:mx-8 lg:mx-10 2xl:mx-14 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div
+            className={`mx-5 md:mx-8 lg:mx-10 2xl:mx-14 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${className}`}
+          >
             {Array.from({ length: columnCount }).map((_, index) => (
               <div key={index} className="border-0">
                 {/* Skeleton Loader using Tailwind CSS */}
@@ -36,7 +44,7 @@ const ProductGrid = memo(
             ))}
           </div>
         ) : (
-          <div className="mx-5 md:mx-8 lg:mx-10 2xl:mx-14 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="mx-5 md:mx-8 lg:mx-10 2xl:mx-14 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-4">
             {productList?.map((product) => (
               <ProductCard
                 key={`product-key-${product?.productName}`}
@@ -46,7 +54,6 @@ const ProductGrid = memo(
                 img={product?.images?.[0]?.image}
                 price={product?.baseSellingPrice}
                 goldColorVariations={product?.goldColorVariations}
-                goldTypeVariations={product?.goldTypeVariations}
                 productLink={getProductLink({
                   queryParams,
                   isDiamondSettingPage,

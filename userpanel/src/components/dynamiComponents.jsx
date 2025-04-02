@@ -48,3 +48,10 @@ export const TestimonialSlider = dynamic(() => import("./TestimonialSlider"), {
 export const AccordionDropdown = dynamic(() => import("./AccordionDropdown"), {
   ssr: false,
 });
+
+export const LatestProductSwiper = dynamic(
+  () => import("./latestProductSwiper"),
+  {
+    ssr: false,
+  }
+);

@@ -1,4 +1,4 @@
-import { setLatestProductList, setProductLoading } from "@/store/slices/productSlice";
+import { setCollectionTypeProductList, setLatestProductList, setProductLoading } from "@/store/slices/productSlice";
 import { productService } from "@/_services";
 
 export const fetchLatestProductList = (length) => {
@@ -18,36 +18,26 @@ export const fetchLatestProductList = (length) => {
   };
 };
 
-// export const fetchCollectionsTypeWiseProduct = (
-//   collectionsType,
-//   collectionsTitle
-// ) => {
-//   return async (dispatch, getState) => {
-//     try {
-//       dispatch({
-//         type: actionTypes.FETCH_COLLECTIONS_TYPES_WISE_PRODUCT,
-//         collectionsTypeWiseProductList: [],
-//         collectionTypeWiseProductLoader: true,
-//       });
-//       const collectionsTypeWiseProductList =
-//         await productService.getCollectionsTypeWiseProduct(
-//           collectionsType,
-//           collectionsTitle
-//         );
-//       if (collectionsTypeWiseProductList) {
-//         dispatch({
-//           type: actionTypes.FETCH_COLLECTIONS_TYPES_WISE_PRODUCT,
-//           collectionsTypeWiseProductList,
-//         });
-//       }
-//     } catch (e) {
-//       dispatch({
-//         type: actionTypes.FETCH_COLLECTIONS_TYPES_WISE_PRODUCT,
-//         collectionsTypeWiseProductList: [],
-//       });
-//     }
-//   };
-// };
+export const fetchCollectionsTypeWiseProduct = (
+  collectionType,
+  collectionTitle
+) => {
+  return async (dispatch) => {
+    try {
+      dispatch(setCollectionTypeProductList([]));
+      const collectionsTypeWiseProductList =
+        await productService.getCollectionsTypeWiseProduct(
+          collectionType,
+          collectionTitle
+        );
+      if (collectionsTypeWiseProductList) {
+        dispatch(setCollectionTypeProductList(collectionsTypeWiseProductList));
+      }
+    } catch (e) {
+      dispatch(setCollectionTypeProductList([]));
+    }
+  };
+};
 
 // export const fetchProductDetailByProductName = (productName) => {
 //   return async (dispatch, getState) => {

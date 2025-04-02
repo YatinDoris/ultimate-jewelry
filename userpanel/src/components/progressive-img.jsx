@@ -27,8 +27,8 @@ const ProgressiveImg = ({
     <Image
       src={imgSrc}
       alt={alt}
-      width={props.width || 200} // Provide a default width
-      height={props.height || 200} // Provide a default height
+      width={props.width || 200}
+      height={props.height || 200}
       className={`object-contain ${customClass} ${className}`}
       priority
       {...props}
