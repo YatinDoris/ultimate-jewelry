@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useState } from 'react';
-import logo from '../../../public/assets/ultimateJewelry.webp';
+import logo from '../../../public/assets/katanoff-loading.webp';
 
 const ProgressiveImg = ({
   placeholderSrc = logo,
