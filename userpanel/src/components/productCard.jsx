@@ -9,7 +9,6 @@ export default function ProductCard({
   onClick,
   price,
   goldColorVariations,
-  goldTypeVariations,
   productLink = "",
 }) {
   productLink =
@@ -29,7 +28,7 @@ export default function ProductCard({
           title={title}
         />
         {discount ? (
-          <div className="bg-primary absolute top-3 left-3 text-white px-3 py-1.5 ">
+          <div className="bg-primary absolute top-3 left-3 text-sm text-white px-3 py-1.5 ">
             {discount}% Off
           </div>
         ) : null}
@@ -50,18 +49,6 @@ export default function ProductCard({
                   style={{ background: x?.variationTypeHexCode }}
                   className="w-11 h-[22px]"
                 ></div>
-              ))}
-            </div>
-          ) : null}
-          {goldTypeVariations?.length ? (
-            <div className="text-sm flex gap-2">
-              {goldTypeVariations?.map((x, i) => (
-                <span
-                  className="border border-[#B0B0B0] px-1.5 py-1"
-                  key={`gold-type-${i}-${title}`}
-                >
-                  {x?.variationTypeName}
-                </span>
               ))}
             </div>
           ) : null}

@@ -96,7 +96,7 @@ export default function footer() {
           <CustomImg srcAttr={footerLogo} altAttr="" />
         </div>
 
-        <div>
+        <div className="lg:mx-auto 2xl:mx-1 ">
           <h3 className="mb-1 text-lg 2xl:text-2xl font-prata">Support</h3>
           <div className="w-28 h-[3px] bg-primary"></div>
           <ul className="mt-4 2xl:mt-6 text-[0.9375rem] 2xl:text-[1rem] space-y-2.5 2xl:space-y-3">

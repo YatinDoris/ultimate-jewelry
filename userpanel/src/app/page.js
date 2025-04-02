@@ -53,13 +53,16 @@ import {
   AccordionDropdown,
   AnimatedSection,
   CustomImg,
+  LatestProductSwiper,
   MarqueeBrandsHome,
   SwipperHomePageBig,
   TestimonialSlider,
 } from "@/components/dynamiComponents";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TextAboveImage from "@/components/TextAboveImage";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLatestProductList } from "@/_actions/product.actions";
 
 const animatedContent = [
   {
@@ -232,6 +235,14 @@ const faqData = [
 ];
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const { latestProductList, productLoading } = useSelector(({ product }) => product)
+
+  useEffect(() => {
+    dispatch(
+      fetchLatestProductList(8)
+    );
+  }, []);
   return (
     <>
       <section>
@@ -370,6 +381,9 @@ const Home = () => {
       <section className="mx-auto pt-16 lg:pt-20 2xl:pt-40">
         <SwipperHomePageBig collections={collections} />
       </section>
+      <section className="pt-16 lg:pt-20 2xl:pt-40">
+        <LatestProductSwiper productList={latestProductList} loading={productLoading} />
+      </section>
 
       <section className="pt-16 lg:pt-20 2xl:pt-40">
         <div className="flex flex-col items-center justify-center gap-4 text-center">
@@ -389,14 +403,24 @@ const Home = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center text-center">
           {benefits.map((benefit, index) => (
             <div
-              key={index}
-              className="flex flex-col items-center space-y-2 relative"
+              key={`benefits-${index}`}
+              className="group flex flex-col items-center space-y-2 relative"
             >
               <CustomImg
                 srcAttr={benefit.icon}
                 altAttr=""
                 titleAttr=""
                 className="w-15 h-15"
+                style={{
+                  transition: "transform 0.3s ease-in-out",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.animation =
+                    "rotateY 2s linear infinite";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.animation = "none";
+                }}
               />
               <p className="text-md text-[#374151]">{benefit.text}</p>
               {index !== benefits.length - 1 && (
@@ -446,11 +470,10 @@ const CategoryGallery = () => {
                   setActiveCategory(category);
                   setOpen(false);
                 }}
-                className={`px-4 py-2 text-sm cursor-pointer transition ${
-                  activeCategory === category
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-primary hover:text-white"
-                }`}
+                className={`px-4 py-2 text-sm cursor-pointer transition ${activeCategory === category
+                  ? "bg-primary text-white"
+                  : "text-gray-700 hover:bg-primary hover:text-white"
+                  }`}
               >
                 {category}
               </li>
@@ -463,11 +486,10 @@ const CategoryGallery = () => {
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
-            className={`text-sm tracking-wide pb-1 border-b-2 transition-all ${
-              activeCategory === category
-                ? "border-black font-semibold"
-                : "border-transparent text-gray-500"
-            }`}
+            className={`text-sm tracking-wide pb-1 border-b-2 transition-all ${activeCategory === category
+              ? "border-black font-semibold"
+              : "border-transparent text-gray-500"
+              }`}
           >
             {category}
           </button>

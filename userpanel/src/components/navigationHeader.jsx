@@ -50,13 +50,13 @@ export default function NavigationHeader() {
         }  w-full container items-center gap-6`}
       >
         <ul className={`flex ${lastScrollY > 30 ? "py-3" : "py-4"} gap-4`}>
-          {menuList.map((item) => {
+          {menuList.map((item, index) => {
             const hasSubCategories = item.subCategories?.length > 0;
 
             return (
               <li
-                key={item?.title}
-                className={`relative ${lastScrollY > 30 ? "" : "pb-3"}`}
+                key={`${item?.id}-${index}`}
+                className={`relative ${lastScrollY > 30 ? "pb-2" : "pb-3"}`}
                 onMouseEnter={() =>
                   hasSubCategories && dispatch(setOpenDropdown(item.title))
                 }
@@ -75,27 +75,33 @@ export default function NavigationHeader() {
                   <div className="fixed left-0 right-0 top-[45px] bg-white shadow-lg z-50 border-t-2 border-primary">
                     <div className="container flex justify-between p-6">
                       <div>
-                        {item.subCategories.map((subItem) => (
-                          <HeaderLinkButton
-                            key={subItem.title}
-                            href={subItem.href}
-                            className="block !font-semibold"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              closeAllDropdown();
-                            }}
+                        {item.subCategories.map((subItem, index) => (
+                          <div
+                            key={`${subItem.title}-${index}`}
+                            className="relative px-4"
                           >
-                            {subItem.title}
-                          </HeaderLinkButton>
+                            <HeaderLinkButton
+                              href={subItem.href}
+                              className="block !font-semibold capitalize text-primary !px-0 mb-1"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                closeAllDropdown();
+                              }}
+                            >
+                              {subItem.title}
+                            </HeaderLinkButton>
+                            <div className="w-5 h-1 rounded-full bg-primary bottom-0"></div>
+                          </div>
                         ))}
-                        <div className="mt-2">
+                        <div className="mt-3">
                           {item?.subCategories[0]?.productTypes &&
                             item?.subCategories[0]?.productTypes.map(
-                              (productType) => {
+                              (productType, index) => {
                                 return (
                                   <HeaderLinkButton
-                                    key={productType.title}
+                                    key={`${productType.title}-${index}3`}
                                     href={productType.href}
+                                    className="text-[#828282] hover:text-baseblack transition-all duration-300 capitalize"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       closeAllDropdown();
@@ -108,16 +114,30 @@ export default function NavigationHeader() {
                             )}
                         </div>
                       </div>
-                      <div>
-                        <CustomImg srcAttr={ringJewelry} className="w-80" />
-                        <div className="text-sm mt-3">
-                          <h3>Pure Value Diamonds</h3>
-                          <Link
-                            href={"#"}
-                            className="underline hover:text-primary transition-all duration-300"
-                          >
-                            Shop Now
-                          </Link>
+                      <div className="flex gap-6">
+                        <div>
+                          <CustomImg srcAttr={ringJewelry} className="w-80" />
+                          <div className="text-sm mt-3">
+                            <h3>Pure Value Diamonds</h3>
+                            <Link
+                              href={"#"}
+                              className="underline hover:text-primary transition-all duration-300"
+                            >
+                              Shop Now
+                            </Link>
+                          </div>
+                        </div>
+                        <div>
+                          <CustomImg srcAttr={ringJewelry} className="w-80" />
+                          <div className="text-sm mt-3">
+                            <h3>Pure Value Diamonds</h3>
+                            <Link
+                              href={"#"}
+                              className="underline hover:text-primary transition-all duration-300"
+                            >
+                              Shop Now
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -148,12 +168,15 @@ export default function NavigationHeader() {
             className="lg:hidden"
           >
             <nav className="text-center h-screen px-4 py-2 flex flex-col gap-3">
-              {menuList.map((item) => {
+              {menuList.map((item, index) => {
                 const hasSubCategories = item.subCategories?.length > 0;
                 const isDropdownOpen = openDropdownMobile === item.title;
 
                 return (
-                  <div key={item.title} className="flex flex-col">
+                  <div
+                    key={`${item.title}-${index}4`}
+                    className="flex flex-col"
+                  >
                     <button
                       className="text-gray-700 hover:text-black flex justify-between items-center w-full py-2"
                       onClick={() =>
@@ -179,9 +202,9 @@ export default function NavigationHeader() {
                     {/* Dropdown for Mobile */}
                     {hasSubCategories && isDropdownOpen && (
                       <div className="ml-4 gap-2 flex flex-col">
-                        {item.subCategories.map((subItem) => (
+                        {item.subCategories.map((subItem, index) => (
                           <HeaderLinkButton
-                            key={subItem.title}
+                            key={`${subItem.title}-${index}5`}
                             href={subItem.href}
                             className="block !font-semibold"
                             onClick={() => {
@@ -195,10 +218,10 @@ export default function NavigationHeader() {
                         <div className="mt-1">
                           {item?.subCategories[0]?.productTypes &&
                             item?.subCategories[0]?.productTypes.map(
-                              (productType) => {
+                              (productType, index) => {
                                 return (
                                   <HeaderLinkButton
-                                    key={productType.title}
+                                    key={`${productType.title}-${index}6`}
                                     href={productType.href}
                                     onClick={(e) => {
                                       e.stopPropagation();

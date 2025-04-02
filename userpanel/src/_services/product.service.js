@@ -133,46 +133,46 @@ const getAllCustomizations = () => {
   });
 };
 
-const getCollectionsTypeWiseProduct = (collectionsType, collectionsTitle) => {
+const getCollectionsTypeWiseProduct = (collectionType, collectionTitle) => {
   return new Promise(async (resolve, reject) => {
     try {
-      collectionsType = sanitizeValue(collectionsType)
-        ? collectionsType.trim()
+      collectionType = sanitizeValue(collectionType)
+        ? collectionType.trim()
         : null;
-      collectionsTitle = sanitizeValue(collectionsTitle)
-        ? collectionsTitle.trim()
+      collectionTitle = sanitizeValue(collectionTitle)
+        ? collectionTitle.trim()
         : null;
-      if (!collectionsType || !collectionsTitle) {
+      if (!collectionType || !collectionTitle) {
         reject(new Error("Invalid Data"));
         return;
       }
       const allActiveProductsData = await getAllActiveProducts();
       let filteredData = [];
-      if (collectionsType === "categories") {
+      if (collectionType === "categories") {
         filteredData = allActiveProductsData.filter(
           (item) =>
-            item.categoryName.toLowerCase() === collectionsTitle.toLowerCase()
+            item.categoryName.toLowerCase() === collectionTitle.toLowerCase()
         );
-      } else if (collectionsType === "subCategories") {
+      } else if (collectionType === "subCategories") {
         filteredData = allActiveProductsData.filter(
           (item) =>
             item.subCategoryName.toLowerCase() ===
-            collectionsTitle.toLowerCase()
+            collectionTitle.toLowerCase()
         );
-      } else if (collectionsType === "productTypes") {
+      } else if (collectionType === "productTypes") {
         filteredData = allActiveProductsData.filter(
           (item) =>
             item.productTypeNames?.length &&
             item.productTypeNames.some(
-              (name) => name.toLowerCase() === collectionsTitle.toLowerCase()
+              (name) => name.toLowerCase() === collectionTitle.toLowerCase()
             )
         );
-      } else if (collectionsType === "collection") {
+      } else if (collectionType === "collection") {
         filteredData = allActiveProductsData.filter(
           (item) =>
             item.collectionNames?.length &&
             item.collectionNames.some(
-              (name) => name.toLowerCase() === collectionsTitle.toLowerCase()
+              (name) => name.toLowerCase() === collectionTitle.toLowerCase()
             )
         );
       }
