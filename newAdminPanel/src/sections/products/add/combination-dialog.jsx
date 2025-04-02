@@ -149,7 +149,6 @@ const CombinationDialog = ({
   const { combinations, crudProductLoading } = useSelector(({ product }) => product);
 
   const onSubmit = async (values, { setStatus }) => {
-    console.log('fields', fields);
     let payload = {
       saltSKU: fields?.saltSKU,
       sku: fields?.sku,

@@ -168,7 +168,6 @@ const FileDrop = forwardRef(
           } else if (productId && item.type === 'old') {
             const deletedImage = formik.values?.[previewKey]?.splice(index, 1);
             formik.setFieldValue([previewKey], [...formik.values?.[previewKey]]);
-            console.log(...formik.values?.[deleteKey], deletedImage, '<<<<<<<<<<<<<<');
             formik.setFieldValue([deleteKey], [...formik.values?.[deleteKey], ...deletedImage]);
           }
         }

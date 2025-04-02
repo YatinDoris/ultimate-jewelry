@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 
-import logo from '/assets/ultimateJewelry.webp';
+import logo from '/assets/katanoff.webp';
 import { RouterLink } from 'src/routes/components';
 
 // ----------------------------------------------------------------------
@@ -17,7 +17,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
         src={logo}
         sx={{
           mt: 3,
-          height: 50,
+          height: 60,
           objectFit: 'contain',
         }}
       />
