@@ -275,7 +275,9 @@ const insertProduct = (params) => {
             return;
           } else if (thumbnailImageFile.length > fileSettings.PRODUCT_THUMBNAIL_IMAGE_FILE_LIMIT) {
             reject(
-              new Error(`You can only ${fileSettings.PRODUCT_THUMBNAIL_IMAGE_FILE_LIMIT} thumbnail image upload here`)
+              new Error(
+                `You can only ${fileSettings.PRODUCT_THUMBNAIL_IMAGE_FILE_LIMIT} thumbnail image upload here`
+              )
             );
             return;
           } else if (videoFile.length && videoFile.length > fileSettings.PRODUCT_VIDEO_FILE_LIMIT) {
@@ -285,14 +287,20 @@ const insertProduct = (params) => {
             return;
           } else {
             const imageValidFileType = isValidFileType(fileSettings.IMAGE_FILE_NAME, imageFiles);
-            const thumbnailImageValidFileType = isValidFileType(fileSettings.IMAGE_FILE_NAME, thumbnailImageFile);
+            const thumbnailImageValidFileType = isValidFileType(
+              fileSettings.IMAGE_FILE_NAME,
+              thumbnailImageFile
+            );
             if (!imageValidFileType || !thumbnailImageValidFileType) {
               reject(new Error('Invalid file! (Only JPG, JPEG, PNG, WEBP files are allowed!)'));
               return;
             }
 
             const imageValidFileSize = isValidFileSize(fileSettings.IMAGE_FILE_NAME, imageFiles);
-            const thumbnailImageValidFileSize = isValidFileSize(fileSettings.IMAGE_FILE_NAME, thumbnailImageFile);
+            const thumbnailImageValidFileSize = isValidFileSize(
+              fileSettings.IMAGE_FILE_NAME,
+              thumbnailImageFile
+            );
             if (!imageValidFileSize || !thumbnailImageValidFileSize) {
               reject(new Error('Invalid File Size! (Only 5 MB are allowed!)'));
               return;
@@ -607,22 +615,26 @@ const updateProductThumbnailPhoto = (params) => {
         });
         if (productData) {
           let uploadedThumbnailImage = '';
-          if (thumbnailImageFile.length && thumbnailImageFile.length > fileSettings.CUSTOMIZATION_SUB_TYPE_IMAGE_FILE_LIMIT) {
+          if (
+            thumbnailImageFile.length &&
+            thumbnailImageFile.length > fileSettings.PRODUCT_THUMBNAIL_IMAGE_FILE_LIMIT
+          ) {
             reject(
-              new Error(`You can only ${fileSettings.CUSTOMIZATION_SUB_TYPE_IMAGE_FILE_LIMIT} thumbnail upload here`)
+              new Error(
+                `You can only ${fileSettings.PRODUCT_THUMBNAIL_IMAGE_FILE_LIMIT} thumbnail upload here`
+              )
             );
             return;
           }
           if (thumbnailImageFile.length) {
-            const videoValidFileType = isValidFileType(fileSettings.THUMBNAIL_IMAGE_FILE_NAME, thumbnailImageFile);
-            if (!videoValidFileType) {
-              reject(new Error('Invalid file! (Only JPG, JPEG PNG, WEBP files are allowed!)'));
+            const validFileType = isValidFileType(fileSettings.IMAGE_FILE_NAME, thumbnailImageFile);
+            if (!validFileType) {
+              reject(new Error('Invalid file! (Only JPG, JPEG, PNG, WEBP files are allowed!)'));
               return;
             }
-
-            const videoValidFileSize = isValidFileSize(fileSettings.THUMBNAIL_IMAGE_FILE_NAME, thumbnailImageFile);
-            if (!videoValidFileSize) {
-              reject(new Error('Invalid File Size! (Only 5 MB are allowed!'));
+            const validFileSize = isValidFileSize(fileSettings.IMAGE_FILE_NAME, thumbnailImageFile);
+            if (!validFileSize) {
+              reject(new Error('Invalid File Size! (Only 5 MB are allowed!)'));
               return;
             }
 
@@ -632,14 +644,16 @@ const updateProductThumbnailPhoto = (params) => {
                 uploadedThumbnailImage = fileNames[0];
               })
               .catch((e) => {
-                reject(new Error('An error occurred during product video uploading.'));
+                reject(new Error('An error occurred during product thumbnail image uploading.'));
               });
           }
 
-          const thumbnailImageUrl = deletedThumbnailImage ? '' : (productData?.thumbnailImage ?? '');
+          const thumbnailImageUrl = thumbnailImageFile.length
+            ? uploadedThumbnailImage
+            : productData?.thumbnailImage;
 
           const payload = {
-            thumbnailImage: thumbnailImageFile.length ? uploadedThumbnailImage : thumbnailImageUrl,
+            thumbnailImage: thumbnailImageUrl,
             updatedDate: Date.now(),
           };
           const updatePattern = {
@@ -650,14 +664,14 @@ const updateProductThumbnailPhoto = (params) => {
             ._update(updatePattern)
             .then((response) => {
               // Whenever a new file is uploaded for a product, the old file will be deleted.
-              if (deletedThumbnailImage) {
-                deleteFile(productsUrl, deletedThumbnailImage);
+              if (uploadedThumbnailImage) {
+                deleteFile(productsUrl, productData?.thumbnailImage);
               }
               resolve(true);
             })
             .catch((e) => {
-              reject(new Error('An error occurred during update product video.'));
-              // whenever an error occurs for updating a product video the uploaded file is deleted
+              reject(new Error('An error occurred during update product thumbnail image.'));
+              // whenever an error occurs for updating a product product thumbnail image the uploaded file is deleted
               if (uploadedThumbnailImage) {
                 deleteFile(productsUrl, uploadedThumbnailImage);
               }
@@ -717,7 +731,7 @@ const updateProductVideo = (params) => {
               });
           }
 
-          const videoUrl = deletedVideo ? '' : (productData?.video ?? '');
+          const videoUrl = deletedVideo ? '' : productData?.video ?? '';
 
           const payload = {
             video: videoFile.length ? uploadedVideo : videoUrl,
@@ -823,6 +837,7 @@ const updateProduct = (params) => {
       let {
         productId,
         productName,
+        thumbnailImageFile,
         imageFiles,
         videoFile,
         sku,
@@ -914,6 +929,7 @@ const updateProduct = (params) => {
             deletedImages = Array.isArray(deletedImages) ? deletedImages : [];
             videoFile = typeof videoFile === 'object' ? [videoFile] : [];
             deletedVideo = deletedVideo ? deletedVideo.trim() : null;
+            thumbnailImageFile = typeof thumbnailImageFile === 'object' ? [thumbnailImageFile] : [];
 
             let tempPhotoArray = [];
             tempPhotoArray = productData.images || [];
@@ -931,8 +947,19 @@ const updateProduct = (params) => {
             }
             let uploadedImages = [];
             let uploadedVideo = '';
-            if (imageFiles.length || videoFile.length) {
+            let uploadedThumbnailImage = '';
+            if (thumbnailImageFile?.length || imageFiles.length || videoFile.length) {
               if (
+                thumbnailImageFile.length &&
+                thumbnailImageFile.length > fileSettings.PRODUCT_THUMBNAIL_IMAGE_FILE_LIMIT
+              ) {
+                reject(
+                  new Error(
+                    `You can only ${fileSettings.PRODUCT_THUMBNAIL_IMAGE_FILE_LIMIT} thumbnail image upload here`
+                  )
+                );
+                return;
+              } else if (
                 imageFiles.length &&
                 tempPhotoArray.length + imageFiles.length > fileSettings.PRODUCT_IMAGE_FILE_LIMIT
               ) {
@@ -953,6 +980,26 @@ const updateProduct = (params) => {
                 );
                 return;
               } else {
+                if (thumbnailImageFile.length) {
+                  const validFileType = isValidFileType(
+                    fileSettings.IMAGE_FILE_NAME,
+                    thumbnailImageFile
+                  );
+                  if (!validFileType) {
+                    reject(
+                      new Error('Invalid file! (Only JPG, JPEG, PNG, WEBP files are allowed!)')
+                    );
+                    return;
+                  }
+                  const validFileSize = isValidFileSize(
+                    fileSettings.IMAGE_FILE_NAME,
+                    thumbnailImageFile
+                  );
+                  if (!validFileSize) {
+                    reject(new Error('Invalid File Size! (Only 5 MB are allowed!)'));
+                    return;
+                  }
+                }
                 if (imageFiles.length) {
                   const validFileType = isValidFileType(fileSettings.IMAGE_FILE_NAME, imageFiles);
                   if (!validFileType) {
@@ -986,9 +1033,12 @@ const updateProduct = (params) => {
                     return;
                   }
                 }
-                const filesPayload = [...imageFiles, ...videoFile];
+                const filesPayload = [...thumbnailImageFile, ...imageFiles, ...videoFile];
                 await uploadFile(productsUrl, filesPayload)
                   .then((fileNames) => {
+                    if (thumbnailImageFile.length) {
+                      uploadedThumbnailImage = fileNames.shift();
+                    }
                     if (videoFile.length) {
                       uploadedVideo = fileNames.pop();
                     }
@@ -1024,13 +1074,15 @@ const updateProduct = (params) => {
               : [];
             const variComboWithQuantityArray =
               variComboWithQuantity.length &&
-                !isInValidVariComboWithQuantityArray(variComboWithQuantity)
+              !isInValidVariComboWithQuantityArray(variComboWithQuantity)
                 ? getVariComboWithQuantityArray(variComboWithQuantity)
                 : productData.variComboWithQuantity;
 
-            const videoUrl = deletedVideo ? '' : (productData?.video ?? '');
+            const videoUrl = deletedVideo ? '' : productData?.video ?? '';
+            const thumbnailImageUrl = uploadedThumbnailImage || productData?.thumbnailImage;
             const payload = {
               productName,
+              thumbnailImage: thumbnailImageUrl,
               images: imagesArray,
               video: videoFile.length ? uploadedVideo : videoUrl,
               sku,
@@ -1077,6 +1129,9 @@ const updateProduct = (params) => {
                 if (deletedVideo) {
                   deleteFile(productsUrl, deletedVideo);
                 }
+                if (uploadedThumbnailImage) {
+                  deleteFile(productsUrl, productData?.thumbnailImage);
+                }
                 resolve(true);
               })
               .catch((e) => {
@@ -1087,6 +1142,9 @@ const updateProduct = (params) => {
                 }
                 if (uploadedVideo) {
                   deleteFile(productsUrl, uploadedVideo);
+                }
+                if (uploadedThumbnailImage) {
+                  deleteFile(productsUrl, uploadedThumbnailImage);
                 }
               });
           } else {

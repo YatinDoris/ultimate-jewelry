@@ -236,15 +236,13 @@ export const updateProductPhotosAction = (payload) => async (dispatch) => {
   }
 };
 
-
-
 export const updateProductThumbnailPhotoAction = (payload) => async (dispatch) => {
   try {
     dispatch(setCrudProductLoading(true));
     const res = await productService.updateProductThumbnailPhoto(payload);
 
     if (res) {
-      toast.success('Product updated successfully');
+      toast.success('Product thumbnail image updated successfully');
       return true;
     }
   } catch (e) {

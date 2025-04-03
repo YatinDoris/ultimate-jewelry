@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "qa-ultimate-jewelry"
+  },
+  "targets": {
+    "qa-ultimate-jewelry": {
+      "hosting": {
+        "admin": [
+          "admin-qa-ultimate-jewelry"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

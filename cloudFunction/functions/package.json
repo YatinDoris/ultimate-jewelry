@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
     "nanoid": "^5.0.3",
+    "next": "^15.2.4",
     "nodemailer": "^6.9.7",
     "otp-generator": "^4.0.1",
     "simple-encryptor": "^4.0.0",
