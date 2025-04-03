@@ -3,7 +3,7 @@ import { SlDiamond } from "react-icons/sl";
 import { HiOutlineUser, HiOutlineShoppingBag } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
 import { getMenuList } from "@/_actions/home.action";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavigationHeader } from "./dynamiComponents";
 import { setIsMenuOpen, setLastScrollY } from "@/store/slices/commonSlice";
 import { IoMenu } from "react-icons/io5";
@@ -12,6 +12,7 @@ import { RxCross2 } from "react-icons/rx";
 export default function Header() {
   const dispatch = useDispatch();
   const { isMenuOpen, lastScrollY } = useSelector(({ common }) => common);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(false);
 
   const toggleMenu = () => dispatch(setIsMenuOpen(!isMenuOpen));
   useEffect(() => {
@@ -21,7 +22,8 @@ export default function Header() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      dispatch(setLastScrollY(currentScrollY));
+      setLastScrollY(currentScrollY);
+      setIsHeaderVisible(currentScrollY > 100);
 
       if (currentScrollY > lastScrollY && currentScrollY > 300) {
         dispatch(setIsMenuOpen(false));
@@ -43,11 +45,13 @@ export default function Header() {
 
       {/* Header */}
       <header
-        className={`fixed ${
-          lastScrollY > 0 ? "!top-0" : "top-10"
-        } lg:static left-0 z-50 w-full shadow transition-all duration-300 bg-white`}
+        className={`${
+          isHeaderVisible
+            ? "fixed top-0 left-0 shadow-lg lg:static lg:top-0 lg:left-0"
+            : ""
+        } w-full bg-white z-50 shadow transition-all duration-300`}
       >
-        <div className="flex justify-between items-center py-4 px-6 lg:px-20">
+        <div className="flex justify-between items-center py-4 lg:pt-4 px-6 lg:px-20">
           <Link href={"/contact-us"} className="hidden lg:flex gap-2">
             <SlDiamond className="text-lg text-baseblack" />
             <h3 className="uppercase text-base">Contact us</h3>

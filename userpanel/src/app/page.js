@@ -53,7 +53,7 @@ import {
   AccordionDropdown,
   AnimatedSection,
   CustomImg,
-  LatestProductSwiper,
+  ProductSwiper,
   MarqueeBrandsHome,
   SwipperHomePageBig,
   TestimonialSlider,
@@ -279,7 +279,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
       <section className="pt-16 lg:pt-20 2xl:pt-40 grid grid-cols-1 lg:grid-cols-[0.7fr_1fr] items-center justify-center gap-10 container">
         <div className="flex flex-col items-center text-center bg-transparent">
           <CustomImg
@@ -381,10 +380,9 @@ const Home = () => {
       <section className="mx-auto pt-16 lg:pt-20 2xl:pt-40">
         <SwipperHomePageBig collections={collections} />
       </section>
-      <section className="pt-16 lg:pt-20 2xl:pt-40">
-        <LatestProductSwiper productList={latestProductList} loading={productLoading} />
+      <section className="pt-16 lg:pt-20 2xl:pt-40 container">
+        <ProductSwiper productList={latestProductList} loading={productLoading} title="Latest Products" />
       </section>
-
       <section className="pt-16 lg:pt-20 2xl:pt-40">
         <div className="flex flex-col items-center justify-center gap-4 text-center">
           <h3 className="text-lg font-normal font-castoro">

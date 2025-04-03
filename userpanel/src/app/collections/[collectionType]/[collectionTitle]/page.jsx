@@ -1,13 +1,16 @@
 "use client";
 import { fetchCollectionsTypeWiseProduct } from "@/_actions/product.actions";
 import { helperFunctions } from "@/_helper";
+import { ProductGrid } from "@/components/dynamiComponents";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 export default function CollectionPage() {
   const params = useParams();
   const dispatch = useDispatch();
-  const { collectionTypeProductList } = useSelector(({ product }) => product);
+  const { collectionTypeProductList, productLoading } = useSelector(
+    ({ product }) => product
+  );
   let { collectionType, collectionTitle } = params;
 
   collectionTitle = helperFunctions.stringReplacedWithSpace(collectionTitle);
@@ -15,11 +18,13 @@ export default function CollectionPage() {
   useEffect(() => {
     dispatch(fetchCollectionsTypeWiseProduct(collectionType, collectionTitle));
   }, []);
-  console.log("collectionTypeProductList", collectionTypeProductList);
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
-      <h1>Collection Type: {collectionType}</h1>
-      <h2>Value: {collectionTitle}</h2>
-    </div>
+    <section className="pt-16 lg:pt-20 2xl:pt-40 container">
+      <ProductGrid
+        productList={collectionTypeProductList}
+        isLoading={productLoading}
+        noDataFoundMsg="Stay tuned! The products you're looking for will be available soon. We appreciate your patience."
+      />
+    </section>
   );
 }
