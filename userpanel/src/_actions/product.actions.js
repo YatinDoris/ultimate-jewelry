@@ -1,4 +1,9 @@
-import { setCollectionTypeProductList, setLatestProductList, setProductLoading } from "@/store/slices/productSlice";
+import {
+  setCollectionTypeProductList,
+  setLatestProductList,
+  setProductDetail,
+  setProductLoading,
+} from "@/store/slices/productSlice";
 import { productService } from "@/_services";
 
 export const fetchLatestProductList = (length) => {
@@ -25,6 +30,7 @@ export const fetchCollectionsTypeWiseProduct = (
   return async (dispatch) => {
     try {
       dispatch(setCollectionTypeProductList([]));
+      dispatch(setProductLoading(true));
       const collectionsTypeWiseProductList =
         await productService.getCollectionsTypeWiseProduct(
           collectionType,
@@ -32,32 +38,31 @@ export const fetchCollectionsTypeWiseProduct = (
         );
       if (collectionsTypeWiseProductList) {
         dispatch(setCollectionTypeProductList(collectionsTypeWiseProductList));
+        dispatch(setProductLoading(false));
       }
     } catch (e) {
       dispatch(setCollectionTypeProductList([]));
+    } finally {
+      dispatch(setProductLoading(false));
     }
   };
 };
 
-// export const fetchProductDetailByProductName = (productName) => {
-//   return async (dispatch, getState) => {
-//     try {
-//       dispatch({
-//         type: actionTypes.FETCH_PRODUCT_DETAIL,
-//         productDetail: {},
-//         isLoading: true,
-//       });
-//       const productDetail = await productService.getSingleProduct(productName);
+export const fetchProductDetailByProductName = (productName) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(setProductDetail({}));
+      const productDetail = await productService.getSingleProduct(productName);
 
-//       if (productDetail) {
-//         dispatch({ type: actionTypes.FETCH_PRODUCT_DETAIL, productDetail });
-//         return productDetail;
-//       }
-//     } catch (e) {
-//       dispatch({ type: actionTypes.FETCH_PRODUCT_DETAIL, productDetail: {} });
-//     }
-//   };
-// };
+      if (productDetail) {
+        dispatch(setProductDetail(productDetail));
+        return productDetail;
+      }
+    } catch (e) {
+      dispatch(setProductDetail({}));
+    }
+  };
+};
 
 // export const fetchReletedProducts = (productName) => {
 //   return async (dispatch, getState) => {
@@ -179,4 +184,4 @@ export const fetchCollectionsTypeWiseProduct = (
 //       });
 //     }
 //   };
-// };  
+// };

@@ -25,7 +25,7 @@ export default function TestimonialSlider({ testimonials }) {
   }, []);
 
   return (
-    <section className="py-16 md:pt-24 bg-[#F3F2ED] text-center px-4 md:px-20">
+    <section className="py-16 md:pt-24 pb-24 pb-auto bg-[#F3F2ED] text-center px-4 md:px-20">
       <p className="text-lg lg:text-xl">Testimonials</p>
       <h2 className="text-2xl md:text-3xl 2xl:text-4xl font-normal mt-2 mb-8">
         What People Say About Us
