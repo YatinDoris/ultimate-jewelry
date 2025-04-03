@@ -49,9 +49,6 @@ export const AccordionDropdown = dynamic(() => import("./AccordionDropdown"), {
   ssr: false,
 });
 
-export const LatestProductSwiper = dynamic(
-  () => import("./latestProductSwiper"),
-  {
-    ssr: false,
-  }
-);
+export const ProductSwiper = dynamic(() => import("./productSwiper"), {
+  ssr: false,
+});

@@ -45,8 +45,8 @@ export const useWindowSize = () => {
     if (screenSize?.isXLargeScreen) return 6;
     if (screenSize?.isLargeScreen) return 5;
     if (screenSize?.isLaptop) return 4;
-    if (screenSize?.isTablet) return 2;
-    if (screenSize?.isMobile) return 1;
+    if (screenSize?.isTablet) return 3;
+    if (screenSize?.isMobile) return 2;
     return 4; // Default for non-matching cases
   }, [
     screenSize?.isLaptop,

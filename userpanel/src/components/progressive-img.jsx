@@ -1,6 +1,6 @@
 import { memo, useEffect, useState, useMemo } from "react";
 import Image from "next/image";
-import logo from "@/assets/images/logo.webp"; // Ensure the file is in the "public" folder
+import logo from "@/assets/images/logo.webp";
 
 const ProgressiveImg = ({
   placeholderSrc = logo,
