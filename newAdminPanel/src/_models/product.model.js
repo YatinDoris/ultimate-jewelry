@@ -1,18 +1,4 @@
-import { RealTimeCollaborativeTrackChanges } from 'ckeditor5-premium-features';
-import {
-  ALLOW_MAX_CARAT_WEIGHT,
-  ALLOW_MIN_CARAT_WEIGHT,
-  ALLOWED_DIA_CERTIFICATES,
-  ALLOWED_DIA_CLARITIES,
-  ALLOWED_DIA_COLORS,
-  ALLOWED_DIA_CUTS,
-  ALLOWED_DIA_FLUORESCENCE,
-  ALLOWED_DIA_POLISH,
-  ALLOWED_DIA_SYMMETRIES,
-  ALLOWED_DIA_TYPES,
-  ALLOWED_SHAPES,
-} from 'src/_helpers/constants';
-import { boolean } from 'yup';
+import { ALLOW_MAX_CARAT_WEIGHT, ALLOW_MIN_CARAT_WEIGHT } from 'src/_helpers/constants';
 
 export const productModel = {
   id: {
@@ -22,6 +8,10 @@ export const productModel = {
   productName: {
     type: String,
     unique: true,
+  },
+  thumbnailImage: {
+    type: String,
+    required: true,
   },
   images: {
     type: [
@@ -65,12 +55,12 @@ export const productModel = {
   subCategoryId: {
     type: String,
     ref: 'subCategories',
-    require: true,
+    // require: true,
   },
   productTypeIds: {
     type: Array,
     ref: 'productType',
-    require: true,
+    // require: true,
   },
   shortDescription: {
     type: String,
