@@ -56,15 +56,28 @@ const getAllActiveProducts = () => {
           categoryName: menuData.categories.find(
             (category) => category.id === product.categoryId
           )?.title,
-          subCategoryName: menuData.subCategories.find(
-            (subCategory) => subCategory.id === product.subCategoryId
-          )?.title,
-          productTypeNames: product.productTypeIds.map(
-            (id) =>
-              menuData.productTypes.find(
-                (productType) => productType?.id === id
-              )?.title
-          ),
+          // subCategoryName: menuData.subCategories.find(
+          //   (subCategory) => subCategory.id === product.subCategoryId
+          // )?.title,
+          // productTypeNames: product.productTypeIds.map(
+          //   (id) =>
+          //     menuData.productTypes.find(
+          //       (productType) => productType?.id === id
+          //     )?.title
+          // ),
+          ...(product.subCategoryId && {
+            subCategoryName: menuData.subCategories.find(
+              (subCategory) => subCategory.id === product.subCategoryId
+            )?.title,
+          }),
+          ...(product.productTypeIds?.length > 0 && {
+            productTypeNames: product.productTypeIds.map(
+              (id) =>
+                menuData.productTypes.find(
+                  (productType) => productType?.id === id
+                )?.title
+            ),
+          }),
           variations: helperFunctions.getVariationsArray(
             product.variations,
             customizations
@@ -92,6 +105,7 @@ const getLatestProducts = (length = 8) => {
           return {
             productName: product.productName,
             images: product.images.slice(0, 2),
+            video: product.video,
             id: product.id,
             basePrice: price,
             baseSellingPrice: helperFunctions.getSellingPrice(
@@ -182,10 +196,10 @@ const getCollectionsTypeWiseProduct = (collectionType, collectionTitle) => {
           const { price = 0 } = helperFunctions.getMinPriceVariCombo(
             product.variComboWithQuantity
           );
-
           return {
             productName: product.productName,
             images: product.images.slice(0, 2),
+            video: product.video,
             id: product.id,
             basePrice: price,
             baseSellingPrice: helperFunctions.getSellingPrice(

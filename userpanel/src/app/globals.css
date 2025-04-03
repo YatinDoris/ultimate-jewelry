@@ -3,7 +3,7 @@
 @import "tailwindcss/utilities";
 
 :root {
-  --primary: #153989;
+  --primary: #202A4E;
   --offwhite: #fafaf8;
   --baseblack: #2b2b2b;
 }
@@ -18,8 +18,7 @@
 
 @font-face {
   font-family: "Figtree";
-  src: url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf")
-      format("woff2"),
+  src: url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf") format("woff2"),
     url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf") format("woff");
   font-weight: 400;
   font-style: normal;
@@ -33,7 +32,7 @@ body {
 
 .progressive-img-loading {
   object-fit: contain;
-  opacity: 0.25;
+  opacity: 0.5;
   clip-path: inset(0);
   animation: fade-in 2s linear infinite;
 }
@@ -50,5 +49,15 @@ body {
 
   to {
     opacity: 0.8;
+  }
+}
+
+@keyframes rotateY {
+  0% {
+    transform: rotatey(0deg);
+  }
+
+  100% {
+    transform: rotatey(360deg);
   }
 }
