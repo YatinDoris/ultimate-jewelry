@@ -2,9 +2,9 @@ import Image from "next/image";
 import React from "react";
 
 const commonAltAttr =
-  "Tele Gold Jewelers | Diamond Jewelry, Coin, Gold, Silver, Platinum";
+  "Katan Off | Diamond Jewelry, Coin, Gold, Silver, Platinum";
 const commonTitleAttr =
-  "Tele Gold Jewelers | Diamond Jewelry, Coin, Gold, Silver, Platinum";
+  "Katan Off | Diamond Jewelry, Coin, Gold, Silver, Platinum";
 
 export default function CustomImg({
   altAttr = commonAltAttr,

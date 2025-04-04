@@ -22,7 +22,7 @@ export const NavigationHeader = dynamic(() => import("./navigationHeader"), {
   ssr: false,
 });
 
-export const ProductGrid = dynamic(() => import("./productGrid"), {
+export const ProductGrid = dynamic(() => import("./product/productGrid"), {
   ssr: false,
 });
 

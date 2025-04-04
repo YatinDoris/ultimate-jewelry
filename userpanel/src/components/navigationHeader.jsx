@@ -45,7 +45,7 @@ export default function NavigationHeader() {
     //   }`}
     // >
     <header
-      className={`w-full bg-white shadow-md z-50 transition-all duration-500 ease-in-out ${
+      className={`w-full bg-white shadow-md z-40 transition-all duration-500 ease-in-out ${
         isHeaderVisible
           ? "fixed top-0 left-0 shadow-lg"
           : "relative lg:translate-y-[40%] opacity-100"
@@ -72,7 +72,7 @@ export default function NavigationHeader() {
                 <li
                   key={`${item?.id}-${index}`}
                   className={`relative ${
-                    lastScrollY > 100 ? "py-2 lg:pb-2" : "pb-3"
+                    lastScrollY > 100 ? "py-2 lg:pb-2" : "pb-4"
                   }`}
                   onMouseEnter={() =>
                     hasSubCategories && dispatch(setOpenDropdown(item.title))
@@ -89,7 +89,11 @@ export default function NavigationHeader() {
 
                   {/* Dropdown for Desktop */}
                   {hasSubCategories && openDropdown === item.title && (
-                    <div className="fixed left-0 right-0 top-[45px] bg-white shadow-lg z-50 border-t-2 border-primary">
+                    <div
+                      className={`fixed left-0 right-0 ${
+                        isHeaderVisible ? "top-[45px]" : "top-[40px]"
+                      } bg-white shadow-lg z-50 border-t-2 border-primary`}
+                    >
                       <div className="container flex justify-between p-6">
                         <div>
                           {item.subCategories.map((subItem, index) => (
