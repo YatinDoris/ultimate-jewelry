@@ -28,6 +28,7 @@ export const productInitDetails = {
   categoryId: '',
   subCategoryId: '',
   productTypeIds: [],
+  netWeight: '',
   shortDescription: '',
   description: '',
   variations: [
@@ -79,6 +80,7 @@ const initialState = {
   customizationTypesList: [],
   customizationSubTypesList: [],
   selectedProduct: productInitDetails,
+  isDuplicateProduct: false,
   combinations: combinationInitDetails,
   exportExcelLoading: false,
 };
@@ -104,6 +106,9 @@ const productSlice = createSlice({
     },
     setSelectedProduct: (state, action) => {
       state.selectedProduct = action.payload;
+    },
+    setIsDuplicateProduct: (state, action) => {
+      state.isDuplicateProduct = action.payload;
     },
     setProductTypesList: (state, action) => {
       state.productTypesList = action.payload;
@@ -139,6 +144,7 @@ export const {
   setProductLoading,
   setCategoriesList,
   setSelectedProduct,
+  setIsDuplicateProduct,
   setProductTypesList,
   setActiveProductList,
   setSubCategoriesList,

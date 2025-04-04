@@ -11,7 +11,11 @@ import {
   StyledDialogContent,
   StyledDialogTitle,
 } from '../../../components/dialog/styles';
-import { productInitDetails, setSelectedProduct } from 'src/store/slices/productSlice';
+import {
+  productInitDetails,
+  setIsDuplicateProduct,
+  setSelectedProduct,
+} from 'src/store/slices/productSlice';
 import { helperFunctions } from 'src/_helpers';
 
 const validationSchema = Yup.object({
@@ -125,6 +129,7 @@ const DuplicateProductDialog = ({ open, setOpen, loading }) => {
         }
       });
       dispatch(setSelectedProduct(payload));
+      dispatch(setIsDuplicateProduct(true));
       navigate(`/product/add`);
       setOpen(false);
     },
