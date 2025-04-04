@@ -163,6 +163,7 @@ const CombinationDialog = ({
       collectionIds: fields?.collectionIds,
       settingStyleIds: fields?.settingStyleIds,
       productTypeIds: fields?.productTypeIds,
+      netWeight: fields?.netWeight,
       subCategoryId: fields?.subCategoryId,
       specifications: fields?.specifications,
       shortDescription: fields?.shortDescription,

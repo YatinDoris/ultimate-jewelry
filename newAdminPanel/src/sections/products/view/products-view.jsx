@@ -43,6 +43,7 @@ import { getCollectionList } from 'src/actions/collectionActions';
 import {
   setCrudProductLoading,
   setExportExcelLoading,
+  setIsDuplicateProduct,
   setPerPageCount,
   setSelectedProduct,
 } from 'src/store/slices/productSlice';
@@ -259,64 +260,10 @@ export default function ProductsView() {
     dispatch(setExportExcelLoading(false));
   }, [productList]);
 
-  // set  default variations selected
-  const setInitVariation = () => {
-    const findCustomizationByName = (list, name) =>
-      list.find(
-        (customization) =>
-          customization.title === name || customization.customizationTypeName === name
-      );
-    const foundedGoldType = findCustomizationByName(customizationTypeList, GOLD_TYPE.title);
-    const foundedGoldColor = findCustomizationByName(customizationTypeList, GOLD_COLOR.title);
-    if (foundedGoldType && foundedGoldColor) {
-      const foundedGoldTypeWiseSubTypes = customizationSubTypeList.filter(
-        (subType) => subType.customizationTypeName === GOLD_TYPE.title
-      );
-
-      const foundedGoldColorWiseSubTypes = customizationSubTypeList.filter(
-        (subType) => subType.customizationTypeName === foundedGoldColor.title
-      );
-
-      const matchedGoldTypeSubTypes = INIT_GOLD_TYPE_SUB_TYPES_LIST.map(
-        (goldType) =>
-          customizationSubTypeList.find((subType) => subType.title === goldType.title) || null
-      );
-
-      const matchedGoldColorSubTypes = GOLD_COLOR_SUB_TYPES_LIST.map(
-        (goldType) =>
-          customizationSubTypeList.find((subType) => subType.title === goldType.title) || null
-      );
-
-      const createVariation = (variationId, foundedSubTypes, matchedSubTypes) => ({
-        variationId,
-        subTypes: foundedSubTypes,
-        variationTypes: matchedSubTypes.map((subType) => ({ variationTypeId: subType.id })),
-      });
-
-      const newVariations = [
-        createVariation(foundedGoldType.id, foundedGoldTypeWiseSubTypes, matchedGoldTypeSubTypes),
-        createVariation(
-          foundedGoldColor.id,
-          foundedGoldColorWiseSubTypes,
-          matchedGoldColorSubTypes
-        ),
-      ];
-      const newPayload = {
-        ...selectedProduct,
-        variations: newVariations,
-      };
-      if (JSON.stringify(newPayload) !== JSON.stringify(selectedProduct)) {
-        dispatch(setSelectedProduct(newPayload));
-      }
-    }
-  };
-
   const newProduct = useCallback(() => {
-    if (customizationTypeList.length && customizationSubTypeList.length) {
-      setInitVariation();
-    }
+    dispatch(setIsDuplicateProduct(false));
     navigate('/product/add');
-  }, [customizationTypeList, customizationSubTypeList]);
+  }, []);
 
   return (
     <Container sx={{ height: '100%' }}>

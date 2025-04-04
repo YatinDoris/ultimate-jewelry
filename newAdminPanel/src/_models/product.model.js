@@ -62,6 +62,9 @@ export const productModel = {
     ref: 'productType',
     // require: true,
   },
+  netWeight: {
+    type: Number,
+  },
   shortDescription: {
     type: String,
   },

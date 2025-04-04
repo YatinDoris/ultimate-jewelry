@@ -62,7 +62,14 @@ import { Button, LoadingButton } from 'src/components/button';
 import { getCollectionList } from 'src/actions/collectionActions';
 import CombinationDialog, { generateCombinations } from './combination-dialog';
 import DiamondFilters from './diamond-filters';
-import { ALLOW_MAX_CARAT_WEIGHT, ALLOW_MIN_CARAT_WEIGHT } from 'src/_helpers/constants';
+import {
+  ALLOW_MAX_CARAT_WEIGHT,
+  ALLOW_MIN_CARAT_WEIGHT,
+  GOLD_COLOR,
+  GOLD_COLOR_SUB_TYPES_LIST,
+  GOLD_TYPE,
+  INIT_GOLD_TYPE_SUB_TYPES_LIST,
+} from 'src/_helpers/constants';
 
 // ----------------------------------------------------------------------
 
@@ -246,6 +253,7 @@ export default function AddProductPage() {
     const res = await dispatch(updateProductPhotosAction(payload));
     if (res) dispatch(getSingleProduct(productId));
   };
+
   const updateProductThumbnailImage = async (formik) => {
     const payload = {
       productId,
@@ -269,6 +277,60 @@ export default function AddProductPage() {
 
     if (res) {
       dispatch(getSingleProduct(productId));
+    }
+  };
+
+  // set  default variations selected
+  const setInitVariation = ({ customizationTypesList, customizationSubTypesList }) => {
+    const findCustomizationByName = (list, name) =>
+      list.find(
+        (customization) =>
+          customization.title === name || customization.customizationTypeName === name
+      );
+    const foundedGoldType = findCustomizationByName(customizationTypesList, GOLD_TYPE.title);
+    const foundedGoldColor = findCustomizationByName(customizationTypesList, GOLD_COLOR.title);
+    if (foundedGoldType && foundedGoldColor) {
+      const foundedGoldTypeWiseSubTypes = customizationSubTypesList.filter(
+        (subType) => subType.customizationTypeName === GOLD_TYPE.title
+      );
+
+      const foundedGoldColorWiseSubTypes = customizationSubTypesList.filter(
+        (subType) => subType.customizationTypeName === foundedGoldColor.title
+      );
+
+      const matchedGoldTypeSubTypes = INIT_GOLD_TYPE_SUB_TYPES_LIST.map(
+        (goldType) =>
+          customizationSubTypesList.find((subType) => subType.title === goldType.title) || null
+      );
+
+      const matchedGoldColorSubTypes = GOLD_COLOR_SUB_TYPES_LIST.map(
+        (goldType) =>
+          customizationSubTypesList.find((subType) => subType.title === goldType.title) || null
+      );
+
+      const createVariation = (variationId, foundedSubTypes, matchedSubTypes) => ({
+        variationId,
+        subTypes: foundedSubTypes,
+        variationTypes: matchedSubTypes.map((subType) => ({
+          variationTypeId: subType.id,
+        })),
+      });
+
+      const newVariations = [
+        createVariation(foundedGoldType.id, foundedGoldTypeWiseSubTypes, matchedGoldTypeSubTypes),
+        createVariation(
+          foundedGoldColor.id,
+          foundedGoldColorWiseSubTypes,
+          matchedGoldColorSubTypes
+        ),
+      ];
+      const newPayload = {
+        ...selectedProduct,
+        variations: newVariations,
+      };
+      if (JSON.stringify(newPayload) !== JSON.stringify(selectedProduct)) {
+        dispatch(setSelectedProduct(newPayload));
+      }
     }
   };
 
@@ -320,7 +382,9 @@ export default function AddProductPage() {
                   setFieldValue,
                 } = formik;
                 // const [productDetail, setProductDetail] = useState({});
-                const { selectedProduct } = useSelector(({ product }) => product);
+                const { selectedProduct, isDuplicateProduct } = useSelector(
+                  ({ product }) => product
+                );
 
                 const loadData = useCallback(async () => {
                   const product = await dispatch(getSingleProduct(productId));
@@ -378,6 +442,20 @@ export default function AddProductPage() {
                 useEffect(() => {
                   if (productId) loadData();
                 }, [productId]);
+
+                useEffect(() => {
+                  if (
+                    !productId &&
+                    !isDuplicateProduct &&
+                    Object.keys(selectedProduct).length &&
+                    customizationSubTypesList.length
+                  ) {
+                    setInitVariation({
+                      customizationTypesList,
+                      customizationSubTypesList,
+                    });
+                  }
+                }, [productId, customizationTypesList, customizationSubTypesList]);
 
                 useEffect(() => {
                   if (Object.keys(selectedProduct).length && menuList) {
@@ -829,7 +907,7 @@ export default function AddProductPage() {
                                     name="productTypeIds"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    value={values?.productTypeIds}
+                                    value={values?.productTypeIds || []}
                                     input={<OutlinedInput label="Product Type" />}
                                     renderValue={(selected) => {
                                       let updated = selected?.map((x) => {
@@ -867,6 +945,23 @@ export default function AddProductPage() {
                                     </Typography>
                                   ) : null}
                                 </FormControl>
+                              </Grid>
+                              <Grid xs={12} sm={6} md={6}>
+                                <TextField
+                                  type="number"
+                                  name="netWeight"
+                                  label="Net Weight"
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
+                                  value={values.netWeight || ''}
+                                  error={!!(touched.netWeight && errors.netWeight)}
+                                  helperText={
+                                    touched.netWeight && errors.netWeight ? errors.netWeight : ''
+                                  }
+                                  sx={{
+                                    width: '100%',
+                                  }}
+                                />
                               </Grid>
                             </Grid>
                           </Card>

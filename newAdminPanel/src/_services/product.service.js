@@ -151,6 +151,7 @@ const insertProduct = (params) => {
         categoryId,
         subCategoryId,
         productTypeIds,
+        netWeight,
         shortDescription,
         description,
         variations,
@@ -173,6 +174,7 @@ const insertProduct = (params) => {
       categoryId = categoryId ? categoryId.trim() : null;
       subCategoryId = subCategoryId ? subCategoryId.trim() : null;
       productTypeIds = Array.isArray(productTypeIds) ? productTypeIds : [];
+      netWeight = !isNaN(netWeight) ? Number(netWeight) : 0;
       shortDescription = shortDescription ? shortDescription.trim() : null;
       description = description ? description.trim() : null;
       variations = Array.isArray(variations) ? variations : [];
@@ -345,6 +347,7 @@ const insertProduct = (params) => {
                   categoryId,
                   subCategoryId,
                   productTypeIds: productTypeIds.map((id) => id?.trim()),
+                  netWeight,
                   shortDescription,
                   description,
                   variations: variationsArray,
@@ -848,6 +851,7 @@ const updateProduct = (params) => {
         categoryId,
         subCategoryId,
         productTypeIds,
+        netWeight,
         shortDescription,
         description,
         variations,
@@ -869,6 +873,7 @@ const updateProduct = (params) => {
           sku = sku ? sku.trim() : productData.sku;
           saltSKU = saltSKU ? saltSKU.trim() : productData.saltSKU;
           discount = !isNaN(discount) ? Number(discount) : productData.discount;
+          netWeight = !isNaN(netWeight) ? Number(netWeight) : productData.netWeight;
           isDiamondFilter = isBoolean(isDiamondFilter) ? isDiamondFilter : false;
           diamondFilters =
             typeof diamondFilters === 'object' ? diamondFilters : productData?.diamondFilters || {};
@@ -1100,6 +1105,7 @@ const updateProduct = (params) => {
               productTypeIds: Array.isArray(productTypeIds)
                 ? productTypeIds?.map((id) => id?.trim())
                 : productData.productTypeIds,
+              netWeight: netWeight,
               shortDescription: shortDescription
                 ? shortDescription.trim()
                 : productData?.shortDescription || '',
