@@ -8,7 +8,7 @@ export default function SettingStylePage() {
   return (
     <>
       <Helmet>
-        <title> Setting style | Ultimate Jewelry </title>
+        <title> Setting style | Katan Off </title>
       </Helmet>
 
       <SettingStyle />

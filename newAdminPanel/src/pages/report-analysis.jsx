@@ -8,7 +8,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Report & Analysis | Ultimate Jewelry </title>
+        <title> Report & Analysis | Katan Off </title>
       </Helmet>
 
       <ReportAnalysisPage />

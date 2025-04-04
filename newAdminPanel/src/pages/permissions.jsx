@@ -8,7 +8,7 @@ export default function AppPage() {
   return (
     <>
       <Helmet>
-        <title> Permissions | Ultimate Jewelry </title>
+        <title> Permissions | Katan Off </title>
       </Helmet>
 
       <PermissionsPage />

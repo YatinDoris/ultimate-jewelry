@@ -8,7 +8,7 @@ export default function SliderViewAddPage() {
   return (
     <>
       <Helmet>
-        <title> Collection | Ultimate Jewelry </title>
+        <title> Collection | Katan Off </title>
       </Helmet>
 
       <Collection />

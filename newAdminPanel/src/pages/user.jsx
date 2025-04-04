@@ -8,7 +8,7 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> User | Ultimate Jewelry </title>
+        <title> User | Katan Off </title>
       </Helmet>
 
       <User />
