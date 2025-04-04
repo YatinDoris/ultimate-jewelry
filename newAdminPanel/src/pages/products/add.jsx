@@ -8,7 +8,7 @@ export default function AddProductPage() {
   return (
     <>
       <Helmet>
-        <title> Products | Ultimate Jewelry </title>
+        <title> Products | Katan Off </title>
       </Helmet>
 
       <AddProduct />

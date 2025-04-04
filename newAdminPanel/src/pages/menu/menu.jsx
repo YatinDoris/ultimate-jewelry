@@ -8,7 +8,7 @@ export default function MenuPage() {
   return (
     <>
       <Helmet>
-        <title> Menu | Ultimate Jewelry </title>
+        <title> Menu | Katan Off </title>
       </Helmet>
 
       <MenuView />

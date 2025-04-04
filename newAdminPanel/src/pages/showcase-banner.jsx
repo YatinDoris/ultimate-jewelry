@@ -8,7 +8,7 @@ export default function SliderViewAddPage() {
   return (
     <>
       <Helmet>
-        <title> ShowCase Banner | Ultimate Jewelry </title>
+        <title> ShowCase Banner | Katan Off </title>
       </Helmet>
 
       <ShowCaseBanner />
