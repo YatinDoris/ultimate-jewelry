@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import ProductCard from "./productCard";
+import ProductCard from "./product/productCard";
 import useQueryParams from "@/hooks/useQueryParams";
 import { Autoplay, Navigation } from "swiper/modules";
 import { useState, useRef } from "react";

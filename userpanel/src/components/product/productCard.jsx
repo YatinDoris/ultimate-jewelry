@@ -1,6 +1,6 @@
 import { helperFunctions } from "@/_helper";
 import Link from "next/link";
-import { ProgressiveImg } from "./dynamiComponents";
+import { ProgressiveImg } from "../dynamiComponents";
 
 export default function ProductCard({
   img,
