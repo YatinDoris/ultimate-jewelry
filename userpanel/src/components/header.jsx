@@ -4,10 +4,11 @@ import { HiOutlineUser, HiOutlineShoppingBag } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
 import { getMenuList } from "@/_actions/home.action";
 import { useEffect, useState } from "react";
-import { NavigationHeader } from "./dynamiComponents";
+import { CustomImg, NavigationHeader } from "./dynamiComponents";
 import { setIsMenuOpen, setLastScrollY } from "@/store/slices/commonSlice";
 import { IoMenu } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
+import logo from "@/assets/images/logo-2.webp";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -51,7 +52,7 @@ export default function Header() {
             : ""
         } w-full bg-white z-50 shadow transition-all duration-300`}
       >
-        <div className="flex justify-between items-center py-4 lg:pt-4 px-6 lg:px-20">
+        <div className="flex justify-between items-center py-4 lg:pt-4 lg:pb-0  px-6 lg:px-20">
           <Link href={"/contact-us"} className="hidden lg:flex gap-2">
             <SlDiamond className="text-lg text-baseblack" />
             <h3 className="uppercase text-base">Contact us</h3>
@@ -67,11 +68,8 @@ export default function Header() {
               <IoMenu className="w-5 h-5 xxs:w-6 xxs:h-6" />
             )}
           </button>
-          <Link
-            href={"/"}
-            className="text-2xl lg:text-4xl font-castoro tracking-wider text-black"
-          >
-            Katanoff
+          <Link href={"/"}>
+            <CustomImg srcAttr={logo} className="w-28 lg:w-40" />
           </Link>
 
           <div className="text-xl flex items-center gap-5">
