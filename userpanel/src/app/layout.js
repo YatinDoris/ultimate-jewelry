@@ -1,13 +1,16 @@
+import StoreProvider from "@/store/provider";
 import "./globals.css";
-import { Layout } from "@/components/dynamiComponents";
-
-
+import { Lenis } from "@/components/dynamiComponents";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <Layout>{children}</Layout>
+        <Lenis>
+          <StoreProvider>
+            <main>{children}</main>
+          </StoreProvider>
+        </Lenis>
       </body>
     </html>
   );
