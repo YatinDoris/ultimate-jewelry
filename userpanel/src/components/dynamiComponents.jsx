@@ -48,3 +48,10 @@ export const AccordionDropdown = dynamic(() => import("./AccordionDropdown"), {
 export const ProductSwiper = dynamic(() => import("./productSwiper"), {
   ssr: false,
 });
+
+export const ProductFilterSidebar = dynamic(
+  () => import("./product/productFilterSidebar"),
+  {
+    ssr: false,
+  }
+);
