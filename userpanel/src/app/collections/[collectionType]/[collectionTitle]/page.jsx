@@ -86,12 +86,15 @@ export default function CollectionPage() {
       </section>
 
       {/* Product Grid Section */}
-      <section className="container pt-16 lg:pt-20 2xl:pt-20">
+      <section className="container pt-10 md:pt-14 lg:pt-20 2xl:pt-20">
+        <h2 className="text-center text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-castoro mb-8">
+          {collectionTitle}
+        </h2>
+
         <ProductGrid
           productList={collectionTypeProductList}
           pagination={true}
           isLoading={productLoading}
-          noDataFoundMsg="Stay tuned! The products you're looking for will be available soon. We appreciate your patience."
         />
       </section>
       <section className=" pt-16 lg:pt-20 2xl:pt-20">
