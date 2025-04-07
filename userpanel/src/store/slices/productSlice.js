@@ -6,7 +6,7 @@ const initialState = {
   productDetail: {},
   collectionTypeProductList: [],
   currentPage: 0,
-  selectedVariations: {},
+  selectedVariations: [],
   productQuantity: 1,
 };
 

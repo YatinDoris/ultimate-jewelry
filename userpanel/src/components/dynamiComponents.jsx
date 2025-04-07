@@ -26,10 +26,6 @@ export const ProductGrid = dynamic(() => import("./product/productGrid"), {
   ssr: false,
 });
 
-export const MarqueeBrandsHome = dynamic(() => import("./MarqueeBrandsHome"), {
-  ssr: false,
-});
-
 export const AnimatedSection = dynamic(() => import("./AnimatedSection"), {
   ssr: false,
 });

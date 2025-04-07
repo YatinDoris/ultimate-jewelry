@@ -63,38 +63,43 @@ function sortArrays(arr1, arr2) {
 }
 
 const areArraysEqual = (arr1, arr2) => {
+  if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
+    console.error("Invalid input to areArraysEqual", arr1, arr2);
+    return false;
+  }
+
   if (arr1.length !== arr2.length) {
     return false;
   }
 
-  sortArrays(arr1, arr2);
-
-  for (let i = 0; i < arr1.length; i++) {
-    if (
-      arr1[i].variationId !== arr2[i].variationId ||
-      arr1[i].variationTypeId !== arr2[i].variationTypeId
-    ) {
-      return false;
-    }
-  }
-
-  return true;
+  return arr1.every((item1) =>
+    arr2.some(
+      (item2) =>
+        item1.variationId === item2.variationId &&
+        item1.variationTypeId === item2.variationTypeId
+    )
+  );
 };
 
 const getVariComboPriceQty = (arrayOfCombinations, selectedVariations) => {
-  const array1 = selectedVariations.map((item) => {
-    return {
-      variationId: item.variationId,
-      variationTypeId: item.variationTypeId,
-    };
-  });
+  if (!Array.isArray(selectedVariations)) {
+    console.error("selectedVariations is not an array", selectedVariations);
+    return { price: 0, quantity: 0 };
+  }
+
+  const array1 = selectedVariations.map((item) => ({
+    variationId: item.variationId,
+    variationTypeId: item.variationTypeId,
+  }));
+
   const findedCombination = arrayOfCombinations?.find((combinationsItem) => {
     const array2 = combinationsItem.combination;
     return areArraysEqual(array1, array2);
   });
+
   return {
-    price: findedCombination?.price ? findedCombination?.price : 0,
-    quantity: findedCombination?.quantity ? findedCombination?.quantity : 0,
+    price: findedCombination?.price || 0,
+    quantity: findedCombination?.quantity || 0,
   };
 };
 
