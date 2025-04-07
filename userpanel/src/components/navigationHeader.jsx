@@ -39,11 +39,6 @@ export default function NavigationHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
   return (
-    // <header
-    //   className={`w-full bg-white shadow-md z-50 transition-all duration-300 ${
-    //     isHeaderVisible ? "fixed top-0 left-0 shadow-lg" : "relative"
-    //   }`}
-    // >
     <header
       className={`w-full bg-white shadow-md z-40 transition-all duration-500 ease-in-out ${
         isHeaderVisible
@@ -63,7 +58,7 @@ export default function NavigationHeader() {
             srcAttr={miniLogo}
           />
         </Link>
-        <ul className={`flex ${lastScrollY > 100 ? "py-3" : "pb-4"} gap-4`}>
+        <ul className={`flex ${lastScrollY > 100 ? "" : ""} gap-4`}>
           {menuList &&
             menuList.map((item, index) => {
               const hasSubCategories = item.subCategories?.length > 0;
@@ -72,8 +67,8 @@ export default function NavigationHeader() {
                 <li
                   key={`${item?.id}-${index}`}
                   className={`relative ${
-                    lastScrollY > 100 ? "py-2 lg:pb-2" : "pb-4"
-                  }`}
+                    lastScrollY > 100 ? "py-2 lg:py-6" : "pb-4"
+                  } ${openDropdown ? "" : ""}`}
                   onMouseEnter={() =>
                     hasSubCategories && dispatch(setOpenDropdown(item.title))
                   }
@@ -91,7 +86,7 @@ export default function NavigationHeader() {
                   {hasSubCategories && openDropdown === item.title && (
                     <div
                       className={`fixed left-0 right-0 ${
-                        isHeaderVisible ? "top-[45px]" : "top-[40px]"
+                        isHeaderVisible ? "top-[60px]" : "top-[40px]"
                       } bg-white shadow-lg z-50 border-t-2 border-primary`}
                     >
                       <div className="container flex justify-between p-6">
@@ -155,7 +150,7 @@ export default function NavigationHeader() {
             })}
         </ul>
         {lastScrollY > 100 ? (
-          <div className="text-xl flex items-center gap-5">
+          <div className="text-xl flex py-6 items-center gap-5">
             <HiOutlineUser />
             <Link href="/cart">
               <HiOutlineShoppingBag />
@@ -174,7 +169,7 @@ export default function NavigationHeader() {
             transition={{ duration: 0.3 }}
             className="lg:hidden"
           >
-            <nav className="text-center h-screen px-4 py-2 flex flex-col gap-3">
+            <nav className=" h-screen px-4 py-2 flex flex-col gap-3">
               {menuList.map((item, index) => {
                 const hasSubCategories = item.subCategories?.length > 0;
                 const isDropdownOpen = openDropdownMobile === item.title;
@@ -208,7 +203,7 @@ export default function NavigationHeader() {
 
                     {/* Dropdown for Mobile */}
                     {hasSubCategories && isDropdownOpen && (
-                      <div className="ml-4 gap-2 flex flex-col">
+                      <div className=" gap-2 flex flex-col">
                         {item.subCategories.map((subItem, index) => (
                           <HeaderLinkButton
                             key={`${subItem.title}-${index}5`}

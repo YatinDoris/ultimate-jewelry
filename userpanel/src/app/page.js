@@ -192,7 +192,7 @@ const giftCategories = [
   { id: 3, title: "GIFTS FOR HIM", image: home25, altAttr: "" },
 ];
 
-const collections = [
+export const collections = [
   {
     title: "Most Popular Collection",
     image: home26,
