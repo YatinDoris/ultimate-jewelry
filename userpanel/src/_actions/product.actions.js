@@ -52,14 +52,18 @@ export const fetchProductDetailByProductName = (productName) => {
   return async (dispatch, getState) => {
     try {
       dispatch(setProductDetail({}));
+      dispatch(setProductLoading(true));
+
       const productDetail = await productService.getSingleProduct(productName);
 
       if (productDetail) {
         dispatch(setProductDetail(productDetail));
+        dispatch(setProductLoading(false));
         return productDetail;
       }
     } catch (e) {
       dispatch(setProductDetail({}));
+      dispatch(setProductLoading(false));
     }
   };
 };
