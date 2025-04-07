@@ -9,7 +9,7 @@ import Link from "next/link";
 const SwipperHomePageBig = ({ collections }) => {
   return (
     <Swiper
-      spaceBetween={20}
+      spaceBetween={10}
       slidesPerView={1.2}
       className="w-full"
       breakpoints={{
@@ -38,10 +38,11 @@ const SwipperHomePageBig = ({ collections }) => {
               <h2 className="text-xl xl:text-4xl 2xl:text-5xl text-white font-castoro font-semibold bottom-[10%]">
                 {collection.title}
               </h2>
-              <Link href={collection?.btnLink}>
-                <p className="text-md xl:text-lg font-normal tracking-wide border-b-2 text-white uppercase border-white w-fit">
-                  {collection?.btnText}
-                </p>
+              <Link
+                href={collection?.btnLink}
+                className="text-md lg:text-base 2xl:text-lg font-normal tracking-wide border-b-2 text-white uppercase border-white w-fit"
+              >
+                {collection?.btnText}
               </Link>
             </div>
           </div>

@@ -3,7 +3,7 @@
 @import "tailwindcss/utilities";
 
 :root {
-  --primary: #202A4E;
+  --primary: #202a4e;
   --offwhite: #fafaf8;
   --baseblack: #2b2b2b;
 }
@@ -18,7 +18,8 @@
 
 @font-face {
   font-family: "Figtree";
-  src: url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf") format("woff2"),
+  src: url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf")
+      format("woff2"),
     url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf") format("woff");
   font-weight: 400;
   font-style: normal;
