@@ -4,13 +4,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import ProductCard from "./product/productCard";
 import useQueryParams from "@/hooks/useQueryParams";
 import { Autoplay, Navigation } from "swiper/modules";
 import { useState, useRef } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
-import SkeletonLoader from "./skeletonLoader";
+import SkeletonLoader from "../ui/skeletonLoader";
 import { useWindowSize } from "@/_helper/hooks";
+import ProductCard from "./productCard";
 
 export default function ProductSwiper({
   productList,
