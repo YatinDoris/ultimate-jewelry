@@ -15,7 +15,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
-import { collections } from "@/app/page";
+import { collections } from "@/app/(shop)/page";
 
 const collectionSwiper = [
   {

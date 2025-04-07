@@ -22,10 +22,10 @@ export default function ProductCard({
 
   return (
     <Link onClick={onClick} href={productLink} aria-label={title}>
-      <div className="relative group">
+      <div className="relative group w-full h-[200px] md:w-[300px] md:h-[300px] 2xl:w-[400px] 2xl:h-[400px]">
         {" "}
         <ProgressiveImg
-          className="w-full h-[200px] md:w-[300px] md:h-[300px] 2xl:w-[400px] 2xl:h-[400px] object-cover"
+          className="w-full h-full object-cover"
           src={img}
           alt={title}
           title={title}
