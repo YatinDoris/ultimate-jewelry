@@ -1,47 +1,42 @@
 "use client";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import useQueryParams from "@/hooks/useQueryParams";
+import noDataImg from "@/assets/images/no-data.webp";
 import ProductCard from "./productCard";
 import { useWindowSize } from "@/_helper/hooks";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentPage } from "@/store/slices/productSlice";
+import {
+  setCurrentPage,
+  setShowFilterSidebar,
+  setSortByValue,
+} from "@/store/slices/productSlice";
 import SkeletonLoader from "../skeletonLoader";
 import { VscSettings } from "react-icons/vsc";
-import { AiOutlineClose } from "react-icons/ai";
-import { FiMinus, FiPlus } from "react-icons/fi";
+import { ProductFilterSidebar } from "../dynamiComponents";
+import CustomImg from "../custom-img";
+import { LinkButton } from "../button";
 
 const ITEMS_PER_PAGE = 20;
-
-const sortByList = [
-  { value: "date_new_to_old", title: "NEW TO OLD" },
-  { value: "date_old_to_new", title: "OLD TO NEW" },
-  { value: "price_high_to_low", title: "HIGH TO LOW" },
-  { value: "price_low_to_high", title: "LOW TO HIGH" },
-  { value: "alphabetically_a_to_z", title: "A-Z" },
-  { value: "alphabetically_z_to_a", title: "Z-A" },
-];
 
 const ProductGrid = memo(
   ({
     productList = [],
     isLoading,
     pagination = false,
-    noDataFoundMsg,
     isDiamondSettingPage,
     className,
   }) => {
     const queryParams = useQueryParams();
     const dispatch = useDispatch();
     const { columnCount } = useWindowSize();
-    const { currentPage } = useSelector(({ product }) => product);
-    const [selectedSortByValue, setSelectedSortByValue] =
-      useState("date_new_to_old");
-    const [selectedVariation, setSelectedVariation] = useState({});
-    const [showSidebar, setShowSidebar] = useState(false);
-    const defaultOpenKeys = ["sortBy"];
-    const [openKeys, setOpenKeys] = useState(defaultOpenKeys);
+    const {
+      currentPage,
+      selectedSortByValue,
+      showFilterSidebar,
+      selectedVariations,
+    } = useSelector(({ product }) => product);
 
     const handlePageClick = ({ selected }) => {
       dispatch(setCurrentPage(selected));
@@ -90,29 +85,11 @@ const ProductGrid = memo(
       });
     });
 
-    const handleClearFilters = () => {
-      setSelectedSortByValue("date_new_to_old");
-      setSelectedVariation({});
-      setOpenKeys(defaultOpenKeys);
-    };
-
-    const sortBySelectHandler = (eventKey) => {
-      setSelectedSortByValue(eventKey);
-    };
-
-    const onSelectVariant = (variationName, variationTypeName) => {
-      const updatedFilters = {
-        ...selectedVariation,
-        [variationName]: variationTypeName,
-      };
-      setSelectedVariation(updatedFilters);
-    };
-
     let filteredItemsList = productList;
-    if (Object.keys(selectedVariation)?.length) {
+    if (Object.keys(selectedVariations)?.length) {
       filteredItemsList = productList.filter((product) => {
         return product.variations.some((variation) => {
-          const selectedType = selectedVariation[variation.variationName];
+          const selectedType = selectedVariations[variation.variationName];
           if (!selectedType) return false;
           return variation.variationTypes.some(
             (type) => type.variationTypeName === selectedType
@@ -159,20 +136,8 @@ const ProductGrid = memo(
     };
 
     useEffect(() => {
-      setSelectedSortByValue(selectedSortByValue);
+      dispatch(setSortByValue(selectedSortByValue));
     }, [selectedSortByValue]);
-
-    const isOpenKey = useCallback((key) => openKeys.includes(key), [openKeys]);
-
-    const toggleOpenKey = useCallback(
-      (key) => {
-        const newArr = isOpenKey(key)
-          ? openKeys.filter((k) => k !== key)
-          : [...openKeys, key];
-        setOpenKeys(newArr);
-      },
-      [isOpenKey, openKeys]
-    );
 
     return (
       <>
@@ -191,189 +156,32 @@ const ProductGrid = memo(
           </div>
         ) : (
           <div className="relative">
-            {/* Filter Toggle Button */}
-            <div
-              className={`flex ${
-                showSidebar ? "justify-end" : "justify-between"
-              } mb-6 items-center`}
-            >
-              <button
-                onClick={() => setShowSidebar(true)}
-                className={`${
-                  showSidebar ? "hidden" : "block"
-                } flex items-center gap-2 px-4 py-2 border shadow-sm bg-primary text-white hover:bg-gray-100 hover:border-primary hover:text-primary font-medium transition-all duration-300`}
+            {filteredItemsList.length ? (
+              <div
+                className={`flex ${
+                  showFilterSidebar ? "justify-end" : "justify-between"
+                } mb-6 items-center`}
               >
-                <VscSettings className="text-xl" /> Filter
-              </button>
-              {filteredItemsList ? (
-                <span>{filteredItemsList.length} items</span>
-              ) : null}
-            </div>
+                <button
+                  onClick={() => dispatch(setShowFilterSidebar(true))}
+                  className={`${
+                    showFilterSidebar ? "hidden" : "block"
+                  } flex items-center gap-2 px-4 py-2 border shadow-sm bg-primary text-white hover:bg-gray-100 hover:border-primary hover:text-primary font-medium transition-all duration-300`}
+                >
+                  <VscSettings className="text-xl" /> Filter
+                </button>
+                {filteredItemsList ? (
+                  <span>{filteredItemsList.length} items</span>
+                ) : null}
+              </div>
+            ) : null}
 
             <div className="flex gap-6 items-start">
-              {/* Filter Sidebar */}
-              <div
-                className={`w-full lg:w-72 flex-shrink-0 bg-white lg:bg-transparent transition-transform duration-300 ease-in-out lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-y-auto lg:translate-x-0 lg:z-0 z-[60] ${
-                  showSidebar
-                    ? "fixed inset-y-0 left-0 translate-x-0 block"
-                    : "fixed -translate-x-full lg:translate-x-0 hidden"
-                }`}
-              >
-                {/* Backdrop for Mobile */}
-                {showSidebar && (
-                  <div>
-                    <div
-                      className="fixed inset-0 bg-white lg:hidden"
-                      onClick={() => {
-                        setShowSidebar(false);
-                        setOpenKeys(defaultOpenKeys);
-                      }}
-                    />
-                  </div>
-                )}
-
-                {/* Sidebar Content */}
-                <div className="relative z-3 bg-transparent p-4 h-full">
-                  {/* Header */}
-                  <div className="flex justify-between items-center border-b border-[#C8C8C6] pb-4">
-                    <h2 className="text-lg font-semibold">All Filters</h2>
-                    <button
-                      onClick={() => {
-                        setShowSidebar(false);
-                        setOpenKeys(defaultOpenKeys);
-                      }}
-                    >
-                      <AiOutlineClose />
-                    </button>
-                  </div>
-
-                  {/* Clear Filters Button */}
-                  <div className="flex justify-end">
-                    <button
-                      onClick={handleClearFilters}
-                      className="text-xs underline hover:underline mt-3"
-                    >
-                      Reset Filters
-                    </button>
-                  </div>
-
-                  {/* Filters Content */}
-                  <div>
-                    <div className="border-b border-[#C8C8C6]">
-                      <button
-                        className={`w-full flex items-center justify-between ${
-                          isOpenKey("sortBy") ? "pt-4 pb-2" : "py-4"
-                        }`}
-                        onClick={() => toggleOpenKey("sortBy")}
-                      >
-                        <p className="font-semibold mb-1">Sort By</p>
-                        <span className="text-xl">
-                          {isOpenKey("sortBy") ? <FiMinus /> : <FiPlus />}
-                        </span>
-                      </button>
-                      <div
-                        className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                          isOpenKey("sortBy")
-                            ? "max-h-screen opacity-100"
-                            : "max-h-0 opacity-0"
-                        }`}
-                      >
-                        <div className="flex flex-wrap gap-2 pb-4">
-                          {sortByList.map((item) => (
-                            <button
-                              key={item.value}
-                              onClick={() => sortBySelectHandler(item.value)}
-                              className={`px-3 py-1 border rounded-md text-sm ${
-                                selectedSortByValue === item.value
-                                  ? "bg-primary text-white"
-                                  : "bg-gray-100 hover:bg-gray-200"
-                              }`}
-                            >
-                              {item.title}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Variations Filter */}
-                    {uniqueVariations?.map((x, index) => (
-                      <div
-                        key={x?.variationId}
-                        className="border-b border-[#C8C8C6]"
-                      >
-                        <button
-                          className={`w-full flex items-center justify-between ${
-                            isOpenKey(x?.variationName) ? "pt-4 pb-2" : "py-4"
-                          }`}
-                          onClick={() => toggleOpenKey(x?.variationName)}
-                        >
-                          <p className="font-semibold mb-1">
-                            {x?.variationName}
-                          </p>
-                          <span className="text-xl">
-                            {isOpenKey(x?.variationName) ? (
-                              <FiMinus />
-                            ) : (
-                              <FiPlus />
-                            )}
-                          </span>
-                        </button>
-                        <div
-                          className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                            isOpenKey(x?.variationName)
-                              ? "max-h-screen opacity-100"
-                              : "max-h-0 opacity-0"
-                          }`}
-                        >
-                          <div className="flex flex-wrap gap-2 pb-4">
-                            {x?.variationTypes?.map((y) => (
-                              <button
-                                key={`${x.variationId}-${y.variationTypeName}`}
-                                onClick={() =>
-                                  onSelectVariant(
-                                    x?.variationName,
-                                    y?.variationTypeName
-                                  )
-                                }
-                                className={`px-3 py-1 m-1 border rounded-md text-sm flex items-center justify-center ${
-                                  selectedVariation[x?.variationName] ===
-                                  y?.variationTypeName
-                                    ? "bg-primary text-white"
-                                    : "bg-gray-100 hover:bg-gray-200"
-                                } ${
-                                  selectedVariation[x?.variationName] ===
-                                    y?.variationTypeName &&
-                                  y.variationTypeHexCode
-                                    ? "border-2 border-primary"
-                                    : ""
-                                }`}
-                                style={
-                                  y?.variationTypeHexCode
-                                    ? {
-                                        backgroundColor: y.variationTypeHexCode,
-                                        width: "32px",
-                                        height: "32px",
-                                      }
-                                    : {}
-                                }
-                              >
-                                {!y?.variationTypeHexCode &&
-                                  y?.variationTypeName}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
+              <ProductFilterSidebar uniqueVariations={uniqueVariations} />
               {/* Product Grid */}
               <div
                 className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 ${
-                  showSidebar ? "lg:grid-cols-3" : "lg:grid-cols-4"
+                  showFilterSidebar ? "lg:grid-cols-3" : "lg:grid-cols-4"
                 } 6xl:grid-cols-6 gap-x-4 gap-y-6 place-items-center`}
               >
                 {currentProducts.map((product) => (
@@ -399,8 +207,30 @@ const ProductGrid = memo(
         )}
 
         {!isLoading && !productList?.length && (
-          <div className="text-center h-[50vh] flex justify-center items-center">
-            {noDataFoundMsg}
+          <div className="h-[60vh] lg:h-[70vh] gap-8 lg:gap-10 flex flex-col justify-center items-center text-center">
+            <CustomImg
+              srcAttr={noDataImg}
+              className="w-44 md:w-52 lg:w-56 2xl:w-auto"
+              altAttr=""
+              titleAttr=""
+            />
+            <div>
+              {" "}
+              <h3 className="text-2xl md:text-3xl 2xl:text-4xl font-castoro">
+                Sorry, No product Found
+              </h3>
+              <p className="text-base mt-2 font-semibold">
+                You can Try Our Different Product...
+              </p>
+              <div className="flex justify-center mt-4 ">
+                <LinkButton
+                  href="#"
+                  className="!bg-primary w-[70%] xxs:h-11 md:h-12 lg:!h-[2.8rem] !rounded-none !text-sm font-semibold !tracking-wider hover:border-primary hover:!bg-transparent hover:!text-primary"
+                >
+                  BACK TO SHOP
+                </LinkButton>
+              </div>
+            </div>
           </div>
         )}
 
