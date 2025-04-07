@@ -48,7 +48,7 @@ import diamondPear from "@/assets/images/home/diamond-pear.webp";
 import diamondPrincess from "@/assets/images/home/diamond-princess.webp";
 import diamondRadiant from "@/assets/images/home/diamond-radiant.webp";
 import diamondRound from "@/assets/images/home/diamond-round.webp";
-import { LinkButton } from "../components/button";
+import { LinkButton } from "../../components/button";
 import {
   AccordionDropdown,
   AnimatedSection,
