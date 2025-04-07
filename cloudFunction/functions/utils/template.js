@@ -1,13 +1,15 @@
 const {
   WEBSITE_URL,
   INSTAGRAM,
+  INSTAGRAM_URL,
   FACEBOOK,
+  FACEBOOK_URL,
   COMPANY_EMAIL,
   LOGO,
   COMPANY_MOBILE_NO,
   TEMPLATE_BG,
+  COMPANY_NAME,
 } = require("./companyInfo");
-const { facebookUrl, instagramUrl } = require("../helpers/environment.js");
 
 const headerTemplate = () => `
  <div style="padding-top:35px; text-align: center;">
@@ -19,17 +21,17 @@ const footerTemplate = () => `
 	<div style="text-align: center; ">
  		<p style="font-family: IBM Plex Mono, monospace; color:white;">Follow Us</p>
         <div style="margin: 7px 0;">
-            <a href=${facebookUrl}" style="margin: 0 10px; display: inline-block;">
+            <a href=${FACEBOOK_URL}" style="margin: 0 10px; display: inline-block;">
                 <img src=${FACEBOOK} alt="Facebook" style="width: 24px; height: 24px;" />
             </a>
               
-            <a href=${instagramUrl} style="margin: 0 10px; display: inline-block;">
+            <a href=${INSTAGRAM_URL} style="margin: 0 10px; display: inline-block;">
             	<img src=${INSTAGRAM} alt="Instagram" style="width: 24px; height: 24px;" />
             </a>
         </div>
 
         <div style="padding: 20px; text-align: center; color: #a5a5a5; font-size: 0.7vw;">
-            <p style="margin: 0; font-family: IBM Plex Mono, monospace; font-style: normal;">© 2024 Your Ultimate Jewelry. All rights reserved.</p>
+            <p style="margin: 0; font-family: IBM Plex Mono, monospace; font-style: normal;">© 2024 Your ${COMPANY_NAME}. All rights reserved.</p>
             <p style="margin: 0;"><a href="mailto:${COMPANY_EMAIL}" style="font-family: IBM Plex Mono, monospace; font-style: normal; color: #a5a5a5; text-decoration: none;">Mail us: ${COMPANY_EMAIL}</a></p>
         </div>
 	</div>
@@ -90,7 +92,7 @@ const welcomeTemplate = (fullName) => {
 					</table>
   
 					<div style="margin-bottom: 40px;">
-					  <img src=${companyInfo.LOGO} alt="logo">
+					  <img src=${LOGO} alt="logo">
 					</div>
 					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="wrapperBody" style="max-width:600px">
 						<tbody>
@@ -111,12 +113,12 @@ const welcomeTemplate = (fullName) => {
 											<tr>
 												<td style="padding-bottom: 30px; padding-left: 20px; padding-right: 20px;" valign="top" class="subTitle">
                                                     <h3 class="text" style="color:#000;font-family:Poppins,Helvetica,Arial,sans-serif;font-size:16px;font-weight:500;font-style:normal;letter-spacing:normal;line-height:24px;text-transform:none;text-align:center;padding:0;margin:0">
-                                                        Thanks for registering at ${companyInfo.COMPANY_NAME}
+                                                        Thanks for registering at ${COMPANY_NAME}
                                                     </h3>
                                                     
                                                     <h6 class="text" style="color:#000;font-size:14px;font-weight:500;font-style:normal;letter-spacing:normal;line-height:24px;text-transform:none;text-align:center;padding:0;margin:0;margin-top: 5px;">
                                                         We are thrilled to have you join our community of jewelry enthusiasts and fashion connoisseurs.<br/>
-                                                        At ${companyInfo.COMPANY_NAME}, we believe every piece of jewelry tells a unique story, and we're here to help you find the perfect pieces that resonate with your style and personality.
+                                                        At ${COMPANY_NAME}, we believe every piece of jewelry tells a unique story, and we're here to help you find the perfect pieces that resonate with your style and personality.
                                                     </h6>
                                                     <table class="text"
                                                         style="font-size:14px;font-weight:500;font-style:normal;letter-spacing:normal;line-height:24px;text-transform:none;text-align:justify;padding:0;margin:0;">
@@ -168,16 +170,14 @@ const welcomeTemplate = (fullName) => {
                                                   <span class="text">Happy Shopping,</span>  
                                                 
                                                   <p class="text" style="color:#bbb;font-family:'Open Sans',Helvetica,Arial,sans-serif;font-size:12px;font-weight:400;font-style:normal;letter-spacing:normal;text-transform:none;text-align:center;padding:0;margin:0;margin-top:5px">
-                                                      ©&nbsp; ${companyInfo.COMPANY_NAME} 2024
+                                                      ©&nbsp; ${COMPANY_NAME} 2024
                                                   </p>
                                                 </td>
                                             </tr>
                                             <tr align="center"> 
                                                 <td style="padding-top:15px">
-													<a href="/"><img src=${companyInfo.PINTEREST} alt="pinterest" height="30px" width="30px"></a>
-													<a href="/"><img src=${companyInfo.TWITTER} alt="twitter" height="30px" width="30px"></a>
-													<a href="/"><img src=${companyInfo.INSTAGRAM} alt="instagram" height="30px" width="30px"></a>
-													<a href="/"><img src=${companyInfo.YOUTUBE} alt="youtube" height="30px" width="30px"></a>
+													<a href="/"><img src=${FACEBOOK} alt="facebook" height="30px" width="30px"></a>
+													<a href="/"><img src=${INSTAGRAM} alt="instagram" height="30px" width="30px"></a>
                                                 </td>
                                             </tr>
 											<tr>
@@ -234,7 +234,7 @@ const emailOtpVerification = (otp) => {
 			<p>
 				Thank you for your attention!
 			</p>
-			<p style="margin-bottom : 10px; ">Best Regards,<br />Ultimate Jewelry</p>
+			<p style="margin-bottom : 10px; ">Best Regards,<br />${COMPANY_NAME}</p>
       	</div>`;
 
   return { subject, description: html(body) };
@@ -267,7 +267,7 @@ const forgotPasswordOtpVerification = (username, otp) => {
 		<p>
 			Thank you for your attention!
 		</p>
-		<p style="margin-bottom : 10px; ">Best Regards,<br />Ultimate Jewelry</p>
+		<p style="margin-bottom : 10px; ">Best Regards,<br />${COMPANY_NAME}</p>
       </div>`;
 
   return { subject, description: html(body) };
@@ -303,7 +303,7 @@ const getMailTemplateForOrderStatus = (userName, orderNumber, orderStatus) => {
 	<p style=" margin-bottom : 10px;">Dear ${userName},</p>	
 	${
     orderStatus === "pending"
-      ? `<p>Thank you for choosing Ultimate Jewelry! We're happy to confirm that we’ve received your payment for ${boldOrderNumber}.</p>
+      ? `<p>Thank you for choosing ${COMPANY_NAME}! We're happy to confirm that we’ve received your payment for ${boldOrderNumber}.</p>
 			<div style="margin : 10px;">
 				<p style="color : #58a4bd; margin : 0px;">Order Summary</p>
 				<ul>
@@ -314,7 +314,7 @@ const getMailTemplateForOrderStatus = (userName, orderNumber, orderStatus) => {
 			</div>
 			<p>Our team is reviewing your order, and we’ll keep you updated once it’s ready for the next steps. Should you have any questions or need further information, feel free to reach out to us at <a href="mailto:${COMPANY_EMAIL}" style="color : #58a4bd;"> ${COMPANY_EMAIL}</a> or <a href="tel:${COMPANY_MOBILE_NO}" style="color: #58a4bd;">${COMPANY_MOBILE_NO}</a>.</p>
 			<p>We appreciate your trust in
-Ultimate Jewelry
+${COMPANY_NAME}
 and look forward to completing your order soon.</p>
 			`
       : ""
@@ -342,7 +342,7 @@ has been canceled. We understand this may be disappointing, and we apologize for
 	  
 	  ${
       orderStatus === "confirmed"
-        ? `<p>Thank you for your purchase with Ultimate Jewelry! We’re excited to confirm that your ${boldOrderNumber} has been successfully placed, and we’ve received your payment.
+        ? `<p>Thank you for your purchase with ${COMPANY_NAME}! We’re excited to confirm that your ${boldOrderNumber} has been successfully placed, and we’ve received your payment.
  </p>
 			<div style="margin : 10px;">
 				<p style="color : #58a4bd; margin : 0px;">Order Summary</p>
@@ -353,7 +353,7 @@ has been canceled. We understand this may be disappointing, and we apologize for
 				</ul>
 			</div>
 			<p>We are now preparing your order and will notify you once it has been shipped. If you have any questions in the meantime, feel free to reach out to us at <a href="mailto:${COMPANY_EMAIL}" style="color : #58a4bd;"> ${COMPANY_EMAIL}</a> or call us at <a href="tel:${COMPANY_MOBILE_NO}" style="color: #58a4bd;">${COMPANY_MOBILE_NO}</a>.</p>
-			<p>Thank you for choosing Ultimate Jewelry. We look forward to delivering your order soon!</p>`
+			<p>Thank you for choosing ${COMPANY_NAME}. We look forward to delivering your order soon!</p>`
         : ""
     }
 		 ${
@@ -369,10 +369,10 @@ has been canceled. We understand this may be disappointing, and we apologize for
         ? `<p>We’re happy to let you know that your ${boldOrderNumber} has been successfully delivered.</p>
 			
 			<p>We hope you enjoy your purchase. If you have any questions or concerns about your order, please feel free to contact us at <a href="mailto:${COMPANY_EMAIL}" style="color : #58a4bd;"> ${COMPANY_EMAIL}</a> or call us at <a href="tel:${COMPANY_MOBILE_NO}" style="color: #58a4bd;">${COMPANY_MOBILE_NO}</a>.</p>
-			<p>Thank you for shopping with Ultimate Jewelry!. We look forward to serving you again soon!</p>`
+			<p>Thank you for shopping with ${COMPANY_NAME}!. We look forward to serving you again soon!</p>`
         : ""
     }
-	<p style = "margin-bottom : 10px; " >Best Regards, <br />Ultimate Jewelry</p>
+	<p style = "margin-bottom : 10px; " >Best Regards, <br />${COMPANY_NAME}</p>
 	</div >
       </div >
 	`;
@@ -404,19 +404,19 @@ const getMailTemplateForAppointmentStatus = (
 			
 				${
           appointmentStatus === "approved"
-            ? `<p>We’re pleased to confirm your appointment with Ultimate Jewelry!</p> <div style="margin : 10px;">
+            ? `<p>We’re pleased to confirm your appointment with ${COMPANY_NAME}!</p> <div style="margin : 10px;">
 				<p style="color : #58a4bd; margin : 0px;">Appointment Details :</p>
 				<ul>
 					<li>Date & Time: ${dateTime}</li>
 				</ul>
 			</div>
 			<p>We look forward to seeing you then. If you have any questions or need to reschedule, please feel free to reach out to us at <a href="mailto:${COMPANY_EMAIL}" style="color : #58a4bd;"> ${COMPANY_EMAIL}</a> or call us at <a href="tel:${COMPANY_MOBILE_NO}" style="color: #58a4bd;">${COMPANY_MOBILE_NO}</a>.</p>
-			<p>Thank you for choosing Ultimate Jewelry!</p>`
+			<p>Thank you for choosing ${COMPANY_NAME}!</p>`
             : ""
         }
 					${
             appointmentStatus === "rejected"
-              ? `	<p>Thank you for reaching out to us regarding your appointment request. We appreciate your interest in Ultimate Jewelry.</p>
+              ? `	<p>Thank you for reaching out to us regarding your appointment request. We appreciate your interest in ${COMPANY_NAME}.</p>
 				<p>Unfortunately, we must decline your appointment request for ${dateTime}${
                   rejectReason ? `, ${rejectReason}` : ""
                 }. We apologize for any inconvenience this may cause.</p>
@@ -424,7 +424,7 @@ const getMailTemplateForAppointmentStatus = (
 				<p>Thank you for your understanding, and we hope to connect with you soon!</p>`
               : ""
           }
-			<p style="margin-bottom : 10px;">Best Regards,<br />Ultimate Jewelry</p>
+			<p style="margin-bottom : 10px;">Best Regards,<br />${COMPANY_NAME}</p>
 		</div>
       </div>
 	`;
@@ -509,8 +509,8 @@ const getMailTemplateForReturnStatus = (
           : ""
       }
 			  
-				<p style = "color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;" > Thank you for choosing <a href="${WEBSITE_URL}" style="color: #58a4bd;" target="_blank" >Ultimate Jewelry<a/> Please Visit Again.</p>
-		<p style = "color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;" > Best Regards, <br />Ultimate Jewelry</p>
+				<p style = "color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;" > Thank you for choosing <a href="${WEBSITE_URL}" style="color: #58a4bd;" target="_blank" >${COMPANY_NAME}<a/> Please Visit Again.</p>
+		<p style = "color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;" > Best Regards, <br />${COMPANY_NAME}</p>
 		</div >
       </div >
 	`;
@@ -591,7 +591,7 @@ Order ${boldOrderNumber}.</p>`;
           ? "<p>We apologize for any inconvenience and appreciate your patience as we work to resolve this.</p>"
           : "<p>Thank you for your understanding and patience.</p>"
       }
-		<p style="color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;">Best Regards,<br />Ultimate Jewelry</p>
+		<p style="color: white; margin-bottom : 10px; font-family: IBM Plex Mono, monospace; font-style: normal; font-size: 1vw;">Best Regards,<br />${COMPANY_NAME}</p>
 		</div >
       </div >
 	`;
