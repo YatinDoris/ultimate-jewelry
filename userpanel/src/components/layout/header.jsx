@@ -4,7 +4,7 @@ import { HiOutlineUser, HiOutlineShoppingBag } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
 import { getMenuList } from "@/_actions/home.action";
 import { useEffect, useState } from "react";
-import { CustomImg, NavigationHeader } from "./dynamiComponents";
+import { CustomImg, NavigationHeader } from "../dynamiComponents";
 import { setIsMenuOpen, setLastScrollY } from "@/store/slices/commonSlice";
 import { IoMenu } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
@@ -34,6 +34,24 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
+    } else {
+      document.body.style.overflow = "auto";
+      document.body.style.position = "";
+      document.body.style.width = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+      document.body.style.position = "";
+      document.body.style.width = "";
+    };
+  }, [isMenuOpen]);
   return (
     <div>
       {/* Announcement Bar */}

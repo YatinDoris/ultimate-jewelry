@@ -13,7 +13,7 @@ import {
   FaPinterestP,
   FaTiktok,
 } from "react-icons/fa";
-import CustomImg from "./custom-img";
+import { CustomImg } from "../dynamiComponents";
 
 const usefulLinks = [
   { title: "Get on the Guest List", href: "/", usefulClass: "font-semibold" },

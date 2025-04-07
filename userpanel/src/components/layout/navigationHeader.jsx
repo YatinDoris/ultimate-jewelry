@@ -1,5 +1,5 @@
 "use client";
-import { HeaderLinkButton } from "@/components/button";
+import { HeaderLinkButton } from "@/components/ui/button";
 import { setIsMenuOpen, setOpenDropdown } from "@/store/slices/commonSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { HiOutlineShoppingBag, HiOutlineUser } from "react-icons/hi2";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import miniLogo from "@/assets/images/logo-2.webp";
-import { CustomImg } from "./dynamiComponents";
+import { CustomImg } from "../dynamiComponents";
 export default function NavigationHeader() {
   const dispatch = useDispatch();
   const { menuList, openDropdown, isMenuOpen } = useSelector(

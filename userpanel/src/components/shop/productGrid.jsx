@@ -12,11 +12,10 @@ import {
   setShowFilterSidebar,
   setSortByValue,
 } from "@/store/slices/productSlice";
-import SkeletonLoader from "../skeletonLoader";
+import SkeletonLoader from "../ui/skeletonLoader";
 import { VscSettings } from "react-icons/vsc";
-import { ProductFilterSidebar } from "../dynamiComponents";
-import CustomImg from "../custom-img";
-import { LinkButton } from "../button";
+import { CustomImg, ProductFilterSidebar } from "../dynamiComponents";
+import { LinkButton } from "../ui/button";
 
 const ITEMS_PER_PAGE = 20;
 

@@ -48,7 +48,7 @@ import diamondPear from "@/assets/images/home/diamond-pear.webp";
 import diamondPrincess from "@/assets/images/home/diamond-princess.webp";
 import diamondRadiant from "@/assets/images/home/diamond-radiant.webp";
 import diamondRound from "@/assets/images/home/diamond-round.webp";
-import { LinkButton } from "../../components/button";
+import { LinkButton } from "../../components/ui/button";
 import {
   AccordionDropdown,
   AnimatedSection,
@@ -59,7 +59,7 @@ import {
 } from "@/components/dynamiComponents";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import TextAboveImage from "@/components/TextAboveImage";
+import TextAboveImage from "@/components/ui/TextAboveImage";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLatestProductList } from "@/_actions/product.actions";
 
@@ -468,11 +468,10 @@ const CategoryGallery = () => {
                   setActiveCategory(category);
                   setOpen(false);
                 }}
-                className={`px-4 py-2 text-sm cursor-pointer transition ${
-                  activeCategory === category
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-primary hover:text-white"
-                }`}
+                className={`px-4 py-2 text-sm cursor-pointer transition ${activeCategory === category
+                  ? "bg-primary text-white"
+                  : "text-gray-700 hover:bg-primary hover:text-white"
+                  }`}
               >
                 {category}
               </li>
@@ -485,11 +484,10 @@ const CategoryGallery = () => {
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
-            className={`text-sm tracking-wide pb-1 border-b-2 transition-all ${
-              activeCategory === category
-                ? "border-black font-semibold"
-                : "border-transparent text-gray-500"
-            }`}
+            className={`text-sm tracking-wide pb-1 border-b-2 transition-all ${activeCategory === category
+              ? "border-black font-semibold"
+              : "border-transparent text-gray-500"
+              }`}
           >
             {category}
           </button>
