@@ -54,7 +54,6 @@ import {
   AnimatedSection,
   CustomImg,
   ProductSwiper,
-  MarqueeBrandsHome,
   SwipperHomePageBig,
   TestimonialSlider,
 } from "@/components/dynamiComponents";
@@ -236,12 +235,12 @@ const faqData = [
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { latestProductList, productLoading } = useSelector(({ product }) => product)
+  const { latestProductList, productLoading } = useSelector(
+    ({ product }) => product
+  );
 
   useEffect(() => {
-    dispatch(
-      fetchLatestProductList(8)
-    );
+    dispatch(fetchLatestProductList(8));
   }, []);
   return (
     <>
@@ -352,10 +351,6 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="flex flex-col items-center w-full pt-16 lg:pt-20 2xl:pt-40">
-        <MarqueeBrandsHome />
-      </section>
-
       <section className="pt-16 lg:pt-20 2xl:pt-40">
         <TextAboveImage categoryData={categoryData[0].data} />
       </section>
@@ -381,7 +376,11 @@ const Home = () => {
         <SwipperHomePageBig collections={collections} />
       </section>
       <section className="pt-16 lg:pt-20 2xl:pt-40 container">
-        <ProductSwiper productList={latestProductList} loading={productLoading} title="Latest Products" />
+        <ProductSwiper
+          productList={latestProductList}
+          loading={productLoading}
+          title="Latest Products"
+        />
       </section>
       <section className="pt-16 lg:pt-20 2xl:pt-40">
         <div className="flex flex-col items-center justify-center gap-4 text-center">
@@ -468,10 +467,11 @@ const CategoryGallery = () => {
                   setActiveCategory(category);
                   setOpen(false);
                 }}
-                className={`px-4 py-2 text-sm cursor-pointer transition ${activeCategory === category
-                  ? "bg-primary text-white"
-                  : "text-gray-700 hover:bg-primary hover:text-white"
-                  }`}
+                className={`px-4 py-2 text-sm cursor-pointer transition ${
+                  activeCategory === category
+                    ? "bg-primary text-white"
+                    : "text-gray-700 hover:bg-primary hover:text-white"
+                }`}
               >
                 {category}
               </li>
@@ -484,10 +484,11 @@ const CategoryGallery = () => {
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
-            className={`text-sm tracking-wide pb-1 border-b-2 transition-all ${activeCategory === category
-              ? "border-black font-semibold"
-              : "border-transparent text-gray-500"
-              }`}
+            className={`text-sm tracking-wide pb-1 border-b-2 transition-all ${
+              activeCategory === category
+                ? "border-black font-semibold"
+                : "border-transparent text-gray-500"
+            }`}
           >
             {category}
           </button>
