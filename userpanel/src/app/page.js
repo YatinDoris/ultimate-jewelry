@@ -71,6 +71,7 @@ const animatedContent = [
     title: "Expert Guidance, Personalized for You",
     description: [
       "Our seasoned jewelry specialists are here to help you find the perfect piece. Whether you're looking for timeless elegance or a custom creation, we provide expert advice and personalized service to match your style and needs.",
+      "Our seasoned jewelry specialists are here to help you find the perfect piece. Whether you're looking for timeless elegance or a custom creation, we provide expert advice and personalized service to match your style and needs.",
     ],
     btnText: "Book an Appointment",
     btnLink: "/",
@@ -357,7 +358,7 @@ const Home = () => {
       <section className="container mx-auto pt-16 lg:pt-20 2xl:pt-28">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center h-full">
           {giftCategories.map((category) => (
-            <div key={category.id} className="text-start space-y-2">
+            <div key={category.id}>
               <CustomImg
                 srcAttr={category.image}
                 altAttr={category.altAttr}
@@ -401,7 +402,7 @@ const Home = () => {
           {benefits.map((benefit, index) => (
             <div
               key={`benefits-${index}`}
-              className="group flex flex-col items-center space-y-2 relative"
+              className="group flex flex-col items-center gap-y-2 relative"
             >
               <CustomImg
                 srcAttr={benefit.icon}

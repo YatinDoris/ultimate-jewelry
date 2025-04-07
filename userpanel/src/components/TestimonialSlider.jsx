@@ -39,14 +39,13 @@ export default function TestimonialSlider({ testimonials }) {
         >
           {testimonials.map((item, idx) => (
             <SwiperSlide key={idx}>
-              <div className="flex flex-col items-center space-y-6 pt-6 lg:pt-8 2xl:pt-10">
+              <div className="flex flex-col items-center gap-y-6 pt-6 lg:pt-8 2xl:pt-10">
                 <CustomImg
                   srcAttr={testimonialProfile}
                   altAttr=""
                   titleAttr=""
                   width={100}
                   height={100}
-                  alt="Profile"
                   className="rounded-full object-cover"
                 />
                 <p className="text-lg md:text-2xl 2xl:text-3xl text-gray-800 max-w-xl xl:max-w-2xl px-4">
