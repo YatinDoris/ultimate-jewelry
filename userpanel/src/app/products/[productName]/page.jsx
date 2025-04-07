@@ -13,6 +13,9 @@ import VariationsList from "@/components/VariationsList";
 import { ProgressiveImg } from "@/components/dynamiComponents";
 import DetailPageSkeleton from "@/components/DetailPageSkeleton";
 import KeyFeatures from "@/components/KeyFeatures";
+import calender from "@/assets/icons/calender.svg";
+import inspect from "@/assets/icons/inspect.svg";
+import truck from "@/assets/icons/truck.svg";
 export const minProductQuantity = 1;
 export const maxProductQuantity = 5;
 import {
@@ -23,19 +26,19 @@ import { insertProductIntoCart } from "@/_actions/cart.action";
 
 const shippingInfo = [
   {
-    icon: "📞",
+    icon: truck,
     altAttr: "",
     titleAttr: "",
     text: "Please call us: +1-800-282-2242",
   },
   {
-    icon: "🔄",
+    icon: calender,
     altAttr: "",
     titleAttr: "",
     text: "Free 30 Day Returns, Free Resizing, Free Lifetime Warranty.",
   },
   {
-    icon: "✅",
+    icon: inspect,
     altAttr: "",
     titleAttr: "",
     text: "We inspect & verify authenticity before shipping. 100% Money-Back Guarantee.",
@@ -45,6 +48,54 @@ const shippingInfo = [
 const paymentOptions = [
   { img: stripe, name: "Stripe", altAttr: "", titleAttr: "" },
   { img: paypal, name: "PayPal", altAttr: "", titleAttr: "" },
+];
+
+const shippingReturnContent = [
+  {
+    label: "Fast & Secure Shipping – ",
+    content:
+      "Orders are processed within 1-2 business days and shipped via reliable carriers like UPS, FedEx, or USPS.",
+  },
+  {
+    label: "Delivery Time –",
+    content:
+      "Standard shipping takes 3-7 business days, while expedited options are available for faster delivery.",
+  },
+  {
+    label: "Shipping Fees – ",
+    content:
+      "Free shipping on orders over [Specify Amount], with calculated rates for express or international shipping.",
+  },
+  {
+    label: "Order Tracking – ",
+    content:
+      "A tracking number is provided once your order ships, allowing you to monitor your package in real time.",
+  },
+  {
+    label: "Return Window –",
+    content:
+      "Items can be returned within [Specify Days, e.g., 14-30 days] of delivery for a refund or exchange.",
+  },
+  {
+    label: "Return Condition –",
+    content:
+      "Items must be unworn, in original packaging, and accompanied by proof of purchase.",
+  },
+  {
+    label: "Non-Returnable Items – ",
+    content:
+      "Custom or engraved jewelry, final sale items, and used pieces cannot be returned.",
+  },
+  {
+    label: "Refund Processing –",
+    content:
+      "Refunds are issued to the original payment method within [Specify Days] after the return is received and inspected.",
+  },
+  {
+    label: "Damaged or Incorrect Items – ",
+    content:
+      "If your order arrives damaged or incorrect, contact us immediately for a resolution.",
+  },
 ];
 
 const ProductDetails = () => {
@@ -58,9 +109,7 @@ const ProductDetails = () => {
 
   const { productDetail, productLoading, selectedVariations, productQuantity } =
     useSelector(({ product }) => product);
-  const { cartErrorMessage, cartList, cartLoading } = useSelector(
-    ({ cart }) => cart
-  );
+  const { cartErrorMessage, cartLoading } = useSelector(({ cart }) => cart);
   productName = helperFunctions.stringReplacedWithSpace(productName);
 
   const loadData = useCallback(() => {
@@ -87,21 +136,6 @@ const ProductDetails = () => {
     availableQty = quantity;
     price = productPrice;
   }
-
-  const handleQuantityChange = useCallback(
-    (type) => {
-      if (
-        type === "increase" &&
-        productQuantity < maxProductQuantity &&
-        productQuantity < availableQty
-      ) {
-        setProductQuantity((productQuantity || 1) + 1);
-      } else if (type === "decrease" && productQuantity > minProductQuantity) {
-        setProductQuantity((productQuantity || 1) - 1);
-      }
-    },
-    [availableQty, productQuantity]
-  );
 
   const handleSelect = (variationId, variationTypeId) => {
     const updated = [
@@ -224,11 +258,12 @@ const ProductDetails = () => {
               ))}
             </div>
 
-            <div className="flex flex-col space-y-4 lg:p-6">
+            <div className="flex flex-col lg:p-6">
               <h2 className="text-2xl md:text-3xl font-medium">
                 {productDetail?.productName}
               </h2>
-              <div className="flex items-center gap-2 mt-2 xl:mt-4 !mb-4 lg:!mb-6">
+
+              <div className="flex items-center gap-2 mt-2 xl:mt-4 mb-6 lg:mb-10">
                 <span className="text-2xl md:text-3xl xl:text-4xl font-normal font-castoro">
                   {selectedPrice
                     ? `$${(
@@ -247,15 +282,15 @@ const ProductDetails = () => {
                 </span>
               </div>
 
-              <div className="border-t my-6 border-[#0000001A]" />
+              <div className="border-t  border-[#0000001A]" />
 
-              <div className="!mt-8 lg:!mt-12 flex items-center gap-3">
-                <p className="font-medium text-lg min-w-[110px] xs:min-w-[120px]">
+              <div className="mt-6 lg:mt-10 flex items-center gap-3">
+                <p className="font-medium text-lg w-[110px] xs:w-[120px]">
                   Qty:
                 </p>
                 <div className="flex items-center py-2 bg-white">
                   <button
-                    className={`px-3 text-xl font-medium text-baseblack ${
+                    className={`px-1 text-xl font-medium text-baseblack ${
                       productQuantity <= minProductQuantity || !availableQty
                         ? "opacity-50 cursor-not-allowed"
                         : ""
@@ -276,7 +311,7 @@ const ProductDetails = () => {
                     {productQuantity}
                   </span>
                   <button
-                    className={`px-3 text-xl font-medium text-baseblack ${
+                    className={`px-1 text-xl font-medium text-baseblack ${
                       productQuantity >= maxProductQuantity ||
                       productQuantity >= availableQty
                         ? "opacity-50 cursor-not-allowed"
@@ -305,7 +340,7 @@ const ProductDetails = () => {
                 handleSelect={handleSelect}
               />
 
-              <div className="!mt-8 lg:!mt-12 flex gap-4 items-center">
+              <div className="mt-4 lg:mt-8 flex gap-4 items-center">
                 <button
                   className={`flex-1 bg-primary text-lg font-medium text-white xss:px-6 py-3 ${
                     (!availableQty && !isInValidSelectedVariation()) ||
@@ -341,7 +376,7 @@ const ProductDetails = () => {
                 <p className="text-red-600 text-lg">{cartErrorMessage}</p>
               ) : null}
 
-              <div className="!mt-4 lg:!mt-6 flex items-center gap-3">
+              <div className="mt-4 lg:mt-6 flex items-center gap-3">
                 <p className="font-medium text-xl text-gray-500">Pay With:</p>
                 <div className="flex gap-3">
                   {paymentOptions.map((option, index) => (
@@ -355,17 +390,21 @@ const ProductDetails = () => {
                 </div>
               </div>
 
-              <div className="!mt-6 lg:!mt-8 p-4 bg-white">
-                <p className="font-medium text-lg md:text-xl">
+              <div className="mt-6 lg:mt-8 p-4 bg-white">
+                <p className="font-medium text-base md:text-lg">
                   Estimate Ship Date Monday, April 7
                 </p>
                 <ul className="mt-3">
                   {shippingInfo.map((info, index) => (
                     <li
                       key={index}
-                      className="flex gap-4 items-center font-medium text-base md:text-lg mt-2"
+                      className="flex gap-4 items-center text-base md:text-lg mt-2"
                     >
-                      <span>{info.icon}</span>
+                      <CustomImg
+                        srcAttr={info.icon}
+                        alt={info.altAttr}
+                        className="w-6 h-6"
+                      />
                       <span>{info.text}</span>
                     </li>
                   ))}
@@ -374,10 +413,10 @@ const ProductDetails = () => {
             </div>
           </div>
 
-          <div className="container pt-10 lg:pt-20 2xl:pt-36 md:p-6">
+          <div className="container pt-10 lg:pt-20 2xl:pt-28 md:p-6">
             <ProductDetailsTabs productDetail={productDetail} />
           </div>
-          <section className="pt-10 lg:pt-20 2xl:pt-36 container">
+          <section className="pt-10 lg:pt-20 2xl:pt-28 container">
             <KeyFeatures />
           </section>
         </>
@@ -392,112 +431,79 @@ const ProductDetailsTabs = ({ productDetail }) => {
   const [activeTab, setActiveTab] = useState("Product Detail");
   const [open, setOpen] = useState(false);
 
-  const tabData = {
-    "Product Detail": (
-      <div className="flex flex-wrap gap-6 md:gap-16 xl:gap-32 mt-4">
-        <div>
-          <p className="font-medium text-lg xl:text-2xl text-baseblack">
-            Information
-          </p>
-          {productDetail?.sku && (
-            <p className="pt-4 text-lg xl:text-xl text-baseblack">
-              SKU: {productDetail?.sku}
+  const tabData = [
+    {
+      label: "Product Detail",
+      content: (
+        <div className="flex flex-wrap gap-6 md:gap-16 xl:gap-32 mt-4">
+          <div>
+            <p className="inline-block font-semibold text-xl text-baseblack border-b-[2.5px] border-[#0000001A] pt-[6px] pb-[6px]">
+              Information
             </p>
-          )}
-          {productDetail?.shortDescription && (
-            <p className="pt-4 text-lg xl:text-xl text-baseblack">
-              {productDetail?.shortDescription}
-            </p>
-          )}
-          <p className="pt-4 text-lg xl:text-xl text-baseblack">
-            Diamond Type: Lab Grown Diamond
-          </p>
-          {productDetail?.settingStyleNamesWithImg?.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-4">
-              <p className=" text-lg xl:text-xl text-baseblack">
-                Setting Style:
+
+            {productDetail?.sku && (
+              <p className="pt-4 text-lg md:text-xl text-baseblack">
+                SKU: {productDetail?.sku}
               </p>
-              {productDetail?.settingStyleNamesWithImg.map((style, index) => (
-                <div className="flex flex-wrap gap-2" key={index}>
-                  <p className=" text-lg xl:text-xl text-baseblack">
-                    {style?.title}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
+            )}
+            {productDetail?.shortDescription && (
+              <p className="pt-4 text-lg md:text-xl text-baseblack">
+                {productDetail?.shortDescription}
+              </p>
+            )}
+            <p className="pt-4 text-lg md:text-xl text-baseblack">
+              Diamond Type: Lab Grown Diamond
+            </p>
+            {productDetail?.settingStyleNamesWithImg?.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-4">
+                <p className=" text-lg md:text-xl text-baseblack">
+                  Setting Style:
+                </p>
+                {productDetail?.settingStyleNamesWithImg.map((style, index) => (
+                  <div className="flex flex-wrap gap-2" key={index}>
+                    <p className=" text-lg md:text-xl text-baseblack">
+                      {style?.title}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    ),
-    Description: productDetail?.description ? (
-      <div
-        className="mt-4 text-lg xl:text-xl text-baseblack"
-        dangerouslySetInnerHTML={{ __html: productDetail.description }}
-      />
-    ) : (
-      <p className="mt-4 text-lg xl:text-xl text-baseblack">
-        No Description Available
-      </p>
-    ),
-    "Shipping & Returns": (
-      <div className="flex flex-wrap gap-6 mt-4">
-        <p className="text-lg xl:text-xl text-baseblack">
-          <span className="font-medium">Fast & Secure Shipping – </span>
-          Orders are processed within 1-2 business days and shipped via reliable
-          carriers like UPS, FedEx, or USPS.
+      ),
+    },
+    {
+      label: "Description",
+      content: productDetail?.description ? (
+        <div
+          className="mt-4 text-lg md:text-xl text-baseblack"
+          dangerouslySetInnerHTML={{ __html: productDetail.description }}
+        />
+      ) : (
+        <p className="mt-4 text-lg md:text-xl text-baseblack">
+          No Description Available
         </p>
-        <p className="text-lg xl:text-xl text-baseblack">
-          <span className="font-medium">Fast & Secure Shipping – </span>
-          Orders are processed within 1-2 business days and shipped via reliable
-          carriers like UPS, FedEx, or USPS.
-        </p>
-        <p className="text-lg xl:text-xl text-baseblack">
-          <span className="font-medium">Delivery Time –</span>
-          Standard shipping takes 3-7 business days, while expedited options are
-          available for faster delivery.
-        </p>
-        <p className="text-lg xl:text-xl text-baseblack">
-          <span className="font-medium">Shipping Fees – </span>
-          Free shipping on orders over [Specify Amount], with calculated rates
-          for express or international shipping.
-        </p>
-        <p className="text-lg xl:text-xl text-baseblack">
-          <span className="font-medium">Order Tracking – </span>A tracking
-          number is provided once your order ships, allowing you to monitor your
-          package in real time.
-        </p>
-        <p className="text-lg xl:text-xl text-baseblack">
-          <span className="font-medium">Return Window –</span>
-          Items can be returned within [Specify Days, e.g., 14-30 days] of
-          delivery for a refund or exchange.
-        </p>
-        <p className="text-lg xl:text-xl text-baseblack">
-          <span className="font-medium">Return Condition –</span>
-          Items must be unworn, in original packaging, and accompanied by proof
-          of purchase.
-        </p>
-        <p className="text-lg xl:text-xl text-baseblack">
-          <span className="font-medium">Non-Returnable Items – </span>
-          Custom or engraved jewelry, final sale items, and used pieces cannot
-          be returned.
-        </p>
-        <p className="text-lg xl:text-xl text-baseblack">
-          <span className="font-medium">Refund Processing –</span>
-          Refunds are issued to the original payment method within [Specify
-          Days] after the return is received and inspected.
-        </p>
-        <p className="text-lg xl:text-xl text-baseblack">
-          <span className="font-medium">Damaged or Incorrect Items – </span>
-          If your order arrives damaged or incorrect, contact us immediately for
-          a resolution.
-        </p>
-      </div>
-    ),
-  };
+      ),
+    },
+    {
+      label: "Shipping & Returns",
+      content: (
+        <>
+          {shippingReturnContent?.map((item, index) => (
+            <div key={item?.label} className="flex flex-wrap gap-6 mt-4">
+              <p className="text-lg md:text-xl  text-baseblack">
+                <span className="font-semibold">{item?.label} </span>
+                {item?.content}
+              </p>
+            </div>
+          ))}
+        </>
+      ),
+    },
+  ];
 
   return (
     <div className="mt-6">
-      {/* Mobile Dropdown */}
       <div className="relative md:hidden mb-4">
         <button
           onClick={() => setOpen(!open)}
@@ -508,46 +514,47 @@ const ProductDetailsTabs = ({ productDetail }) => {
         </button>
         {open && (
           <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 shadow-md uppercase">
-            {Object.keys(tabData).map((tab) => (
+            {tabData.map(({ label }) => (
               <li
-                key={tab}
+                key={label}
                 onClick={() => {
-                  setActiveTab(tab);
+                  setActiveTab(label);
                   setOpen(false);
                 }}
                 className={`px-4 py-2 text-sm cursor-pointer transition ${
-                  activeTab === tab
+                  activeTab === label
                     ? "bg-primary text-white"
                     : "text-gray-700 hover:bg-primary hover:text-white"
                 }`}
               >
-                {tab}
+                {label}
               </li>
             ))}
           </ul>
         )}
       </div>
 
-      {/* Desktop Tabs */}
-      <div className="hidden md:flex gap-6 xl:gap-36 border-b">
-        {Object.keys(tabData).map((tab) => (
+      <div className="hidden md:flex gap-6 lg:gap-20 2xl:gap-28 border-b">
+        {tabData.map(({ label }) => (
           <button
-            key={tab}
-            className={`py-2 text-lg font-medium ${
-              activeTab === tab
+            key={label}
+            className={`py-2 text-2xl font-medium ${
+              activeTab === label
                 ? "text-primary border-b-2 border-primary"
                 : "text-gray-500"
             }`}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => setActiveTab(label)}
           >
-            {tab}
+            {label}
           </button>
         ))}
       </div>
 
       {/* Tab Content */}
-      <div className="md:p-4 w-full">
-        {tabData[activeTab] || <p>No Data</p>}
+      <div className="w-full">
+        {tabData.find((tab) => tab.label === activeTab)?.content || (
+          <p>No Data</p>
+        )}
       </div>
     </div>
   );
