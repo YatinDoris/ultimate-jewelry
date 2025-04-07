@@ -139,13 +139,13 @@ const VariationsList = ({ variations, selectedVariations, handleSelect }) => {
     );
 
   return (
-    <div className="flex flex-col !mt-6 lg:!mt-8 gap-6 lg:gap-8">
+    <div className="flex flex-col mt-6 lg:mt-8 gap-6 lg:gap-8">
       {variations?.map((variation) => (
         <div
           key={variation.variationId}
           className="flex items-center md:gap-x-6"
         >
-          <p className="font-medium text-baseblack text-lg min-w-[110px] xs:min-w-[120px]">
+          <p className="font-medium text-baseblack text-lg w-[110px] xs:w-[120px]">
             {variation.variationName}:
           </p>
 
@@ -161,8 +161,12 @@ const VariationsList = ({ variations, selectedVariations, handleSelect }) => {
                   {type.type === "color" ? (
                     <div className="flex flex-col items-center">
                       <button
-                        className={`relative w-16 sm:w-20 h-10 p-2 border transition-all flex items-center justify-center
-                          ${selected ? "border-primary border-2" : ""}
+                        className={`relative w-16 sm:w-20 h-10 p-2 transition-all flex items-center justify-center
+                          ${
+                            selected
+                              ? "border-primary border-2"
+                              : "border-transparent border-2"
+                          }
                         `}
                         style={{
                           backgroundColor: type.variationTypeHexCode,
@@ -176,7 +180,7 @@ const VariationsList = ({ variations, selectedVariations, handleSelect }) => {
                         }
                       />
                       <span
-                        className={`text-lg font-medium mt-1 whitespace-nowrap transition-opacity duration-300
+                        className={`text-base font-medium mt-1 whitespace-nowrap transition-opacity duration-300
                           ${selected ? "text-primary opacity-100" : "opacity-0"}
                         `}
                       >
@@ -186,7 +190,9 @@ const VariationsList = ({ variations, selectedVariations, handleSelect }) => {
                   ) : type.type === "image" ? (
                     <button
                       className={`p-2 flex flex-col items-center ${
-                        selected ? "border-primary border-2 text-primary" : ""
+                        selected
+                          ? "border-primary border-2 text-primary"
+                          : "border-transparent border-2"
                       }`}
                       onClick={() =>
                         handleSelect(
@@ -211,7 +217,7 @@ const VariationsList = ({ variations, selectedVariations, handleSelect }) => {
                       className={`px-4 py-1 text-xl font-medium transition-all ${
                         selected
                           ? "border-primary text-primary border-2 scale-105"
-                          : "text-baseblack"
+                          : "text-baseblack border-transparent border-2"
                       }`}
                       onClick={() =>
                         handleSelect(

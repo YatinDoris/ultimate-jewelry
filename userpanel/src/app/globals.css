@@ -18,10 +18,33 @@
 
 @font-face {
   font-family: "Figtree";
-  src: url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf")
-      format("woff2"),
-    url("/fonts/static/Figtree/Figtree-VariableFont_wght.ttf") format("woff");
+  src: url("/fonts/Figtree/static/Figtree-Regular.ttf") format("woff2"),
+    url("/fonts/Figtree/static/Figtree-Regular.ttf") format("woff");
   font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/fonts/Figtree/static/Figtree-Medium.ttf") format("woff2"),
+    url("/fonts/Figtree/static/Figtree-Medium.ttf") format("woff");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/fonts/Figtree/static/Figtree-Semibold.ttf") format("woff2"),
+    url("/fonts/Figtree/static/Figtree-SemiBold.ttf") format("woff");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/fonts/Figtree/static/Figtree-Bold.ttf") format("woff2"),
+    url("/fonts/Figtree/static/Figtree-Bold.ttf") format("woff");
+  font-weight: 700;
   font-style: normal;
 }
 

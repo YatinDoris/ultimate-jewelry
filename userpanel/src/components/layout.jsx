@@ -8,7 +8,7 @@ const Layout = ({ children }) => {
       <StoreProvider>
         <main>
           <Header />
-          <div className="pt-10 lg:pt-16 2xl:pt-28">{children}</div>
+          {children}
           <Footer />
         </main>
       </StoreProvider>

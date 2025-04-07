@@ -13,18 +13,10 @@ const features = [
       "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Integer Egestas Nisi Nec Libero Fermentum.",
   },
   {
-    icon: shippingPrimary,
-    altAttr: "",
-    titleAttr: "",
-    title: "Free Shipping",
-    description:
-      "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Integer Egestas Nisi Nec Libero Fermentum.",
-  },
-  {
     icon: returns,
     altAttr: "",
     titleAttr: "",
-    title: "Free Returns",
+    title: "Returns",
     description:
       "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Integer Egestas Nisi Nec Libero Fermentum.",
   },
@@ -39,7 +31,7 @@ const features = [
 ];
 export default function KeyFeatures() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 gap-y-12 lg:gap-y-1 text-center md:text-start justify-center">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-12 2xl:gap-44 gap-y-8 lg:gap-y-1 text-center md:text-start justify-center">
       {features.map((feature, index) => (
         <div key={index} className="flex flex-col items-center md:items-start">
           <CustomImg

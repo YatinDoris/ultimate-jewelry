@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+export const defaultOpenKeys = ['sortBy']
 const initialState = {
   productLoading: false,
   latestProductList: [],
@@ -8,6 +8,9 @@ const initialState = {
   currentPage: 0,
   selectedVariations: [],
   productQuantity: 1,
+  selectedSortByValue: 'date_new_to_old',
+  openKeys: defaultOpenKeys,
+  showFilterSidebar: false,
 };
 
 const productSlice = createSlice({
@@ -35,6 +38,30 @@ const productSlice = createSlice({
     setProductQuantity: (state, action) => {
       state.productQuantity = action.payload;
     },
+
+
+    setSortByValue: (state, action) => {
+      state.selectedSortByValue = action.payload;
+    },
+    setOpenKeys: (state, action) => {
+      state.openKeys = action.payload;
+    },
+    toggleOpenKey: (state, action) => {
+      const key = action.payload;
+      if (state.openKeys.includes(key)) {
+        state.openKeys = state.openKeys.filter((k) => k !== key);
+      } else {
+        state.openKeys.push(key);
+      }
+    },
+    setShowFilterSidebar: (state, action) => {
+      state.showFilterSidebar = action.payload;
+    },
+    resetFilters: (state) => {
+      state.selectedSortByValue = 'date_new_to_old';
+      state.selectedVariations = {};
+      state.openKeys = defaultOpenKeys;
+    },
   },
 });
 
@@ -46,6 +73,12 @@ export const {
   setCurrentPage,
   setSelectedVariations,
   setProductQuantity,
+
+  setSortByValue,
+  setShowFilterSidebar,
+  resetFilters,
+  setOpenKeys,
+  toggleOpenKey
 } = productSlice.actions;
 
 export default productSlice.reducer;

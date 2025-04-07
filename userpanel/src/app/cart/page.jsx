@@ -1,10 +1,10 @@
 "use client";
 import { useCallback, useState, useEffect } from "react";
 import deleteIcon from "@/assets/icons/delete.svg";
-import product1 from "@/assets/images/cart/product.png";
 import { CustomImg, ProgressiveImg } from "@/components/dynamiComponents";
 import stripe from "@/assets/images/stripe.webp";
 import paypal from "@/assets/images/paypal.webp";
+import SkeletonLoader from "@/components/skeletonLoader";
 import KeyFeatures from "@/components/KeyFeatures";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,7 +16,6 @@ import {
 import { helperFunctions } from "@/_helper";
 import Link from "next/link";
 import { LinkButton } from "@/components/button";
-import { useRouter } from "next/router";
 
 const maxQuantity = 5;
 const minQuantity = 1;
@@ -28,7 +27,6 @@ const paymentOptions = [
 const Cart = () => {
   const dispatch = useDispatch();
   const [deleteLoader, setDeleteLoader] = useState(false);
-  // const router = useRouter();
 
   const {
     cartLoading,
@@ -82,10 +80,6 @@ const Cart = () => {
     [dispatch]
   );
 
-  const onCheckOutHandler = useCallback(() => {
-    // router.push("/checkout");
-  });
-
   const removeFromCart = useCallback(
     (cartItem) => {
       dispatch(handleSelectCartItem({ selectedCartItem: cartItem }));
@@ -136,9 +130,8 @@ const Cart = () => {
 
   const grandTotal = getSubTotal();
 
-  // const grandTotal = subtotal + tax;
   return (
-    <>
+    <div>
       <section className="bg-[#F3F2ED] justify-center flex text-center py-6">
         <p className="text-2xl lg:text-3xl 2xl:text-4xl text-baseblack font-castoro">
           Secure Shopping Cart
@@ -146,244 +139,247 @@ const Cart = () => {
       </section>
 
       <div className="container mx-auto flex flex-col lg:flex-row gap-6">
-        <div className="w-full lg:w-2/3">
-          {/* {products.map((product) => (
-            <div className="bg-white mb-6 py-6 px-2 xs:px-6" key={product.id}>
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-               
-                <div className="flex-shrink-0 border border-[#F3F2ED]">
-                  <CustomImg
-                    src={product.image}
-                    alt={product.name}
-                    className="w-36 h-36 md:w-40 md:h-40 object-cover"
-                  />
-                </div>
-
-                <div className="flex-1 w-full">
-                  <div className="flex flex-col xs:flex-row xs:justify-between text-center items-center">
-                    <h3 className="text-lg font-medium">{product.name}</h3>
-                    <p className="text-2xl font-medium font-castoro">
-                      ${product.price}
-                    </p>
-                  </div>
-
-                  <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-4">
-                    <div className="border border-gray-300 text-sm xs:text-lg p-1 md:p-2 font-medium">
-                      <span className="font-semibold">Style:</span>{" "}
-                      {product.style}
+        {cartLoading ? (
+          <CartSkeleton />
+        ) : cartList?.length ? (
+          <>
+            <div className="w-full lg:w-2/3">
+              {cartList?.map((cartItem) => (
+                <div
+                  className="bg-white mb-6 py-6 px-2 xs:px-6"
+                  key={cartItem.id}
+                >
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex-shrink-0 border border-[#F3F2ED]">
+                      <ProgressiveImg
+                        src={cartItem?.productImage}
+                        alt={cartItem?.productName}
+                        width={100}
+                        height={100}
+                        className="w-36 h-36 md:w-48 md:h-48 object-cover"
+                      />
                     </div>
-                    <div className="border border-gray-300 text-sm xs:text-lg p-1 md:p-2 font-medium">
-                      <span className="font-semibold">Ring Size: </span>{" "}
-                      {product.ringSize}"
-                    </div>
-                    <div className="border border-gray-300 text-sm xs:text-lg p-1 md:p-2 font-medium">
-                      <span className="font-semibold">Metal: </span>{" "}
-                      {product.metal}
-                    </div>
-                    <div className="border border-gray-300 text-sm xs:text-lg p-1 md:p-2 font-medium">
-                      <span className="font-semibold">Color: </span>{" "}
-                      {product.color}
-                    </div>
-                  </div>
+                    <div className="flex-1 w-full">
+                      <div className="flex flex-col xs:flex-row xs:justify-between text-center items-center">
+                        <Link
+                          href={`/products/${cartItem.productName
+                            .split(" ")
+                            .join("_")}`}
+                          className="text-lg font-medium"
+                        >
+                          {cartItem.productName}
+                        </Link>
 
-                 
-                  <div className="flex items-center space-x-2 pt-4">
-                    <h3 className="text-lg font-medium">Qty:</h3>
-                    <div className="flex items-center bg-gray-100  px-2">
-                      <button
-                        className={`px-3 py-1 text-xl font-medium text-black ${
-                          quantity === 1 ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        disabled={quantity === 1}
-                      >
-                        −
-                      </button>
-                      <span className="px-4 text-xl font-medium text-black">
-                        {quantity}
-                      </span>
-                      <button
-                        className="px-3 py-1 text-xl font-medium text-black"
-                        onClick={() => setQuantity(quantity + 1)}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-             
-              <p className="text-lg font-medium text-baseblack mt-4 text-center md:text-left">
-                You Saved ${product.savings} On This Product.{" "}
-                {product.freeShipping && "| Free Shipping On This Order."}
-              </p>
-            </div>
-          ))} */}
-
-          {cartList?.map((cartItem) => (
-            <div className="bg-white mb-6 py-6 px-2 xs:px-6" key={cartItem.id}>
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="flex-shrink-0 border border-[#F3F2ED]">
-                  <ProgressiveImg
-                    src={cartItem?.productImage}
-                    alt={cartItem?.productName}
-                    width={100}
-                    height={100}
-                    className="w-36 h-36 md:w-48 md:h-48 object-cover"
-                  />
-                </div>
-                <div className="flex-1 w-full">
-                  <div className="flex flex-col xs:flex-row xs:justify-between text-center items-center">
-                    <Link
-                      href={`/products/${cartItem.productName
-                        .split(" ")
-                        .join("_")}`}
-                      className="text-lg font-medium"
-                    >
-                      {cartItem.productName}
-                    </Link>
-
-                    {/* <p className="text-2xl font-medium font-castoro">
-                      ${cartItem.quantityWiseSellingPrice}
-                    </p> */}
-                    <p className="text-2xl font-medium font-castoro">
-                      {cartItem?.productDiscount ? (
-                        <span className="text-lg text-gray-500 line-through mr-2">
+                        <p className="text-2xl font-medium font-castoro">
+                          {cartItem?.productDiscount ? (
+                            <span className="text-lg text-gray-500 line-through mr-2">
+                              $
+                              {helperFunctions.toFixedNumber(
+                                cartItem?.quantityWisePrice
+                              )}
+                            </span>
+                          ) : null}
                           $
                           {helperFunctions.toFixedNumber(
-                            cartItem?.quantityWisePrice
+                            cartItem?.quantityWiseSellingPrice
                           )}
-                        </span>
-                      ) : null}
-                      $
-                      {helperFunctions.toFixedNumber(
-                        cartItem?.quantityWiseSellingPrice
-                      )}
-                    </p>
-                  </div>
-                  <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
-                    {cartItem.variations.map((variItem) => (
-                      <div
-                        className="border border-gray-300 text-sm xs:text-lg p-1 md:p-2 font-medium"
-                        key={variItem.variationId}
-                      >
-                        <span className="font-semibold">
-                          {variItem.variationName}:{" "}
-                        </span>{" "}
-                        {variItem.variationTypeName}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                  {/* Quantity Control */}
-                  <div className="flex items-center space-x-2 pt-4">
-                    <h3 className="text-lg font-medium">Qty:</h3>
-                    <div className="flex items-center bg-[#F3F2ED] px-2">
-                      <button
-                        className={`px-3 py-1 text-xl font-medium text-black ${
-                          cartItem?.quantity <= minQuantity
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }`}
-                        onClick={() => handleCartQuantity("decrease", cartItem)}
-                        disabled={cartItem?.quantity <= minQuantity}
-                      >
-                        −
-                      </button>
-                      <span className="px-4 text-xl font-medium text-black">
-                        {cartItem.quantity}
-                      </span>
-                      <button
-                        className={`px-3 py-1 text-xl font-medium text-black ${
-                          cartItem?.quantity >= maxQuantity ||
-                          cartItem.quantity >= cartItem.productQuantity
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }`}
-                        onClick={() => handleCartQuantity("increase", cartItem)}
-                        disabled={
-                          cartItem?.quantity >= maxQuantity ||
-                          cartItem.quantity >= cartItem.productQuantity
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
+                      <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
+                        {cartItem.variations.map((variItem) => (
+                          <div
+                            className="border-2 border-[#0000001A] text-sm xs:text-base p-1 md:p-2 font-medium"
+                            key={variItem.variationId}
+                          >
+                            <span className="font-semibold">
+                              {variItem.variationName}:{" "}
+                            </span>{" "}
+                            {variItem.variationTypeName}
+                          </div>
+                        ))}
+                      </div>
+                      {/* Quantity Control */}
+                      <div className="flex items-center space-x-2 pt-4">
+                        <h3 className="text-lg font-medium">Qty:</h3>
+                        <div className="flex items-center bg-[#F3F2ED] px-2">
+                          <button
+                            className={`px-1 py-1 text-xl font-medium text-black ${
+                              cartItem?.quantity <= minQuantity
+                                ? "opacity-50 cursor-not-allowed"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              handleCartQuantity("decrease", cartItem)
+                            }
+                            disabled={cartItem?.quantity <= minQuantity}
+                          >
+                            −
+                          </button>
+                          {selectedCartItem.id === cartItem.id &&
+                          updateCartQtyErrorMessage ? (
+                            <p className="text-red-600 text-lg">
+                              {updateCartQtyErrorMessage}
+                            </p>
+                          ) : null}
+                          <span className="px-4 text-xl font-medium text-black">
+                            {cartItem.quantity}
+                          </span>
+                          <button
+                            className={`px-1 py-1 text-xl font-medium text-black ${
+                              cartItem?.quantity >= maxQuantity ||
+                              cartItem.quantity >= cartItem.productQuantity
+                                ? "opacity-50 cursor-not-allowed"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              handleCartQuantity("increase", cartItem)
+                            }
+                            disabled={
+                              cartItem?.quantity >= maxQuantity ||
+                              cartItem.quantity >= cartItem.productQuantity
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
 
-                    <button
-                      className="font-medium px-3 py-1 cursor-pointer flex items-center justify-center transition-all duration-200"
-                      onClick={() => removeFromCart(cartItem)}
-                      disabled={deleteLoader}
-                    >
+                        <button
+                          className="font-medium px-3 py-1 cursor-pointer flex items-center justify-center transition-all duration-200"
+                          onClick={() => removeFromCart(cartItem)}
+                          disabled={deleteLoader}
+                        >
+                          <CustomImg
+                            srcAttr={deleteIcon}
+                            altAttr="delete icon"
+                            className="w-6 h-6 transition-transform duration-200 hover:scale-110"
+                          />
+                        </button>
+                        {selectedCartItem.id === cartItem.id &&
+                        removeCartErrorMessage ? (
+                          <p className="text-red-600 text-lg">
+                            {removeCartErrorMessage}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="mt-4 flex flex-col md:flex-row gap-6">
+                <LinkButton
+                  href="/"
+                  className="!text-baseblack !font-medium  w-fit !py-6 !bg-transparent !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2"
+                >
+                  Continue Shopping
+                </LinkButton>
+              </div>
+            </div>
+
+            <div className="w-full lg:w-1/3 bg-white py-6 lg:py-10 px-2 xs:px-6  self-start">
+              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-medium">
+                Order Total: <span className="">${getOrderTotal()}</span>
+              </p>
+              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-medium pt-4">
+                Discount Offer: <span className="">-${getDiscountTotal()}</span>
+              </p>
+              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-medium pt-4">
+                Subtotal: <span className="">${getSubTotal()}</span>
+              </p>
+              <p className="my-4 border-t-2 border-[#0000001A]" />
+              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-medium pt-2">
+                Grand Total: <span>${grandTotal}</span>
+              </p>
+
+              <LinkButton
+                href="/checkout"
+                className="!text-white !rounded-none !font-medium  w-full !mt-10 lg:!mt-20 !py-6 !bg-primary !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2"
+              >
+                SECURE CHECKOUT
+              </LinkButton>
+
+              <p className="text-sm font-medium text-baseblack mt-4">
+                Made-To-Order. Estimated Ship Date: Wednesday, April 9th
+              </p>
+              <div className="mt-10">
+                <div className="flex items-center justify-center gap-4 mb-4">
+                  <div className="flex-grow h-px bg-gray-300" />
+                  <p className="text-sm md:text-lg font-medium text-baseblack uppercase whitespace-nowrap">
+                    We Accept Payment
+                  </p>
+                  <div className="flex-grow h-px bg-gray-300" />
+                </div>
+
+                <div className="flex items-center gap-3 ">
+                  <p className="font-medium text-lg text-gray-500">Pay With:</p>
+                  <div className="flex gap-3 flex-wrap">
+                    {paymentOptions.map((option, index) => (
                       <CustomImg
-                        srcAttr={deleteIcon}
-                        altAttr="delete icon"
-                        className="w-8 h-8 transition-transform duration-200 hover:scale-125"
+                        key={index}
+                        srcAttr={option.img}
+                        alt={option}
+                        className="object-contain"
                       />
-                    </button>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
-          ))}
-
-          <div className="mt-4 flex flex-col md:flex-row gap-6">
-            <LinkButton
-              href="/"
-              className="!text-baseblack !font-medium  w-fit !py-6 !bg-transparent !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2"
-            >
-              Continue Shopping
-            </LinkButton>
-          </div>
-        </div>
-
-        <div className="w-full lg:w-1/3 bg-white py-6 px-2 xs:px-6  self-start">
-          <div className="space-y-2">
-            <p className="font-medium text-lg xl:text-xl text-baseblack flex justify-between">
-              Order Total: <span className="">${getOrderTotal()}</span>
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center w-full h-full py-10">
+            <p className="text-center mb-3 font-castoro text-2xl md:text-3xl">
+              Your cart is currently empty
             </p>
-            <p className="font-medium text-lg xl:text-xl text-baseblack flex justify-between">
-              Discount Offer: <span className="">-${getDiscountTotal()}</span>
-            </p>
-            <p className="font-medium text-lg xl:text-xl text-baseblack flex justify-between">
-              Subtotal: <span className="">${getSubTotal()}</span>
-            </p>
-            <p className="!my-6 border-t-2 border-[#0000001A]" />
-            <p className="font-medium text-lg xl:text-xl text-baseblack flex justify-between">
-              Grand Total: <span>${grandTotal}</span>
-            </p>
-          </div>
-          <button
-            onClick={onCheckOutHandler}
-            className="w-full text-lg font-medium bg-primary text-white py-2 mt-10"
-          >
-            SECURE CHECKOUT
-          </button>
-          <p className="text-sm font-medium text-baseblack mt-2">
-            Made-To-Order. Estimated Ship Date: Wednesday, April 9th
-          </p>
-
-          <div className="!mt-4 lg:!mt-6 flex items-center gap-3">
-            <p className="font-medium text-lg text-gray-500">Pay With:</p>
-            <div className="flex gap-3">
-              {paymentOptions.map((option, index) => (
-                <CustomImg
-                  key={index}
-                  srcAttr={option.img}
-                  alt={option}
-                  className="object-contain"
-                />
-              ))}
+            <div className="mt-4 flex flex-col md:flex-row gap-6">
+              <LinkButton
+                href="/"
+                className="!text-baseblack !font-medium  w-fit !py-6 !bg-transparent !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2"
+              >
+                Continue Shopping
+              </LinkButton>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       <section className="pt-10 lg:pt-20 2xl:pt-36 container">
         <KeyFeatures />
       </section>
-    </>
+    </div>
   );
 };
 
 export default Cart;
+
+const CartSkeleton = () => {
+  const skeletons = [
+    { width: "w-[40%]", height: "h-4", margin: "mt-2" },
+    { width: "w-full", height: "h-8", margin: "mt-2" },
+    { width: "w-[40%]", height: "h-4", margin: "mt-6" },
+    { width: "w-full", height: "h-8", margin: "mt-2" },
+  ];
+  return (
+    <div
+      className={`container grid grid-cols-1 lg:grid-cols-[60%_auto] gap-12 pt-12`}
+    >
+      <div className="grid grid-cols-1 gap-4 auto-rows-min">
+        <SkeletonLoader height="w-full h-[100px] md:h-[300px]  2xl:h-[250px]" />
+        <SkeletonLoader height="w-[20%] h-[40px]" />
+      </div>
+      <div>
+        {Array(2)
+          .fill(skeletons)
+          .flat()
+          .map((skeleton, index) => (
+            <SkeletonLoader
+              key={index}
+              width={skeleton.width}
+              height={skeleton.height}
+              className={skeleton.margin}
+            />
+          ))}
+      </div>
+    </div>
+  );
+};

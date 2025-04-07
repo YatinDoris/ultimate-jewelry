@@ -13,7 +13,6 @@ import Link from "next/link";
 
 const AnimatedSection = ({
   description = [],
-  points = [],
   title = "",
   direction = "LTF",
   img = "",
@@ -74,44 +73,18 @@ const AnimatedSection = ({
         >
           {title}
         </h2>
-        <div className="space-y-0.5 mb-3 !text-left">
+        <div className="gap-y-2 xl:gap-y-5 flex flex-col mb-3">
           {description.length &&
             description.map((desc, i) => {
               return (
                 <p
-                  key={i}
-                  className={`text-xl 2xl:text-xl text-baseblack ${
-                    i !== 0 ? "xl:pt-6 pt-4" : ""
-                  }`}
+                  key={`desc-${i}`}
+                  className="text-xl 2xl:text-xl text-baseblack"
                 >
                   {desc}
                 </p>
               );
             })}
-          {points.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 mb-3 text-baseblack">
-              <ol className="list-decimal pl-4 space-y-2">
-                {points
-                  .slice(0, Math.ceil(points.length / 2))
-                  .map((point, i) => (
-                    <li key={i} className="text-lg 2xl:text-xl">
-                      {point}
-                    </li>
-                  ))}
-              </ol>
-
-              <ol
-                className="list-decimal pl-4 space-y-2"
-                start={Math.ceil(points.length / 2) + 1}
-              >
-                {points.slice(Math.ceil(points.length / 2)).map((point, i) => (
-                  <li key={i} className="text-lg 2xl:text-xl">
-                    {point}
-                  </li>
-                ))}
-              </ol>
-            </div>
-          )}
         </div>
 
         <div className="relative  group flex flex-col justify-center items-center">
