@@ -5,6 +5,7 @@ import { CustomImg, ProgressiveImg } from "@/components/dynamiComponents";
 import stripe from "@/assets/images/stripe.webp";
 import paypal from "@/assets/images/paypal.webp";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
+import cartImage from "@/assets/images/cart/cart.webp";
 import KeyFeatures from "@/components/ui/KeyFeatures";
 import { useDispatch, useSelector } from "react-redux";
 import {
