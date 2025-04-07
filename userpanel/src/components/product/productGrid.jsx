@@ -1,6 +1,5 @@
 "use client";
-
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import useQueryParams from "@/hooks/useQueryParams";
 import ProductCard from "./productCard";
@@ -12,6 +11,7 @@ import SkeletonLoader from "../skeletonLoader";
 import { VscSettings } from "react-icons/vsc";
 import { AiOutlineClose } from "react-icons/ai";
 import { FiMinus, FiPlus } from "react-icons/fi";
+
 const ITEMS_PER_PAGE = 20;
 
 const sortByList = [
@@ -22,6 +22,7 @@ const sortByList = [
   { value: "alphabetically_a_to_z", title: "A-Z" },
   { value: "alphabetically_z_to_a", title: "Z-A" },
 ];
+
 const ProductGrid = memo(
   ({
     productList = [],
@@ -33,14 +34,14 @@ const ProductGrid = memo(
   }) => {
     const queryParams = useQueryParams();
     const dispatch = useDispatch();
-
     const { columnCount } = useWindowSize();
     const { currentPage } = useSelector(({ product }) => product);
     const [selectedSortByValue, setSelectedSortByValue] =
       useState("date_new_to_old");
     const [selectedVariation, setSelectedVariation] = useState({});
     const [showSidebar, setShowSidebar] = useState(false);
-    const [activeIndex, setActiveIndex] = useState("sortBy");
+    const defaultOpenKeys = ["sortBy"];
+    const [openKeys, setOpenKeys] = useState(defaultOpenKeys);
 
     const handlePageClick = ({ selected }) => {
       dispatch(setCurrentPage(selected));
@@ -92,11 +93,13 @@ const ProductGrid = memo(
     const handleClearFilters = () => {
       setSelectedSortByValue("date_new_to_old");
       setSelectedVariation({});
-      setActiveIndex("sortBy");
+      setOpenKeys(defaultOpenKeys);
     };
+
     const sortBySelectHandler = (eventKey) => {
       setSelectedSortByValue(eventKey);
     };
+
     const onSelectVariant = (variationName, variationTypeName) => {
       const updatedFilters = {
         ...selectedVariation,
@@ -105,9 +108,6 @@ const ProductGrid = memo(
       setSelectedVariation(updatedFilters);
     };
 
-    const toggleFAQ = (index) => {
-      setActiveIndex(index === activeIndex ? null : index);
-    };
     let filteredItemsList = productList;
     if (Object.keys(selectedVariation)?.length) {
       filteredItemsList = productList.filter((product) => {
@@ -161,6 +161,19 @@ const ProductGrid = memo(
     useEffect(() => {
       setSelectedSortByValue(selectedSortByValue);
     }, [selectedSortByValue]);
+
+    const isOpenKey = useCallback((key) => openKeys.includes(key), [openKeys]);
+
+    const toggleOpenKey = useCallback(
+      (key) => {
+        const newArr = isOpenKey(key)
+          ? openKeys.filter((k) => k !== key)
+          : [...openKeys, key];
+        setOpenKeys(newArr);
+      },
+      [isOpenKey, openKeys]
+    );
+
     return (
       <>
         {isLoading ? (
@@ -177,12 +190,12 @@ const ProductGrid = memo(
             ))}
           </div>
         ) : (
-          <div>
-            {/* Filter */}
+          <div className="relative">
+            {/* Filter Toggle Button */}
             <div
-              className={`flex  ${
+              className={`flex ${
                 showSidebar ? "justify-end" : "justify-between"
-              }  mb-6`}
+              } mb-6 items-center`}
             >
               <button
                 onClick={() => setShowSidebar(true)}
@@ -193,107 +206,128 @@ const ProductGrid = memo(
                 <VscSettings className="text-xl" /> Filter
               </button>
               {filteredItemsList ? (
-                <span> {filteredItemsList.length} items</span>
+                <span>{filteredItemsList.length} items</span>
               ) : null}
             </div>
+
             <div className="flex gap-6 items-start">
-              {/* filter */}
+              {/* Filter Sidebar */}
               <div
-                className={`w-72  bg-transparent ${
+                className={`w-full lg:w-72 flex-shrink-0 bg-white lg:bg-transparent transition-transform duration-300 ease-in-out lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-y-auto lg:translate-x-0 lg:z-0 z-[60] ${
                   showSidebar
-                    ? "translate-x-0 block"
-                    : "-translate-x-full hidden"
+                    ? "fixed inset-y-0 left-0 translate-x-0 block"
+                    : "fixed -translate-x-full lg:translate-x-0 hidden"
                 }`}
               >
-                {/* Header */}
-                <div className="flex justify-between items-center border-b border-[#C8C8C6] pb-4">
-                  <h2 className="text-lg font-semibold">All Filter</h2>
-                  <button
-                    onClick={() => {
-                      setShowSidebar(false);
-                      setActiveIndex("sortBy");
-                    }}
-                  >
-                    <AiOutlineClose />
-                  </button>
-                </div>
-
-                {/* Clear Filters Button */}
-                <div className="flex justify-end">
-                  <button
-                    onClick={handleClearFilters}
-                    className="text-xs underline hover:underline mt-3 "
-                  >
-                    Reset Filters
-                  </button>
-                </div>
-
-                {/* Filters Content */}
-                <div>
-                  <div className="border-b border-[#C8C8C6] ">
-                    <button
-                      className={`w-full flex items-center justify-between ${
-                        activeIndex === "sortBy" ? "pt-4 pb-2" : "py-4"
-                      }`}
-                      onClick={() => toggleFAQ("sortBy")}
-                    >
-                      <p className="font-semibold mb-1">Sort By</p>
-                      <span className="text-xl">
-                        {activeIndex === "sortBy" ? <FiMinus /> : <FiPlus />}
-                      </span>
-                    </button>
+                {/* Backdrop for Mobile */}
+                {showSidebar && (
+                  <div>
                     <div
-                      className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                        activeIndex === "sortBy"
-                          ? "max-h-screen opacity-100"
-                          : "max-h-0 opacity-0"
-                      }`}
+                      className="fixed inset-0 bg-white lg:hidden"
+                      onClick={() => {
+                        setShowSidebar(false);
+                        setOpenKeys(defaultOpenKeys);
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Sidebar Content */}
+                <div className="relative z-3 bg-transparent p-4 h-full">
+                  {/* Header */}
+                  <div className="flex justify-between items-center border-b border-[#C8C8C6] pb-4">
+                    <h2 className="text-lg font-semibold">All Filters</h2>
+                    <button
+                      onClick={() => {
+                        setShowSidebar(false);
+                        setOpenKeys(defaultOpenKeys);
+                      }}
                     >
-                      <div className="flex flex-wrap gap-2 pb-4">
-                        {sortByList.map((item) => (
-                          <button
-                            key={item.value}
-                            onClick={() => sortBySelectHandler(item.value)}
-                            className={`px-3 py-1 border rounded-md text-sm ${
-                              selectedSortByValue === item.value
-                                ? "bg-primary text-white"
-                                : "bg-gray-100 hover:bg-gray-200"
-                            }`}
-                          >
-                            {item.title}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                      <AiOutlineClose />
+                    </button>
                   </div>
 
-                  {/* Variations Filter */}
-                  {uniqueVariations?.map((x, index) => (
-                    <div
-                      key={x?.variationId}
-                      className="border-b border-[#C8C8C6] "
+                  {/* Clear Filters Button */}
+                  <div className="flex justify-end">
+                    <button
+                      onClick={handleClearFilters}
+                      className="text-xs underline hover:underline mt-3"
                     >
+                      Reset Filters
+                    </button>
+                  </div>
+
+                  {/* Filters Content */}
+                  <div>
+                    <div className="border-b border-[#C8C8C6]">
                       <button
-                        className={`w-full flex items-center justify-between  ${
-                          activeIndex === index ? "pt-4 pb-2" : "py-4"
+                        className={`w-full flex items-center justify-between ${
+                          isOpenKey("sortBy") ? "pt-4 pb-2" : "py-4"
                         }`}
-                        onClick={() => toggleFAQ(index)}
+                        onClick={() => toggleOpenKey("sortBy")}
                       >
-                        <p className="font-semibold mb-1">{x?.variationName}</p>
+                        <p className="font-semibold mb-1">Sort By</p>
                         <span className="text-xl">
-                          {activeIndex === index ? <FiMinus /> : <FiPlus />}
+                          {isOpenKey("sortBy") ? <FiMinus /> : <FiPlus />}
                         </span>
                       </button>
                       <div
                         className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                          activeIndex === index
+                          isOpenKey("sortBy")
                             ? "max-h-screen opacity-100"
                             : "max-h-0 opacity-0"
                         }`}
                       >
                         <div className="flex flex-wrap gap-2 pb-4">
-                          {x?.variationTypes?.map((y) => {
-                            return (
+                          {sortByList.map((item) => (
+                            <button
+                              key={item.value}
+                              onClick={() => sortBySelectHandler(item.value)}
+                              className={`px-3 py-1 border rounded-md text-sm ${
+                                selectedSortByValue === item.value
+                                  ? "bg-primary text-white"
+                                  : "bg-gray-100 hover:bg-gray-200"
+                              }`}
+                            >
+                              {item.title}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Variations Filter */}
+                    {uniqueVariations?.map((x, index) => (
+                      <div
+                        key={x?.variationId}
+                        className="border-b border-[#C8C8C6]"
+                      >
+                        <button
+                          className={`w-full flex items-center justify-between ${
+                            isOpenKey(x?.variationName) ? "pt-4 pb-2" : "py-4"
+                          }`}
+                          onClick={() => toggleOpenKey(x?.variationName)}
+                        >
+                          <p className="font-semibold mb-1">
+                            {x?.variationName}
+                          </p>
+                          <span className="text-xl">
+                            {isOpenKey(x?.variationName) ? (
+                              <FiMinus />
+                            ) : (
+                              <FiPlus />
+                            )}
+                          </span>
+                        </button>
+                        <div
+                          className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                            isOpenKey(x?.variationName)
+                              ? "max-h-screen opacity-100"
+                              : "max-h-0 opacity-0"
+                          }`}
+                        >
+                          <div className="flex flex-wrap gap-2 pb-4">
+                            {x?.variationTypes?.map((y) => (
                               <button
                                 key={`${x.variationId}-${y.variationTypeName}`}
                                 onClick={() =>
@@ -307,7 +341,7 @@ const ProductGrid = memo(
                                   y?.variationTypeName
                                     ? "bg-primary text-white"
                                     : "bg-gray-100 hover:bg-gray-200"
-                                }  ${
+                                } ${
                                   selectedVariation[x?.variationName] ===
                                     y?.variationTypeName &&
                                   y.variationTypeHexCode
@@ -327,14 +361,16 @@ const ProductGrid = memo(
                                 {!y?.variationTypeHexCode &&
                                   y?.variationTypeName}
                               </button>
-                            );
-                          })}
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
+
+              {/* Product Grid */}
               <div
                 className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 ${
                   showSidebar ? "lg:grid-cols-3" : "lg:grid-cols-4"
@@ -380,10 +416,10 @@ const ProductGrid = memo(
               pageRangeDisplayed={2}
               onPageChange={handlePageClick}
               containerClassName={"flex items-center gap-2"}
-              pageClassName={"px-4 py-2 rounded-md "}
-              activeClassName={"bg-primary text-white  rounded px-4 py-2"}
-              previousClassName={"px-3 py-1 rounded-md "}
-              nextClassName={"px-3 py-1 rounded-md "}
+              pageClassName={"px-4 py-2 rounded-md"}
+              activeClassName={"bg-primary text-white rounded px-4 py-2"}
+              previousClassName={"px-3 py-1 rounded-md"}
+              nextClassName={"px-3 py-1 rounded-md"}
               disabledClassName={"opacity-50 cursor-not-allowed"}
             />
           </div>
