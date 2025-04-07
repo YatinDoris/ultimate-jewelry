@@ -4,15 +4,14 @@ import { useRouter } from "next/navigation";
 import { CiHeart } from "react-icons/ci";
 import stripe from "@/assets/images/stripe.webp";
 import paypal from "@/assets/images/paypal.webp";
-import CustomImg from "@/components/custom-img";
 import { useParams } from "next/navigation";
 import { helperFunctions } from "@/_helper";
 import { fetchProductDetailByProductName } from "@/_actions/product.actions";
 import { useDispatch, useSelector } from "react-redux";
-import VariationsList from "@/components/VariationsList";
-import { ProgressiveImg } from "@/components/dynamiComponents";
-import DetailPageSkeleton from "@/components/DetailPageSkeleton";
-import KeyFeatures from "@/components/KeyFeatures";
+import VariationsList from "@/components/ui/VariationsList";
+import { CustomImg, ProgressiveImg } from "@/components/dynamiComponents";
+import DetailPageSkeleton from "@/components/ui/DetailPageSkeleton";
+import KeyFeatures from "@/components/ui/KeyFeatures";
 import calender from "@/assets/icons/calender.svg";
 import inspect from "@/assets/icons/inspect.svg";
 import truck from "@/assets/icons/truck.svg";
@@ -290,7 +289,7 @@ const ProductDetails = () => {
                 </p>
                 <div className="flex items-center py-2 bg-white">
                   <button
-                    className={`px-1 text-xl font-medium text-baseblack ${
+                    className={`px-2 text-xl font-medium text-baseblack ${
                       productQuantity <= minProductQuantity || !availableQty
                         ? "opacity-50 cursor-not-allowed"
                         : ""
@@ -311,7 +310,7 @@ const ProductDetails = () => {
                     {productQuantity}
                   </span>
                   <button
-                    className={`px-1 text-xl font-medium text-baseblack ${
+                    className={`px-2 text-xl font-medium text-baseblack ${
                       productQuantity >= maxProductQuantity ||
                       productQuantity >= availableQty
                         ? "opacity-50 cursor-not-allowed"
@@ -447,15 +446,15 @@ const ProductDetailsTabs = ({ productDetail }) => {
               </p>
             )}
             {productDetail?.shortDescription && (
-              <p className="pt-4 text-lg md:text-xl text-baseblack">
+              <p className="pt-4 text-lg md:text-xl font-medium text-baseblack">
                 {productDetail?.shortDescription}
               </p>
             )}
-            <p className="pt-4 text-lg md:text-xl text-baseblack">
+            <p className="pt-4 text-lg md:text-xl font-medium text-baseblack">
               Diamond Type: Lab Grown Diamond
             </p>
             {productDetail?.settingStyleNamesWithImg?.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-4">
+              <div className="flex flex-wrap font-medium gap-2 pt-4">
                 <p className=" text-lg md:text-xl text-baseblack">
                   Setting Style:
                 </p>
@@ -476,11 +475,11 @@ const ProductDetailsTabs = ({ productDetail }) => {
       label: "Description",
       content: productDetail?.description ? (
         <div
-          className="mt-4 text-lg md:text-xl text-baseblack"
+          className="mt-4 text-lg md:text-xl font-medium text-baseblack"
           dangerouslySetInnerHTML={{ __html: productDetail.description }}
         />
       ) : (
-        <p className="mt-4 text-lg md:text-xl text-baseblack">
+        <p className="mt-4 text-lg md:text-xl font-medium text-baseblack">
           No Description Available
         </p>
       ),
@@ -489,9 +488,9 @@ const ProductDetailsTabs = ({ productDetail }) => {
       label: "Shipping & Returns",
       content: (
         <>
-          {shippingReturnContent?.map((item, index) => (
+          {shippingReturnContent?.map((item) => (
             <div key={item?.label} className="flex flex-wrap gap-6 mt-4">
-              <p className="text-lg md:text-xl  text-baseblack">
+              <p className="text-lg md:text-xl font-medium text-baseblack">
                 <span className="font-semibold">{item?.label} </span>
                 {item?.content}
               </p>

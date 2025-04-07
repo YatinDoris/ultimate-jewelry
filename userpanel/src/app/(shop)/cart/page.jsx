@@ -4,8 +4,8 @@ import deleteIcon from "@/assets/icons/delete.svg";
 import { CustomImg, ProgressiveImg } from "@/components/dynamiComponents";
 import stripe from "@/assets/images/stripe.webp";
 import paypal from "@/assets/images/paypal.webp";
-import SkeletonLoader from "@/components/skeletonLoader";
-import KeyFeatures from "@/components/KeyFeatures";
+import SkeletonLoader from "@/components/ui/skeletonLoader";
+import KeyFeatures from "@/components/ui/KeyFeatures";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCart,
@@ -15,7 +15,7 @@ import {
 } from "@/_actions/cart.action";
 import { helperFunctions } from "@/_helper";
 import Link from "next/link";
-import { LinkButton } from "@/components/button";
+import { LinkButton } from "@/components/ui/button";
 
 const maxQuantity = 5;
 const minQuantity = 1;
@@ -132,17 +132,17 @@ const Cart = () => {
 
   return (
     <div>
-      <section className="bg-[#F3F2ED] justify-center flex text-center py-6">
-        <p className="text-2xl lg:text-3xl 2xl:text-4xl text-baseblack font-castoro">
-          Secure Shopping Cart
-        </p>
-      </section>
-
       <div className="container mx-auto flex flex-col lg:flex-row gap-6">
         {cartLoading ? (
           <CartSkeleton />
         ) : cartList?.length ? (
           <>
+            <section className="bg-[#F3F2ED] justify-center flex text-center py-6">
+              <p className="text-2xl lg:text-3xl 2xl:text-4xl text-baseblack font-castoro">
+                Secure Shopping Cart
+              </p>
+            </section>
+
             <div className="w-full lg:w-2/3">
               {cartList?.map((cartItem) => (
                 <div
@@ -325,27 +325,27 @@ const Cart = () => {
                 </div>
               </div>
             </div>
+            <section className="pt-10 lg:pt-20 2xl:pt-36 container">
+              <KeyFeatures />
+            </section>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center w-full h-full py-10">
-            <p className="text-center mb-3 font-castoro text-2xl md:text-3xl">
-              Your cart is currently empty
+          <div className="flex flex-col items-center h-[70vh] lg:h-[80vh] justify-center align-middle mx-auto my-auto  text-center px-4">
+            <CustomImg srcAttr={cartImage} altAttr="" className="mb-6 w-80" />
+
+            <p className="text-lg md:text-xl 2xl:text-3xl font-medium font-castoro text-baseblack">
+              Oops! Your cart is empty. Let’s fix that <br /> with some stunning
+              jewelry
             </p>
-            <div className="mt-4 flex flex-col md:flex-row gap-6">
-              <LinkButton
-                href="/"
-                className="!text-baseblack !font-medium  w-fit !py-6 !bg-transparent !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2"
-              >
-                Continue Shopping
-              </LinkButton>
-            </div>
+            <LinkButton
+              href="/"
+              className="!text-white !rounded-none !font-medium !mt-8 w-fit !px-16 !py-6 !bg-primary !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2 uppercase"
+            >
+              Back To Shop
+            </LinkButton>
           </div>
         )}
       </div>
-
-      <section className="pt-10 lg:pt-20 2xl:pt-36 container">
-        <KeyFeatures />
-      </section>
     </div>
   );
 };

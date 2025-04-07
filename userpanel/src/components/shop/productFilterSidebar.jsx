@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AiOutlineClose } from "react-icons/ai";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { useEffect } from "react";
+import { useWindowSize } from "@/_helper/hooks";
 
 const sortByList = [
   { value: "date_new_to_old", title: "NEW TO OLD" },
@@ -23,6 +24,7 @@ const sortByList = [
 
 export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   const dispatch = useDispatch();
+  const screen = useWindowSize();
   const {
     showFilterSidebar,
     openKeys,
@@ -42,15 +44,23 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   };
 
   useEffect(() => {
-    if (showFilterSidebar && window.innerWidth < 1024) {
+    const isSmallScreen = screen.isMobile || screen.isTablet;
+
+    if (showFilterSidebar && isSmallScreen) {
       document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
     } else {
       document.body.style.overflow = "auto";
+      document.body.style.position = "";
+      document.body.style.width = "";
     }
 
-    // Clean up when unmounted or sidebar closed
+    // Cleanup function
     return () => {
       document.body.style.overflow = "auto";
+      document.body.style.position = "";
+      document.body.style.width = "";
     };
   }, [showFilterSidebar]);
   return (

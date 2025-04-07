@@ -1,4 +1,3 @@
-
 const SkeletonLoader = ({
   width = "w-full",
   height = "h-[300px]",
