@@ -33,6 +33,9 @@ const primaryBtn = `
   whitespace-nowrap
 `;
 
+const containedPrimaryBtn =
+  "!bg-primary  xxs:h-11 md:h-12 lg:!h-[2.8rem] !rounded-none !text-sm font-semibold !tracking-wider hover:border-primary hover:!bg-transparent hover:!text-primary";
+
 /**
  *
  * @param {*} href, className, rest props
@@ -97,6 +100,20 @@ export const Button = ({ className = "", variant = "contained", ...rest }) => {
       className={`${
         variant === "contained" ? containedBtn : outlinedBtn
       } ${primaryBtn} ${className}`}
+      {...rest}
+    />
+  );
+};
+
+export const PrimaryButton = ({ className, ...rest }) => {
+  return <Button className={`${containedPrimaryBtn} ${className}`} {...rest} />;
+};
+
+export const PrimaryLinkButton = ({ className, href = "#", ...rest }) => {  
+  return (
+    <LinkButton
+      href={href}
+      className={`${containedPrimaryBtn} ${className}`}
       {...rest}
     />
   );
