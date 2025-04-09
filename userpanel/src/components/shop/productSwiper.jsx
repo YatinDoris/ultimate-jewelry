@@ -42,7 +42,7 @@ export default function ProductSwiper({
             {title}
           </h3>
         ) : null}
-        <div className="flex space-x-3">
+        <div className="flex gap-4">
           <button
             className={`${isBeginning ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={() => swiperRef.current?.slidePrev()}

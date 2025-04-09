@@ -328,3 +328,12 @@ export const ALLOWED_DIA_CERTIFICATES = [
     value: "HRD",
   },
 ];
+
+export const sortByList = [
+  { value: "date_new_to_old", title: "NEW TO OLD" },
+  { value: "date_old_to_new", title: "OLD TO NEW" },
+  { value: "price_high_to_low", title: "HIGH TO LOW" },
+  { value: "price_low_to_high", title: "LOW TO HIGH" },
+  { value: "alphabetically_a_to_z", title: "A-Z" },
+  { value: "alphabetically_z_to_a", title: "Z-A" },
+];
