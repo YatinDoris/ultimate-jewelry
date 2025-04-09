@@ -328,3 +328,10 @@ export const ALLOWED_DIA_CERTIFICATES = [
     value: "HRD",
   },
 ];
+
+export const messageType = {
+  SUCCESS: "SUCCESS",
+  ERROR: "ERROR",
+  INFO: "INFO",
+  WARNING: "WARNING",
+};

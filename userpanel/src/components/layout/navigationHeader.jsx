@@ -117,7 +117,7 @@ export default function NavigationHeader() {
                                     <HeaderLinkButton
                                       key={`${productType.title}-${index}3`}
                                       href={productType.href}
-                                      className="text-[#828282] hover:text-baseblack transition-all duration-300 capitalize"
+                                      className="text-basegray hover:text-baseblack transition-all duration-300 capitalize"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         closeAllDropdown();

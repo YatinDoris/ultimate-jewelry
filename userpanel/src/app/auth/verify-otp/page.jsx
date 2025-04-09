@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
-import { CustomImg, LoginForm } from "@/components/dynamiComponents";
+import { CustomImg, VerifyOTPForm } from "@/components/dynamiComponents";
 import handWithRing from "@/assets/images/auth/hand-ring.webp";
 import logo from "@/assets/images/logo-2.webp";
 
-const Login = () => {
+const VeriftOTP = () => {
   return (
     <div className="flex lg:flex-row h-full">
       {/* Left Side */}
@@ -22,7 +22,7 @@ const Login = () => {
           <Link href={"/"} className="flex justify-center">
             <CustomImg srcAttr={logo} className="w-40 md:w-52" />
           </Link>
-          <LoginForm />
+          <VerifyOTPForm />
 
           {/* Privacy Policy */}
           <p className="flex justify-end">
@@ -39,4 +39,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default VeriftOTP;

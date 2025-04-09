@@ -2,12 +2,6 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-:root {
-  --primary: #202a4e;
-  --offwhite: #fafaf8;
-  --baseblack: #2b2b2b;
-}
-
 @font-face {
   font-family: "Castoro";
   src: url("/fonts/Castoro/Castoro-Regular.ttf") format("woff2"),
@@ -48,10 +42,67 @@
   font-style: normal;
 }
 
+:root {
+  --primary: #202a4e;
+  --offwhite: #fafaf8;
+  --baseblack: #2b2b2b;
+  --basegray: #828282;
+}
+
+html,
 body {
-  background: var(--offwhite);
+  font-size: 16px;
   color: var(--baseblack);
+  background-color: var(--offwhite);
   font-family: "Figtree", sans-serif;
+  height: 100%;
+}
+
+html,
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+fieldset,
+input,
+textarea,
+p,
+blockquote,
+th,
+td {
+  margin: 0;
+  padding: 0;
+}
+
+address,
+caption,
+cite,
+code,
+dfn,
+th,
+var {
+  font-style: normal;
+  font-weight: normal;
+}
+
+ol,
+dl,
+ul {
+  padding-left: 0;
+  list-style: none;
+  margin-bottom: 0;
 }
 
 .progressive-img-loading {
@@ -64,6 +115,10 @@ body {
 .progressive-img-loaded {
   opacity: 1;
   transition: all 0.5s linear;
+}
+
+.custom-input {
+  @apply w-full p-3 2xl:p-5  focus:outline-none  focus:ring-blue-500 text-sm md:text-lg;
 }
 
 @keyframes fade-in {

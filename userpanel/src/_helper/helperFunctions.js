@@ -83,7 +83,6 @@ const areArraysEqual = (arr1, arr2) => {
 
 const getVariComboPriceQty = (arrayOfCombinations, selectedVariations) => {
   if (!Array.isArray(selectedVariations)) {
-    console.error("selectedVariations is not an array", selectedVariations);
     return { price: 0, quantity: 0 };
   }
 
