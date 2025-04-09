@@ -10,6 +10,7 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import miniLogo from "@/assets/images/logo-2.webp";
 import { CustomImg } from "../dynamiComponents";
+import CartPopup from "../ui/CartPopup";
 export default function NavigationHeader() {
   const dispatch = useDispatch();
   const { menuList, openDropdown, isMenuOpen } = useSelector(
@@ -117,7 +118,7 @@ export default function NavigationHeader() {
                                     <HeaderLinkButton
                                       key={`${productType.title}-${index}3`}
                                       href={productType.href}
-                                      className="text-[#828282] hover:text-baseblack transition-all duration-300 capitalize"
+                                      className="text-basegray hover:text-baseblack transition-all duration-300 capitalize"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         closeAllDropdown();
@@ -152,9 +153,7 @@ export default function NavigationHeader() {
         {lastScrollY > 100 ? (
           <div className="text-xl flex py-6 items-center gap-5">
             <HiOutlineUser />
-            <Link href="/cart">
-              <HiOutlineShoppingBag />
-            </Link>
+            <CartPopup />
           </div>
         ) : null}
       </nav>
