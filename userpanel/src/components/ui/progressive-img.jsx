@@ -1,15 +1,14 @@
 import { memo, useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import logo from "@/assets/images/logo.webp";
-import clsx from "clsx";
 
 const ProgressiveImg = ({
   placeholderSrc = logo,
   src,
   alt = "",
   className,
-  width = 200, // default width
-  height = 200, // default height
+  width = 1000, // default width
+  height = 1000, // default height
   ...props
 }) => {
   const [imgSrc, setImgSrc] = useState(placeholderSrc || src);
@@ -32,7 +31,7 @@ const ProgressiveImg = ({
       alt={alt}
       width={width}
       height={height}
-      className={clsx("object-contain", customClass, className)} // Using clsx to handle class names
+      className={`object-contain ${customClass} ${className}`}
       priority
       {...props}
     />

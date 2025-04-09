@@ -11,6 +11,8 @@ const initialState = {
   selectedSortByValue: 'date_new_to_old',
   openKeys: defaultOpenKeys,
   showFilterSidebar: false,
+  uniqueFilterOptions: {},
+  selectedSettingStyles: "",
 };
 
 const productSlice = createSlice({
@@ -61,7 +63,14 @@ const productSlice = createSlice({
       state.selectedSortByValue = 'date_new_to_old';
       state.selectedVariations = {};
       state.openKeys = defaultOpenKeys;
+      state.selectedSettingStyles = "";
     },
+    setUniqueFilterOptions: (state, action) => {
+      state.uniqueFilterOptions = action.payload;
+    },
+    setSelectedSettingStyle: (state, action) => {
+      state.selectedSettingStyles = action.payload;
+    }
   },
 });
 
@@ -78,7 +87,9 @@ export const {
   setShowFilterSidebar,
   resetFilters,
   setOpenKeys,
-  toggleOpenKey
+  toggleOpenKey,
+  setUniqueFilterOptions,
+  setSelectedSettingStyle
 } = productSlice.actions;
 
 export default productSlice.reducer;
