@@ -1,6 +1,5 @@
 import { CustomImg } from "../dynamiComponents";
 import pricing from "@/assets/icons/pricing.svg";
-import shippingPrimary from "@/assets/icons/shippingPrimary.svg";
 import warranty from "@/assets/icons/warranty.svg";
 import returns from "@/assets/icons/returns.svg";
 const features = [
@@ -10,7 +9,7 @@ const features = [
     titleAttr: "",
     title: "Competitive Pricing",
     description:
-      "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Integer Egestas Nisi Nec Libero Fermentum.",
+      "At Red Stone Pawn, we offer fair and competitive pricing on all our products. Whether you’re buying, selling, or trading, our expert team ensures you get the best value for your money",
   },
   {
     icon: returns,
@@ -18,7 +17,7 @@ const features = [
     titleAttr: "",
     title: "Returns",
     description:
-      "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Integer Egestas Nisi Nec Libero Fermentum.",
+      "We stand by the quality of our products and want you to shop worry-free. If you're not completely satisfied with your purchase, return it hassle-free!",
   },
   {
     icon: warranty,
@@ -26,7 +25,7 @@ const features = [
     titleAttr: "",
     title: "Lifetime Warranty",
     description:
-      "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Integer Egestas Nisi Nec Libero Fermentum.",
+      "Shop with confidence knowing that your investment is backed by our commitment to excellence.",
   },
 ];
 export default function KeyFeatures() {
@@ -39,7 +38,7 @@ export default function KeyFeatures() {
             altAttr={feature.title}
             className="w-12 h-12 mb-4"
           />
-          <h3 className="text-xl xl:text-2xl 2xl:text-3xl text-baseblack font-normal">
+          <h3 className="text-xl xl:text-2xl 2xl:text-3xl text-baseblack font-castoro">
             {feature.title}
           </h3>
           <p className="text-baseblack text-base xl:text-lg mt-4 w-[90%] md:w-full">

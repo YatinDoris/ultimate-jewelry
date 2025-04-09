@@ -22,10 +22,10 @@ export default function ProductCard({
 
   return (
     <Link onClick={onClick} href={productLink} aria-label={title}>
-      <div className="relative group w-full h-[200px] md:w-[300px] md:h-[300px] 2xl:w-[400px] 2xl:h-[400px]">
+      <div className="relative group w-full h-[200px] md:h-[300px] 2xl:h-[400px] ">
         {" "}
         <ProgressiveImg
-          className="w-full h-full object-cover"
+          className="w-full h-[200px] md:w-[300px] md:h-[300px] 2xl:w-[400px] 2xl:h-[400px] !object-cover"
           src={img}
           alt={title}
           title={title}
@@ -40,7 +40,7 @@ export default function ProductCard({
           />
         )}
         {discount ? (
-          <div className="bg-primary absolute top-3 left-3 text-sm text-white px-2 py-1 md:px-3 md:py-1.5">
+          <div className="bg-primary absolute top-3 left-3 text-xs md:text-sm text-white px-2 py-1 md:px-3 md:py-1.5">
             {discount}% Off
           </div>
         ) : null}

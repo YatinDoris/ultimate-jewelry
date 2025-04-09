@@ -2,6 +2,7 @@ import {
   defaultOpenKeys,
   resetFilters,
   setOpenKeys,
+  setSelectedSettingStyle,
   setSelectedVariations,
   setShowFilterSidebar,
   setSortByValue,
@@ -12,15 +13,8 @@ import { AiOutlineClose } from "react-icons/ai";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { useEffect } from "react";
 import { useWindowSize } from "@/_helper/hooks";
-
-const sortByList = [
-  { value: "date_new_to_old", title: "NEW TO OLD" },
-  { value: "date_old_to_new", title: "OLD TO NEW" },
-  { value: "price_high_to_low", title: "HIGH TO LOW" },
-  { value: "price_low_to_high", title: "LOW TO HIGH" },
-  { value: "alphabetically_a_to_z", title: "A-Z" },
-  { value: "alphabetically_z_to_a", title: "Z-A" },
-];
+import { sortByList } from "@/_helper/constants";
+import { ProgressiveImg } from "../dynamiComponents";
 
 export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   const dispatch = useDispatch();
@@ -30,8 +24,9 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
     openKeys,
     selectedSortByValue,
     selectedVariations,
+    selectedSettingStyles,
+    uniqueFilterOptions,
   } = useSelector(({ product }) => product);
-
   const isOpenKey = (key) => openKeys.includes(key);
 
   const onSelectVariant = (variationName, variationTypeName) => {
@@ -56,7 +51,6 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
       document.body.style.width = "";
     }
 
-    // Cleanup function
     return () => {
       document.body.style.overflow = "auto";
       document.body.style.position = "";
@@ -65,7 +59,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   }, [showFilterSidebar]);
   return (
     <div
-      className={`w-full lg:w-72 flex-shrink-0 bg-white lg:bg-transparent transition-transform duration-300 ease-in-out lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:overflow-y-auto lg:translate-x-0 lg:z-0 z-[60] ${
+      className={`w-full lg:w-[300px] 2xl:w-[400px] flex-shrink-0 bg-white lg:bg-transparent transition-transform duration-300 ease-in-out lg:sticky lg:top-20 lg:h-screen lg:overflow-y-auto lg:translate-x-0 lg:z-0 z-[60] ${
         showFilterSidebar
           ? "fixed inset-y-0 left-0 translate-x-0 block"
           : "fixed -translate-x-full lg:translate-x-0 hidden"
@@ -130,7 +124,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                   <button
                     key={item.value}
                     onClick={() => dispatch(setSortByValue(item.value))}
-                    className={`px-3 py-1 border rounded-md text-sm ${
+                    className={`px-3 py-1 border text-sm ${
                       selectedSortByValue === item.value
                         ? "bg-primary text-white"
                         : "bg-gray-100 hover:bg-gray-200"
@@ -139,6 +133,55 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                     {item.title}
                   </button>
                 ))}
+              </div>
+            </div>
+          </div>
+          <div className="border-b border-[#C8C8C6]">
+            <button
+              className={`w-full flex items-center justify-between ${
+                isOpenKey("settingStyle") ? "pt-4 pb-2" : "py-4"
+              }`}
+              onClick={() => dispatch(toggleOpenKey("settingStyle"))}
+            >
+              <p className="font-semibold mb-1">Setting Style</p>
+              <span className="text-xl">
+                {isOpenKey("settingStyle") ? <FiMinus /> : <FiPlus />}
+              </span>
+            </button>
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                isOpenKey("settingStyle")
+                  ? "max-h-screen opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-2 pb-4">
+                {uniqueFilterOptions.uniqueSettingStyles.map((settingStyle) => {
+                  const isSelected =
+                    selectedSettingStyles === settingStyle.value;
+
+                  return (
+                    <div
+                      className={`text-center cursor-pointer `}
+                      onClick={() => {
+                        dispatch(setSelectedSettingStyle(settingStyle.value));
+                      }}
+                      key={`setting-style-key-${settingStyle.value}`}
+                    >
+                      <ProgressiveImg
+                        className={`w-full  aspect-square object-cover !transition-none  border-2 border-transparent ${
+                          isSelected ? "border-2 !border-primary" : ""
+                        }`}
+                        src={settingStyle.image}
+                        alt={settingStyle.title}
+                        title={settingStyle.title}
+                      />
+                      <h2 className="text-base lg:text-sm font-semibold mt-2">
+                        {settingStyle.title}
+                      </h2>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -170,8 +213,8 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                     : "max-h-0 opacity-0"
                 }`}
               >
-                <div className="flex flex-wrap gap-2 pb-4">
-                  {variation.variationTypes.map((type) => (
+                <div className="flex flex-wrap pb-4">
+                  {/* {variation.variationTypes.map((type) => (
                     <button
                       key={type.variationTypeId}
                       onClick={() =>
@@ -180,10 +223,14 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                           type.variationTypeName
                         )
                       }
-                      className={`px-3 py-1 m-1 border rounded-md text-sm ${
+                      className={`px-3  py-1 m-1 border  text-sm ${
                         selectedVariations[variation.variationName] ===
                         type.variationTypeName
-                          ? "bg-primary text-white"
+                          ? type.variationTypeHexCode
+                            ? "border-primary border-2"
+                            : "bg-primary text-white"
+                          : type.variationTypeHexCode
+                          ? "border-gray-300"
                           : "bg-gray-100 hover:bg-gray-200"
                       }`}
                       style={
@@ -197,6 +244,33 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                       }
                     >
                       {!type.variationTypeHexCode && type.variationTypeName}
+                    </button>
+                  ))} */}
+                  {variation.variationTypes.map((type) => (
+                    <button
+                      key={type.variationTypeId}
+                      onClick={() =>
+                        onSelectVariant(
+                          variation.variationName,
+                          type.variationTypeName
+                        )
+                      }
+                      className={`px-3 flex items-center gap-2 py-1.5 m-1 border  text-sm ${
+                        selectedVariations[variation.variationName] ===
+                        type.variationTypeName
+                          ? "bg-primary text-white"
+                          : "bg-gray-100 hover:bg-gray-200"
+                      }`}
+                    >
+                      {type.variationTypeHexCode ? (
+                        <div
+                          className="w-6 h-6 "
+                          style={{
+                            backgroundColor: type.variationTypeHexCode,
+                          }}
+                        ></div>
+                      ) : null}{" "}
+                      {type.variationTypeName}
                     </button>
                   ))}
                 </div>
