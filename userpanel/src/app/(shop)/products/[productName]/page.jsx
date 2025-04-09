@@ -2,8 +2,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CiHeart } from "react-icons/ci";
-import stripe from "@/assets/images/stripe.webp";
-import paypal from "@/assets/images/paypal.webp";
+import stripe from "@/assets/images/cart/stripe.webp";
+import paypal from "@/assets/images/cart/paypal.webp";
+import snapFinance from "@/assets/images/cart/snapFinance.webp";
+import acima from "@/assets/images/cart/acima.webp";
 import { useParams } from "next/navigation";
 import { helperFunctions } from "@/_helper";
 import { fetchProductDetailByProductName } from "@/_actions/product.actions";
@@ -47,6 +49,8 @@ const shippingInfo = [
 const paymentOptions = [
   { img: stripe, name: "Stripe", altAttr: "", titleAttr: "" },
   { img: paypal, name: "PayPal", altAttr: "", titleAttr: "" },
+  { img: snapFinance, name: "Snap Finance", altAttr: "", titleAttr: "" },
+  { img: acima, name: "Acima", altAttr: "", titleAttr: "" },
 ];
 
 const shippingReturnContent = [
@@ -215,7 +219,7 @@ const ProductDetails = () => {
   ]);
 
   return (
-    <>
+    <div className="pt-10 lg:pt-12 2xl:pt-16">
       {productLoading ? (
         <DetailPageSkeleton />
       ) : (
@@ -261,8 +265,10 @@ const ProductDetails = () => {
               <h2 className="text-2xl md:text-3xl font-medium">
                 {productDetail?.productName}
               </h2>
-
-              <div className="flex items-center gap-2 mt-2 xl:mt-4 mb-6 lg:mb-10">
+              <h2 className="text-base md:text-lg text-basegray mt-2 font-castoro ">
+                sku: {productDetail?.sku}
+              </h2>
+              <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-6 lg:mb-10">
                 <span className="text-2xl md:text-3xl xl:text-4xl font-normal font-castoro">
                   {selectedPrice
                     ? `$${(
@@ -376,14 +382,17 @@ const ProductDetails = () => {
               ) : null}
 
               <div className="mt-4 lg:mt-6 flex items-center gap-3">
-                <p className="font-medium text-xl text-gray-500">Pay With:</p>
-                <div className="flex gap-3">
+                <p className="font-medium text-base md:text-xl text-gray-500">
+                  Pay With:
+                </p>
+                <div className="flex flex-wrap gap-3 md:gap-6">
                   {paymentOptions.map((option, index) => (
                     <CustomImg
                       key={index}
-                      srcAttr={option.img}
-                      alt={option}
-                      className="object-contain"
+                      srcAttr={option?.img}
+                      titleAttr={option?.titleAttr}
+                      altAttr={option?.altAttr}
+                      className="object-contain md:h-auto md:w-auto h-12 w-10"
                     />
                   ))}
                 </div>
@@ -400,9 +409,10 @@ const ProductDetails = () => {
                       className="flex gap-4 items-center text-base md:text-lg mt-2"
                     >
                       <CustomImg
-                        srcAttr={info.icon}
-                        alt={info.altAttr}
+                        srcAttr={info?.icon}
+                        altAttr={info?.altAttr}
                         className="w-6 h-6"
+                        titleAttr={info?.titleAttr}
                       />
                       <span>{info.text}</span>
                     </li>
@@ -420,7 +430,7 @@ const ProductDetails = () => {
           </section>
         </>
       )}
-    </>
+    </div>
   );
 };
 
@@ -490,7 +500,7 @@ const ProductDetailsTabs = ({ productDetail }) => {
         <>
           {shippingReturnContent?.map((item) => (
             <div key={item?.label} className="flex flex-wrap gap-6 mt-4">
-              <p className="text-lg md:text-xl font-medium text-baseblack">
+              <p className="text-lg md:text-xl text-baseblack">
                 <span className="font-semibold">{item?.label} </span>
                 {item?.content}
               </p>

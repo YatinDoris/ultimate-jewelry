@@ -1,13 +1,13 @@
 import Link from "next/link";
 
-const CommonBgHeader = ({ title, backText, backHref = "/" }) => {
+const CommonBgHeading = ({ title, backText, backHref = "/" }) => {
   return (
     <div className="w-full bg-[#F3F2ED] py-6">
       <div className=" mx-auto px-4 flex items-center justify-center relative container">
         {backText && (
           <Link
             href={backHref}
-            className="text-[#828282] text-base hover:underline absolute left-0 hidden xs:block"
+            className="text-basegray text-base hover:underline absolute left-0 hidden xs:block"
           >
             &lt; {backText}
           </Link>
@@ -20,4 +20,4 @@ const CommonBgHeader = ({ title, backText, backHref = "/" }) => {
     </div>
   );
 };
-export default CommonBgHeader;
+export default CommonBgHeading;
