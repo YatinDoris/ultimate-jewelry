@@ -337,3 +337,10 @@ export const sortByList = [
   { value: "alphabetically_a_to_z", title: "A-Z" },
   { value: "alphabetically_z_to_a", title: "Z-A" },
 ];
+
+export const messageType = {
+  SUCCESS: "SUCCESS",
+  ERROR: "ERROR",
+  INFO: "INFO",
+  WARNING: "WARNING",
+};
