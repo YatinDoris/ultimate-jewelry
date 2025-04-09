@@ -2,7 +2,6 @@
 import React, { memo, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import useQueryParams from "@/hooks/useQueryParams";
-import noDataImg from "@/assets/images/no-data.webp";
 import ProductCard from "./productCard";
 import { useWindowSize } from "@/_helper/hooks";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
@@ -14,10 +13,10 @@ import {
 } from "@/store/slices/productSlice";
 import SkeletonLoader from "../ui/skeletonLoader";
 import { VscSettings } from "react-icons/vsc";
-import { CustomImg, ProductFilterSidebar } from "../dynamiComponents";
-import { LinkButton } from "../ui/button";
+import { ProductFilterSidebar } from "../dynamiComponents";
+import ProductNotFound from "./productNotFound";
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 12;
 
 const ProductGrid = memo(
   ({
@@ -35,54 +34,13 @@ const ProductGrid = memo(
       selectedSortByValue,
       showFilterSidebar,
       selectedVariations,
+      uniqueFilterOptions,
+      selectedSettingStyles,
     } = useSelector(({ product }) => product);
 
     const handlePageClick = ({ selected }) => {
       dispatch(setCurrentPage(selected));
     };
-
-    let uniqueVariations = [];
-
-    productList.forEach((product) => {
-      product.variations.forEach((variation) => {
-        let existingVariationIndex = uniqueVariations.findIndex(
-          (item) => item.variationId === variation.variationId
-        );
-
-        if (existingVariationIndex === -1) {
-          let newVariation = {
-            variationName: variation.variationName,
-            variationId: variation.variationId,
-            variationTypes: variation.variationTypes.map((variationType) => ({
-              variationTypeName: variationType.variationTypeName,
-              variationTypeId: variationType.variationTypeId,
-              variationTypeHexCode: variationType.variationTypeHexCode
-                ? variationType.variationTypeHexCode
-                : undefined,
-            })),
-          };
-
-          uniqueVariations.push(newVariation);
-        } else {
-          variation.variationTypes.forEach((variationType) => {
-            let existingTypeIndex = uniqueVariations[
-              existingVariationIndex
-            ].variationTypes.findIndex(
-              (item) => item.variationTypeId === variationType.variationTypeId
-            );
-            if (existingTypeIndex === -1) {
-              uniqueVariations[existingVariationIndex].variationTypes.push({
-                variationTypeName: variationType.variationTypeName,
-                variationTypeId: variationType.variationTypeId,
-                variationTypeHexCode: variationType.variationTypeHexCode
-                  ? variationType.variationTypeHexCode
-                  : undefined,
-              });
-            }
-          });
-        }
-      });
-    });
 
     let filteredItemsList = productList;
     if (Object.keys(selectedVariations)?.length) {
@@ -96,6 +54,7 @@ const ProductGrid = memo(
         });
       });
     }
+
     filteredItemsList = [...filteredItemsList].sort((a, b) => {
       if (selectedSortByValue === "alphabetically_a_to_z") {
         return a.productName.localeCompare(b.productName);
@@ -117,7 +76,13 @@ const ProductGrid = memo(
       }
       return 0;
     });
-
+    if (selectedSettingStyles.length) {
+      filteredItemsList = filteredItemsList.filter((product) => {
+        return product?.settingStyleNamesWithImg?.some(
+          (item) => item.id === selectedSettingStyles
+        );
+      });
+    }
     const pageCount = Math.ceil(filteredItemsList.length / ITEMS_PER_PAGE);
     const currentProducts = filteredItemsList.slice(
       currentPage * ITEMS_PER_PAGE,
@@ -175,13 +140,15 @@ const ProductGrid = memo(
               </div>
             ) : null}
 
-            <div className="flex gap-6 items-start">
-              <ProductFilterSidebar uniqueVariations={uniqueVariations} />
+            <div className={`flex gap-6`}>
+              <ProductFilterSidebar
+                uniqueVariations={uniqueFilterOptions.uniqueVariations}
+              />
               {/* Product Grid */}
               <div
-                className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 ${
+                className={`w-full grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 ${
                   showFilterSidebar ? "lg:grid-cols-3" : "lg:grid-cols-4"
-                } 6xl:grid-cols-6 gap-x-4 gap-y-6 place-items-center`}
+                } 6xl:grid-cols-6 gap-x-4 gap-y-6`}
               >
                 {currentProducts.map((product) => (
                   <ProductCard
@@ -205,36 +172,10 @@ const ProductGrid = memo(
           </div>
         )}
 
-        {!isLoading && !productList?.length && (
-          <div className="h-[60vh] lg:h-[70vh] gap-8 lg:gap-10 flex flex-col justify-center items-center text-center">
-            <CustomImg
-              srcAttr={noDataImg}
-              className="w-44 md:w-52 lg:w-56 2xl:w-auto"
-              altAttr=""
-              titleAttr=""
-            />
-            <div>
-              {" "}
-              <h3 className="text-2xl md:text-3xl 2xl:text-4xl font-castoro">
-                Sorry, No product Found
-              </h3>
-              <p className="text-base mt-2 font-semibold">
-                You can Try Our Different Product...
-              </p>
-              <div className="flex justify-center mt-4 ">
-                <LinkButton
-                  href="#"
-                  className="!bg-primary w-[70%] xxs:h-11 md:h-12 lg:!h-[2.8rem] !rounded-none !text-sm font-semibold !tracking-wider hover:border-primary hover:!bg-transparent hover:!text-primary"
-                >
-                  BACK TO SHOP
-                </LinkButton>
-              </div>
-            </div>
-          </div>
-        )}
+        {!isLoading && !productList?.length && <ProductNotFound />}
 
         {pagination && !isLoading && productList.length > ITEMS_PER_PAGE && (
-          <div className="mt-20 flex justify-center">
+          <div className="pt-10 md:pt-14 lg:pt-20 2xl:pt-20 flex justify-center">
             <ReactPaginate
               previousLabel={<FaAngleLeft className="text-xl text-primary" />}
               nextLabel={<FaAngleRight className="text-xl text-primary" />}

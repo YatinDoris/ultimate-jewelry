@@ -57,12 +57,12 @@ export const useWindowSize = () => {
   ]);
 
   const getDiamondColumns = useCallback(() => {
-    if (diamondScreenSize?.isXLargeScreen) return 6;
-    if (diamondScreenSize?.isLargeScreen) return 5;
-    if (diamondScreenSize?.isLaptop) return 4; // Reflect the changed range here
-    if (diamondScreenSize?.isTablet) return 2;
-    if (diamondScreenSize?.isMobile) return 1;
-    return 5; // Default for non-matching cases
+    if (diamondScreenSize?.isXLargeScreen) return 7;
+    if (diamondScreenSize?.isLargeScreen) return 6;
+    if (diamondScreenSize?.isLaptop) return 6; // Reflect the changed range here
+    if (diamondScreenSize?.isTablet) return 4;
+    if (diamondScreenSize?.isMobile) return 2;
+    return 6; // Default for non-matching cases
   }, [
     diamondScreenSize?.isLaptop,
     diamondScreenSize?.isLargeScreen,
@@ -76,3 +76,4 @@ export const useWindowSize = () => {
 
   return { ...screenSize, columnCount, diamondColumnCount };
 };
+
