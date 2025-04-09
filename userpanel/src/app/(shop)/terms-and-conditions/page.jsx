@@ -1,4 +1,4 @@
-import CommonBgHeader from "@/components/ui/CommonBgHeader";
+import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import TermsAndPrivacyContent from "@/components/ui/TermsAndPrivacyContent";
 const sections = [
   {
@@ -106,7 +106,7 @@ const sections = [
 const TermsAndConditions = () => {
   return (
     <div className="flex flex-col mt-8 lg:mt-12 ">
-      <CommonBgHeader
+      <CommonBgHeading
         title="Terms and Conditions"
         backText="Back To Home"
         backHref="/"
