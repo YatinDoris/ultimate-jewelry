@@ -67,3 +67,12 @@ export const ProductFilterSidebar = dynamic(
     ssr: false,
   }
 );
+export const LoginForm = dynamic(() => import("./auth/LoginForm.jsx"), {
+  ssr: false,
+});
+export const SignUpForm = dynamic(() => import("./auth/SignUpForm.jsx"), {
+  ssr: false,
+});
+export const VerifyOTPForm = dynamic(() => import("./auth/VerifyOTPForm.jsx"), {
+  ssr: false,
+});

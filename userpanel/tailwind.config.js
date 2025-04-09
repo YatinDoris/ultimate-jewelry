@@ -7,6 +7,7 @@ module.exports = {
         primary: "var(--primary)",
         offwhite: "var(--offwhite)",
         baseblack: "var(--baseblack)",
+        basegray: "var(--basegray)",
       },
     },
 

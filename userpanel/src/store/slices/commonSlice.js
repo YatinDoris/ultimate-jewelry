@@ -5,6 +5,8 @@ const initialState = {
   openDropdown: false,
   isMenuOpen: false,
   lastScrollY: false,
+  isHovered: false,
+  isCartOpen: false,
 };
 
 const commonSlice = createSlice({
@@ -23,6 +25,12 @@ const commonSlice = createSlice({
     setLastScrollY: (state, action) => {
       state.lastScrollY = action.payload;
     },
+    setIsHovered: (state, action) => {
+      state.isHovered = action.payload;
+    },
+    setIsCartOpen(state, action) {
+      state.isCartOpen = action.payload;
+    },
   },
 });
 
@@ -31,6 +39,8 @@ export const {
   setIsMenuOpen,
   setOpenDropdown,
   setLastScrollY,
+  setIsHovered,
+  setIsCartOpen,
 } = commonSlice.actions;
 
 export default commonSlice.reducer;

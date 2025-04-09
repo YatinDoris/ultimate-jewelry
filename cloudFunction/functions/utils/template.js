@@ -214,7 +214,7 @@ const emailOtpVerification = (otp) => {
 		
 			<div style=" text-align: center;">
 				<button style="text-align: center; margin : 10px 0; border: 2px solid white; border-radius : 10px; padding : 5px 11px;	background : transparent; font-size : 20px; color : white;">
-					${otp.toString().split("").join(" ")}
+					${otp}
 				</button>
 			</div>
 

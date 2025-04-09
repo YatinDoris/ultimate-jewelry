@@ -8,7 +8,7 @@ export default function RootLayout({ children }) {
       <body>
         <Lenis>
           <StoreProvider>
-            <main>{children}</main>
+            <main className="h-full">{children}</main>
           </StoreProvider>
         </Lenis>
       </body>

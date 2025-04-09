@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Spinner from "./spinner";
+
 const containedBtn = "bg-white border border-white ";
 const outlinedBtn = "border-2 border-white text-white bg-transparent";
 const primaryBtn = `
@@ -34,7 +36,7 @@ const primaryBtn = `
 `;
 
 const containedPrimaryBtn =
-  "!bg-primary  xxs:h-11 md:h-12 lg:!h-[2.8rem] !rounded-none !text-sm font-semibold !tracking-wider hover:border-primary hover:!bg-transparent hover:!text-primary";
+  "!bg-primary !h-12 lg:!h-[2.8rem] 2xl:!h-[4rem] !rounded-none font-semibold !tracking-wider hover:border-primary hover:!bg-transparent hover:!text-primary";
 
 /**
  *
@@ -109,12 +111,37 @@ export const PrimaryButton = ({ className, ...rest }) => {
   return <Button className={`${containedPrimaryBtn} ${className}`} {...rest} />;
 };
 
-export const PrimaryLinkButton = ({ className, href = "#", ...rest }) => {  
+export const PrimaryLinkButton = ({ className, href = "#", ...rest }) => {
   return (
     <LinkButton
       href={href}
       className={`${containedPrimaryBtn} ${className}`}
       {...rest}
     />
+  );
+};
+
+export const LoadingPrimaryButton = ({
+  type = "button",
+  className,
+  children,
+  loading = true,
+  loaderType = "",
+  loadingClassName = "",
+  ...rest
+}) => {
+  return (
+    <Button
+      type={type}
+      className={`${containedPrimaryBtn} ${className}`}
+      disabled={loading}
+      {...rest}
+    >
+      {loading ? (
+        <Spinner loaderType={loaderType} className={loadingClassName} />
+      ) : (
+        children
+      )}
+    </Button>
   );
 };
