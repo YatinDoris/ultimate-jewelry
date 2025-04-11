@@ -184,7 +184,7 @@ export default function LoginView() {
           }}
         >
           <Typography variant="h4" sx={{ mt: 2, mb: 5 }}>
-            Sign in to Katan off
+            Sign in
           </Typography>
 
           {renderForm}
