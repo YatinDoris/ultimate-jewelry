@@ -83,6 +83,10 @@ export const CheckoutCommonComponent = dynamic(
   }
 );
 
+export const CartPage = dynamic(() => import("./ui/cart/CartPage.jsx"), {
+  ssr: false,
+});
+
 // export const CheckoutBreadcrumb = dynamic(
 //   () => import("./ui/checkout/CheckoutBreadcrumb.jsx"),
 //   {
