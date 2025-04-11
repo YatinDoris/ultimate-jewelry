@@ -3,6 +3,7 @@ import {
   helperFunctions,
   sanitizeValue,
   productsUrl,
+  customizationUrl,
 } from "../_helper";
 import { GOLD_COLOR, GOLD_TYPES } from "../_helper/constants";
 import { DIAMONDS_LIST } from "../_helper/diamondsList";
@@ -11,14 +12,12 @@ import { diamondShapeService } from "./diamondShape.service";
 import { homeService } from "./home.service";
 import { settingStyleService } from "./settingStyle.service";
 
-const productUrl = process.env.NEXT_PUBLIC_PRODUCTS;
-const customizationUrl = process.env.NEXT_PUBLIC_CUSTOMIZATION;
 
 const getAllActiveProducts = () => {
   return new Promise(async (resolve, reject) => {
     try {
       const findPattern = {
-        url: productUrl,
+        url: productsUrl,
         key: "active",
         value: true,
       };
@@ -294,7 +293,7 @@ const getSingleProduct = (productName) => {
       productName = sanitizeValue(productName) ? productName.trim() : null;
       if (productName) {
         const singleProductData = await fetchWrapperService.findOne(
-          productUrl,
+          productsUrl,
           { productName }
         );
         if (singleProductData) {
@@ -320,7 +319,7 @@ const getReletedProducts = (productName) => {
       productName = sanitizeValue(productName) ? productName.trim() : null;
 
       if (productName) {
-        const productData = await fetchWrapperService.findOne(productUrl, {
+        const productData = await fetchWrapperService.findOne(productsUrl, {
           productName,
         });
 

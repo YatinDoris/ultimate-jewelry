@@ -32,6 +32,7 @@ export const GOLD_TYPES = "Gold Type";
 export const GOLD_COLOR = "Gold Color";
 
 export const TOP_SELLING_PRODUCTS = "Top Selling Products";
+export const FLASH_DEALS = "Flash Deals";
 
 export const ENGAGEMENT_RINGS = [
   {

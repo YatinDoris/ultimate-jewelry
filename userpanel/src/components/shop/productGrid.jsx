@@ -16,7 +16,7 @@ import { VscSettings } from "react-icons/vsc";
 import { ProductFilterSidebar } from "../dynamiComponents";
 import ProductNotFound from "./productNotFound";
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 20;
 
 const ProductGrid = memo(
   ({

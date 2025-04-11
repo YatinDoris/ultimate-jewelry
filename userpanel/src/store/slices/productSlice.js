@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 export const defaultOpenKeys = ['sortBy']
 const initialState = {
   productLoading: false,
+  recentlyProductLoading: false,
   latestProductList: [],
+  recentlyViewProductList: [],
   productDetail: {},
   collectionTypeProductList: [],
   currentPage: 0,
@@ -21,6 +23,12 @@ const productSlice = createSlice({
   reducers: {
     setProductLoading: (state, action) => {
       state.productLoading = action.payload;
+    },
+    setRecentlyProductLoading: (state, action) => {
+      state.recentlyProductLoading = action.payload;
+    },
+    setRecentlyViewProductList: (state, action) => {
+      state.recentlyViewProductList = action.payload;
     },
     setLatestProductList: (state, action) => {
       state.latestProductList = action.payload;
@@ -76,6 +84,8 @@ const productSlice = createSlice({
 
 export const {
   setProductLoading,
+  setRecentlyProductLoading,
+  setRecentlyViewProductList,
   setLatestProductList,
   setCollectionTypeProductList,
   setProductDetail,

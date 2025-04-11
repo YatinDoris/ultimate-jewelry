@@ -1,8 +1,6 @@
-import { fetchWrapperService, helperFunctions } from "../_helper";
+import { collectionUrl, fetchWrapperService, helperFunctions, productsUrl } from "../_helper";
 import { TOP_SELLING_PRODUCTS } from "../_helper/constants";
 
-const collectionUrl = process.env.NEXT_PUBLIC_COLLECTION;
-const productUrl = process.env.NEXT_PUBLIC_PRODUCTS;
 
 const getAllCollection = () => {
   return new Promise(async (resolve, reject) => {
@@ -21,7 +19,7 @@ const getCollectionsWithProduct = () => {
     try {
       const collectionData = await getAllCollection();
       const findPattern = {
-        url: productUrl,
+        url: productsUrl,
         key: "active",
         value: true,
       };

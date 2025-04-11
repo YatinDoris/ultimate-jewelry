@@ -40,11 +40,10 @@ export default function SettingStyleCategorySwiper({
 
     dispatch(setSelectedSettingStyle(updatedStyles));
   };
-
   return (
     <div>
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 6xl:grid-cols-7 gap-4">
+        <div className="pt-10 md:pt-14 lg:pt-20 2xl:pt-20 mx-10 lg:mx-20 2xl:mx-28 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 6xl:grid-cols-7 gap-4">
           {Array.from({ length: diamondColumnCount }).map((_, index) => (
             <div key={index}>
               <SkeletonLoader height="h-32 lg:h-36 2xl:h-48 aspect-square" />
@@ -54,84 +53,87 @@ export default function SettingStyleCategorySwiper({
             </div>
           ))}
         </div>
-      ) : settingStyleCategories.length > 0 ? (
-        <div className="relative">
-          <button
-            className={`absolute top-1/2 left-0 -translate-x-8 lg:-translate-x-10 -translate-y-1/2 ${
-              isBeginning ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={() => swiperRef.current?.slidePrev()}
-            disabled={isBeginning}
-          >
-            <SlArrowLeft className="text-lg lg:text-xl" />
-          </button>
-          <button
-            className={`absolute top-1/2 -right-8 lg:-right-10 -translate-y-1/2 ${
-              isEnd ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={() => swiperRef.current?.slideNext()}
-            disabled={isEnd}
-          >
-            <SlArrowRight className="text-lg lg:text-xl" />
-          </button>
-          <Swiper
-            spaceBetween={20}
-            modules={[Navigation]}
-            slidesPerView={7}
-            breakpoints={{
-              320: {
-                slidesPerView: 2,
-                spaceBetween: 10,
-              },
-              480: {
-                slidesPerView: 3,
-                spaceBetween: 15,
-              },
-              768: {
-                slidesPerView: 4,
-                spaceBetween: 20,
-              },
-              1024: {
-                slidesPerView: 5,
-                spaceBetween: 20,
-              },
-              1280: {
-                slidesPerView: 6,
-                spaceBetween: 20,
-              },
-              1536: {
-                slidesPerView: 7,
-                spaceBetween: 20,
-              },
-            }}
-            onSwiper={handleSwiperInit}
-            onSlideChange={handleSlideChange}
-          >
-            {settingStyleCategories.map((settingStyle) => {
-              const isSelected = selectedSettingStyles === settingStyle.value;
+      ) : settingStyleCategories?.length ? (
+        <div className="pt-10 md:pt-14 lg:pt-20 2xl:pt-20 mx-10 lg:mx-20 2xl:mx-28">
+          <div className="relative">
+            <button
+              className={`absolute top-1/2 left-0 -translate-x-8 lg:-translate-x-10 -translate-y-1/2 ${
+                isBeginning ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              onClick={() => swiperRef.current?.slidePrev()}
+              disabled={isBeginning}
+            >
+              <SlArrowLeft className="text-lg lg:text-xl" />
+            </button>
+            <button
+              className={`absolute top-1/2 -right-8 lg:-right-10 -translate-y-1/2 ${
+                isEnd ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              onClick={() => swiperRef.current?.slideNext()}
+              disabled={isEnd}
+            >
+              <SlArrowRight className="text-lg lg:text-xl" />
+            </button>
+            <Swiper
+              spaceBetween={20}
+              modules={[Navigation]}
+              slidesPerView={7}
+              breakpoints={{
+                320: {
+                  slidesPerView: 2,
+                  spaceBetween: 10,
+                },
+                480: {
+                  slidesPerView: 3,
+                  spaceBetween: 15,
+                },
+                768: {
+                  slidesPerView: 4,
+                  spaceBetween: 20,
+                },
+                1024: {
+                  slidesPerView: 5,
+                  spaceBetween: 20,
+                },
+                1280: {
+                  slidesPerView: 6,
+                  spaceBetween: 20,
+                },
+                1536: {
+                  slidesPerView: 7,
+                  spaceBetween: 20,
+                },
+              }}
+              onSwiper={handleSwiperInit}
+              onSlideChange={handleSlideChange}
+            >
+              {settingStyleCategories?.map((settingStyle) => {
+                const isSelected =
+                  selectedSettingStyles === settingStyle?.value;
 
-              return (
-                <SwiperSlide key={`setting-style-key-${settingStyle?.value}`}>
-                  <div
-                    className={`text-center cursor-pointer `}
-                    onClick={() => handleStyleSelect(settingStyle.value)}
-                  >
-                    <ProgressiveImg
-                      className={`h-32 lg:h-36 2xl:h-48 aspect-square object-cover !transition-none  border-2 border-transparent ${
-                        isSelected ? "border-2 !border-primary" : ""
-                      }`}
-                      src={settingStyle.image}
-                      alt={settingStyle.title}
-                      title={settingStyle.title}
-                    />
-                    <h2 className="text-base lg:text-lg font-semibold mt-2">
-                      {settingStyle.title}
-                    </h2>
-                  </div>
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
+                return (
+                  <SwiperSlide key={`setting-style-key-${settingStyle?.value}`}>
+                    <div
+                      className={`text-center cursor-pointer `}
+                      onClick={() => handleStyleSelect(settingStyle?.value)}
+                    >
+                      <ProgressiveImg
+                        className={`h-32 lg:h-36 2xl:h-48 aspect-square object-cover !transition-none  border-2 border-transparent ${
+                          isSelected ? "border-2 !border-primary" : ""
+                        }`}
+                        src={settingStyle?.image}
+                        alt={settingStyle?.title}
+                        title={settingStyle?.title}
+                      />
+                      <h2 className="text-base lg:text-lg font-semibold mt-2">
+                        {settingStyle?.title}
+                      </h2>
+                    </div>
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+          </div>
         </div>
       ) : null}
     </div>

@@ -3,9 +3,11 @@ import {
   setLatestProductList,
   setProductDetail,
   setProductLoading,
+  setRecentlyProductLoading,
+  setRecentlyViewProductList,
   setUniqueFilterOptions,
 } from "@/store/slices/productSlice";
-import { productService } from "@/_services";
+import { productService, recentlyViewedService } from "@/_services";
 
 export const fetchLatestProductList = (length) => {
   return async (dispatch) => {
@@ -174,67 +176,44 @@ const getUniqueFilterOptions = (productList) => {
 //   };
 // };
 
-// export const fetchRecentlyViewedProducts = () => {
-//   return async (dispatch, getState) => {
-//     try {
-//       dispatch({
-//         type: actionTypes.RECENTLY_VIEWED_LOADER,
-//         payload: true,
-//       });
-//       const recentlyViewedProductsList =
-//         await recentlyViewedService.getAllRecentlyViewedWithProduct();
-//       if (recentlyViewedProductsList) {
-//         dispatch({
-//           type: actionTypes.FETCH_RECENTLY_VIEWED_PRODUCT,
-//           recentlyViewedProductsList: recentlyViewedProductsList,
-//         });
-//       }
-//     } catch (e) {
-//       dispatch({
-//         type: actionTypes.FETCH_RECENTLY_VIEWED_PRODUCT,
-//         recentlyViewedProductsList: [],
-//       });
-//     } finally {
-//       dispatch({
-//         type: actionTypes.RECENTLY_VIEWED_LOADER,
-//         payload: false,
-//       });
-//     }
-//   };
-// };
+export const fetchRecentlyViewedProducts = () => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(setRecentlyProductLoading(true));
+      const recentlyViewedProductsList =
+        await recentlyViewedService.getAllRecentlyViewedWithProduct();
 
-// export const addUpdateRecentlyViewedProducts = (params) => {
-//   return async (dispatch, getState) => {
-//     try {
-//       dispatch({
-//         type: actionTypes.RECENTLY_VIEWED_LOADER,
-//         payload: true,
-//       });
+      if (recentlyViewedProductsList) {
+        dispatch(setRecentlyViewProductList(recentlyViewedProductsList))
+      }
+    } catch (e) {
+      dispatch(setRecentlyViewProductList([]))
+    } finally {
+      dispatch(setRecentlyProductLoading(false));
+    }
+  };
+};
 
-//       await recentlyViewedService.addUpdateRecentlyViewed(params);
+export const addUpdateRecentlyViewedProducts = (params) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(setRecentlyProductLoading(true));
 
-//       const recentlyViewedProductsList =
-//         await recentlyViewedService.getAllRecentlyViewedWithProduct();
+      await recentlyViewedService.addUpdateRecentlyViewed(params);
 
-//       if (recentlyViewedProductsList) {
-//         dispatch({
-//           type: actionTypes.FETCH_RECENTLY_VIEWED_PRODUCT,
-//           recentlyViewedProductsList: recentlyViewedProductsList,
-//         });
-//       }
-//     } catch (e) {
-//       dispatch({
-//         type: actionTypes.FETCH_RECENTLY_VIEWED_PRODUCT,
-//         recentlyViewedProductsList: [],
-//       });
-//     } finally {
-//       dispatch({
-//         type: actionTypes.RECENTLY_VIEWED_LOADER,
-//         payload: false,
-//       });
-//     }
-//   };
-// };
+      const recentlyViewedProductsList =
+        await recentlyViewedService.getAllRecentlyViewedWithProduct();
+
+      if (recentlyViewedProductsList) {
+        dispatch(setRecentlyViewProductList(recentlyViewedProductsList))
+      }
+    } catch (e) {
+      dispatch(setRecentlyViewProductList([]))
+    } finally {
+      dispatch(setRecentlyProductLoading(false));
+    }
+  };
+};
 
 // export const fetchSingleProductDataById = (productId) => {
 //   return async (dispatch, getState) => {

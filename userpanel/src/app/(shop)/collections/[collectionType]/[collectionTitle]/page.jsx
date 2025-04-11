@@ -51,8 +51,10 @@ export default function CollectionPage() {
     decodeURIComponent(collectionTitle)
   );
 
-  const loadData = useCallback(() => {
-    dispatch(fetchCollectionsTypeWiseProduct(collectionType, collectionTitle));
+  const loadData = useCallback(async () => {
+    await dispatch(
+      fetchCollectionsTypeWiseProduct(collectionType, collectionTitle)
+    );
   }, [dispatch, collectionType, collectionTitle]);
 
   useEffect(() => {
@@ -60,9 +62,8 @@ export default function CollectionPage() {
   }, [loadData]);
   return (
     <>
-      {" "}
       {/* Swiper Section */}
-      <section className="lg:pt-4">
+      <section className="pt-20 md:pt-10 lg:pt-4 2xl:pt-6">
         <Swiper
           modules={[Autoplay]}
           autoplay={{ delay: 3000, disableOnInteraction: false }}
@@ -76,7 +77,7 @@ export default function CollectionPage() {
               <div className="relative w-full">
                 <CustomImg
                   srcAttr={slide.image}
-                  className="h-[30vh] lg:h-auto"
+                  className="h-[30vh] lg:h-auto object-cover lg:object-contain"
                 />
                 <div className="absolute inset-0 grid lg:grid-cols-2 place-items-center bg-black  bg-opacity-5 items-center justify-center  text-white text-center p-4">
                   <div className="md:w-[70%]">
@@ -96,14 +97,10 @@ export default function CollectionPage() {
         <h2 className="text-center text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-castoro ">
           {collectionTitle}
         </h2>
-        {uniqueFilterOptions?.uniqueSettingStyles?.length ? (
-          <div className="pt-10 md:pt-14 lg:pt-20 2xl:pt-20 mx-10 lg:mx-20 2xl:mx-28">
-            <SettingStyleCategorySwiper
-              settingStyleCategories={uniqueFilterOptions.uniqueSettingStyles}
-              loading={productLoading}
-            />
-          </div>
-        ) : null}
+        <SettingStyleCategorySwiper
+          settingStyleCategories={uniqueFilterOptions.uniqueSettingStyles}
+          loading={productLoading}
+        />
       </section>
       {/* Product Grid Section */}
       <section className="container pt-10 md:pt-14 lg:pt-20 2xl:pt-20">

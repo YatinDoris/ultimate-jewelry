@@ -5,3 +5,5 @@ export * from "./diamondShape.service";
 export * from "./settingStyle.service";
 export * from "./cart.service";
 export * from "./user.service";
+export * from "./recentlyViewed.service";
+export * from "./address.service";

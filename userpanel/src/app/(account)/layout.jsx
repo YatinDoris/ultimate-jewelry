@@ -1,12 +1,12 @@
-import AccountHeader from "@/components/layout/AccountHeader";
-import AccountFooter from "@/components/layout/AccountFooter";
+import ProfileHeader from "@/components/layout/ProfileHeader";
+import ProfileFooter from "@/components/layout/ProfileFooter";
 
 export default function AccountLayout({ children }) {
   return (
     <div className="flex flex-col min-h-screen">
-      <AccountHeader />
+      <ProfileHeader />
       <main className="flex-1">{children}</main>
-      <AccountFooter />
+      <ProfileFooter />
     </div>
   );
 }
