@@ -227,6 +227,11 @@ const calculateRefundAmount = (list) => {
   return Number(total);
 };
 
+const getNameInitials = (firstName, lastName) => {
+  const firstInitial = firstName.charAt(0).toUpperCase();
+  const lastInitial = lastName.charAt(0).toUpperCase();
+  return firstInitial + lastInitial;
+}
 export const helperFunctions = {
   generateUniqueId,
   stringReplacedWithUnderScore,
@@ -249,4 +254,5 @@ export const helperFunctions = {
   getMinPriceVariCombo,
   getVariComboPriceQty,
   getSellingPrice,
+  getNameInitials
 };

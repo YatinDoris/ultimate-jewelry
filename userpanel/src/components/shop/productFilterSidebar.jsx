@@ -120,19 +120,20 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="flex flex-wrap gap-2 pb-4">
-                {sortByList.map((item) => (
-                  <button
-                    key={item.value}
-                    onClick={() => dispatch(setSortByValue(item.value))}
-                    className={`px-3 py-1 border text-sm ${
-                      selectedSortByValue === item.value
-                        ? "bg-primary text-white"
-                        : "bg-gray-100 hover:bg-gray-200"
-                    }`}
-                  >
-                    {item.title}
-                  </button>
-                ))}
+                {sortByList.length &&
+                  sortByList.map((item) => (
+                    <button
+                      key={item.value}
+                      onClick={() => dispatch(setSortByValue(item.value))}
+                      className={`px-3 py-1 border text-sm ${
+                        selectedSortByValue === item.value
+                          ? "bg-primary text-white"
+                          : "bg-gray-100 hover:bg-gray-200"
+                      }`}
+                    >
+                      {item.title}
+                    </button>
+                  ))}
               </div>
             </div>
           </div>
@@ -156,32 +157,37 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-2 pb-4">
-                {uniqueFilterOptions.uniqueSettingStyles.map((settingStyle) => {
-                  const isSelected =
-                    selectedSettingStyles === settingStyle.value;
+                {uniqueFilterOptions?.uniqueSettingStyles &&
+                  uniqueFilterOptions?.uniqueSettingStyles.map(
+                    (settingStyle) => {
+                      const isSelected =
+                        selectedSettingStyles === settingStyle.value;
 
-                  return (
-                    <div
-                      className={`text-center cursor-pointer `}
-                      onClick={() => {
-                        dispatch(setSelectedSettingStyle(settingStyle.value));
-                      }}
-                      key={`setting-style-key-${settingStyle.value}`}
-                    >
-                      <ProgressiveImg
-                        className={`w-full  aspect-square object-cover !transition-none  border-2 border-transparent ${
-                          isSelected ? "border-2 !border-primary" : ""
-                        }`}
-                        src={settingStyle.image}
-                        alt={settingStyle.title}
-                        title={settingStyle.title}
-                      />
-                      <h2 className="text-base lg:text-sm font-semibold mt-2">
-                        {settingStyle.title}
-                      </h2>
-                    </div>
-                  );
-                })}
+                      return (
+                        <div
+                          className={`text-center cursor-pointer `}
+                          onClick={() => {
+                            dispatch(
+                              setSelectedSettingStyle(settingStyle.value)
+                            );
+                          }}
+                          key={`setting-style-key-${settingStyle.value}`}
+                        >
+                          <ProgressiveImg
+                            className={`w-full  aspect-square object-cover !transition-none  border-2 border-transparent ${
+                              isSelected ? "border-2 !border-primary" : ""
+                            }`}
+                            src={settingStyle.image}
+                            alt={settingStyle.title}
+                            title={settingStyle.title}
+                          />
+                          <h2 className="text-base lg:text-sm font-semibold mt-2">
+                            {settingStyle.title}
+                          </h2>
+                        </div>
+                      );
+                    }
+                  )}
               </div>
             </div>
           </div>
