@@ -8,12 +8,8 @@ import {
   userUrl,
 } from "@/_helper";
 import { messageType } from "@/_helper/constants";
-import { setLoginMessage } from "@/store/slices/userSlice";
+import { setLoginMessage, setSendOtpMessage } from "@/store/slices/userSlice";
 import axios from "axios";
-// import {
-//   handleSendOtpError,
-//   handleVerifyOtpError,
-// } from "../store/actions/userActions";
 const bcrypt = require("bcryptjs");
 
 const insertUser = (params) => {
@@ -209,7 +205,7 @@ const sendOTPForVerificationEmail = async (payload, dispatch) => {
 
       if (status === 200) {
         dispatch(
-          setLoginMessage({
+          setSendOtpMessage({
             message: "OTP sent to your email address.",
             type: messageType.SUCCESS,
           })
@@ -217,7 +213,7 @@ const sendOTPForVerificationEmail = async (payload, dispatch) => {
         return true;
       }
       dispatch(
-        setLoginMessage({
+        setSendOtpMessage({
           message,
           type: messageType.ERROR,
         })
@@ -225,13 +221,13 @@ const sendOTPForVerificationEmail = async (payload, dispatch) => {
       return false;
     } else {
       dispatch(
-        setLoginMessage({ message: "Invalid Data", type: messageType.ERROR })
+        setSendOtpMessage({ message: "Invalid Data", type: messageType.ERROR })
       );
       return false;
     }
   } catch (error) {
     dispatch(
-      setLoginMessage({ message: error.message, type: messageType.ERROR })
+      setSendOtpMessage({ message: error.message, type: messageType.ERROR })
     );
     return false;
   }

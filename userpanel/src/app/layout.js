@@ -6,11 +6,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <Lenis>
-          <StoreProvider>
-            <main className="h-full">{children}</main>
-          </StoreProvider>
-        </Lenis>
+        {/* <Lenis> */}
+        <StoreProvider>
+          <main className="h-full">{children}</main>
+        </StoreProvider>
+        {/* </Lenis> */}
       </body>
     </html>
   );

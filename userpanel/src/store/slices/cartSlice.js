@@ -5,9 +5,8 @@ const initialState = {
   cartList: [],
   addLoader: false,
   selectedCartItem: "",
-  isProductHasInsertedIntoCart: false,
   isProductQuantityHasUpdatedIntoCart: false,
-  cartErrorMessage: "",
+  cartMessage: { message: "", type: "" },
   updateCartQtyErrorMessage: "",
   removeCartErrorMessage: "",
 };
@@ -28,14 +27,11 @@ const cartSlice = createSlice({
     setSelectedCartItem: (state, action) => {
       state.selectedCartItem = action.payload;
     },
-    setProductHasInsertedIntoCart: (state, action) => {
-      state.isProductHasInsertedIntoCart = action.payload;
-    },
     setProductQuantityHasUpdatedIntoCart: (state, action) => {
       state.isProductQuantityHasUpdatedIntoCart = action.payload;
     },
-    setCartErrorMessage: (state, action) => {
-      state.cartErrorMessage = action.payload;
+    setCartMessage: (state, action) => {
+      state.cartMessage = action.payload;
     },
     setUpdateCartQtyErrorMessage: (state, action) => {
       state.updateCartQtyErrorMessage = action.payload;
@@ -50,9 +46,8 @@ export const {
   setCartLoading,
   setCartList,
   setSelectedCartItem,
-  setProductHasInsertedIntoCart,
   setProductQuantityHasUpdatedIntoCart,
-  setCartErrorMessage,
+  setCartMessage,
   setUpdateCartQtyErrorMessage,
   setRemoveCartErrorMessage,
   clearCart,

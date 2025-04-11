@@ -1,13 +1,12 @@
 import { uid } from "uid";
 import {
+  cartsUrl,
   fetchWrapperService,
   helperFunctions,
+  productsUrl,
   sanitizeObject,
 } from "../_helper";
 import { productService } from "./product.service";
-
-const cartUrl = process.env.NEXT_PUBLIC_PRODUCTS_CART;
-const productBaseUrl = process.env.NEXT_PUBLIC_PRODUCTS;
 
 const getAllCartWithProduct = () => {
   return new Promise(async (resolve, reject) => {
@@ -16,7 +15,7 @@ const getAllCartWithProduct = () => {
       let cartData = [];
       if (userData) {
         const findPattern = {
-          url: cartUrl,
+          url: cartsUrl,
           key: "userId",
           value: userData.id,
         };
@@ -80,7 +79,7 @@ const insertProductIntoCart = (params) => {
       quantity = quantity ? Number(quantity) : 0;
       variations = Array.isArray(variations) ? variations : [];
       if (productId && variations.length && quantity && uuid) {
-        const productData = await fetchWrapperService.findOne(productBaseUrl, {
+        const productData = await fetchWrapperService.findOne(productsUrl, {
           id: productId,
         });
         if (productData) {
@@ -134,7 +133,7 @@ const insertProductIntoCart = (params) => {
           if (userData) {
             insertPattern.userId = userData.id;
             const createPattern = {
-              url: `${cartUrl}/${uuid}`,
+              url: `${cartsUrl}/${uuid}`,
               insertPattern: insertPattern,
             };
             fetchWrapperService
@@ -184,7 +183,7 @@ const insertMultipleProductsIntoCart = (params) => {
 
             if (productId && variations.length && quantity) {
               fetchWrapperService
-                .findOne(productBaseUrl, { id: productId })
+                .findOne(productsUrl, { id: productId })
                 .then((productData) => {
                   if (productData) {
                     if (
@@ -228,7 +227,7 @@ const insertMultipleProductsIntoCart = (params) => {
                                   Number(quantity),
                               };
                               const updatePattern = {
-                                url: `${cartUrl}/${cartId}`,
+                                url: `${cartsUrl}/${cartId}`,
                                 payload: payload,
                               };
                               fetchWrapperService
@@ -264,7 +263,7 @@ const insertMultipleProductsIntoCart = (params) => {
                               };
 
                               const createPattern = {
-                                url: `${cartUrl}/${uuid}`,
+                                url: `${cartsUrl}/${uuid}`,
                                 insertPattern: insertPattern,
                               };
                               fetchWrapperService
@@ -355,7 +354,7 @@ const updateProductQuantityIntoCart = (params) => {
               quantity: quantity,
             };
             const updatePattern = {
-              url: `${cartUrl}/${cartId}`,
+              url: `${cartsUrl}/${cartId}`,
               payload: payload,
             };
             fetchWrapperService
@@ -396,7 +395,7 @@ const removeProductIntoCart = (params) => {
           const userData = helperFunctions.getCurrentUser();
           if (userData) {
             // remove cart into firebase
-            await fetchWrapperService._delete(`${cartUrl}/${cartId}`);
+            await fetchWrapperService._delete(`${cartsUrl}/${cartId}`);
             resolve(true);
           } else {
             const newCartData = allCartData.filter((x) => x.id !== cartId);
@@ -416,10 +415,6 @@ const removeProductIntoCart = (params) => {
       reject(e);
     }
   });
-};
-
-export default {
-  removeProductIntoCart,
 };
 
 const getCartItemOnOffline = () => {

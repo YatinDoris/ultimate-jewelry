@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { helperFunctions } from "@/_helper";
 import { useAlertTimeout } from "@/hooks/use-alert-timeout";
 import {
-  setLoginMessage,
+  setSendOtpMessage,
   setUserRegisterMessage,
 } from "@/store/slices/userSlice";
 import { SendOTPForEmailVerification } from "@/_actions/user.action";
@@ -17,6 +17,7 @@ import { setIsHovered } from "@/store/slices/commonSlice";
 import { LoadingPrimaryButton } from "../ui/button";
 import Alert from "../ui/Alert";
 import { messageType } from "@/_helper/constants";
+import ErrorMessage from "../ui/ErrorMessage";
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +36,7 @@ const initialValues = {
 const LoginForm = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { sendOtpLoading, loginMessage, userRegisterMessage } = useSelector(
+  const { sendOtpLoading, sendOtpMessage, userRegisterMessage } = useSelector(
     ({ user }) => user
   );
   const { isHovered } = useSelector(({ common }) => common);
@@ -44,8 +45,8 @@ const LoginForm = () => {
     dispatch(setUserRegisterMessage({ message: "", type: "" }))
   );
 
-  useAlertTimeout(loginMessage, () =>
-    dispatch(setLoginMessage({ message: "", type: "" }))
+  useAlertTimeout(sendOtpMessage, () =>
+    dispatch(setSendOtpMessage({ message: "", type: "" }))
   );
 
   const onSubmit = useCallback(async (fields, { resetForm }) => {
@@ -79,8 +80,11 @@ const LoginForm = () => {
 
   useEffect(() => {
     return () => {
-      if (loginMessage?.type && loginMessage?.type !== messageType?.SUCCESS) {
-        dispatch(setLoginMessage({ message: "", type: "" }));
+      if (
+        sendOtpMessage?.type &&
+        sendOtpMessage?.type !== messageType?.SUCCESS
+      ) {
+        dispatch(setSendOtpMessage({ message: "", type: "" }));
       }
     };
   }, []);
@@ -108,7 +112,7 @@ const LoginForm = () => {
           value={values?.email}
         />
         {touched?.email && errors?.email ? (
-          <p className="text-red-500 text-sm mt-1">{errors?.email}</p>
+          <ErrorMessage message={errors?.email} />
         ) : null}
       </div>
       <div
@@ -135,8 +139,8 @@ const LoginForm = () => {
           Sign Up
         </Link>
       </p>
-      {loginMessage?.type !== messageType?.SUCCESS ? (
-        <Alert message={loginMessage?.message} type={loginMessage?.type} />
+      {sendOtpMessage?.type !== messageType?.SUCCESS ? (
+        <Alert message={sendOtpMessage?.message} type={sendOtpMessage?.type} />
       ) : null}
       <Alert
         message={userRegisterMessage?.message}

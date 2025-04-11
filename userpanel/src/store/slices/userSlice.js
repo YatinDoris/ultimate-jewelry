@@ -9,8 +9,9 @@ export const initUserProfile = {
 
 const initialState = {
   sendOtpLoading: false,
-  loginMessage: { message: "", type: "" },
+  sendOtpMessage: { message: "", type: "" },
   verifyOTPLoading: false,
+  loginMessage: { message: "", type: "" },
   userRegisterLoading: false,
   userRegisterMessage: { message: "", type: "" },
   userProfile: initUserProfile,
@@ -23,6 +24,9 @@ const userSlice = createSlice({
   reducers: {
     setSendOtpLoading: (state, action) => {
       state.sendOtpLoading = action.payload;
+    },
+    setSendOtpMessage: (state, action) => {
+      state.sendOtpMessage = action.payload;
     },
     setLoginMessage: (state, action) => {
       state.loginMessage = action.payload;
@@ -47,8 +51,9 @@ const userSlice = createSlice({
 
 export const {
   setSendOtpLoading,
-  setLoginMessage,
+  setSendOtpMessage,
 
+  setLoginMessage,
   setVerifyOtpLoading,
 
   setUserRegisterLoading,
