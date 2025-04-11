@@ -83,9 +83,9 @@ export const CheckoutCommonComponent = dynamic(
   }
 );
 
-export const CheckoutBreadcrumb = dynamic(
-  () => import("./ui/checkout/CheckoutBreadcrumb.jsx"),
-  {
-    ssr: false,
-  }
-);
+// export const CheckoutBreadcrumb = dynamic(
+//   () => import("./ui/checkout/CheckoutBreadcrumb.jsx"),
+//   {
+//     ssr: false,
+//   }
+// );
