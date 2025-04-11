@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CiHeart } from "react-icons/ci";
 import stripe from "@/assets/images/cart/stripe.webp";
@@ -8,22 +8,35 @@ import snapFinance from "@/assets/images/cart/snapFinance.webp";
 import acima from "@/assets/images/cart/acima.webp";
 import { useParams } from "next/navigation";
 import { helperFunctions } from "@/_helper";
-import { fetchProductDetailByProductName } from "@/_actions/product.actions";
+import {
+  addUpdateRecentlyViewedProducts,
+  fetchProductDetailByProductName,
+  fetchRecentlyViewedProducts,
+} from "@/_actions/product.actions";
 import { useDispatch, useSelector } from "react-redux";
 import VariationsList from "@/components/ui/VariationsList";
-import { CustomImg, ProgressiveImg } from "@/components/dynamiComponents";
+import {
+  CustomImg,
+  ProgressiveImg,
+  ProductSwiper,
+} from "@/components/dynamiComponents";
 import DetailPageSkeleton from "@/components/ui/DetailPageSkeleton";
 import KeyFeatures from "@/components/ui/KeyFeatures";
 import calender from "@/assets/icons/calender.svg";
 import inspect from "@/assets/icons/inspect.svg";
 import truck from "@/assets/icons/truck.svg";
-export const minProductQuantity = 1;
-export const maxProductQuantity = 5;
 import {
   setSelectedVariations,
   setProductQuantity,
 } from "@/store/slices/productSlice";
 import { insertProductIntoCart } from "@/_actions/cart.action";
+import { LoadingPrimaryButton } from "@/components/ui/button";
+import { setIsHovered } from "@/store/slices/commonSlice";
+import ErrorMessage from "@/components/ui/ErrorMessage";
+import { setCartMessage } from "@/store/slices/cartSlice";
+
+export const minProductQuantity = 1;
+export const maxProductQuantity = 5;
 
 const shippingInfo = [
   {
@@ -55,7 +68,7 @@ const paymentOptions = [
 
 const shippingReturnContent = [
   {
-    label: "Fast & Secure Shipping – ",
+    label: "Fast & Secure Shipping –",
     content:
       "Orders are processed within 1-2 business days and shipped via reliable carriers like UPS, FedEx, or USPS.",
   },
@@ -85,7 +98,7 @@ const shippingReturnContent = [
       "Items must be unworn, in original packaging, and accompanied by proof of purchase.",
   },
   {
-    label: "Non-Returnable Items – ",
+    label: "Non-Returnable Items –",
     content:
       "Custom or engraved jewelry, final sale items, and used pieces cannot be returned.",
   },
@@ -95,7 +108,7 @@ const shippingReturnContent = [
       "Refunds are issued to the original payment method within [Specify Days] after the return is received and inspected.",
   },
   {
-    label: "Damaged or Incorrect Items – ",
+    label: "Damaged or Incorrect Items –",
     content:
       "If your order arrives damaged or incorrect, contact us immediately for a resolution.",
   },
@@ -108,15 +121,32 @@ const ProductDetails = () => {
   let { productName } = params;
   const [isSubmitted, setIsSubmitted] = useState(false);
   let availableQty = 0;
-  let price = 0;
 
-  const { productDetail, productLoading, selectedVariations, productQuantity } =
-    useSelector(({ product }) => product);
-  const { cartErrorMessage, cartLoading } = useSelector(({ cart }) => cart);
+  const {
+    productDetail,
+    productLoading,
+    recentlyProductLoading,
+    selectedVariations,
+    productQuantity,
+    recentlyViewProductList,
+  } = useSelector(({ product }) => product);
+  const { cartMessage, cartLoading } = useSelector(({ cart }) => cart);
+  const { isHovered } = useSelector(({ common }) => common);
+
   productName = helperFunctions.stringReplacedWithSpace(productName);
 
-  const loadData = useCallback(() => {
-    dispatch(fetchProductDetailByProductName(productName));
+  const loadData = useCallback(async () => {
+    const response = await dispatch(
+      fetchProductDetailByProductName(productName)
+    );
+    if (response) {
+      dispatch(addUpdateRecentlyViewedProducts({ productName }));
+      const initialSelections = response?.variations?.map((variation) => ({
+        variationId: variation.variationId,
+        variationTypeId: variation.variationTypes[0]?.variationTypeId,
+      }));
+      dispatch(setSelectedVariations(initialSelections));
+    }
   }, [dispatch, productName]);
 
   useEffect(() => {
@@ -125,71 +155,70 @@ const ProductDetails = () => {
     dispatch(setSelectedVariations([]));
   }, [productName]);
 
+  const loadRecentlyViewProduct = useCallback(() => {
+    dispatch(fetchRecentlyViewedProducts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    loadRecentlyViewProduct();
+  }, [loadRecentlyViewProduct]);
+
   if (
     Array.isArray(productDetail?.variComboWithQuantity) &&
     Array.isArray(selectedVariations) &&
-    selectedVariations.length > 0
+    selectedVariations?.length
   ) {
-    const { price: productPrice, quantity } =
-      helperFunctions.getVariComboPriceQty(
-        productDetail.variComboWithQuantity,
-        selectedVariations
-      );
+    const { price, quantity } = helperFunctions.getVariComboPriceQty(
+      productDetail.variComboWithQuantity,
+      selectedVariations
+    );
 
     availableQty = quantity;
-    price = productPrice;
   }
 
-  const handleSelect = (variationId, variationTypeId) => {
-    const updated = [
-      ...selectedVariations.filter((item) => item.variationId !== variationId),
-      { variationId, variationTypeId },
-    ];
-    dispatch(setSelectedVariations(updated));
-  };
+  const handleSelect = useCallback(
+    (variationId, variationTypeId) => {
+      dispatch(setCartMessage({ message: "", type: "" }));
+      const updated = [
+        ...selectedVariations.filter(
+          (item) => item.variationId !== variationId
+        ),
+        { variationId, variationTypeId },
+      ];
+      dispatch(setSelectedVariations(updated));
+    },
+    [selectedVariations]
+  );
 
-  const getSelectedPrice = () => {
+  const selectedPrice = useMemo(() => {
     if (
-      !productDetail?.variComboWithQuantity ||
-      selectedVariations.length === 0
+      !productDetail?.variComboWithQuantity?.length ||
+      !selectedVariations.length
     )
       return null;
 
-    return productDetail.variComboWithQuantity.find((combo) =>
+    return productDetail?.variComboWithQuantity?.find((combo) =>
       combo.combination.every((item) =>
-        selectedVariations.some(
+        selectedVariations?.some(
           (selected) =>
-            selected.variationId === item.variationId &&
-            selected.variationTypeId === item.variationTypeId
+            selected?.variationId === item?.variationId &&
+            selected?.variationTypeId === item?.variationTypeId
         )
       )
     )?.price;
-  };
+  }, [productDetail?.variComboWithQuantity, selectedVariations]);
 
-  const selectedPrice = getSelectedPrice();
-
-  useEffect(() => {
-    if (productDetail?.variations) {
-      const initialSelections = productDetail.variations.map((variation) => ({
-        variationId: variation.variationId,
-        variationTypeId: variation.variationTypes[0]?.variationTypeId,
-      }));
-      dispatch(setSelectedVariations(initialSelections));
-    }
-  }, [productDetail]);
-
-  const isInValidSelectedVariation = useCallback(() => {
+  const isInValidSelectedVariation = useMemo(() => {
     if (productDetail?.variations?.length !== selectedVariations?.length) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   }, [productDetail?.variations?.length, selectedVariations?.length]);
 
   const addToCartHandler = useCallback(async () => {
     setIsSubmitted(true);
     if (
-      isInValidSelectedVariation() ||
+      isInValidSelectedVariation ||
       !availableQty ||
       availableQty < productQuantity ||
       !productQuantity
@@ -236,16 +265,13 @@ const ProductDetails = () => {
                   playsInline
                   className="w-full object-cover"
                 >
-                  <source src={productDetail.video} type="video/mp4" />
+                  <source src={productDetail?.video} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               )}
               {productDetail?.thumbnailImage && (
                 <ProgressiveImg
                   src={productDetail?.thumbnailImage}
-                  width={100}
-                  height={100}
-                  alt="Ring"
                   className="cursor-pointer transition-all duration-300 w-full"
                 />
               )}
@@ -253,9 +279,6 @@ const ProductDetails = () => {
                 <ProgressiveImg
                   key={index}
                   src={media?.image}
-                  width={100}
-                  height={100}
-                  alt="Ring"
                   className="cursor-pointer transition-all duration-300 w-full"
                 />
               ))}
@@ -265,8 +288,8 @@ const ProductDetails = () => {
               <h2 className="text-2xl md:text-3xl font-medium">
                 {productDetail?.productName}
               </h2>
-              <h2 className="text-base md:text-lg text-basegray mt-2 font-castoro ">
-                sku: {productDetail?.sku}
+              <h2 className="text-base md:text-base text-basegray mt-2 font-castoro">
+                sku: {productDetail?.saltSKU}
               </h2>
               <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-6 lg:mb-10">
                 <span className="text-2xl md:text-3xl xl:text-4xl font-normal font-castoro">
@@ -282,9 +305,11 @@ const ProductDetails = () => {
                 <span className="text-gray-500 line-through text-xl font-castoro">
                   ${(selectedPrice * productQuantity).toFixed(2)}
                 </span>
-                <span className="bg-primary text-white px-2 py-2 text-xs font-medium rounded">
-                  {`You Save ${productDetail.discount}%`}
-                </span>
+                {productDetail?.discount ? (
+                  <span className="bg-primary text-white px-2 py-2 text-xs font-medium rounded">
+                    {`You Save ${productDetail?.discount}%`}
+                  </span>
+                ) : null}
               </div>
 
               <div className="border-t  border-[#0000001A]" />
@@ -346,39 +371,35 @@ const ProductDetails = () => {
               />
 
               <div className="mt-4 lg:mt-8 flex gap-4 items-center">
-                <button
-                  className={`flex-1 bg-primary text-lg font-medium text-white xss:px-6 py-3 ${
-                    (!availableQty && !isInValidSelectedVariation()) ||
-                    cartLoading
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                  onClick={addToCartHandler}
-                  disabled={
-                    (!availableQty && !isInValidSelectedVariation()) ||
-                    cartLoading
-                  }
+                <div
+                  className="w-full"
+                  onMouseEnter={() => dispatch(setIsHovered(true))}
+                  onMouseLeave={() => dispatch(setIsHovered(false))}
                 >
-                  {cartLoading ? (
-                    <>
-                      <span className="loader"></span> Adding...
-                    </>
-                  ) : !availableQty && !isInValidSelectedVariation() ? (
-                    "Out of stock"
-                  ) : (
-                    "ADD TO BAG"
-                  )}
-                </button>
-
-                <button className="p-3 hover:bg-gray-100 transition-all w-14 h-14">
+                  <LoadingPrimaryButton
+                    className="w-full uppercase"
+                    loading={cartLoading}
+                    disabled={
+                      cartLoading ||
+                      (!availableQty && !isInValidSelectedVariation)
+                    }
+                    loaderType={isHovered ? "" : "white"}
+                    onClick={addToCartHandler}
+                  >
+                    {!availableQty && !isInValidSelectedVariation
+                      ? "OUT OF STOCK"
+                      : "ADD TO BAG"}
+                  </LoadingPrimaryButton>
+                </div>
+                {/* <button className="p-3 hover:bg-gray-100 transition-all w-14 h-14">
                   <CiHeart className="w-full h-full text-primary" />
-                </button>
+                </button> */}
               </div>
               {isSubmitted && !selectedVariations?.length ? (
-                <p className="text-danger">Please select variants</p>
+                <ErrorMessage message={"Please select variants"} />
               ) : null}
-              {isSubmitted && cartErrorMessage ? (
-                <p className="text-red-600 text-lg">{cartErrorMessage}</p>
+              {isSubmitted && cartMessage?.message ? (
+                <ErrorMessage message={cartMessage?.message} />
               ) : null}
 
               <div className="mt-4 lg:mt-6 flex items-center gap-3">
@@ -423,8 +444,15 @@ const ProductDetails = () => {
           </div>
 
           <div className="container pt-10 lg:pt-20 2xl:pt-28 md:p-6">
-            <ProductDetailsTabs productDetail={productDetail} />
+            <ProductDetailTabs />
           </div>
+          <section className="pt-16 lg:pt-20 2xl:pt-40 container">
+            <ProductSwiper
+              productList={recentlyViewProductList}
+              loading={recentlyProductLoading}
+              title="Recently viewed"
+            />
+          </section>
           <section className="pt-10 lg:pt-20 2xl:pt-28 container">
             <KeyFeatures />
           </section>
@@ -436,7 +464,9 @@ const ProductDetails = () => {
 
 export default ProductDetails;
 
-const ProductDetailsTabs = ({ productDetail }) => {
+const ProductDetailTabs = () => {
+  const { productDetail } = useSelector(({ product }) => product);
+
   const [activeTab, setActiveTab] = useState("Product Detail");
   const [open, setOpen] = useState(false);
 
@@ -450,9 +480,9 @@ const ProductDetailsTabs = ({ productDetail }) => {
               Information
             </p>
 
-            {productDetail?.sku && (
+            {productDetail?.saltSKU && (
               <p className="pt-4 text-lg md:text-xl text-baseblack">
-                SKU: {productDetail?.sku}
+                SKU: {productDetail?.saltSKU}
               </p>
             )}
             {productDetail?.shortDescription && (

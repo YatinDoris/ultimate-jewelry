@@ -62,6 +62,9 @@ import { useEffect, useState } from "react";
 import TextAboveImage from "@/components/ui/TextAboveImage";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLatestProductList } from "@/_actions/product.actions";
+import Alert from "@/components/ui/Alert";
+import { setLoginMessage } from "@/store/slices/userSlice";
+import { useAlertTimeout } from "@/hooks/use-alert-timeout";
 
 const animatedContent = [
   {
@@ -238,6 +241,11 @@ const Home = () => {
   const dispatch = useDispatch();
   const { latestProductList, productLoading } = useSelector(
     ({ product }) => product
+  );
+  const { loginMessage } = useSelector(({ user }) => user);
+
+  useAlertTimeout(loginMessage, () =>
+    dispatch(setLoginMessage({ message: "", type: "" }))
   );
 
   useEffect(() => {
@@ -440,6 +448,7 @@ const Home = () => {
       <section className="mx-auto pt-16 lg:pt-20 2xl:pt-40">
         <AccordionDropdown items={faqData} />
       </section>
+      <Alert message={loginMessage?.message} type={loginMessage?.type} />
     </>
   );
 };
@@ -468,10 +477,11 @@ const CategoryGallery = () => {
                   setActiveCategory(category);
                   setOpen(false);
                 }}
-                className={`px-4 py-2 text-sm cursor-pointer transition ${activeCategory === category
-                  ? "bg-primary text-white"
-                  : "text-gray-700 hover:bg-primary hover:text-white"
-                  }`}
+                className={`px-4 py-2 text-sm cursor-pointer transition ${
+                  activeCategory === category
+                    ? "bg-primary text-white"
+                    : "text-gray-700 hover:bg-primary hover:text-white"
+                }`}
               >
                 {category}
               </li>
@@ -484,10 +494,11 @@ const CategoryGallery = () => {
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
-            className={`text-sm tracking-wide pb-1 border-b-2 transition-all ${activeCategory === category
-              ? "border-black font-semibold"
-              : "border-transparent text-gray-500"
-              }`}
+            className={`text-sm tracking-wide pb-1 border-b-2 transition-all ${
+              activeCategory === category
+                ? "border-black font-semibold"
+                : "border-transparent text-gray-500"
+            }`}
           >
             {category}
           </button>

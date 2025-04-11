@@ -8,13 +8,17 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { helperFunctions } from "@/_helper";
 import { useAlertTimeout } from "@/hooks/use-alert-timeout";
-import { setLoginMessage } from "@/store/slices/userSlice";
+import { setLoginMessage, setSendOtpMessage } from "@/store/slices/userSlice";
 import { SendOTPForEmailVerification, verifyOTP } from "@/_actions/user.action";
 import { setIsHovered } from "@/store/slices/commonSlice";
 import { LoadingPrimaryButton } from "../ui/button";
 import Alert from "../ui/Alert";
 import Spinner from "../ui/spinner";
 import { messageType } from "@/_helper/constants";
+import {
+  fetchCart,
+  insertMultipleProductsIntoCart,
+} from "@/_actions/cart.action";
 
 // ----------------------------------------------------------------------
 
@@ -42,13 +46,12 @@ const VerifyOTPForm = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
 
-  const { verifyOTPLoading, sendOtpLoading, loginMessage } = useSelector(
-    ({ user }) => user
-  );
+  const { verifyOTPLoading, sendOtpMessage, sendOtpLoading, loginMessage } =
+    useSelector(({ user }) => user);
   const { isHovered } = useSelector(({ common }) => common);
 
-  useAlertTimeout(loginMessage, () =>
-    dispatch(setLoginMessage({ message: "", type: "" }))
+  useAlertTimeout(sendOtpMessage, () =>
+    dispatch(setSendOtpMessage({ message: "", type: "" }))
   );
 
   const removeEmailFromStorage = () => {
@@ -83,6 +86,18 @@ const VerifyOTPForm = () => {
     };
   }, [loginMessage.type]);
 
+  const addToCartFromLocalStorage = useCallback(async () => {
+    const storageData = JSON.parse(localStorage.getItem("cart"));
+    if (storageData !== null && storageData.length) {
+      const payload = {
+        cartData: storageData,
+      };
+      await dispatch(insertMultipleProductsIntoCart(payload));
+      dispatch(fetchCart());
+      localStorage.removeItem("cart");
+    }
+  }, [dispatch]);
+
   const onSubmit = useCallback(
     async (fields, { resetForm }) => {
       const otpCode = fields?.otp?.join("");
@@ -97,7 +112,7 @@ const VerifyOTPForm = () => {
         removeEmailFromStorage();
         localStorage.setItem("currentUser", JSON.stringify(response?.userData));
         router.push("/");
-        // addToCartFromLocalStorage();
+        addToCartFromLocalStorage();
       }
     },
     [dispatch, router, email]
@@ -233,16 +248,24 @@ const VerifyOTPForm = () => {
 
       <div className="mt-3 lg:mt-4 text-sm sm:text-base 2xl:text-lg text-basegray text-center flex items-center gap-1">
         Didn't Receive OTP?{" "}
-        <Link
-          href="#"
-          onClick={handleResendOTP}
-          className="underline text-primary hover:text-basegray transition-all duration-300 font-bold"
-        >
-          {sendOtpLoading ? <Spinner /> : "Resend OTP"}
-        </Link>
+        {!sendOtpLoading ? (
+          <Link
+            href="#"
+            onClick={handleResendOTP}
+            className="underline text-primary hover:text-basegray transition-all duration-300 font-bold"
+          >
+            Resend OTP
+          </Link>
+        ) : (
+          <Spinner loaderType="pleaseWait" className={"h-8"} />
+        )}
       </div>
 
-      <Alert message={loginMessage?.message} type={loginMessage?.type} />
+      {loginMessage?.type !== messageType?.SUCCESS ? (
+        <Alert message={loginMessage?.message} type={loginMessage?.type} />
+      ) : null}
+
+      <Alert message={sendOtpMessage?.message} type={sendOtpMessage?.type} />
     </div>
   );
 };

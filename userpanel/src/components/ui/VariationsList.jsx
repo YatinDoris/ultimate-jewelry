@@ -216,7 +216,7 @@ const VariationsList = ({ variations, selectedVariations, handleSelect }) => {
                     <button
                       className={`px-4 py-1 text-xl font-medium transition-all ${
                         selected
-                          ? "border-primary text-primary border-2 scale-105"
+                          ? "border-primary text-primary border-2"
                           : "text-baseblack border-transparent border-2"
                       }`}
                       onClick={() =>

@@ -7,8 +7,8 @@ const ProgressiveImg = ({
   src,
   alt = "",
   className,
-  width = 1000, // default width
-  height = 1000, // default height
+  width = 100, // default width
+  height = 100, // default height
   ...props
 }) => {
   const [imgSrc, setImgSrc] = useState(placeholderSrc || src);

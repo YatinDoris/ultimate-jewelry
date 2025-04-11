@@ -38,6 +38,7 @@ const Alert = ({ type = "info", message, removeMessage, className }) => {
           position: "fixed",
           top: "0",
           right: "0",
+          zIndex: "9999",
         }}
         animate={{
           opacity: 1,

@@ -2,13 +2,13 @@ import {
   setCartLoading,
   setCartList,
   setSelectedCartItem,
-  setProductHasInsertedIntoCart,
   setProductQuantityHasUpdatedIntoCart,
-  setCartErrorMessage,
+  setCartMessage,
   setUpdateCartQtyErrorMessage,
   setRemoveCartErrorMessage,
 } from "@/store/slices/cartSlice";
 import { cartService } from "@/_services";
+import { messageType } from "@/_helper/constants";
 
 export const fetchCart = () => {
   return async (dispatch) => {
@@ -30,19 +30,19 @@ export const fetchCart = () => {
 export const insertProductIntoCart = (payload) => {
   return async (dispatch) => {
     try {
-      dispatch(setCartErrorMessage(""));
+      dispatch(setCartMessage({ message: "", type: "" }));
       dispatch(setCartLoading(true));
-      dispatch(setProductHasInsertedIntoCart(false));
       const createdCartItem = await cartService.insertProductIntoCart(payload);
 
       if (createdCartItem) {
-        dispatch(setProductHasInsertedIntoCart(true));
         dispatch(fetchCart());
         return createdCartItem;
       }
     } catch (err) {
-      const cartErrorMessage = err?.message || "Something went wrong";
-      dispatch(setCartErrorMessage(cartErrorMessage));
+      const errorMessage = err?.message || "Something went wrong";
+      dispatch(
+        setCartMessage({ message: errorMessage, type: messageType.ERROR })
+      );
     } finally {
       dispatch(setCartLoading(false));
     }
@@ -110,6 +110,22 @@ export const updateProductQuantityIntoCart = (payload) => {
       );
     } finally {
       dispatch(setCartLoading(false));
+    }
+  };
+};
+
+export const insertMultipleProductsIntoCart = (payload) => {
+  return async (dispatch) => {
+    try {
+      const createdOrUpdateCartData =
+        await cartService.insertMultipleProductsIntoCart(payload);
+
+      if (createdOrUpdateCartData.length) {
+        return true;
+      }
+    } catch (err) {
+      const errorMessage = err.message || "something went wrong";
+      console.log("insert multiple cart : ", errorMessage);
     }
   };
 };
