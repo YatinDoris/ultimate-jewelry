@@ -76,3 +76,16 @@ export const SignUpForm = dynamic(() => import("./auth/SignUpForm.jsx"), {
 export const VerifyOTPForm = dynamic(() => import("./auth/VerifyOTPForm.jsx"), {
   ssr: false,
 });
+export const CheckoutCommonComponent = dynamic(
+  () => import("./ui/checkout/CheckoutCommonComponent.jsx"),
+  {
+    ssr: false,
+  }
+);
+
+export const CheckoutBreadcrumb = dynamic(
+  () => import("./ui/checkout/CheckoutBreadcrumb.jsx"),
+  {
+    ssr: false,
+  }
+);
