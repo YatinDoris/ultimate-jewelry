@@ -1,4 +1,3 @@
-import { fetchCart } from "@/_actions/user.action";
 import { helperFunctions } from "@/_helper";
 import { setOpenProfileDropdown } from "@/store/slices/commonSlice";
 import { useRouter } from "next/navigation";
@@ -7,6 +6,7 @@ import { HiOutlineUser } from "react-icons/hi2";
 import { IoIosArrowDown } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { HeaderLinkButton } from "./button";
+import { fetchCart } from "@/_actions/cart.action";
 
 export default function ProfileDropdown({ className = "" }) {
   const dispatch = useDispatch();
