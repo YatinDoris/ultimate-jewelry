@@ -13,6 +13,7 @@ export const createSubscriber = (payload) => {
                 return true;
             }
         } catch (e) {
+            console.log('e', e)
             dispatch(setSubscriberLoading(false));
             const errorMessage = e.message || "something went wrong";
             dispatch(setSubscriberMessage({ message: errorMessage, type: messageType.ERROR }));

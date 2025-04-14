@@ -9,8 +9,8 @@ const subscriberSlice = createSlice({
     name: "subscriber",
     initialState,
     reducers: {
-        setSubscribeMessage: (state, action) => {
-            state.subscribeMessage = action.payload;
+        setSubscriberMessage: (state, action) => {
+            state.subscriberMessage = action.payload;
         },
         setSubscriberLoading: (state, action) => {
             state.subscriberLoading = action.payload

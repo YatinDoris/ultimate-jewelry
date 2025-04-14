@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import { CustomImg, LoginForm } from "@/components/dynamiComponents";
 import handWithRing from "@/assets/images/auth/hand-ring.webp";
