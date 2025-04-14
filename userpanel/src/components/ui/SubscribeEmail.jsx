@@ -10,6 +10,7 @@ import Alert from "./Alert";
 import { useAlertTimeout } from "@/hooks/use-alert-timeout";
 import { emailPattern } from "@/_utils/common";
 import { setSubscriberMessage } from "@/store/slices/subscriberSlice";
+import { createSubscriber } from "@/_actions/subscriber.action";
 const inputClassName =
   "block w-full p-3 md:p-3 2xl:p-4 text-[14px] placeholder:text-white placeholder:italic bg-transparent lg:text-base   sm:text-sm border-white border focus:outline-none ";
 
@@ -19,15 +20,13 @@ const SubscribeEmail = () => {
   const { subscriberLoading, subscriberMessage } = useSelector(
     ({ subscriber }) => subscriber
   );
-
   useAlertTimeout(subscriberMessage, () =>
     dispatch(setSubscriberMessage({ message: "", type: "" }))
   );
 
   const onSubmit = useCallback(async (val, { resetForm }) => {
-    console.log("val", val);
-    // const res = await dispatch(sendSubscribeDetails(val));
-    // if (res) resetForm();
+    const res = await dispatch(createSubscriber(val));
+    if (res) resetForm();
   }, []);
 
   const { handleChange, handleSubmit, handleBlur, values, errors, touched } =
@@ -57,54 +56,54 @@ const SubscribeEmail = () => {
           onKeyDown={handleKeyPress}
           className="flex flex-col gap-3 lg:gap-4 sm:gap-3 pt-2 lg:pt-5"
         >
-          <div className="relative">
-            <input
-              className={inputClassName}
-              id="email"
-              type="email"
-              name="email"
-              placeholder="Sign Me Up"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values?.email || ""}
-            />
-            {touched?.email && errors?.email && (
-              <p className="text-left text-sm text-rose-500 ml-4 mt-1">
-                {errors?.email}
-              </p>
-            )}
-            <div className="absolute right-0 top-0">
-              <Button
-                type="submit"
-                title={"Submit"}
-                variant="contained"
-                color="black"
-                disabled={subscriberLoading}
-                className={`relative group w-fit !h-[3rem] md:!h-[2.9rem] lg:!h-[3.1rem] lg:!min-w-[100px] !text-primary rounded-none font-inter overflow-hidden border cursor-pointer transition-all duration-500 ${
-                  subscriberLoading
-                    ? "border-white  !bg-primary !hover:bg-primary pointer-events-none"
-                    : "!bg-primary "
+          <div className="flex">
+            <div>
+              <input
+                className={inputClassName}
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Sign Me Up"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values?.email || ""}
+              />
+              {touched?.email && errors?.email && (
+                <p className="text-left text-sm text-rose-500 ml-4 mt-1">
+                  {errors?.email}
+                </p>
+              )}
+            </div>
+            <Button
+              type="submit"
+              title={"Submit"}
+              variant="contained"
+              color="black"
+              disabled={subscriberLoading}
+              className={`relative group w-fit !h-[3rem] md:!h-[2.9rem] lg:!h-[3.1rem] 2xl:!h-[3.6rem] lg:!min-w-[100px] !text-primary rounded-none font-inter overflow-hidden border cursor-pointer transition-all duration-500 ${
+                subscriberLoading
+                  ? "border-white  !bg-primary !hover:bg-primary pointer-events-none"
+                  : "!bg-primary "
+              }`}
+            >
+              {/* Button Text */}
+              <span
+                className={`relative z-10 transition-colors duration-500  ${
+                  subscriberLoading ? "" : "group-hover:text-white"
                 }`}
               >
-                {/* Button Text */}
-                <span
-                  className={`relative z-10 transition-colors duration-500  ${
-                    subscriberLoading ? "" : "group-hover:text-white"
-                  }`}
-                >
-                  {subscriberLoading ? (
-                    <Spinner />
-                  ) : (
-                    <MdOutlineArrowRightAlt className="text-4xl" />
-                  )}
-                </span>
-
-                {/* Hover Background Effect */}
-                {!subscriberLoading && (
-                  <div className="absolute inset-0 bg-white z-0 transition-all duration-500 transform translate-x-0 group-hover:translate-x-full"></div>
+                {subscriberLoading ? (
+                  <Spinner />
+                ) : (
+                  <MdOutlineArrowRightAlt className="text-4xl" />
                 )}
-              </Button>
-            </div>
+              </span>
+
+              {/* Hover Background Effect */}
+              {!subscriberLoading && (
+                <div className="absolute inset-0 bg-white z-0 transition-all duration-500 transform translate-x-0 group-hover:translate-x-full"></div>
+              )}
+            </Button>
           </div>
 
           {subscriberMessage?.message ? (

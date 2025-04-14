@@ -10,7 +10,6 @@ const addNewSubscriber = (params) => {
     try {
       let { email } = sanitizeObject(params);
       email = email ? email?.trim() : null;
-
       if (email) {
         const emailPattern = /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/;
         const emailResult = emailPattern.test(email);
