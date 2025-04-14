@@ -8,6 +8,8 @@ const initialState = {
   isHovered: false,
   isCartOpen: false,
   openProfileDropdown: false,
+  showModal: false,
+  isChecked: false,
 };
 
 const commonSlice = createSlice({
@@ -35,6 +37,12 @@ const commonSlice = createSlice({
     setOpenProfileDropdown(state, action) {
       state.openProfileDropdown = action.payload;
     },
+    setShowModal(state, action) {
+      state.showModal = action.payload;
+    },
+    setIsChecked(state, action) {
+      state.isChecked = action.payload;
+    },
   },
 });
 
@@ -45,7 +53,9 @@ export const {
   setLastScrollY,
   setIsHovered,
   setIsCartOpen,
-  setOpenProfileDropdown
+  setOpenProfileDropdown,
+  setShowModal,
+  setIsChecked,
 } = commonSlice.actions;
 
 export default commonSlice.reducer;

@@ -2,7 +2,6 @@
 import { useEffect, useCallback, useRef } from "react";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import {
-  fetchCart,
   handleSelectCartItem,
   removeProductIntoCart,
   updateProductQuantityIntoCart,
@@ -33,15 +32,14 @@ const paymentOptions = [
 const CartPopup = () => {
   const dispatch = useDispatch();
   const contentRef = useRef(null);
-  const { isCartOpen } = useSelector((state) => state.common);
+  const { isCartOpen } = useSelector(({ common }) => common);
   const {
     cartLoading,
     cartList,
     selectedCartItem,
     updateCartQtyErrorMessage,
     removeCartErrorMessage,
-  } = useSelector((state) => state.cart);
-
+  } = useSelector(({ cart }) => cart);
   const handleCartQuantity = useCallback(
     (type, cartItem) => {
       dispatch(handleSelectCartItem({ selectedCartItem: cartItem }));

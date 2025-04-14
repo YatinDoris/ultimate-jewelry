@@ -301,10 +301,11 @@ const ProductDetails = () => {
                       ).toFixed(2)}`
                     : "N/A"}
                 </span>
-
-                <span className="text-gray-500 line-through text-xl font-castoro">
-                  ${(selectedPrice * productQuantity).toFixed(2)}
-                </span>
+                {productDetail?.discount ? (
+                  <span className="text-gray-500 line-through text-xl font-castoro">
+                    ${(selectedPrice * productQuantity).toFixed(2)}
+                  </span>
+                ) : null}
                 {productDetail?.discount ? (
                   <span className="bg-primary text-white px-2 py-2 text-xs font-medium rounded">
                     {`You Save ${productDetail?.discount}%`}

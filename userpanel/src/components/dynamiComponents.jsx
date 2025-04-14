@@ -87,9 +87,26 @@ export const CartPage = dynamic(() => import("./ui/cart/CartPage.jsx"), {
   ssr: false,
 });
 
-// export const CheckoutBreadcrumb = dynamic(
-//   () => import("./ui/checkout/CheckoutBreadcrumb.jsx"),
-//   {
-//     ssr: false,
-//   }
-// );
+export const LatestProduct = dynamic(() => import("./ui/LatestProduct.jsx"), {
+  ssr: false,
+});
+
+export const CheckoutForm = dynamic(
+  () => import("./ui/checkout/CheckoutForm.jsx"),
+  {
+    ssr: false,
+  }
+);
+export const CheckoutAddressModal = dynamic(
+  () => import("./ui/checkout/CheckoutAddressModal.jsx"),
+  {
+    ssr: false,
+  }
+);
+
+export const ShippingForm = dynamic(
+  () => import("./ui/shipping/ShippingForm.jsx"),
+  {
+    ssr: false,
+  }
+);
