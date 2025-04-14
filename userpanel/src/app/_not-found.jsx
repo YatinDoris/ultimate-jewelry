@@ -1,4 +1,3 @@
-"use client";
 import notFound from "@/assets/images/404-not-found.webp";
 import { PrimaryLinkButton } from "@/components/ui/button";
 import { CustomImg } from "@/components/dynamiComponents";
