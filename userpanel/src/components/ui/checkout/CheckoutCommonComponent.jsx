@@ -74,7 +74,7 @@ const CheckoutCommonComponent = () => {
   return (
     <div className="flex flex-col gap-6 pt-8 lg:pt-12 h-fit">
       <section
-        className="bg-white px-4 xs:px-6 flex-1 overflow-y-auto max-h-[45vh]"
+        className="bg-white px-2 xs:px-6 flex-1 overflow-y-auto max-h-[45vh]"
         ref={cartContentRef}
       >
         {cartList?.map((cartItem) => (
@@ -130,7 +130,7 @@ const CheckoutCommonComponent = () => {
           </div>
         ))}
       </section>
-      <section className="bg-white px-6 xs:px-10 pt-10">
+      <section className="bg-white px-2 xs:px-10 pt-10">
         <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold">
           Order Summary
         </p>
@@ -159,7 +159,7 @@ const CheckoutCommonComponent = () => {
 
           <div className="flex items-center gap-3">
             <p className="font-medium text-lg text-gray-500">Pay With:</p>
-            <div className="flex gap-6 flex-wrap">
+            <div className="flex gap-3 xl:gap-6 flex-wrap">
               {paymentOptions.map((option, index) => (
                 <CustomImg
                   key={index}
@@ -167,7 +167,7 @@ const CheckoutCommonComponent = () => {
                   titleAttr={option.titleAttr}
                   altAttr={option.altAttr}
                   alt={option}
-                  className="object-contain h-12 w-12 2xl:h-16 2xl:w-16"
+                  className="object-contain w-8 h-10 xs:w-10 xs:h-10 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
                 />
               ))}
             </div>

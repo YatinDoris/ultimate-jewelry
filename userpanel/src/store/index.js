@@ -4,6 +4,9 @@ import product from "./slices/productSlice.js";
 import cart from "./slices/cartSlice.js";
 import user from "./slices/userSlice.js";
 import address from "./slices/addressSlice.js";
+import checkout from "./slices/checkoutSlice.js";
+import payment from "./slices/paymentSlice.js";
+import subscriber from "./slices/subscriberSlice.js";
 import subscriber from "./slices/subscriberSlice.js";
 
 const reducers = combineReducers({
@@ -12,6 +15,9 @@ const reducers = combineReducers({
   cart,
   user,
   address,
+  checkout,
+  payment,
+  subscriber,
   subscriber
 });
 

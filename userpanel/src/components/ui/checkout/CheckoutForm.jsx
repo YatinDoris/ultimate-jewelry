@@ -1,0 +1,556 @@
+"use client";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { Country, State } from "country-state-city";
+import { defaultCountry } from "@/store/slices/addressSlice";
+import {
+  handleAddressMessage,
+  handleInvalidAddressDetail,
+  validateAddress,
+} from "@/_actions/address.action";
+import ErrorMessage from "@/components/ui/ErrorMessage";
+import { LoadingPrimaryButton } from "@/components/ui/button";
+import { messageType } from "@/_helper/constants";
+import { setIsHovered, setShowModal } from "@/store/slices/commonSlice";
+import {
+  setSelectedShippingAddress,
+  setStandardizedAddress,
+  setStateList,
+} from "@/store/slices/checkoutSlice";
+import { helperFunctions } from "@/_helper";
+const countries = Country.getAllCountries();
+
+const validationSchema = yup.object({
+  firstName: yup.string().trim().required("First Name is required"),
+  lastName: yup.string().trim().required("Last Name is required"),
+  phone: yup
+    .string()
+    .matches(/^\+?[0-9]{6,14}$/, "Invalid Mobile Number")
+    .required("Phone is Required"),
+  email: yup
+    .string()
+    .email("Invalid email address")
+    .required("Email is Required"),
+  country: yup.string().required("Select a Country"),
+  city: yup
+    .string()
+    .matches(/^[A-Za-z\s]+$/, "Only letters and spaces are allowed")
+    .required("City is Required"),
+  state: yup.string().required("Select a State"),
+  zipCode: yup
+    .string()
+    .required("zipcode is a required")
+    .matches(/^[0-9]+$/, "Must be only digits")
+    .min(5, "Must be exactly 5 digits")
+    .max(6, "Must be exactly 6 digits"),
+  address: yup.string().required("Address is Required"),
+});
+const CheckoutForm = () => {
+  const { cartList } = useSelector((state) => state.cart);
+  const { stateList, selectedShippingAddress } = useSelector(
+    ({ checkout }) => checkout
+  );
+  const router = useRouter();
+  const abortControllerRef = useRef(null);
+  const dispatch = useDispatch();
+  const { validateAddressLoader, addressMessage, invalidAddressDetail } =
+    useSelector(({ address }) => address);
+  const { isHovered } = useSelector(({ common }) => common);
+
+  useEffect(() => {
+    setCountryWiseStateList(defaultCountry);
+    dispatch(handleAddressMessage({ message: "", type: "" }));
+
+    return () => {
+      clearAbortController(); // Cancel request on unmount/route change
+    };
+  }, []);
+
+  let initialValues = useMemo(() => {
+    return {
+      email: "",
+      firstName: "",
+      lastName: "",
+      country: defaultCountry,
+      city: "",
+      state: "",
+      stateCode: "",
+      zipCode: "",
+      company: "",
+      address: "",
+      apartment: "",
+      phone: "",
+      ...(selectedShippingAddress || {}), // override from Redux
+    };
+  }, [selectedShippingAddress]);
+
+  let currentUser = "";
+  const userData = helperFunctions.getCurrentUser();
+  if (userData) {
+    currentUser = userData;
+    initialValues.email = currentUser.email;
+  }
+
+  const clearAbortController = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = null;
+  }, []);
+
+  const checkValidationAddress = useCallback(
+    async (fieldValues) => {
+      try {
+        dispatch(handleAddressMessage({ message: "", type: "" }));
+
+        dispatch(
+          handleInvalidAddressDetail({
+            setInvalidAddressDetail: {},
+          })
+        );
+        if (!abortControllerRef.current) {
+          abortControllerRef.current = new AbortController();
+        }
+        if (!cartList.length) {
+          dispatch(
+            handleAddressMessage({
+              message: "cart data not found",
+              type: messageType.ERROR,
+            })
+          );
+
+          return;
+        }
+        const {
+          address = "",
+          apartment = "",
+          city = "",
+          state = "",
+          country = "",
+          zipCode = "",
+        } = fieldValues;
+        const addressLine = `${address} ${apartment} ${city} ${state} ${country} ${zipCode}`;
+        const payload = {
+          regionCode: country,
+          addressLine: addressLine?.trim(),
+        };
+        const response = await dispatch(
+          validateAddress(payload, abortControllerRef.current)
+        );
+        if (response.status === 200) {
+          dispatch(setShowModal(true));
+          dispatch(setSelectedShippingAddress(fieldValues));
+
+          dispatch(setStandardizedAddress(response.standardizedAddress));
+        } else if (response.status === 422) {
+          dispatch(
+            handleAddressMessage({
+              message: response.message || "Invalid address provided",
+              type: messageType.ERROR,
+            })
+          );
+          dispatch(
+            handleInvalidAddressDetail({
+              setInvalidAddressDetail: {
+                unconfirmedComponentTypes:
+                  response.unconfirmedComponentTypes?.map((x) =>
+                    x?.replace("_", " ")
+                  ),
+                missingComponentTypes: response.missingComponentTypes?.map(
+                  (x) => x?.replace("_", " ")
+                ),
+              },
+            })
+          );
+        } else if (response?.message) {
+          dispatch(
+            handleAddressMessage({
+              message: response.message,
+              type: messageType.ERROR,
+            })
+          );
+        }
+      } catch (error) {
+        console.error("Error occurred while validating address:", error);
+      } finally {
+        clearAbortController();
+      }
+    },
+    [cartList.length, clearAbortController, dispatch]
+  );
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setValues,
+  } = useFormik({
+    enableReinitialize: true,
+    initialValues: initialValues,
+    validationSchema: validationSchema,
+    onSubmit: checkValidationAddress,
+  });
+
+  useEffect(() => {
+    let address = localStorage.getItem("address");
+    if (address) {
+      address = JSON.parse(address);
+      const updatedValues = {
+        ...initialValues,
+        email: address.email,
+        firstName: address.firstName,
+        lastName: address.lastName,
+        country: defaultCountry,
+        state: address.state,
+        stateCode: address.stateCode,
+        city: address.city,
+        zipCode: address.zipCode,
+        company: address.companyName,
+        address: address.address,
+        apartment: address.apartment,
+        phone: address.phone,
+      };
+      setValues(updatedValues);
+      dispatch(setSelectedShippingAddress(updatedValues));
+      setCountryWiseStateList(address.countryName);
+    }
+  }, []);
+
+  const setCountryWiseStateList = (selectedCountry) => {
+    const matchedCountry = countries.find(
+      (item) => item.isoCode === selectedCountry
+    );
+    if (matchedCountry) {
+      const countryWiseStatesList = State.getStatesOfCountry(
+        matchedCountry?.isoCode
+      );
+      dispatch(setStateList(countryWiseStatesList));
+    }
+  };
+
+  const handleCountryChange = (value) => {
+    setValues((prevValues) => ({
+      ...prevValues,
+      country: value,
+      state: "",
+    }));
+    setCountryWiseStateList(value);
+  };
+
+  const handleStateChange = (stateCode) => {
+    const selectedState = stateList.find(
+      (state) => state.isoCode === stateCode
+    );
+    if (selectedState) {
+      setValues((values) => ({
+        ...values,
+        stateCode: selectedState.isoCode,
+        state: selectedState.name,
+      }));
+    } else {
+      setValues((values) => ({
+        ...values,
+        stateCode: "",
+        state: "",
+      }));
+    }
+  };
+  const inputClassName =
+    "!font-medium placeholder:font-medium w-full  2xl:!p-2";
+  return (
+    <>
+      <form>
+        <div className="flex flex-col gap-6 pt-12">
+          <section className="border-2 border-[#0000001A] px-4 rounded-md">
+            <h2 className="text-lg text-baseblack font-semibold pt-8">
+              Contact Information
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+              <div>
+                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First name"
+                  className={`custom-input ${inputClassName}`}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.firstName || ""}
+                />
+                {touched?.firstName && errors?.firstName && (
+                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
+                    {errors?.firstName}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Last name"
+                  name="lastName"
+                  className={`custom-input ${inputClassName}`}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.lastName || ""}
+                />
+                {touched?.lastName && errors?.lastName && (
+                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
+                    {errors?.lastName}
+                  </p>
+                )}
+              </div>
+              <div className="md:col-span-2 ">
+                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  Phone Number
+                </label>
+                <input
+                  type="text"
+                  placeholder="Phone number"
+                  className={`custom-input ${inputClassName}`}
+                  name="phone"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.phone || ""}
+                />
+                {touched?.phone && errors?.phone && (
+                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
+                    {errors?.phone}
+                  </p>
+                )}
+              </div>
+              <div className="md:col-span-2 pb-8">
+                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  className={`custom-input ${inputClassName}`}
+                  name="email"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.email || ""}
+                  readOnly={!!userData?.email} // 👈 this line disables editing if userData.email exists
+                />
+
+                {touched?.email && errors?.email && (
+                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
+                    {errors?.email}
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section className="border-2 border-[#0000001A] px-4 rounded-md">
+            <h2 className="text-lg font-semibold pt-8">Shipping Address</h2>
+            <div className="flex flex-col gap-6 pt-6">
+              <div>
+                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  House No, Street Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Street Address"
+                  className="w-full px-3 py-2"
+                  name="address"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.address || ""}
+                />
+                {touched?.address && errors?.address && (
+                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
+                    {errors?.address}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  Country *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Country"
+                  disabled={true}
+                  className={`custom-input ${inputClassName}`}
+                  name="country"
+                  onChange={(event) => handleCountryChange(event.target.value)}
+                  onBlur={handleBlur}
+                  value={values?.country || ""}
+                />
+                {touched?.country && errors?.country && (
+                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
+                    {errors?.country}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  Company
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Company (Optional)"
+                  className={`custom-input ${inputClassName}`}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.company || ""}
+                  name="company"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  Apartment
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter Apartment"
+                  className={`custom-input ${inputClassName}`}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.appartment || ""}
+                  name="appartment"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  Town / City *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Town / City"
+                  className={`custom-input ${inputClassName}`}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.city || ""}
+                  name="city"
+                />
+                {touched?.city && errors?.city && (
+                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
+                    {errors?.city}
+                  </p>
+                )}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8">
+                <div>
+                  <label className="block text-sm font-semibold text-[#666666] mb-1">
+                    State
+                  </label>
+                  <select
+                    name="stateCode"
+                    value={values.stateCode || ""}
+                    onChange={(e) => handleStateChange(e.target.value)}
+                    onBlur={handleBlur}
+                    className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 ${
+                      touched.stateCode && errors.stateCode
+                        ? "border-rose-500"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    <option value="" hidden>
+                      Select State
+                    </option>
+                    {stateList.length > 0 ? (
+                      stateList.map((state) => (
+                        <option key={state.isoCode} value={state.isoCode}>
+                          {state.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>No Records Found</option>
+                    )}
+                  </select>
+
+                  {touched.stateCode && errors.stateCode && (
+                    <p className="text-left text-sm text-rose-500 mt-1">
+                      {errors.stateCode}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#666666] mb-1">
+                    Zip Code
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Zip Code"
+                    className={`custom-input ${inputClassName}`}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.zipCode || ""}
+                    name="zipCode"
+                  />
+                  {touched?.zipCode && errors?.zipCode && (
+                    <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
+                      {errors?.zipCode}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div
+            onMouseEnter={() => dispatch(setIsHovered(true))}
+            onMouseLeave={() => dispatch(setIsHovered(false))}
+          >
+            <LoadingPrimaryButton
+              className="w-full uppercase hover:!text-primary"
+              loading={validateAddressLoader}
+              loaderType={isHovered ? "" : "white"}
+              onClick={handleSubmit}
+            >
+              CONTINUE SHIPPING
+            </LoadingPrimaryButton>
+            {addressMessage?.message ? (
+              <ErrorMessage message={addressMessage?.message} />
+            ) : null}
+
+            <div className="flex flex-col md:flex-row gap-4 mt-4">
+              {invalidAddressDetail?.unconfirmedComponentTypes?.length > 0 && (
+                <div className="flex-1">
+                  <h4 className="font-semibold text-red-600 mb-2">
+                    Unconfirmed:
+                  </h4>
+                  <ul className="list-inside text-red-600 text-sm">
+                    {invalidAddressDetail.unconfirmedComponentTypes.map(
+                      (componentType, index) => (
+                        <li key={index}>{componentType.replace(/_/g, " ")}</li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
+
+              {invalidAddressDetail?.missingComponentTypes?.length > 0 && (
+                <div className="flex-1">
+                  <h4 className="font-semibold text-red-600 mb-2">Missing:</h4>
+                  <ul className="list-inside text-red-600 text-sm">
+                    {invalidAddressDetail.missingComponentTypes.map(
+                      (componentType, index) => (
+                        <li key={index}>{componentType}</li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </form>
+    </>
+  );
+};
+
+export default CheckoutForm;

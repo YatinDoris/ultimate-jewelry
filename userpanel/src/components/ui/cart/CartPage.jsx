@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import deleteIcon from "@/assets/icons/delete.svg";
 import { CustomImg, ProgressiveImg } from "@/components/dynamiComponents";
 import stripe from "@/assets/images/cart/stripe.webp";
@@ -20,6 +20,7 @@ import { helperFunctions } from "@/_helper";
 import Link from "next/link";
 import { LinkButton } from "@/components/ui/button";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
+import { setDeleteLoader } from "@/store/slices/cartSlice";
 
 const maxQuantity = 5;
 const minQuantity = 1;
@@ -32,7 +33,6 @@ const paymentOptions = [
 
 const CartPage = () => {
   const dispatch = useDispatch();
-  const [deleteLoader, setDeleteLoader] = useState(false);
 
   const {
     cartLoading,
@@ -41,7 +41,8 @@ const CartPage = () => {
     isProductQuantityHasUpdatedIntoCart,
     updateCartQtyErrorMessage,
     removeCartErrorMessage,
-  } = useSelector((state) => state.cart);
+    deleteLoader,
+  } = useSelector(({ cart }) => cart);
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -97,9 +98,9 @@ const CartPage = () => {
         cartId: cartItem.id,
       };
 
-      setDeleteLoader(true);
+      dispatch(setDeleteLoader(true));
       dispatch(removeProductIntoCart(payload));
-      setDeleteLoader(false);
+      dispatch(setDeleteLoader(false));
     },
     [dispatch]
   );
