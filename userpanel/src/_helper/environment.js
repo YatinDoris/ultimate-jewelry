@@ -63,10 +63,8 @@ export const companyLogo = process.env.COMPANY_LOGO;
 export const contactNumber = process.env.NEXT_PUBLIC_CONTACT_NUMBER;
 export const facebookUrl = process.env.NEXT_PUBLIC_FACEBOOK_URL;
 export const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL;
-
-// Mail Configuration
-export const mailEmail = process.env.NEXT_PUBLIC_MAIL_EMAIL;
-export const password = process.env.PASSWORD;
+export const tiktokUrl = process.env.NEXT_PUBLIC_TIKTOK_URL;
+export const pinterestUrl = process.env.NEXT_PUBLIC_PINTEREST_URL;
 
 // MAIL ASSETS
 export const facebookIconUrl = process.env.FACEBOOK_ICON_URL;

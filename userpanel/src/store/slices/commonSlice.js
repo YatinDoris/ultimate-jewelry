@@ -3,8 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   menuList: [],
   openDropdown: false,
+  menuLoading: false,
   isMenuOpen: false,
   lastScrollY: false,
+  openDropdownMobile: false,
   isHovered: false,
   isCartOpen: false,
   openProfileDropdown: false,
@@ -16,6 +18,10 @@ const commonSlice = createSlice({
   name: "common",
   initialState,
   reducers: {
+    // Header
+    setMenuLoading: (state, action) => {
+      state.menuLoading = action.payload
+    },
     setMenuList: (state, action) => {
       state.menuList = action.payload;
     },
@@ -28,13 +34,18 @@ const commonSlice = createSlice({
     setLastScrollY: (state, action) => {
       state.lastScrollY = action.payload;
     },
+    setOpenDropdownMobile: (state, action) => {
+      state.openDropdownMobile = action.payload;
+    },
+
+    // Others
     setIsHovered: (state, action) => {
       state.isHovered = action.payload;
     },
     setIsCartOpen(state, action) {
       state.isCartOpen = action.payload;
     },
-    setOpenProfileDropdown(state, action) {
+    setOpenProfileDropdown: (state, action) => {
       state.openProfileDropdown = action.payload;
     },
     setShowModal(state, action) {
@@ -48,8 +59,10 @@ const commonSlice = createSlice({
 
 export const {
   setMenuList,
+  setMenuLoading,
   setIsMenuOpen,
   setOpenDropdown,
+  setOpenDropdownMobile,
   setLastScrollY,
   setIsHovered,
   setIsCartOpen,
