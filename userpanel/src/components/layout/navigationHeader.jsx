@@ -1,9 +1,13 @@
 "use client";
 import { HeaderLinkButton } from "@/components/ui/button";
-import { setIsMenuOpen, setOpenDropdown } from "@/store/slices/commonSlice";
+import {
+  setIsMenuOpen,
+  setOpenDropdown,
+  setOpenDropdownMobile,
+} from "@/store/slices/commonSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import ringJewelry from "@/assets/images/jewelry.webp";
+import jewelry from "@/assets/images/jewelry.webp";
 import { useCallback, useEffect, useState } from "react";
 import { IoIosArrowDown, IoIosSearch } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,20 +18,23 @@ import { helperFunctions } from "@/_helper";
 import { FLASH_DEALS } from "@/_helper/constants";
 import { GoHeart } from "react-icons/go";
 import ProfileDropdown from "../ui/ProfileDropdown";
+import SkeletonLoader from "../ui/skeletonLoader";
 export default function NavigationHeader() {
   const dispatch = useDispatch();
-  const { menuList, openDropdown, isMenuOpen } = useSelector(
-    ({ common }) => common
-  );
-  console.log("menuList", menuList);
+  const {
+    menuList,
+    openDropdown,
+    isMenuOpen,
+    openDropdownMobile,
+    menuLoading,
+  } = useSelector(({ common }) => common);
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [openDropdownMobile, setOpenDropdownMobile] = useState(null);
 
   const closeAllDropdown = useCallback(() => {
     setTimeout(() => {
       dispatch(setOpenDropdown(null));
-      setOpenDropdownMobile(null);
+      dispatch(setOpenDropdownMobile(null));
     }, 200);
   }, [dispatch]);
 
@@ -58,7 +65,7 @@ export default function NavigationHeader() {
       className={`w-full bg-white  z-40 transition-all duration-500 ease-in-out ${
         isHeaderVisible
           ? "fixed top-0 left-0 "
-          : "relative lg:translate-y-[40%] opacity-100"
+          : "relative lg:translate-y-[40%]"
       }`}
     >
       {/* Desktop Navigation */}
@@ -77,155 +84,176 @@ export default function NavigationHeader() {
             />
           </Link>
         ) : null}
-        <ul className={`flex ${lastScrollY > 100 ? "" : ""}`}>
-          <li
-            className={`relative ${
+
+        {menuLoading ? (
+          <div
+            className={`flex justify-center gap-4 bg-white ${
               lastScrollY > 100 ? "py-2 lg:py-6" : "pb-4"
             }`}
           >
-            <HeaderLinkButton
-              href={`/collections/collection/${helperFunctions.stringReplacedWithUnderScore(
-                FLASH_DEALS
-              )}`}
-              className="rounded-none flex items-center gap-1 hover:!text-primary"
+            {Array.from({ length: 9 }).map((_, index) => (
+              <SkeletonLoader
+                key={index}
+                width="w-24 2xl:w-28"
+                height="h-4 2xl:h-6"
+                className="!px-3 2xl:!px-4"
+              />
+            ))}
+          </div>
+        ) : (
+          <ul className={`flex`}>
+            <li
+              className={`relative ${
+                lastScrollY > 100 ? "py-2 lg:py-6" : "pb-4"
+              }`}
             >
-              {FLASH_DEALS}
-            </HeaderLinkButton>
-          </li>
+              <HeaderLinkButton
+                href={`/collections/collection/${helperFunctions.stringReplacedWithUnderScore(
+                  FLASH_DEALS
+                )}`}
+                className="rounded-none flex items-center gap-1 hover:!text-primary"
+              >
+                {FLASH_DEALS}
+              </HeaderLinkButton>
+            </li>
 
-          <li
-            className={`relative ${
-              lastScrollY > 100 ? "py-2 lg:py-6" : "pb-4"
-            }`}
-          >
-            <HeaderLinkButton
-              href={`#`}
-              className="rounded-none flex items-center gap-1 hover:!text-primary"
+            <li
+              className={`relative ${
+                lastScrollY > 100 ? "py-2 lg:py-6" : "pb-4"
+              }`}
             >
-              Engagement
-            </HeaderLinkButton>
-          </li>
+              <HeaderLinkButton
+                href={`#`}
+                className="rounded-none flex items-center gap-1 hover:!text-primary"
+              >
+                Engagement
+              </HeaderLinkButton>
+            </li>
 
-          {menuList &&
-            menuList.map((item, index) => {
-              const hasSubCategories = item.subCategories?.length > 0;
+            {menuList &&
+              menuList.map((item, index) => {
+                const hasSubCategories = item.subCategories?.length > 0;
 
-              return (
-                <li
-                  key={`${item?.id}-${index}`}
-                  className={`relative ${
-                    lastScrollY > 100 ? "py-2 lg:py-6" : "pb-4"
-                  }`}
-                  onMouseEnter={() =>
-                    hasSubCategories && dispatch(setOpenDropdown(item.title))
-                  }
-                  onMouseLeave={() => dispatch(setOpenDropdown(null))}
-                >
-                  <HeaderLinkButton
-                    href={item.href}
-                    className="rounded-none flex items-center gap-1 hover:!text-primary"
-                    onClick={closeAllDropdown}
+                return (
+                  <li
+                    key={`${item?.id}-${index}`}
+                    className={`relative ${
+                      lastScrollY > 100 ? "py-2 lg:py-6" : "pb-4"
+                    }`}
+                    onMouseEnter={() =>
+                      hasSubCategories && dispatch(setOpenDropdown(item.title))
+                    }
+                    onMouseLeave={() => dispatch(setOpenDropdown(null))}
                   >
-                    {item?.title}
-                    <div className="text-base 2xl:text-lg pb-0.5">
-                      <IoIosArrowDown
-                        className={`transition-all duration-300 ease-in-out transform ${
-                          openDropdown === item.title
-                            ? "rotate-180 scale-110"
-                            : "rotate-0 scale-100"
-                        }`}
-                      />
-                    </div>
-                  </HeaderLinkButton>
-
-                  {/* Dropdown for Desktop */}
-                  {hasSubCategories && openDropdown === item.title && (
-                    <div
-                      className={`fixed left-0 right-0 ${
-                        isHeaderVisible
-                          ? "top-[65px] 2xl:top-[70px]"
-                          : "top-[37px]"
-                      } bg-white shadow-lg z-50 border-t-[0.5px] border-basegray`}
+                    <HeaderLinkButton
+                      href={item.href}
+                      className="rounded-none flex items-center gap-1 hover:!text-primary"
+                      onClick={closeAllDropdown}
                     >
-                      <div className="container flex justify-between p-6">
-                        <div className="grid grid-cols-4 2xl:grid-cols-5 gap-5 2xl:gap-x-20 2xl:gap-y-10 h-fit">
-                          {item.subCategories.map((subItem, index) => (
-                            <div
-                              key={`${subItem.title}-${index}`}
-                              className="relative px-4"
-                            >
-                              <HeaderLinkButton
-                                href={subItem.href}
-                                className="block !font-semibold capitalize text-primary !px-0 mb-1"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  closeAllDropdown();
-                                }}
+                      {item?.title}
+                      <div className="text-base 2xl:text-lg pb-0.5">
+                        <IoIosArrowDown
+                          className={`transition-all duration-300 ease-in-out transform ${
+                            openDropdown === item.title
+                              ? "rotate-180 scale-110"
+                              : "rotate-0 scale-100"
+                          }`}
+                        />
+                      </div>
+                    </HeaderLinkButton>
+
+                    {/* Dropdown for Desktop */}
+                    {hasSubCategories && openDropdown === item.title && (
+                      <div
+                        className={`fixed left-0 right-0 ${
+                          isHeaderVisible
+                            ? "top-[65px] 2xl:top-[70px]"
+                            : "top-[37px]"
+                        } bg-white shadow-lg z-50 border-t-[0.5px] border-basegray`}
+                      >
+                        <div className="container flex justify-between p-6">
+                          <div className="grid grid-cols-4 2xl:grid-cols-5 gap-5 2xl:gap-x-20 2xl:gap-y-10 h-fit">
+                            {item.subCategories.map((subItem, index) => (
+                              <div
+                                key={`${subItem.title}-${index}`}
+                                className="relative px-4"
                               >
-                                {subItem.title}
-                              </HeaderLinkButton>
-                              <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
-                              <div className="mt-3 flex flex-col gap-1">
-                                {subItem.productTypes?.length
-                                  ? subItem?.productTypes.map(
-                                      (productType, index) => {
-                                        return (
-                                          <HeaderLinkButton
-                                            key={`${productType.title}-${index}3`}
-                                            href={productType.href}
-                                            className="text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              closeAllDropdown();
-                                            }}
-                                          >
-                                            {productType.title}
-                                          </HeaderLinkButton>
-                                        );
-                                      }
-                                    )
-                                  : null}
+                                <HeaderLinkButton
+                                  href={subItem.href}
+                                  className="block !font-semibold capitalize text-primary !px-0 mb-1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    closeAllDropdown();
+                                  }}
+                                >
+                                  {subItem.title}
+                                </HeaderLinkButton>
+                                <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                                <div className="mt-3 flex flex-col gap-1">
+                                  {subItem.productTypes?.length
+                                    ? subItem?.productTypes.map(
+                                        (productType, index) => {
+                                          return (
+                                            <HeaderLinkButton
+                                              key={`${productType.title}-${index}3`}
+                                              href={productType.href}
+                                              className="text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                closeAllDropdown();
+                                              }}
+                                            >
+                                              {productType.title}
+                                            </HeaderLinkButton>
+                                          );
+                                        }
+                                      )
+                                    : null}
+                                </div>
                               </div>
+                            ))}
+                          </div>
+                          <div>
+                            <CustomImg
+                              srcAttr={jewelry}
+                              className="w-80 2xl:w-96"
+                            />
+                            <div className="text-sm mt-3">
+                              <Link
+                                href={item.href}
+                                onClick={() => dispatch(setOpenDropdown(null))}
+                                className="underline hover:text-primary transition-all duration-300"
+                              >
+                                Shop Now
+                              </Link>
                             </div>
-                          ))}
-                        </div>
-                        <div>
-                          <CustomImg srcAttr={ringJewelry} className="w-80" />
-                          <div className="text-sm mt-3">
-                            <Link
-                              href={item.href}
-                              onClick={() => dispatch(setOpenDropdown(null))}
-                              className="underline hover:text-primary transition-all duration-300"
-                            >
-                              Shop Now
-                            </Link>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </li>
+                );
+              })}
+
+            {staticLinks?.map((link) => {
+              return (
+                <li
+                  key={`static-link-${link.title}`}
+                  className={`relative ${
+                    lastScrollY > 100 ? "py-2 lg:py-6 hidden" : "pb-4"
+                  } ${openDropdown ? "" : ""}`}
+                >
+                  <HeaderLinkButton
+                    href={link.href}
+                    className="rounded-none flex items-center gap-1 hover:!text-primary"
+                  >
+                    {link.title}
+                  </HeaderLinkButton>
                 </li>
               );
             })}
-
-          {staticLinks?.map((link) => {
-            return (
-              <li
-                key={`static-link-${link.title}`}
-                className={`relative ${
-                  lastScrollY > 100 ? "py-2 lg:py-6 hidden" : "pb-4"
-                } ${openDropdown ? "" : ""}`}
-              >
-                <HeaderLinkButton
-                  href={link.href}
-                  className="rounded-none flex items-center gap-1 hover:!text-primary"
-                >
-                  {link.title}
-                </HeaderLinkButton>
-              </li>
-            );
-          })}
-        </ul>
+          </ul>
+        )}
         {lastScrollY > 100 ? (
           <div className="text-xl flex py-6 items-center gap-5">
             <IoIosSearch />
@@ -244,141 +272,159 @@ export default function NavigationHeader() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden fixed top-[60px] left-0 right-0 bottom-0 bg-white z-50"
+            className="lg:hidden fixed top-[70px] left-0 right-0 bottom-0 bg-white z-50"
           >
-            <nav
-              className="h-full px-4 py-2 flex flex-col gap-3 overflow-y-auto mt-6"
-              style={{ maxHeight: "calc(100vh - 60px)" }}
-            >
-              <HeaderLinkButton
-                href={`/collections/collection/${helperFunctions.stringReplacedWithUnderScore(
-                  FLASH_DEALS
-                )}`}
-                onClick={() => {
-                  dispatch(setIsHeaderVisible(false));
-                }}
-              >
-                {FLASH_DEALS}
-              </HeaderLinkButton>
-              <HeaderLinkButton
-                href={`#`}
-                onClick={() => {
-                  dispatch(setIsHeaderVisible(false));
-                }}
-                className="pt-3.5 border-t"
-              >
-                Engagement
-              </HeaderLinkButton>
-
-              {menuList.map((item, index) => {
-                const hasSubCategories = item.subCategories?.length > 0;
-                const isDropdownOpen = openDropdownMobile === item.title;
-
-                return (
+            {menuLoading ? (
+              <div className="px-4 py-2 flex flex-col">
+                {Array.from({ length: 9 }).map((_, index) => (
                   <div
-                    key={`${item.title}-${index}`}
-                    className="flex flex-col border-t pt-3"
+                    key={index}
+                    className={`flex justify-between items-center py-3.5 ${
+                      index < 8 ? "border-b" : ""
+                    }`}
                   >
+                    <SkeletonLoader width="w-1/2" height="h-6" />
+                    <SkeletonLoader width="w-6" height="h-6" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <nav
+                className="h-full px-4 py-2 flex flex-col gap-3 overflow-y-auto mt-6"
+                style={{ maxHeight: "calc(100vh - 60px)" }}
+              >
+                <HeaderLinkButton
+                  href={`/collections/collection/${helperFunctions.stringReplacedWithUnderScore(
+                    FLASH_DEALS
+                  )}`}
+                  onClick={() => {
+                    dispatch(setIsHeaderVisible(false));
+                  }}
+                >
+                  {FLASH_DEALS}
+                </HeaderLinkButton>
+                <HeaderLinkButton
+                  href={`#`}
+                  onClick={() => {
+                    dispatch(setIsHeaderVisible(false));
+                  }}
+                  className="pt-3.5 border-t"
+                >
+                  Engagement
+                </HeaderLinkButton>
+
+                {menuList.map((item, index) => {
+                  const hasSubCategories = item.subCategories?.length > 0;
+                  const isDropdownOpen = openDropdownMobile === item.title;
+
+                  return (
                     <div
-                      className="flex justify-between"
-                      onClick={() =>
-                        hasSubCategories
-                          ? setOpenDropdownMobile(
-                              isDropdownOpen ? null : item.title
-                            )
-                          : null
-                      }
+                      key={`${item.title}-${index}`}
+                      className="flex flex-col border-t pt-3"
                     >
-                      <HeaderLinkButton
-                        href={item.href}
-                        className="text-gray-700 px-0 hover:text-black py-0.5"
-                        onClick={() => dispatch(setIsMenuOpen(false))}
+                      <div
+                        className="flex justify-between"
+                        onClick={() =>
+                          hasSubCategories
+                            ? dispatch(
+                                setOpenDropdownMobile(
+                                  isDropdownOpen ? null : item.title
+                                )
+                              )
+                            : null
+                        }
                       >
-                        {item.title}
-                      </HeaderLinkButton>
+                        <HeaderLinkButton
+                          href={item.href}
+                          className="text-gray-700 px-0 hover:text-black py-0.5"
+                          onClick={() => dispatch(setIsMenuOpen(false))}
+                        >
+                          {item.title}
+                        </HeaderLinkButton>
+                        {hasSubCategories && (
+                          <div className="text-base pb-0.5">
+                            <IoIosArrowDown
+                              className={`transition-all duration-300 ease-in-out transform ${
+                                isDropdownOpen
+                                  ? "rotate-180 scale-110"
+                                  : "rotate-0 scale-100"
+                              }`}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Dropdown for Mobile */}
                       {hasSubCategories && (
-                        <div className="text-base pb-0.5">
-                          <IoIosArrowDown
-                            className={`transition-all duration-300 ease-in-out transform ${
-                              isDropdownOpen
-                                ? "rotate-180 scale-110"
-                                : "rotate-0 scale-100"
-                            }`}
-                          />
+                        <div
+                          className={`grid grid-cols-1 gap-2 overflow-hidden transition-all duration-300 ease-in-out ${
+                            isDropdownOpen
+                              ? "max-h-96 opacity-100 translate-y-0"
+                              : "max-h-0 opacity-0 -translate-y-2"
+                          }`}
+                        >
+                          {item.subCategories.map((subItem, index) => (
+                            <div
+                              className="flex flex-col gap-2 mt-2 ms-4"
+                              key={`${subItem.title}-${index}5`}
+                            >
+                              <div className="relative">
+                                <HeaderLinkButton
+                                  href={subItem.href}
+                                  className="!font-semibold text-primary capitalize"
+                                  onClick={() => {
+                                    dispatch(setIsMenuOpen(false));
+                                    closeAllDropdown();
+                                  }}
+                                >
+                                  {subItem.title}
+                                </HeaderLinkButton>
+                                <div className="absolute left-3 w-4 h-[2px] bg-primary "></div>
+                              </div>
+                              <div className="flex flex-col gap-1 ms-3 mt-0.5">
+                                {subItem.productTypes.length
+                                  ? subItem.productTypes.map(
+                                      (productType, index) => {
+                                        return (
+                                          <HeaderLinkButton
+                                            key={`${productType.title}-${index}6`}
+                                            href={productType.href}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              closeAllDropdown();
+                                              dispatch(setIsMenuOpen(false));
+                                            }}
+                                            className="capitalize"
+                                          >
+                                            {productType.title}
+                                          </HeaderLinkButton>
+                                        );
+                                      }
+                                    )
+                                  : null}
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
-
-                    {/* Dropdown for Mobile */}
-                    {hasSubCategories && (
-                      <div
-                        className={`grid grid-cols-1 gap-2 overflow-hidden transition-all duration-300 ease-in-out ${
-                          isDropdownOpen
-                            ? "max-h-96 opacity-100 translate-y-0"
-                            : "max-h-0 opacity-0 -translate-y-2"
-                        }`}
-                      >
-                        {item.subCategories.map((subItem, index) => (
-                          <div
-                            className="flex flex-col gap-2 mt-2 ms-4"
-                            key={`${subItem.title}-${index}5`}
-                          >
-                            <div className="relative">
-                              <HeaderLinkButton
-                                href={subItem.href}
-                                className="!font-semibold text-primary capitalize"
-                                onClick={() => {
-                                  dispatch(setIsMenuOpen(false));
-                                  closeAllDropdown();
-                                }}
-                              >
-                                {subItem.title}
-                              </HeaderLinkButton>
-                              <div className="absolute left-3 w-4 h-[2px] bg-primary "></div>
-                            </div>
-                            <div className="flex flex-col gap-1 ms-3 mt-0.5">
-                              {subItem.productTypes.length
-                                ? subItem.productTypes.map(
-                                    (productType, index) => {
-                                      return (
-                                        <HeaderLinkButton
-                                          key={`${productType.title}-${index}6`}
-                                          href={productType.href}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            closeAllDropdown();
-                                            dispatch(setIsMenuOpen(false));
-                                          }}
-                                          className="capitalize"
-                                        >
-                                          {productType.title}
-                                        </HeaderLinkButton>
-                                      );
-                                    }
-                                  )
-                                : null}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-              {staticLinks?.map((link, index) => {
-                return (
-                  <div
-                    className="pt-3.5  border-t"
-                    key={`static-link-${index}12`}
-                  >
-                    <HeaderLinkButton href={link.href}>
-                      {link.title}
-                    </HeaderLinkButton>
-                  </div>
-                );
-              })}
-              <ProfileDropdown />
-            </nav>
+                  );
+                })}
+                {staticLinks?.map((link, index) => {
+                  return (
+                    <div
+                      className="pt-3.5  border-t"
+                      key={`static-link-${index}12`}
+                    >
+                      <HeaderLinkButton href={link.href}>
+                        {link.title}
+                      </HeaderLinkButton>
+                    </div>
+                  );
+                })}
+                <ProfileDropdown />
+              </nav>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

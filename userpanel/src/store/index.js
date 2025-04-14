@@ -4,6 +4,7 @@ import product from "./slices/productSlice.js";
 import cart from "./slices/cartSlice.js";
 import user from "./slices/userSlice.js";
 import address from "./slices/addressSlice.js";
+import subscriber from "./slices/subscriberSlice.js";
 
 const reducers = combineReducers({
   common,
@@ -11,6 +12,7 @@ const reducers = combineReducers({
   cart,
   user,
   address,
+  subscriber
 });
 
 const store = configureStore({

@@ -4,6 +4,8 @@ export const capitalizeWords = (str) =>
     ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1)) // Capitalize each word
     ?.join(" ");
 
+export const emailPattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
 export const generateCurrentTimeAndDate = () => {
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19) + "+00:00";

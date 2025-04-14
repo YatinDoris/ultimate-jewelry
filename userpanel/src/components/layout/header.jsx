@@ -13,7 +13,6 @@ import CartPopup from "../ui/CartPopup";
 import { fetchCart } from "@/_actions/cart.action";
 import { IoIosSearch } from "react-icons/io";
 import { GoHeart } from "react-icons/go";
-import { helperFunctions } from "@/_helper";
 import ProfileDropdown from "../ui/ProfileDropdown";
 
 export default function Header() {
@@ -21,7 +20,6 @@ export default function Header() {
   const { isMenuOpen, lastScrollY, isCartOpen } = useSelector(
     ({ common }) => common
   );
-  let currentUser = helperFunctions?.getCurrentUser();
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const toggleMenu = () => dispatch(setIsMenuOpen(!isMenuOpen));
 

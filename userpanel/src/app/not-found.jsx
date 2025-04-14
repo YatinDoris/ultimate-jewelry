@@ -5,7 +5,7 @@ import { CustomImg } from "@/components/dynamiComponents";
 const NotFound = () => {
   return (
     <section className={"flex flex-col justify-center  items-center h-full"}>
-      <div className="overflow-hidden max-w-[400px] h-[200px] md:max-w-[500px] md:h-[250px] xl:max-w-[600px] xl:h-[400px]">
+      <div className="overflow-hidden max-w-[400px] h-[200px] md:max-w-[500px] md:h-[250px] 2xl:max-w-[600px] 2xl:h-[400px]">
         <CustomImg
           srcAttr={notFound}
           className="h-full w-full object-contain"
