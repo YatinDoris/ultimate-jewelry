@@ -110,3 +110,15 @@ export const ShippingForm = dynamic(
     ssr: false,
   }
 );
+export const HomePage = dynamic(() => import("./ui/HomePage.jsx"), {
+  ssr: false,
+});
+export const CheckoutPage = dynamic(
+  () => import("./ui/checkout/CheckoutPage.jsx"),
+  {
+    ssr: false,
+  }
+);
+export const CollectionPage = dynamic(() => import("./ui/CollectionPage.jsx"), {
+  ssr: false,
+});
