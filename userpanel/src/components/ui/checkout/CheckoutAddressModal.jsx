@@ -1,21 +1,69 @@
-import React, { useState } from "react";
+"use client";
+import { useDispatch, useSelector } from "react-redux";
 import Modal from "../Modal";
-import { LoadingPrimaryButton, PrimaryButton } from "../button";
+import { Button, LoadingPrimaryButton, PrimaryButton } from "../button";
+import {
+  setIsChecked,
+  setIsHovered,
+  setShowModal,
+} from "@/store/slices/commonSlice";
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { setStandardizedAddress } from "@/store/slices/checkoutSlice";
+import { setAddressLoader } from "@/store/slices/addressSlice";
 
-const AddressVerificationModal = ({
-  onClose,
-  onConfirm,
-  loading,
-  handleConfirm,
-  enteredAddress,
-  standardizedAddress,
-}) => {
-  const [isChecked, setIsChecked] = useState(false);
+const AddressVerificationModal = ({ onClose }) => {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { standardizedAddress, selectedShippingAddress } = useSelector(
+    ({ checkout }) => checkout
+  );
+  const { isHovered } = useSelector(({ common }) => common);
+
+  const { isChecked } = useSelector(({ common }) => common);
+  const { addressLoader } = useSelector(({ address }) => address);
+  const enteredAddress = {
+    address: selectedShippingAddress?.address,
+    apartment: selectedShippingAddress?.apartment,
+    city: selectedShippingAddress?.city,
+    state: selectedShippingAddress?.state,
+    country: selectedShippingAddress?.country,
+    zipCode: selectedShippingAddress?.zipCode,
+    stateCode: selectedShippingAddress?.stateCode,
+  };
+
+  const handleConfirm = useCallback(() => {
+    if (!selectedShippingAddress) return;
+    dispatch(setAddressLoader(true));
+    const formsValue = {
+      email: selectedShippingAddress?.email,
+      countryName: selectedShippingAddress?.country,
+      firstName: selectedShippingAddress?.firstName,
+      lastName: selectedShippingAddress?.lastName,
+      address: selectedShippingAddress?.address,
+      city: selectedShippingAddress?.city,
+      state: selectedShippingAddress?.state,
+      stateCode: selectedShippingAddress?.stateCode,
+      zipCode: selectedShippingAddress?.zipCode,
+      phone: selectedShippingAddress?.phone,
+      companyName: selectedShippingAddress?.company,
+      apartment: selectedShippingAddress?.apartment,
+    };
+    localStorage.setItem("address", JSON.stringify(formsValue));
+    dispatch(setAddressLoader(false));
+    router.push("/shipping");
+    localStorage.removeItem("selectedShippingMethod");
+    checkoutModalClose();
+  }, [selectedShippingAddress]);
+
+  const checkoutModalClose = () => {
+    dispatch(setShowModal(false));
+    dispatch(setStandardizedAddress(""));
+  };
 
   const formatAddress = (addr) => {
     if (!addr) return "";
     const { address, apartment, city, state, zipCode } = addr;
-
     return [address, apartment, city, state, zipCode]
       .filter(Boolean)
       .join(", ");
@@ -29,28 +77,35 @@ const AddressVerificationModal = ({
       .filter(Boolean)
       .join(", ");
   };
+
   return (
     <Modal
       title="Address Verification"
       onClose={onClose}
       footer={
         <div className="flex gap-6">
-          <PrimaryButton
-            onClick={onClose}
-            className="!bg-[#F2F2F2] !text-black text-lg px-6 py-2  font-medium uppercase"
+          <Button
+            onClick={checkoutModalClose}
+            className="!bg-[#E5E5E5] !text-black text-lg px-6 py-2  font-medium uppercase !w-[103px] !h-12 2xl:!h-16 lg:!h-[44.5px] xl:!h-11 "
           >
             Cancel
-          </PrimaryButton>
-          <LoadingPrimaryButton
-            loading={loading}
-            disabled={!isChecked || loading}
-            onClick={isChecked ? handleConfirm : undefined}
-            className={`uppercase ${
-              !isChecked || loading ? "cursor-not-allowed" : ""
-            }`}
+          </Button>
+          <div
+            onMouseEnter={() => dispatch(setIsHovered(true))}
+            onMouseLeave={() => dispatch(setIsHovered(false))}
           >
-            Confirm
-          </LoadingPrimaryButton>
+            <LoadingPrimaryButton
+              loading={addressLoader}
+              disabled={!isChecked || addressLoader}
+              loaderType={isHovered ? "" : "white"}
+              onClick={isChecked ? handleConfirm : undefined}
+              className={`uppercase ${
+                !isChecked || addressLoader ? "cursor-not-allowed" : ""
+              }`}
+            >
+              Confirm
+            </LoadingPrimaryButton>
+          </div>
         </div>
       }
     >
@@ -84,7 +139,7 @@ const AddressVerificationModal = ({
           <input
             type="checkbox"
             checked={isChecked}
-            onChange={(e) => setIsChecked(e.target.checked)}
+            onChange={(e) => dispatch(setIsChecked(e.target.checked))}
             className="accent-baseblack text-baseblack mt-2"
           />
           I understand that my address is verified, and I want to proceed with

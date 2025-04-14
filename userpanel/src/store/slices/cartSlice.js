@@ -9,6 +9,7 @@ const initialState = {
   cartMessage: { message: "", type: "" },
   updateCartQtyErrorMessage: "",
   removeCartErrorMessage: "",
+  deleteLoader: false,
 };
 
 const cartSlice = createSlice({
@@ -39,6 +40,9 @@ const cartSlice = createSlice({
     setRemoveCartErrorMessage: (state, action) => {
       state.removeCartErrorMessage = action.payload;
     },
+    setDeleteLoader: (state, action) => {
+      state.deleteLoader = action.payload;
+    },
   },
 });
 
@@ -51,6 +55,7 @@ export const {
   setUpdateCartQtyErrorMessage,
   setRemoveCartErrorMessage,
   clearCart,
+  setDeleteLoader,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

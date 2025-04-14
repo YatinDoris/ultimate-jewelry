@@ -53,7 +53,7 @@ import {
   AccordionDropdown,
   AnimatedSection,
   CustomImg,
-  ProductSwiper,
+  LatestProduct,
   SwipperHomePageBig,
   TestimonialSlider,
 } from "@/components/dynamiComponents";
@@ -239,18 +239,12 @@ const faqData = [
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { latestProductList, productLoading } = useSelector(
-    ({ product }) => product
-  );
   const { loginMessage } = useSelector(({ user }) => user);
 
   useAlertTimeout(loginMessage, () =>
     dispatch(setLoginMessage({ message: "", type: "" }))
   );
 
-  useEffect(() => {
-    dispatch(fetchLatestProductList(8));
-  }, []);
   return (
     <>
       <section>
@@ -385,11 +379,7 @@ const Home = () => {
         <SwipperHomePageBig collections={collections} />
       </section>
       <section className="pt-16 lg:pt-20 2xl:pt-40 container">
-        <ProductSwiper
-          productList={latestProductList}
-          loading={productLoading}
-          title="Latest Products"
-        />
+        <LatestProduct />
       </section>
       <section className="pt-16 lg:pt-20 2xl:pt-40">
         <div className="flex flex-col items-center justify-center gap-4 text-center">
