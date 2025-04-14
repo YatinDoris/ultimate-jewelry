@@ -58,9 +58,10 @@ import {
   TestimonialSlider,
 } from "@/components/dynamiComponents";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TextAboveImage from "@/components/ui/TextAboveImage";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchLatestProductList } from "@/_actions/product.actions";
 import Alert from "@/components/ui/Alert";
 import { setLoginMessage } from "@/store/slices/userSlice";
 import { useAlertTimeout } from "@/hooks/use-alert-timeout";
