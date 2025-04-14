@@ -13,7 +13,7 @@ const CommonBgHeading = ({ title, backText, backHref = "/" }) => {
           </Link>
         )}
 
-        <h1 className="text-2xl xl:text-3xl font-medium font-castoro text-primary">
+        <h1 className="text-2xl xl:text-3xl font-medium font-castoro text-baseblack">
           {title}
         </h1>
       </div>

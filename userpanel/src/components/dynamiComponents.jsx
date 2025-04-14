@@ -122,3 +122,10 @@ export const CheckoutPage = dynamic(
 export const CollectionPage = dynamic(() => import("./ui/CollectionPage.jsx"), {
   ssr: false,
 });
+
+export const ShippingPage = dynamic(
+  () => import("./ui/shipping/ShippingPage.jsx"),
+  {
+    ssr: false,
+  }
+);
