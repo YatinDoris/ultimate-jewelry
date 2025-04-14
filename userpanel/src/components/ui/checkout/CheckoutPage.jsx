@@ -8,7 +8,6 @@ import {
 } from "@/components/dynamiComponents";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import { useSelector } from "react-redux";
-// import CheckoutAddressModal from "@/components/ui/checkout/CheckoutAddressModal";
 import { PrimaryLinkButton } from "@/components/ui/button";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
 import cartImage from "@/assets/images/cart/cart.webp";
@@ -19,7 +18,7 @@ const Checkout = () => {
   const { showModal } = useSelector(({ common }) => common);
 
   return (
-    <div className="mx-auto pt-10 lg:pt-10 2xl:pt-12">
+    <div className="mx-auto pt-28 lg:pt-10 2xl:pt-12">
       {cartLoading ? (
         <CheckoutSkeleton />
       ) : cartList?.length ? (
@@ -30,8 +29,13 @@ const Checkout = () => {
             backHref="/cart"
           />
           <div className="grid grid-cols-1 lg:grid-cols-[55%_auto] lg:gap-6 container mx-auto h-full">
+            <div className="lg:hidden pt-8">
+              <CheckoutCommonComponent />
+            </div>
             <CheckoutForm />
-            <CheckoutCommonComponent />
+            <div className="lg:block hidden">
+              <CheckoutCommonComponent />
+            </div>
           </div>
           {showModal && <CheckoutAddressModal />}
 

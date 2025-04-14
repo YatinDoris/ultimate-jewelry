@@ -261,7 +261,7 @@ const CheckoutForm = () => {
     }
   };
   const inputClassName =
-    "!font-medium placeholder:font-medium w-full  2xl:!p-2";
+    "!font-medium md:!text-base placeholder:font-medium w-full  2xl:!p-2";
   return (
     <>
       <form>
@@ -272,7 +272,7 @@ const CheckoutForm = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
               <div>
-                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
                   First Name
                 </label>
                 <input
@@ -291,7 +291,7 @@ const CheckoutForm = () => {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
                   Last Name
                 </label>
                 <input
@@ -310,7 +310,7 @@ const CheckoutForm = () => {
                 )}
               </div>
               <div className="md:col-span-2 ">
-                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                <label className="block upercase text-sm font-semibold text-[#666666] mb-1">
                   Phone Number
                 </label>
                 <input
@@ -329,7 +329,7 @@ const CheckoutForm = () => {
                 )}
               </div>
               <div className="md:col-span-2 pb-8">
-                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
                   Email Address
                 </label>
                 <input
@@ -353,7 +353,9 @@ const CheckoutForm = () => {
           </section>
 
           <section className="border-2 border-[#0000001A] px-4 rounded-md">
-            <h2 className="text-lg font-semibold pt-8">Shipping Address</h2>
+            <h2 className="text-lg uppercase font-semibold pt-8">
+              Shipping Address
+            </h2>
             <div className="flex flex-col gap-6 pt-6">
               <div>
                 <label className="block text-sm font-semibold text-[#666666] mb-1">
@@ -362,7 +364,7 @@ const CheckoutForm = () => {
                 <input
                   type="text"
                   placeholder="Street Address"
-                  className="w-full px-3 py-2"
+                  className={`custom-input ${inputClassName}`}
                   name="address"
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -375,7 +377,7 @@ const CheckoutForm = () => {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
                   Country *
                 </label>
                 <input
@@ -395,7 +397,7 @@ const CheckoutForm = () => {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
                   Company
                 </label>
                 <input
@@ -409,7 +411,7 @@ const CheckoutForm = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
                   Apartment
                 </label>
                 <input
@@ -423,7 +425,7 @@ const CheckoutForm = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
                   Town / City *
                 </label>
                 <input
@@ -443,7 +445,7 @@ const CheckoutForm = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8">
                 <div>
-                  <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
                     State
                   </label>
                   <select
@@ -451,7 +453,7 @@ const CheckoutForm = () => {
                     value={values.stateCode || ""}
                     onChange={(e) => handleStateChange(e.target.value)}
                     onBlur={handleBlur}
-                    className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 ${
+                    className={`custom-input ${inputClassName} ${
                       touched.stateCode && errors.stateCode
                         ? "border-rose-500"
                         : "border-gray-300"
@@ -479,7 +481,7 @@ const CheckoutForm = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-[#666666] mb-1">
+                  <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
                     Zip Code
                   </label>
                   <input

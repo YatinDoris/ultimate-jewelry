@@ -39,7 +39,7 @@ const shippingForm = () => {
   const { cartList } = useSelector(({ cart }) => cart);
   const { loading, paymentMessage } = useSelector(({ payment }) => payment);
 
-  const [selectedMethod, setSelectedMethod] = useState("Priority");
+  const [selectedMethod, setSelectedMethod] = useState("");
 
   const clearAbortController = useCallback(() => {
     if (abortControllerRef.current) {
@@ -58,14 +58,19 @@ const shippingForm = () => {
     dispatch(setIsSubmitted(false));
     const address = localStorage.getItem("address");
     const getParsedAddress = address ? JSON.parse(address) : null;
+    const subTotal = helperFunctions.getSubTotal(cartList);
 
     if (!getParsedAddress) {
       router.push("/checkout");
       return;
     }
     dispatch(setSelectedShippingAddress(getParsedAddress));
-    const initSelectedOption = shippingOptions?.[0]?.price;
-    dispatch(setSelectedShippingCharge(initSelectedOption));
+    if (subTotal > 199) {
+      dispatch(setSelectedShippingCharge(0));
+    } else {
+      const initSelectedOption = shippingOptions?.[0]?.price;
+      dispatch(setSelectedShippingCharge(initSelectedOption));
+    }
     dispatch(setActiveIndex(0));
     return () => {
       clearAbortController();
@@ -156,6 +161,7 @@ const shippingForm = () => {
       price: 39.99,
     },
   ];
+
   return (
     <div className="flex flex-col gap-6 lg:gap-10 pt-8 lg:pt-12">
       <div className="bg-white px-4 lg:px-6 flex flex-col">
@@ -220,9 +226,12 @@ const shippingForm = () => {
                   value={option.name}
                   id={option?.id}
                   checked={selectedMethod === option.name}
-                  onChange={() => setSelectedMethod(option.name)}
-                  className="form-radio accent-[#0C1D3D] w-4 h-4"
-                  disabled={renderTotalAmount < 199}
+                  onChange={() => {
+                    setSelectedMethod(option.name);
+                    dispatch(setSelectedShippingCharge(option.price));
+                  }}
+                  className="form-radio  w-6 h-5"
+                  disabled={renderTotalAmount > 199}
                 />
                 <span className="md:text-xl text-lg text-baseblack font-semibold">
                   {option.name}
