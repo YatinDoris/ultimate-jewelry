@@ -129,3 +129,6 @@ export const ShippingPage = dynamic(
     ssr: false,
   }
 );
+export const NotFoundPage = dynamic(() => import("./ui/NotFoundPage.jsx"), {
+  ssr: false,
+});
