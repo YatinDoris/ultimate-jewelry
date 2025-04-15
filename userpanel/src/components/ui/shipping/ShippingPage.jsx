@@ -12,6 +12,7 @@ import { PrimaryLinkButton } from "@/components/ui/button";
 
 import { useSelector } from "react-redux";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
+import CheckoutBreadCrumbs from "../checkout/CheckoutBreadCrumbs";
 
 const Shippingpage = () => {
   const { cartLoading, cartList } = useSelector(({ cart }) => cart);
@@ -23,9 +24,12 @@ const Shippingpage = () => {
         <>
           <CommonBgHeading
             title="Secure Checkout"
-            backText="Back to Back"
-            backHref="/cart"
+            backText="Back to Checkout"
+            backHref="/checkout"
           />
+          <div className="px-4 md:container mt-8 lg:mt-12">
+            <CheckoutBreadCrumbs currentStep={1} />
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-[55%_auto] lg:gap-6 container mx-auto h-full">
             <div className="lg:hidden pt-8">
               <CheckoutCommonComponent />

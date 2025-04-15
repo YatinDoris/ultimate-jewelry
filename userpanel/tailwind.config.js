@@ -14,6 +14,15 @@ module.exports = {
     fontFamily: {
       castoro: ["Castoro", "sans-serif"],
     },
+    animation: {
+      "fade-in": "fadeIn 2s linear infinite",
+    },
+    keyframes: {
+      fadeIn: {
+        "0%, 100%": { opacity: 0.25 },
+        "50%": { opacity: 1 },
+      },
+    },
 
     screens: {
       xxs: "320px",
