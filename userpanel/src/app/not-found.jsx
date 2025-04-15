@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import notFound from "@/assets/images/404-not-found.webp";
 import { PrimaryLinkButton } from "@/components/ui/button";
