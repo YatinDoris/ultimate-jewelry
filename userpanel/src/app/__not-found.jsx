@@ -1,24 +1,16 @@
 "use client";
-import Image from "next/image";
 import notFound from "@/assets/images/404-not-found.webp";
 import { PrimaryLinkButton } from "@/components/ui/button";
-// import { CustomImg } from "@/components/dynamiComponents";
+import { CustomImg } from "@/components/dynamiComponents";
 
 const NotFound = () => {
   return (
     <section className={"flex flex-col justify-center  items-center h-full"}>
       <div className="overflow-hidden max-w-[400px] h-[200px] md:max-w-[500px] md:h-[250px] 2xl:max-w-[600px] 2xl:h-[400px]">
-        <Image
-          src={notFound}
-          alt="404 Not Found"
-          className="h-full w-full object-contain"
-          width={600} // Specify width
-          height={400} // Specify height
-        />
-        {/* <CustomImg
+        <CustomImg
           srcAttr={notFound}
           className="h-full w-full object-contain"
-        /> */}
+        />
       </div>
       <h3 className="text-3xl md:text-4xl mt-9 font-castoro">Page Not Found</h3>
       <p className="mt-5 text-center text-md md:text-xl font-medium px-4 md:px-8 w-full lg:w-[60%] 2xl:w-[40%]">
