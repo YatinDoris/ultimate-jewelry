@@ -1,6 +1,6 @@
-// "use client";
+"use client";
 import notFound from "@/assets/images/404-not-found.webp";
-// import { PrimaryLinkButton } from "@/components/ui/button";
+import { PrimaryLinkButton } from "@/components/ui/button";
 import { CustomImg } from "@/components/dynamiComponents";
 
 const NotFoundPage = () => {
@@ -17,13 +17,13 @@ const NotFoundPage = () => {
         We're sorry, but the page you're looking for cannot be found. Please use
         the button below to return to the homepage.
       </p>
-      {/* <PrimaryLinkButton
+      <PrimaryLinkButton
         className="uppercase mt-8 lg:mt-12"
         href={"/"}
         title="Back To Home"
       >
         BACK TO HOME
-      </PrimaryLinkButton> */}
+      </PrimaryLinkButton>
     </section>
   );
 };
