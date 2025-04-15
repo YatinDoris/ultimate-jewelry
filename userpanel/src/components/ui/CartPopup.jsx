@@ -12,7 +12,7 @@ import { LinkButton } from "@/components/ui/button";
 import deleteIcon from "@/assets/icons/delete.svg";
 import cartImage from "@/assets/images/cart/cart.webp";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsCartOpen } from "@/store/slices/commonSlice";
+import { setIsCartOpen, setIsChecked } from "@/store/slices/commonSlice";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
 import stripe from "@/assets/images/cart/stripe.webp";
 import paypal from "@/assets/images/cart/paypal.webp";
@@ -32,7 +32,7 @@ const paymentOptions = [
 const CartPopup = () => {
   const dispatch = useDispatch();
   const contentRef = useRef(null);
-  const { isCartOpen } = useSelector(({ common }) => common);
+  const { isCartOpen, isChecked } = useSelector(({ common }) => common);
   const {
     cartLoading,
     cartList,
@@ -284,23 +284,77 @@ const CartPopup = () => {
                   </div>
                 ))}
               </div>
-              <div className="shrink-0 px-2 xs:px-6 bg-offwhite border-t-2 border-[#0000001A] py-4">
-                <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold md:pt-6">
+              <div className="shrink-0 px-2 xs:px-6 bg-offwhite border-t-2 border-[#0000001A] py-2 md:py-4">
+                <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold md:pt-4">
                   Order Total: <span>${getSubTotal()}</span>
                 </p>
-                <p className="text-basegray text-base mb-2 mt-8">
+                <p className="text-basegray text-base mb-2 mt-4">
                   Taxes and shipping calculated at checkout
                 </p>
+                <div className="flex items-start gap-2 mt-2 text-sm">
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    className="mt-2 cursor-pointer accent-primary"
+                    checked={isChecked}
+                    onChange={(e) => dispatch(setIsChecked(e.target.checked))}
+                  />
+                  <label
+                    htmlFor="terms"
+                    className="leading-tight text-baseblack text-sm md:text-base font-medium"
+                  >
+                    I have read, understood, and agree to the{" "}
+                    <Link
+                      href="/terms-and-conditions"
+                      className="text-primary underline"
+                      target="_blank"
+                    >
+                      Terms and Conditions
+                    </Link>
+                    , ,{" "}
+                    <Link
+                      href="/shipping-policy"
+                      className="text-primary underline"
+                      target="_blank"
+                    >
+                      Shipping Policy
+                    </Link>
+                    , and{" "}
+                    <Link
+                      href="/privacy-policy"
+                      className="text-primary underline"
+                      target="_blank"
+                    >
+                      Privacy Policy
+                    </Link>
+                    , and{" "}
+                    <Link
+                      href="/return-policy"
+                      className="text-primary underline"
+                      target="_blank"
+                    >
+                      Return Policy
+                    </Link>
+                    .
+                  </label>
+                </div>
+
                 <LinkButton
                   href="/checkout"
-                  className="!text-white !rounded-none !font-medium w-full !py-6 !bg-primary !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2"
-                  onClick={() => dispatch(setIsCartOpen(false))}
+                  className={`!text-white !rounded-none !font-medium !mt-4 w-full !py-2 md:!py-6 !bg-primary !text-lg hover:!border-primary hover:!bg-transparent hover:!text-primary !border-[#0000001A] ${
+                    !isChecked ? "cursor-not-allowed" : ""
+                  }`}
+                  onClick={(e) => {
+                    if (!isChecked) e.preventDefault();
+                    dispatch(setIsCartOpen(false));
+                  }}
                 >
                   SECURE CHECKOUT
                 </LinkButton>
-                <div className="mt-6">
+
+                <div className="mt-2 md:mt-6">
                   <div className="flex items-center gap-3">
-                    <p className="font-medium text-lg text-gray-500">
+                    <p className="font-medium text-base md:text-lg text-gray-500">
                       Pay With:
                     </p>
                     <div className="flex gap-3 xl:gap-6 flex-wrap">
@@ -310,7 +364,7 @@ const CartPopup = () => {
                           srcAttr={option.img}
                           titleAttr={option.titleAttr}
                           altAttr={option.altAttr}
-                          className="object-contain h-12 w-12 md:h-16 md:w-16 xl:h-auto xl:w-auto"
+                          className="object-contain h-10 w-10 md:h-12 md:w-12 xl:h-auto xl:w-auto"
                         />
                       ))}
                     </div>

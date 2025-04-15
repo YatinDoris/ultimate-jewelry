@@ -19,6 +19,7 @@ import {
   CustomImg,
   ProgressiveImg,
   ProductSwiper,
+  ProgressiveVed,
 } from "@/components/dynamiComponents";
 import DetailPageSkeleton from "@/components/ui/DetailPageSkeleton";
 import KeyFeatures from "@/components/ui/KeyFeatures";
@@ -34,6 +35,7 @@ import { LoadingPrimaryButton } from "@/components/ui/button";
 import { setIsHovered } from "@/store/slices/commonSlice";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import { setCartMessage } from "@/store/slices/cartSlice";
+import ProductDetailSwipperSm from "@/components/shop/ProductDetailSwipperSm";
 
 export const minProductQuantity = 1;
 export const maxProductQuantity = 5;
@@ -248,40 +250,49 @@ const ProductDetails = () => {
   ]);
 
   return (
-    <div className="pt-10 lg:pt-12 2xl:pt-16">
+    <div className="pt-28 lg:pt-12 2xl:pt-16">
       {productLoading ? (
         <DetailPageSkeleton />
       ) : (
         <>
           <div className="container grid grid-cols-1 lg:grid-cols-[55%_auto] gap-12">
-            <div className="grid grid-cols-1 xss:grid-cols-2 gap-4 auto-rows-min">
-              {productDetail?.video && (
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  height={100}
-                  width={100}
-                  playsInline
-                  className="w-full object-cover"
-                >
-                  <source src={productDetail?.video} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              )}
-              {productDetail?.thumbnailImage && (
-                <ProgressiveImg
-                  src={productDetail?.thumbnailImage}
-                  className="cursor-pointer transition-all duration-300 w-full"
-                />
-              )}
-              {productDetail?.images?.map((media, index) => (
-                <ProgressiveImg
-                  key={index}
-                  src={media?.image}
-                  className="cursor-pointer transition-all duration-300 w-full"
-                />
-              ))}
+            <div className="hidden lg:block">
+              {" "}
+              <div className="grid grid-cols-2 gap-4 auto-rows-min ">
+                {productDetail?.video && (
+                  <ProgressiveVed
+                    src={productDetail.video}
+                    type={helperFunctions?.getVideoType(productDetail?.video)}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+                {productDetail?.thumbnailImage && (
+                  <ProgressiveImg
+                    src={productDetail?.thumbnailImage}
+                    className="cursor-pointer transition-all duration-300 w-full"
+                  />
+                )}
+                {productDetail?.images?.map((media, index) => (
+                  <ProgressiveImg
+                    key={index}
+                    src={media?.image}
+                    className="cursor-pointer transition-all duration-300 w-full"
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="lg:hidden">
+              <ProductDetailSwipperSm
+                images={
+                  productDetail?.thumbnailImage
+                    ? [
+                        { image: productDetail.thumbnailImage },
+                        ...productDetail?.images,
+                      ]
+                    : productDetail?.images ?? []
+                }
+                video={productDetail?.video}
+              />
             </div>
 
             <div className="flex flex-col lg:p-6">

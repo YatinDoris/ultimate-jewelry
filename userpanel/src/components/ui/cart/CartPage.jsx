@@ -21,7 +21,7 @@ import Link from "next/link";
 import { LinkButton } from "@/components/ui/button";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import { setDeleteLoader } from "@/store/slices/cartSlice";
-
+import { setIsChecked } from "@/store/slices/commonSlice";
 const maxQuantity = 5;
 const minQuantity = 1;
 const paymentOptions = [
@@ -34,6 +34,7 @@ const paymentOptions = [
 const CartPage = () => {
   const dispatch = useDispatch();
 
+  const { isChecked } = useSelector(({ common }) => common);
   const {
     cartLoading,
     cartList,
@@ -140,6 +141,7 @@ const CartPage = () => {
       ) : cartList?.length ? (
         <>
           <CommonBgHeading title="Secure Shopping Cart" />
+
           <div className="flex flex-col lg:flex-row gap-6 container mx-auto">
             <div className="w-full lg:w-2/3">
               {cartList?.map((cartItem) => (
@@ -288,9 +290,62 @@ const CartPage = () => {
                 Grand Total: <span>${grandTotal}</span>
               </p>
 
+              <div className="flex items-start gap-2 mt-6 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  className="mt-2 cursor-pointer accent-primary"
+                  checked={isChecked}
+                  onChange={(e) => dispatch(setIsChecked(e.target.checked))}
+                />
+                <label
+                  htmlFor="terms"
+                  className="leading-tight text-baseblack text-sm md:text-lg font-medium"
+                >
+                  I have read, understood, and agree to the{" "}
+                  <Link
+                    href="/terms-and-conditions"
+                    className="text-primary underline"
+                    target="_blank"
+                  >
+                    Terms and Conditions
+                  </Link>
+                  , ,{" "}
+                  <Link
+                    href="/shipping-policy"
+                    className="text-primary underline"
+                    target="_blank"
+                  >
+                    Shipping Policy
+                  </Link>
+                  , and{" "}
+                  <Link
+                    href="/privacy-policy"
+                    className="text-primary underline"
+                    target="_blank"
+                  >
+                    Privacy Policy
+                  </Link>
+                  , and{" "}
+                  <Link
+                    href="/return-policy"
+                    className="text-primary underline"
+                    target="_blank"
+                  >
+                    Return Policy
+                  </Link>
+                  .
+                </label>
+              </div>
+
               <LinkButton
                 href="/checkout"
-                className="!text-white !rounded-none !font-medium  w-full !mt-10 lg:!mt-20 !py-6 !bg-primary !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2"
+                className={`!text-white !rounded-none !font-medium  w-full !mt-10 lg:!mt-20 !py-6 !bg-primary !text-lg hover:!border-primary hover:!bg-transparent hover:!text-primary !border-[#0000001A] ${
+                  !isChecked ? "cursor-not-allowed" : ""
+                }`}
+                onClick={(e) => {
+                  if (!isChecked) e.preventDefault();
+                }}
               >
                 SECURE CHECKOUT
               </LinkButton>

@@ -231,7 +231,14 @@ const getNameInitials = (firstName, lastName) => {
   const firstInitial = firstName.charAt(0).toUpperCase();
   const lastInitial = lastName.charAt(0).toUpperCase();
   return firstInitial + lastInitial;
-}
+};
+
+const getVideoType = (videoUrl) => {
+  const url = new URL(videoUrl);
+  const fileExtension = url.pathname.split(".").pop();
+  return `video/${fileExtension}`;
+};
+
 export const helperFunctions = {
   generateUniqueId,
   stringReplacedWithUnderScore,
@@ -254,5 +261,6 @@ export const helperFunctions = {
   getMinPriceVariCombo,
   getVariComboPriceQty,
   getSellingPrice,
-  getNameInitials
+  getNameInitials,
+  getVideoType,
 };

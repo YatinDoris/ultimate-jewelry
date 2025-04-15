@@ -11,7 +11,7 @@ export default function DetailPageSkeleton() {
     <div
       className={`container grid grid-cols-1 lg:grid-cols-[55%_auto] gap-12`}
     >
-      <div className="grid grid-cols-1 xss:grid-cols-2 gap-4 auto-rows-min">
+      <div className="grid grid-cols-2 gap-4 auto-rows-min">
         <SkeletonLoader height="w-full h-[200px] md:h-[300px]  2xl:h-[400px]" />
         <SkeletonLoader height="w-full h-[200px] md:h-[300px]  2xl:h-[400px]" />
         <SkeletonLoader height="w-full h-[200px] md:h-[300px]  2xl:h-[400px]" />

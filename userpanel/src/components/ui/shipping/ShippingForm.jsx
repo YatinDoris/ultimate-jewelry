@@ -259,7 +259,7 @@ const shippingForm = () => {
           loaderType={isHovered ? "" : "white"}
           onClick={submitShippingMethod}
         >
-          CONTINUE Shipping
+          CONTINUE PAYMENT
         </LoadingPrimaryButton>
       </div>
     </div>

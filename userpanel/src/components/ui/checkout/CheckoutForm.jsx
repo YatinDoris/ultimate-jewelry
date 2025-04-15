@@ -14,7 +14,11 @@ import {
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import { LoadingPrimaryButton } from "@/components/ui/button";
 import { messageType } from "@/_helper/constants";
-import { setIsHovered, setShowModal } from "@/store/slices/commonSlice";
+import {
+  setIsChecked,
+  setIsHovered,
+  setShowModal,
+} from "@/store/slices/commonSlice";
 import {
   setSelectedShippingAddress,
   setStandardizedAddress,
@@ -141,6 +145,7 @@ const CheckoutForm = () => {
           validateAddress(payload, abortControllerRef.current)
         );
         if (response.status === 200) {
+          dispatch(setIsChecked(false));
           dispatch(setShowModal(true));
           dispatch(setSelectedShippingAddress(fieldValues));
 
@@ -265,7 +270,7 @@ const CheckoutForm = () => {
   return (
     <>
       <form>
-        <div className="flex flex-col gap-6 pt-12">
+        <div className="flex flex-col gap-6 pt-8 lg:pt-12">
           <section className="border-2 border-[#0000001A] px-4 rounded-md">
             <h2 className="text-lg text-baseblack font-semibold pt-8">
               Contact Information

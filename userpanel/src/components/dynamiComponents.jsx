@@ -132,3 +132,24 @@ export const ShippingPage = dynamic(
 export const NotFoundPage = dynamic(() => import("./ui/NotFoundPage.jsx"), {
   ssr: false,
 });
+
+export const OrderSubmittedPage = dynamic(
+  () => import("./ui/order-submitted/OrderSubmittedPage.jsx"),
+  {
+    ssr: false,
+  }
+);
+
+export const ProductDetailSwipperSm = dynamic(
+  () => import("./shop/ProductDetailSwipperSm.jsx"),
+  {
+    ssr: false,
+  }
+);
+
+export const ProgressiveVed = dynamic(
+  () => import("./ui/progressive-ved.jsx"),
+  {
+    ssr: false,
+  }
+);

@@ -12,6 +12,7 @@ import { PrimaryLinkButton } from "@/components/ui/button";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
 import cartImage from "@/assets/images/cart/cart.webp";
 import KeyFeatures from "@/components/ui/KeyFeatures";
+import CheckoutBreadCrumbs from "./CheckoutBreadCrumbs";
 
 const Checkout = () => {
   const { cartLoading, cartList } = useSelector(({ cart }) => cart);
@@ -25,9 +26,12 @@ const Checkout = () => {
         <>
           <CommonBgHeading
             title="Secure Checkout"
-            backText="Back to Back"
+            backText="Back to Cart"
             backHref="/cart"
           />
+          <div className="px-4 md:container mt-8 lg:mt-12">
+            <CheckoutBreadCrumbs currentStep={0} />
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-[55%_auto] lg:gap-6 container mx-auto h-full">
             <div className="lg:hidden pt-8">
               <CheckoutCommonComponent />
