@@ -53,7 +53,7 @@ export default function NavigationHeader() {
   const staticLinks = [
     {
       title: "About Katanoff",
-      href: "/about",
+      href: "/about-us",
     },
     {
       title: "Education",

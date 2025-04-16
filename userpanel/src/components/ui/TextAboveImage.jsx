@@ -1,33 +1,38 @@
-import { LinkButton } from "../ui/button";
-import { CustomImg } from "../dynamiComponents";
+import { CustomImg, CustomVideo } from "../dynamiComponents";
+import Link from "next/link";
 
-const TextAboveImage = ({ categoryData }) => {
+const TextAboveImage = ({ categoryData, className, textClassName }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${className}`}>
       {categoryData.map((item, index) => (
-        <div
-          key={index}
-          className={`group relative overflow-hidden ${item.categoryClassname}`}
-        >
-          <CustomImg
-            srcAttr={item.image}
-            altAttr={item.altAttr}
-            titleAttr={item.titleAttr}
-            fill
-            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-          />
-          <div className="absolute bottom-[10%] left-1/2 -translate-x-[40%] gap-6 text-center text-white z-10 flex flex-col items-center justify-center">
-            <h3 className="text-lg md:text-2xl  2xl:text-3xl tracking-wider font-castoro">
-              {item.title}
+        <div key={index} className={`relative`}>
+          {item?.videoSrc ? (
+            <CustomVideo
+              videoSrc={item?.videoSrc}
+              thumbnail={item?.thumbnailImage}
+            />
+          ) : (
+            <CustomImg
+              srcAttr={item?.image}
+              altAttr={item?.altAttr}
+              titleAttr={item?.titleAttr}
+              className="object-contain"
+            />
+          )}
+          <div className="px-4 md:px-0 absolute bottom-10 left-1/2 -translate-x-1/2 inline-block lg:bottom-12 text-center  text-white gap-4 z-40">
+            <h3
+              className={`text-lg md:text-2xl 2xl:text-3xl tracking-wider ${textClassName}`}
+            >
+              {item?.title}
             </h3>
-            <div>
-              <LinkButton
-                href=""
-                className=" lg:!h-[2.3rem] w-fit !py-6 !bg-transparent font-semibold hover:!bg-white hover:!border-white hover:!text-black !rounded-none"
+            {item?.btnText ? (
+              <Link
+                href="#"
+                className="font-bold text-base lg:text-lg 2xl:text-2xl"
               >
-                {item.btnText}
-              </LinkButton>
-            </div>
+                {item?.btnText}
+              </Link>
+            ) : null}
           </div>
         </div>
       ))}
