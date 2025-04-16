@@ -1,7 +1,6 @@
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Country, State } from "country-state-city";
@@ -52,14 +51,15 @@ const validationSchema = yup.object({
     .max(6, "Must be exactly 6 digits"),
   address: yup.string().required("Address is Required"),
 });
+
 const CheckoutForm = () => {
-  const { cartList } = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
+  const abortControllerRef = useRef(null);
+
+  const { cartList } = useSelector(({ cart }) => cart);
   const { stateList, selectedShippingAddress } = useSelector(
     ({ checkout }) => checkout
   );
-  const router = useRouter();
-  const abortControllerRef = useRef(null);
-  const dispatch = useDispatch();
   const { validateAddressLoader, addressMessage, invalidAddressDetail } =
     useSelector(({ address }) => address);
   const { isHovered } = useSelector(({ common }) => common);
@@ -91,10 +91,8 @@ const CheckoutForm = () => {
     };
   }, [selectedShippingAddress]);
 
-  let currentUser = "";
-  const userData = helperFunctions.getCurrentUser();
-  if (userData) {
-    currentUser = userData;
+  const currentUser = helperFunctions.getCurrentUser();
+  if (currentUser) {
     initialValues.email = currentUser.email;
   }
 
@@ -267,19 +265,19 @@ const CheckoutForm = () => {
   };
   const inputClassName =
     "!font-medium md:!text-base placeholder:font-medium w-full  2xl:!p-2";
+  const labelClassName =
+    "block uppercase text-sm font-semibold text-gray-66 mb-1";
   return (
     <>
       <form>
         <div className="flex flex-col gap-6 pt-8 lg:pt-12">
-          <section className="border-2 border-[#0000001A] px-4 rounded-md">
+          <section className="border-2 border-black_opacity_10 px-4 rounded-md">
             <h2 className="text-lg text-baseblack font-semibold pt-8">
               Contact Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
               <div>
-                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
-                  First Name
-                </label>
+                <label className={labelClassName}>First Name</label>
                 <input
                   type="text"
                   name="firstName"
@@ -290,15 +288,11 @@ const CheckoutForm = () => {
                   value={values?.firstName || ""}
                 />
                 {touched?.firstName && errors?.firstName && (
-                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
-                    {errors?.firstName}
-                  </p>
+                  <ErrorMessage message={errors?.firstName}></ErrorMessage>
                 )}
               </div>
               <div>
-                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
-                  Last Name
-                </label>
+                <label className={labelClassName}>Last Name</label>
                 <input
                   type="text"
                   placeholder="Last name"
@@ -309,13 +303,11 @@ const CheckoutForm = () => {
                   value={values?.lastName || ""}
                 />
                 {touched?.lastName && errors?.lastName && (
-                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
-                    {errors?.lastName}
-                  </p>
+                  <ErrorMessage message={errors?.lastName}></ErrorMessage>
                 )}
               </div>
               <div className="md:col-span-2 ">
-                <label className="block upercase text-sm font-semibold text-[#666666] mb-1">
+                <label className="block upercase text-sm font-semibold text-gray-66 mb-1">
                   Phone Number
                 </label>
                 <input
@@ -328,15 +320,11 @@ const CheckoutForm = () => {
                   value={values?.phone || ""}
                 />
                 {touched?.phone && errors?.phone && (
-                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
-                    {errors?.phone}
-                  </p>
+                  <ErrorMessage message={errors?.phone}></ErrorMessage>
                 )}
               </div>
               <div className="md:col-span-2 pb-8">
-                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
-                  Email Address
-                </label>
+                <label className={labelClassName}>Email Address</label>
                 <input
                   type="email"
                   placeholder="Your Email"
@@ -345,25 +333,23 @@ const CheckoutForm = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values?.email || ""}
-                  readOnly={!!userData?.email} // 👈 this line disables editing if userData.email exists
+                  readOnly={!!currentUser?.email} // 👈 this line disables editing if currentUser.email exists
                 />
 
                 {touched?.email && errors?.email && (
-                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
-                    {errors?.email}
-                  </p>
+                  <ErrorMessage message={errors?.email}></ErrorMessage>
                 )}
               </div>
             </div>
           </section>
 
-          <section className="border-2 border-[#0000001A] px-4 rounded-md">
+          <section className="border-2 border-black_opacity_10 px-4 rounded-md">
             <h2 className="text-lg uppercase font-semibold pt-8">
               Shipping Address
             </h2>
             <div className="flex flex-col gap-6 pt-6">
               <div>
-                <label className="block text-sm font-semibold text-[#666666] mb-1">
+                <label className="block text-sm font-semibold text-gray-66 mb-1">
                   House No, Street Name
                 </label>
                 <input
@@ -376,15 +362,11 @@ const CheckoutForm = () => {
                   value={values?.address || ""}
                 />
                 {touched?.address && errors?.address && (
-                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
-                    {errors?.address}
-                  </p>
+                  <ErrorMessage message={errors?.address}></ErrorMessage>
                 )}
               </div>
               <div>
-                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
-                  Country *
-                </label>
+                <label className={labelClassName}>Country *</label>
                 <input
                   type="text"
                   placeholder="Country"
@@ -396,15 +378,11 @@ const CheckoutForm = () => {
                   value={values?.country || ""}
                 />
                 {touched?.country && errors?.country && (
-                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
-                    {errors?.country}
-                  </p>
+                  <ErrorMessage message={errors?.country}></ErrorMessage>
                 )}
               </div>
               <div>
-                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
-                  Company
-                </label>
+                <label className={labelClassName}>Company</label>
                 <input
                   type="text"
                   placeholder="Enter Company (Optional)"
@@ -416,9 +394,7 @@ const CheckoutForm = () => {
                 />
               </div>
               <div>
-                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
-                  Apartment
-                </label>
+                <label className={labelClassName}>Apartment</label>
                 <input
                   type="text"
                   placeholder="Enter Apartment"
@@ -430,9 +406,7 @@ const CheckoutForm = () => {
                 />
               </div>
               <div>
-                <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
-                  Town / City *
-                </label>
+                <label className={labelClassName}>Town / City *</label>
                 <input
                   type="text"
                   placeholder="Town / City"
@@ -443,16 +417,12 @@ const CheckoutForm = () => {
                   name="city"
                 />
                 {touched?.city && errors?.city && (
-                  <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
-                    {errors?.city}
-                  </p>
+                  <ErrorMessage message={errors?.city}></ErrorMessage>
                 )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8">
                 <div>
-                  <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
-                    State
-                  </label>
+                  <label className={labelClassName}>State</label>
                   <select
                     name="stateCode"
                     value={values.stateCode || ""}
@@ -479,16 +449,12 @@ const CheckoutForm = () => {
                   </select>
 
                   {touched.stateCode && errors.stateCode && (
-                    <p className="text-left text-sm text-rose-500 mt-1">
-                      {errors.stateCode}
-                    </p>
+                    <ErrorMessage message={errors?.stateCode}></ErrorMessage>
                   )}
                 </div>
 
                 <div>
-                  <label className="block uppercase text-sm font-semibold text-[#666666] mb-1">
-                    Zip Code
-                  </label>
+                  <label className={labelClassName}>Zip Code</label>
                   <input
                     type="text"
                     placeholder="Zip Code"
@@ -499,9 +465,7 @@ const CheckoutForm = () => {
                     name="zipCode"
                   />
                   {touched?.zipCode && errors?.zipCode && (
-                    <p className="text-left text-sm 2xl:text-lg text-rose-500 ml-2">
-                      {errors?.zipCode}
-                    </p>
+                    <ErrorMessage message={errors?.zipCode}></ErrorMessage>
                   )}
                 </div>
               </div>
@@ -530,7 +494,7 @@ const CheckoutForm = () => {
                   <h4 className="font-semibold text-red-600 mb-2">
                     Unconfirmed:
                   </h4>
-                  <ul className="list-inside text-red-600 text-sm">
+                  <ul className="list-inside text-red-500 text-sm">
                     {invalidAddressDetail.unconfirmedComponentTypes.map(
                       (componentType, index) => (
                         <li key={index}>{componentType.replace(/_/g, " ")}</li>
@@ -543,7 +507,7 @@ const CheckoutForm = () => {
               {invalidAddressDetail?.missingComponentTypes?.length > 0 && (
                 <div className="flex-1">
                   <h4 className="font-semibold text-red-600 mb-2">Missing:</h4>
-                  <ul className="list-inside text-red-600 text-sm">
+                  <ul className="list-inside text-red-500 text-sm">
                     {invalidAddressDetail.missingComponentTypes.map(
                       (componentType, index) => (
                         <li key={index}>{componentType}</li>

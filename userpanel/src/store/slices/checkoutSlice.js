@@ -29,9 +29,6 @@ const checkoutSlice = createSlice({
     setSelectedShippingCharge: (state, action) => {
       state.selectedShippingCharge = action.payload;
     },
-    setIsSubmitted: (state, action) => {
-      state.isSubmitted = action.payload;
-    },
     setIsNewYorkState: (state, action) => {
       state.isNewYorkState = action.payload;
     },
@@ -44,7 +41,6 @@ export const {
   setSelectedShippingAddress,
   setActiveIndex,
   setSelectedShippingCharge,
-  setIsSubmitted,
   setIsNewYorkState,
 } = checkoutSlice.actions;
 

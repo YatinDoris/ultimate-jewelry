@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const CommonBgHeading = ({ title, backText, backHref = "/" }) => {
   return (
-    <div className="w-full bg-[#F3F2ED] py-6">
+    <div className="w-full bg-alabaster py-6">
       <div className=" mx-auto px-4 flex items-center justify-center relative container">
         {backText && (
           <Link

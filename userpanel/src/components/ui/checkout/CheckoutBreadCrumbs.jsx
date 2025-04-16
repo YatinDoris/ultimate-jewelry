@@ -1,16 +1,19 @@
 const steps = ["Delivery", "Shipping", "Payment", "Order Success"];
 import breadCrumbArrow from "@/assets/icons/breadCrumbArrow.svg";
 import { CustomImg } from "@/components/dynamiComponents";
+
 const CheckoutBreadCrumbs = ({ currentStep }) => {
   return (
-    <div className="flex items-stretch bg-[#F7F7F7] border border-[#E2E2E2] justify-center md:justify-start mx-auto md:mx-0 rounded overflow-hidden max-w-fit md:max-w-3xl w-full">
+    <div className="flex  bg-[#F7F7F7] border border-gray-e2 w-fit">
       {steps.map((step, index) => (
-        <div key={step} className="flex items-center md:flex-1 min-w-0">
+        <div key={`breadcrumb-${index}`} className="flex items-center">
           {/* Step */}
-          <div className="md:flex-1 px-2 sm:px-6 md:px-4 py-3 text-center whitespace-nowrap">
+          <div className="px-3 py-3 xss:px-5 text-center whitespace-nowrap">
             <span
-              className={`text-sm sm:text-base ${
-                index === currentStep ? "font-bold text-black" : "text-gray-500"
+              className={`text-base  ${
+                index === currentStep
+                  ? "font-bold text-baseblack md:!text-xl"
+                  : "text-gray-500"
               }`}
             >
               <span className="hidden md:inline">

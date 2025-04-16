@@ -12,6 +12,7 @@ const initialState = {
   openProfileDropdown: false,
   showModal: false,
   isChecked: false,
+  isSubmitted: false,
 };
 
 const commonSlice = createSlice({
@@ -20,7 +21,7 @@ const commonSlice = createSlice({
   reducers: {
     // Header
     setMenuLoading: (state, action) => {
-      state.menuLoading = action.payload
+      state.menuLoading = action.payload;
     },
     setMenuList: (state, action) => {
       state.menuList = action.payload;
@@ -54,6 +55,9 @@ const commonSlice = createSlice({
     setIsChecked(state, action) {
       state.isChecked = action.payload;
     },
+    setIsSubmitted(state, action) {
+      state.isSubmitted = action.payload;
+    },
   },
 });
 
@@ -69,6 +73,7 @@ export const {
   setOpenProfileDropdown,
   setShowModal,
   setIsChecked,
+  setIsSubmitted,
 } = commonSlice.actions;
 
 export default commonSlice.reducer;

@@ -205,7 +205,7 @@ const Home = () => {
                 titleAttr={shape.title}
                 className="w-16 h-16 object-contain"
               />
-              <span className="text-base pt-4 transition-colors duration-200 text-[#2B2B2B]">
+              <span className="text-base pt-4 transition-colors duration-200 text-baseblack">
                 {shape.title}
               </span>
             </Link>
@@ -229,7 +229,7 @@ const Home = () => {
       </section>
 
       {/* Complimentary Matching Wedding Band */}
-      <section className="bg-[#F3F2ED] mt-16 lg:mt-20 2xl:mt-40">
+      <section className="bg-alabaster mt-16 lg:mt-20 2xl:mt-40">
         <div className="container grid grid-cols-1 lg:grid-cols-2 py-10 md:py-16 lg:py-0 relative h-[80vh] md:h-[60vh] place-items-center">
           <div className="relative w-full h-44 2xl:h-52">
             {images.map((img, index) => (

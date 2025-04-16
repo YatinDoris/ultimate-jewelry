@@ -157,3 +157,10 @@ export const ProgressiveVed = dynamic(
 export const CustomVideo = dynamic(() => import("./ui/custom-video.jsx"), {
   ssr: false,
 });
+
+export const CartNotFound = dynamic(
+  () => import("./ui/cart/CartNotFound.jsx"),
+  {
+    ssr: false,
+  }
+);

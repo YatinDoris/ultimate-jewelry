@@ -17,6 +17,7 @@ import { messageType } from "@/_helper/constants";
 import openEye from "@/assets/icons/open-eye.svg";
 import closeEye from "@/assets/icons/close-eye.svg";
 import { CustomImg } from "../dynamiComponents";
+import ErrorMessage from "../ui/ErrorMessage";
 
 // ----------------------------------------------------------------------
 
@@ -149,7 +150,7 @@ const SignUpForm = () => {
               value={values?.firstName}
             />
             {touched?.firstName && errors?.firstName ? (
-              <p className="text-red-500 text-sm mt-1">{errors?.firstName}</p>
+              <ErrorMessage message={errors?.firstName} />
             ) : null}
           </div>
 
@@ -169,7 +170,7 @@ const SignUpForm = () => {
               value={values?.lastName}
             />
             {touched?.lastName && errors?.lastName ? (
-              <p className="text-red-500 text-sm mt-1">{errors?.lastName}</p>
+              <ErrorMessage message={errors?.lastName} />
             ) : null}
           </div>
 
@@ -187,7 +188,7 @@ const SignUpForm = () => {
               value={values?.email}
             />
             {touched?.email && errors?.email ? (
-              <p className="text-red-500 text-sm mt-1">{errors?.email}</p>
+              <ErrorMessage message={errors?.email} />
             ) : null}
           </div>
 
@@ -210,7 +211,7 @@ const SignUpForm = () => {
               {ShowHidePassword}
             </div>
             {touched?.password && errors?.password ? (
-              <p className="text-red-500 text-sm mt-1">{errors?.password}</p>
+              <ErrorMessage message={errors?.password} />
             ) : null}
           </div>
 
@@ -233,9 +234,7 @@ const SignUpForm = () => {
               {ShowHidePassword}
             </div>
             {touched?.confirmPassword && errors?.confirmPassword ? (
-              <p className="text-red-500 text-sm mt-1">
-                {errors?.confirmPassword}
-              </p>
+              <ErrorMessage message={errors?.confirmPassword} />
             ) : null}
           </div>
         </div>

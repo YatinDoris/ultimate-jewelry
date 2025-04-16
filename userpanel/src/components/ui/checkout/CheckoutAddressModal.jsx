@@ -1,10 +1,11 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "../Modal";
-import { Button, LoadingPrimaryButton, PrimaryButton } from "../button";
+import { GrayButton, LoadingPrimaryButton } from "../button";
 import {
   setIsChecked,
   setIsHovered,
+  setIsSubmitted,
   setShowModal,
 } from "@/store/slices/commonSlice";
 import { useCallback } from "react";
@@ -18,10 +19,12 @@ const AddressVerificationModal = ({ onClose }) => {
   const { standardizedAddress, selectedShippingAddress } = useSelector(
     ({ checkout }) => checkout
   );
-  const { isHovered } = useSelector(({ common }) => common);
+  const { isHovered, isSubmitted, isChecked } = useSelector(
+    ({ common }) => common
+  );
 
-  const { isChecked } = useSelector(({ common }) => common);
   const { addressLoader } = useSelector(({ address }) => address);
+
   const enteredAddress = {
     address: selectedShippingAddress?.address,
     apartment: selectedShippingAddress?.apartment,
@@ -33,7 +36,8 @@ const AddressVerificationModal = ({ onClose }) => {
   };
 
   const handleConfirm = useCallback(() => {
-    if (!selectedShippingAddress) return;
+    dispatch(setIsSubmitted(true));
+    if (!selectedShippingAddress || !isChecked) return;
     dispatch(setAddressLoader(true));
     const formsValue = {
       email: selectedShippingAddress?.email,
@@ -54,12 +58,18 @@ const AddressVerificationModal = ({ onClose }) => {
     router.push("/shipping");
     localStorage.removeItem("selectedShippingMethod");
     checkoutModalClose();
-  }, [selectedShippingAddress]);
+  }, [selectedShippingAddress, isChecked]);
 
   const checkoutModalClose = () => {
+    resetValues();
+  };
+
+  const resetValues = useCallback(() => {
+    dispatch(setIsSubmitted(false));
+    dispatch(setIsChecked(false));
     dispatch(setShowModal(false));
     dispatch(setStandardizedAddress(""));
-  };
+  }, []);
 
   const formatAddress = (addr) => {
     if (!addr) return "";
@@ -84,26 +94,22 @@ const AddressVerificationModal = ({ onClose }) => {
       onClose={onClose}
       footer={
         <div className="flex gap-6">
-          <Button
-            onClick={checkoutModalClose}
-            className="!bg-[#E5E5E5] !text-black text-lg px-6 py-2  font-medium uppercase !w-[103px] !h-12 2xl:!h-16 lg:!h-[44.5px] xl:!h-11 "
-          >
+          <GrayButton title="CANCEL" onClick={checkoutModalClose}>
             Cancel
-          </Button>
+          </GrayButton>
           <div
             onMouseEnter={() => dispatch(setIsHovered(true))}
             onMouseLeave={() => dispatch(setIsHovered(false))}
           >
             <LoadingPrimaryButton
+              title="CONFIRM"
               loading={addressLoader}
-              disabled={!isChecked || addressLoader}
+              disabled={addressLoader}
               loaderType={isHovered ? "" : "white"}
-              onClick={isChecked ? handleConfirm : undefined}
-              className={`uppercase ${
-                !isChecked || addressLoader ? "cursor-not-allowed" : ""
-              }`}
+              onClick={handleConfirm}
+              className={`uppercase`}
             >
-              Confirm
+              CONFIRM
             </LoadingPrimaryButton>
           </div>
         </div>
@@ -121,9 +127,9 @@ const AddressVerificationModal = ({ onClose }) => {
           </div>
 
           <div className="hidden xl:flex absolute z-50 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center">
-            <div className="w-2 h-2 rounded-full bg-[#DBDBDB]" />
-            <div className="w-16 border-t-2 border-dotted border-[#DBDBDB] mx-1" />
-            <div className="w-2 h-2 rounded-full bg-[#DBDBDB]" />
+            <div className="w-2 h-2 rounded-full bg-gray-lightest" />
+            <div className="w-16 border-t-2 border-dotted border-gray-lightest mx-1" />
+            <div className="w-2 h-2 rounded-full bg-gray-lightest" />
           </div>
 
           <div className="bg-white p-4 w-full md:w-[380px] flex flex-col justify-between z-10">
@@ -135,16 +141,23 @@ const AddressVerificationModal = ({ onClose }) => {
             </p>
           </div>
         </div>
-        <label className="flex items-start gap-2 text-base md:text-lg text-baseblack">
+        <div className="flex items-start gap-2 text-base md:text-lg text-baseblack">
           <input
             type="checkbox"
+            id="addreess-confirm"
+            className={`mt-2 cursor-pointer accent-primary rounded-sm ring-1 ring-transparent ${
+              isSubmitted && !isChecked
+                ? " !ring-red-500 appearance-none p-1.5"
+                : ""
+            }`}
             checked={isChecked}
             onChange={(e) => dispatch(setIsChecked(e.target.checked))}
-            className="accent-baseblack text-baseblack mt-2"
           />
-          I understand that my address is verified, and I want to proceed with
-          this entered address.
-        </label>
+          <label htmlFor="addreess-confirm">
+            I understand that my address is verified, and I want to proceed with
+            this entered address.
+          </label>
+        </div>
       </div>
     </Modal>
   );

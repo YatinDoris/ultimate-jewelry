@@ -19,6 +19,7 @@ import {
   fetchCart,
   insertMultipleProductsIntoCart,
 } from "@/_actions/cart.action";
+import ErrorMessage from "../ui/ErrorMessage";
 
 // ----------------------------------------------------------------------
 
@@ -225,9 +226,10 @@ const VerifyOTPForm = () => {
           ))}
         </div>
         {touched.otp && errors.otp && (
-          <p className="text-red-500 text-sm mt-2">
-            Please enter a valid 6-digit OTP
-          </p>
+          <ErrorMessage
+            message={"Please enter a valid 6-digit OTP"}
+            className="mt-2"
+          />
         )}
       </div>
       <div

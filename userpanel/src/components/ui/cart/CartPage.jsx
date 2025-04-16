@@ -1,7 +1,11 @@
 "use client";
 import { useCallback, useEffect } from "react";
 import deleteIcon from "@/assets/icons/delete.svg";
-import { CustomImg, ProgressiveImg } from "@/components/dynamiComponents";
+import {
+  CartNotFound,
+  CustomImg,
+  ProgressiveImg,
+} from "@/components/dynamiComponents";
 import stripe from "@/assets/images/cart/stripe.webp";
 import paypal from "@/assets/images/cart/paypal.webp";
 import snapFinance from "@/assets/images/cart/snapFinance.webp";
@@ -18,10 +22,12 @@ import {
 } from "@/_actions/cart.action";
 import { helperFunctions } from "@/_helper";
 import Link from "next/link";
-import { LinkButton } from "@/components/ui/button";
+import { LinkButton, PrimaryButton } from "@/components/ui/button";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import { setDeleteLoader } from "@/store/slices/cartSlice";
-import { setIsChecked } from "@/store/slices/commonSlice";
+import { setIsChecked, setIsSubmitted } from "@/store/slices/commonSlice";
+import { useRouter } from "next/navigation";
+import ErrorMessage from "../ErrorMessage";
 const maxQuantity = 5;
 const minQuantity = 1;
 const paymentOptions = [
@@ -33,8 +39,9 @@ const paymentOptions = [
 
 const CartPage = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  const { isChecked } = useSelector(({ common }) => common);
+  const { isChecked, isSubmitted } = useSelector(({ common }) => common);
   const {
     cartLoading,
     cartList,
@@ -47,6 +54,7 @@ const CartPage = () => {
 
   useEffect(() => {
     dispatch(fetchCart());
+    resetValues();
   }, []);
 
   const loadData = useCallback(() => {
@@ -134,13 +142,18 @@ const CartPage = () => {
 
   const grandTotal = getSubTotal();
 
+  const resetValues = useCallback(() => {
+    dispatch(setIsSubmitted(false));
+    dispatch(setIsChecked(false));
+  }, []);
+
   return (
     <div className="mx-auto pt-10 lg:pt-10 2xl:pt-12">
       {cartLoading ? (
         <CartSkeleton />
       ) : cartList?.length ? (
         <>
-          <CommonBgHeading title="Secure Shopping Cart" />
+          <CommonBgHeading title="Shopping Cart" />
 
           <div className="flex flex-col lg:flex-row gap-6 container mx-auto">
             <div className="w-full lg:w-2/3">
@@ -149,8 +162,8 @@ const CartPage = () => {
                   className="bg-white mb-6 py-6 px-2 xs:px-6"
                   key={cartItem.id}
                 >
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex-shrink-0 border border-[#F3F2ED]">
+                  <div className="flex flex-col md:flex-row  justify-between gap-8">
+                    <div className="flex-shrink-0 border border-alabaster">
                       <ProgressiveImg
                         src={cartItem?.productImage}
                         alt={cartItem?.productName}
@@ -186,7 +199,7 @@ const CartPage = () => {
                       <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
                         {cartItem.variations.map((variItem) => (
                           <div
-                            className="border-2 border-[#0000001A] text-sm xs:text-base p-1 px-2 font-medium"
+                            className="border-2 border-black_opacity_10 text-sm xs:text-base p-1 px-2 font-medium"
                             key={variItem.variationId}
                           >
                             <span className="font-bold">
@@ -199,7 +212,7 @@ const CartPage = () => {
 
                       <div className="flex items-center space-x-2 pt-4">
                         <h3 className="text-lg font-medium">Qty:</h3>
-                        <div className="flex items-center bg-[#F3F2ED] px-2">
+                        <div className="flex items-center bg-alabaster px-2">
                           <button
                             className={`px-1 py-1 text-xl font-medium text-black ${
                               cartItem?.quantity <= minQuantity
@@ -215,9 +228,7 @@ const CartPage = () => {
                           </button>
                           {selectedCartItem.id === cartItem.id &&
                           updateCartQtyErrorMessage ? (
-                            <p className="text-red-600 text-lg">
-                              {updateCartQtyErrorMessage}
-                            </p>
+                            <ErrorMessage message={updateCartQtyErrorMessage} />
                           ) : null}
                           <span className="px-4 text-xl font-medium text-black">
                             {cartItem.quantity}
@@ -255,9 +266,7 @@ const CartPage = () => {
                         </button>
                         {selectedCartItem.id === cartItem.id &&
                         removeCartErrorMessage ? (
-                          <p className="text-red-600 text-lg">
-                            {removeCartErrorMessage}
-                          </p>
+                          <ErrorMessage message={removeCartErrorMessage} />
                         ) : null}
                       </div>
                     </div>
@@ -268,7 +277,7 @@ const CartPage = () => {
               <div className="mt-4 flex flex-col md:flex-row gap-6">
                 <LinkButton
                   href="/"
-                  className="!text-baseblack !font-medium  w-fit !py-6 !bg-transparent !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2"
+                  className="!text-baseblack !font-medium  w-fit !py-6 !bg-transparent !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-black_opacity_10 !border-2"
                 >
                   Continue Shopping
                 </LinkButton>
@@ -285,22 +294,26 @@ const CartPage = () => {
               <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
                 Subtotal: <span className="">${getSubTotal()}</span>
               </p>
-              <p className="my-4 border-t-2 border-[#0000001A]" />
+              <p className="my-4 border-t-2 border-black_opacity_10" />
               <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold pt-2">
                 Grand Total: <span>${grandTotal}</span>
               </p>
 
-              <div className="flex items-start gap-2 mt-6 text-sm text-gray-700">
+              <div className="flex items-start gap-2 mt-3 text-sm">
                 <input
                   type="checkbox"
                   id="terms"
-                  className="mt-2 cursor-pointer accent-primary"
+                  className={`mt-2 cursor-pointer accent-primary rounded-sm ring-1 ring-transparent ${
+                    isSubmitted && !isChecked
+                      ? " !ring-red-500 appearance-none p-1.5"
+                      : ""
+                  }`}
                   checked={isChecked}
                   onChange={(e) => dispatch(setIsChecked(e.target.checked))}
                 />
                 <label
                   htmlFor="terms"
-                  className="leading-tight text-baseblack text-sm md:text-lg font-medium"
+                  className="leading-tight text-baseblack text-sm md:text-base font-medium"
                 >
                   I have read, understood, and agree to the{" "}
                   <Link
@@ -310,7 +323,7 @@ const CartPage = () => {
                   >
                     Terms and Conditions
                   </Link>
-                  , ,{" "}
+                  ,{" "}
                   <Link
                     href="/shipping-policy"
                     className="text-primary underline"
@@ -318,7 +331,7 @@ const CartPage = () => {
                   >
                     Shipping Policy
                   </Link>
-                  , and{" "}
+                  ,
                   <Link
                     href="/privacy-policy"
                     className="text-primary underline"
@@ -337,18 +350,19 @@ const CartPage = () => {
                   .
                 </label>
               </div>
-
-              <LinkButton
-                href="/checkout"
-                className={`!text-white !rounded-none !font-medium  w-full !mt-10 lg:!mt-20 !py-6 !bg-primary !text-lg hover:!border-primary hover:!bg-transparent hover:!text-primary !border-[#0000001A] ${
-                  !isChecked ? "cursor-not-allowed" : ""
-                }`}
-                onClick={(e) => {
-                  if (!isChecked) e.preventDefault();
+              <PrimaryButton
+                title="SECURE CHECKOUT"
+                className={"w-full mt-5"}
+                onClick={() => {
+                  dispatch(setIsSubmitted(true));
+                  if (isChecked) {
+                    resetValues();
+                    router.push("/checkout");
+                  }
                 }}
               >
                 SECURE CHECKOUT
-              </LinkButton>
+              </PrimaryButton>
 
               <p className="text-sm font-medium text-baseblack mt-4">
                 Made-To-Order. Estimated Ship Date: Wednesday, April 9th
@@ -384,25 +398,7 @@ const CartPage = () => {
           </section>
         </>
       ) : (
-        <div className="flex flex-col items-center h-[80vh] lg:h-[80vh] justify-center align-middle mx-auto my-auto  text-center px-4">
-          <CustomImg
-            srcAttr={cartImage}
-            altAttr=""
-            titleAttr=""
-            className="mb-6 w-80"
-          />
-
-          <p className="text-lg md:text-xl 2xl:text-3xl font-medium font-castoro text-baseblack">
-            Oops! Your cart is empty. Let’s fix that <br /> with some stunning
-            jewelry
-          </p>
-          <LinkButton
-            href="/"
-            className="!text-white !rounded-none !font-medium !mt-8 w-fit !px-16 !py-6 !bg-primary !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2 uppercase"
-          >
-            Back To Shop
-          </LinkButton>
-        </div>
+        <CartNotFound textClassName="px-4 md:px-8 w-full md:w-[50%] lg:w-[35%] 2xl:w-[32%]" />
       )}
     </div>
   );
