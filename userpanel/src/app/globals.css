@@ -47,6 +47,12 @@
   --offwhite: #fafaf8;
   --baseblack: #2b2b2b;
   --basegray: #828282;
+  --alabaster: #F3F2ED;
+  --black_opacity_10: #0000001A;
+  --gray-66: #666666;
+  --gray-c8: #C8C8C6;
+  --gray-lightest: #DBDBDB;
+  --gray-e2: #E2E2E2;
 }
 
 html,

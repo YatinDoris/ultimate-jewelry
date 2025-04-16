@@ -8,6 +8,12 @@ module.exports = {
         offwhite: "var(--offwhite)",
         baseblack: "var(--baseblack)",
         basegray: "var(--basegray)",
+        alabaster: "var(--alabaster)",
+        black_opacity_10: "var(--black_opacity_10)",
+        "gray-66": "var(--gray-66)",
+        "gray-c8": "var(--gray-c8)",
+        "gray-lightest": "var(--gray-lightest)",
+        "gray-e2": "var(--gray-e2)",
       },
     },
 

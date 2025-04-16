@@ -145,3 +145,19 @@ export const LoadingPrimaryButton = ({
     </Button>
   );
 };
+const containedGrayBtn =
+  "!bg-[#E5E5E5] !text-black text-lg px-6 py-2  font-medium uppercase !h-12 2xl:!h-16 lg:!h-[44.5px] xl:!h-11";
+
+export const GrayButton = ({ className, ...rest }) => {
+  return <Button className={`${containedGrayBtn} ${className}`} {...rest} />;
+};
+
+export const GrayLinkButton = ({ className, href = "#", ...rest }) => {
+  return (
+    <LinkButton
+      href={href}
+      className={`${containedGrayBtn} ${className}`}
+      {...rest}
+    />
+  );
+};

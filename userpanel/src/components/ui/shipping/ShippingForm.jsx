@@ -6,7 +6,6 @@ import {
 import { helperFunctions } from "@/_helper";
 import {
   setActiveIndex,
-  setIsSubmitted,
   setSelectedShippingAddress,
   setSelectedShippingCharge,
 } from "@/store/slices/checkoutSlice";
@@ -21,13 +20,13 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { LoadingPrimaryButton } from "../button";
-import { setIsHovered } from "@/store/slices/commonSlice";
+import { setIsHovered, setIsSubmitted } from "@/store/slices/commonSlice";
 import ErrorMessage from "../ErrorMessage";
 
 const shippingForm = () => {
-  const router = useRouter();
-  const abortControllerRef = useRef(null);
   const dispatch = useDispatch();
+  const router = useRouter();
+
   const { isHovered } = useSelector(({ common }) => common);
   const {
     isSubmitted,
@@ -41,6 +40,7 @@ const shippingForm = () => {
 
   const [selectedMethod, setSelectedMethod] = useState("");
 
+  const abortControllerRef = useRef(null);
   const clearAbortController = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -211,7 +211,7 @@ const shippingForm = () => {
         <h3 className="font-semibold text-lg mb-3">Shipping Method:</h3>
         <div className="flex flex-col gap-2 md:gap-4">
           {shippingOptions.map((option) => (
-            <label
+            <div
               key={option.name}
               className={`flex justify-between items-center px-4 py-4 cursor-pointer ${
                 selectedMethod === option.name
@@ -240,21 +240,24 @@ const shippingForm = () => {
               <span className="md:text-xl text-lg text-baseblack font-semibold">
                 ${option.price.toLocaleString()}
               </span>
-            </label>
+            </div>
           ))}
           {isSubmitted && paymentMessage?.message ? (
             <ErrorMessage message={paymentMessage?.message} />
           ) : null}
         </div>
+        <span className="mt-5 font-normal text-gray-500">
+          <b className="text-baseblack">Note :</b> Free shipping over 199
+        </span>
       </div>
 
       <div
-        className="uppercase mt-6 2xl:mt-8 w-full"
+        className="uppercase mt-5 2xl:mt-8 w-full"
         onMouseEnter={() => dispatch(setIsHovered(true))}
         onMouseLeave={() => dispatch(setIsHovered(false))}
       >
         <LoadingPrimaryButton
-          className="w-full uppercase hover:!text-primary"
+          className="w-full uppercase"
           loading={loading}
           loaderType={isHovered ? "" : "white"}
           onClick={submitShippingMethod}

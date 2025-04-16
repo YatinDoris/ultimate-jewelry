@@ -8,17 +8,23 @@ import {
 } from "@/_actions/cart.action";
 import { helperFunctions } from "@/_helper";
 import Link from "next/link";
-import { LinkButton } from "@/components/ui/button";
+import { GrayLinkButton, PrimaryButton } from "@/components/ui/button";
 import deleteIcon from "@/assets/icons/delete.svg";
 import cartImage from "@/assets/images/cart/cart.webp";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsCartOpen, setIsChecked } from "@/store/slices/commonSlice";
+import {
+  setIsCartOpen,
+  setIsChecked,
+  setIsSubmitted,
+} from "@/store/slices/commonSlice";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
 import stripe from "@/assets/images/cart/stripe.webp";
 import paypal from "@/assets/images/cart/paypal.webp";
 import snapFinance from "@/assets/images/cart/snapFinance.webp";
 import acima from "@/assets/images/cart/acima.webp";
-import { CustomImg, ProgressiveImg } from "../dynamiComponents";
+import { CartNotFound, CustomImg, ProgressiveImg } from "../dynamiComponents";
+import { useRouter } from "next/navigation";
+import ErrorMessage from "./ErrorMessage";
 
 const maxQuantity = 5;
 const minQuantity = 1;
@@ -31,8 +37,12 @@ const paymentOptions = [
 
 const CartPopup = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
+
   const contentRef = useRef(null);
-  const { isCartOpen, isChecked } = useSelector(({ common }) => common);
+  const { isCartOpen, isChecked, isSubmitted } = useSelector(
+    ({ common }) => common
+  );
   const {
     cartLoading,
     cartList,
@@ -40,6 +50,7 @@ const CartPopup = () => {
     updateCartQtyErrorMessage,
     removeCartErrorMessage,
   } = useSelector(({ cart }) => cart);
+
   const handleCartQuantity = useCallback(
     (type, cartItem) => {
       dispatch(handleSelectCartItem({ selectedCartItem: cartItem }));
@@ -117,6 +128,12 @@ const CartPopup = () => {
     };
   }, [isCartOpen]);
 
+  const closeCartPopup = useCallback(() => {
+    dispatch(setIsSubmitted(false));
+    dispatch(setIsCartOpen(false));
+    dispatch(setIsChecked(false));
+  }, []);
+
   return (
     <>
       <button
@@ -145,12 +162,12 @@ const CartPopup = () => {
         }`}
       >
         <div className="flex flex-col h-full">
-          <div className="shrink-0 p-4 border-b-2 border-[#0000001A] flex justify-between items-center pt-8 xl:pt-8 2xl:pt-10 mb-6">
+          <div className="shrink-0 p-4 border-b-2 border-black_opacity_10 flex justify-between items-center pt-8 xl:pt-8 2xl:pt-10 mb-6">
             <h2 className="text-xl md:text-2xl xl:text-3xl font-medium font-castoro text-baseblack">
-              My Bag({cartList.length})
+              My Bag({cartList?.length})
             </h2>
             <button
-              onClick={() => dispatch(setIsCartOpen(false))}
+              onClick={closeCartPopup}
               className="text-xl text-baseblack font-semibold"
             >
               ✕
@@ -167,11 +184,11 @@ const CartPopup = () => {
               >
                 {cartList?.map((cartItem) => (
                   <div
-                    className="border-b-2 border-[#F3F2ED] last:border-b-0 pb-6 xl:pb-10 mb-10 last:mb-0"
+                    className="border-b-2 border-alabaster last:border-b-0 pb-6 xl:pb-10 mb-10 last:mb-0"
                     key={cartItem.id}
                   >
                     <div className="flex items-center justify-between gap-4">
-                      <div className="flex-shrink-0 border-2 border-[#F3F2ED]">
+                      <div className="flex-shrink-0 border-2 border-alabaster">
                         <ProgressiveImg
                           src={cartItem?.productImage}
                           alt={cartItem?.productName}
@@ -208,7 +225,7 @@ const CartPopup = () => {
                         <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
                           {cartItem.variations.map((variItem) => (
                             <div
-                              className="border-2 border-[#0000001A] text-sm xs:text-base p-1 md:p-2 font-medium"
+                              className="border-2 border-black_opacity_10 text-sm xs:text-base p-1 md:p-2 font-medium"
                               key={variItem.variationId}
                             >
                               <span className="font-bold">
@@ -220,7 +237,7 @@ const CartPopup = () => {
                         </div>
                         <div className="flex items-center space-x-2 pt-4">
                           <h3 className="text-lg font-medium">Qty:</h3>
-                          <div className="flex items-center bg-[#F3F2ED] px-2">
+                          <div className="flex items-center bg-alabaster px-2">
                             <button
                               className={`px-1 py-1 text-xl font-medium text-black ${
                                 cartItem?.quantity <= minQuantity
@@ -236,9 +253,9 @@ const CartPopup = () => {
                             </button>
                             {selectedCartItem.id === cartItem.id &&
                             updateCartQtyErrorMessage ? (
-                              <p className="text-red-600 text-lg">
-                                {updateCartQtyErrorMessage}
-                              </p>
+                              <ErrorMessage
+                                message={updateCartQtyErrorMessage}
+                              />
                             ) : null}
                             <span className="px-4 text-xl font-medium text-black">
                               {cartItem.quantity}
@@ -274,9 +291,7 @@ const CartPopup = () => {
                           </button>
                           {selectedCartItem.id === cartItem.id &&
                           removeCartErrorMessage ? (
-                            <p className="text-red-600 text-lg">
-                              {removeCartErrorMessage}
-                            </p>
+                            <ErrorMessage message={removeCartErrorMessage} />
                           ) : null}
                         </div>
                       </div>
@@ -284,7 +299,7 @@ const CartPopup = () => {
                   </div>
                 ))}
               </div>
-              <div className="shrink-0 px-2 xs:px-6 bg-offwhite border-t-2 border-[#0000001A] py-2 md:py-4">
+              <div className="shrink-0 px-2 xs:px-6 bg-offwhite border-t-2 border-black_opacity_10 py-2 md:py-4">
                 <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold md:pt-4">
                   Order Total: <span>${getSubTotal()}</span>
                 </p>
@@ -295,7 +310,11 @@ const CartPopup = () => {
                   <input
                     type="checkbox"
                     id="terms"
-                    className="mt-2 cursor-pointer accent-primary"
+                    className={`mt-2 cursor-pointer accent-primary rounded-sm ring-1 ring-transparent ${
+                      isSubmitted && !isChecked
+                        ? " !ring-red-500 appearance-none p-1.5"
+                        : ""
+                    }`}
                     checked={isChecked}
                     onChange={(e) => dispatch(setIsChecked(e.target.checked))}
                   />
@@ -311,7 +330,7 @@ const CartPopup = () => {
                     >
                       Terms and Conditions
                     </Link>
-                    , ,{" "}
+                    ,{" "}
                     <Link
                       href="/shipping-policy"
                       className="text-primary underline"
@@ -319,7 +338,7 @@ const CartPopup = () => {
                     >
                       Shipping Policy
                     </Link>
-                    , and{" "}
+                    ,
                     <Link
                       href="/privacy-policy"
                       className="text-primary underline"
@@ -339,18 +358,27 @@ const CartPopup = () => {
                   </label>
                 </div>
 
-                <LinkButton
-                  href="/checkout"
-                  className={`!text-white !rounded-none !font-medium !mt-4 w-full !py-2 md:!py-6 !bg-primary !text-lg hover:!border-primary hover:!bg-transparent hover:!text-primary !border-[#0000001A] ${
-                    !isChecked ? "cursor-not-allowed" : ""
-                  }`}
-                  onClick={(e) => {
-                    if (!isChecked) e.preventDefault();
-                    dispatch(setIsCartOpen(false));
-                  }}
-                >
-                  SECURE CHECKOUT
-                </LinkButton>
+                <div className="grid grid-cols-2 gap-2 mt-5">
+                  <PrimaryButton
+                    title="CHECKOUT"
+                    onClick={() => {
+                      dispatch(setIsSubmitted(true));
+                      if (isChecked) {
+                        closeCartPopup();
+                        router.push("/checkout");
+                      }
+                    }}
+                  >
+                    CHECKOUT
+                  </PrimaryButton>
+                  <GrayLinkButton
+                    title="SHOPPING BAG"
+                    href="/cart"
+                    onClick={closeCartPopup}
+                  >
+                    SHOPPING BAG
+                  </GrayLinkButton>
+                </div>
 
                 <div className="mt-2 md:mt-6">
                   <div className="flex items-center gap-3">
@@ -373,25 +401,7 @@ const CartPopup = () => {
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center h-[80vh] justify-center text-center px-4">
-              <CustomImg
-                srcAttr={cartImage}
-                altAttr=""
-                titleAttr=""
-                className="mb-6 w-70 h-50"
-              />
-              <p className="text-lg md:text-xl 2xl:text-3xl font-medium font-castoro text-baseblack">
-                Oops! Your cart is empty. Let’s fix that <br /> with some
-                stunning jewelry
-              </p>
-              <LinkButton
-                href="/"
-                className="!text-white !rounded-none !font-medium !mt-8 w-fit !px-16 !py-6 !bg-primary !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-[#0000001A] !border-2 uppercase"
-                onClick={() => dispatch(setIsCartOpen(false))}
-              >
-                Back To Shop
-              </LinkButton>
-            </div>
+            <CartNotFound />
           )}
         </div>
       </div>

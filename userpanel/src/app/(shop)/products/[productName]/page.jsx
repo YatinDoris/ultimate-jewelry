@@ -32,7 +32,7 @@ import {
 } from "@/store/slices/productSlice";
 import { insertProductIntoCart } from "@/_actions/cart.action";
 import { LoadingPrimaryButton } from "@/components/ui/button";
-import { setIsHovered } from "@/store/slices/commonSlice";
+import { setIsHovered, setIsSubmitted } from "@/store/slices/commonSlice";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import { setCartMessage } from "@/store/slices/cartSlice";
 import ProductDetailSwipperSm from "@/components/shop/ProductDetailSwipperSm";
@@ -121,7 +121,6 @@ const ProductDetails = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   let { productName } = params;
-  const [isSubmitted, setIsSubmitted] = useState(false);
   let availableQty = 0;
 
   const {
@@ -133,7 +132,7 @@ const ProductDetails = () => {
     recentlyViewProductList,
   } = useSelector(({ product }) => product);
   const { cartMessage, cartLoading } = useSelector(({ cart }) => cart);
-  const { isHovered } = useSelector(({ common }) => common);
+  const { isHovered, isSubmitted } = useSelector(({ common }) => common);
 
   productName = helperFunctions.stringReplacedWithSpace(productName);
 
@@ -218,7 +217,7 @@ const ProductDetails = () => {
   }, [productDetail?.variations?.length, selectedVariations?.length]);
 
   const addToCartHandler = useCallback(async () => {
-    setIsSubmitted(true);
+    dispatch(setIsSubmitted(true));
     if (
       isInValidSelectedVariation ||
       !availableQty ||
@@ -239,6 +238,7 @@ const ProductDetails = () => {
     const response = await dispatch(insertProductIntoCart(payload));
     if (response) {
       router.push("/cart");
+      dispatch(setIsSubmitted(false));
     }
   }, [
     productQuantity,
@@ -324,7 +324,7 @@ const ProductDetails = () => {
                 ) : null}
               </div>
 
-              <div className="border-t  border-[#0000001A]" />
+              <div className="border-t  border-black_opacity_10" />
 
               <div className="mt-6 lg:mt-10 flex items-center gap-3">
                 <p className="font-medium text-lg w-[110px] xs:w-[120px]">
@@ -488,7 +488,7 @@ const ProductDetailTabs = () => {
       content: (
         <div className="flex flex-wrap gap-6 md:gap-16 xl:gap-32 mt-4">
           <div>
-            <p className="inline-block font-semibold text-xl text-baseblack border-b-[2.5px] border-[#0000001A] pt-[6px] pb-[6px]">
+            <p className="inline-block font-semibold text-xl text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px]">
               Information
             </p>
 

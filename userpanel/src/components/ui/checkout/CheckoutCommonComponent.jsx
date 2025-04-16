@@ -114,6 +114,11 @@ const CheckoutCommonComponent = () => {
   }, [cartList, getSubTotal, isNewYorkState, selectedShippingCharge]);
 
   const cartContentRef = useRef(null);
+
+  const calculateNextStep = useMemo(() => {
+    return <span className="text-lg font-normal">Calculated at next step</span>;
+  }, []);
+
   return (
     <>
       <div className="hidden lg:block ">
@@ -124,11 +129,11 @@ const CheckoutCommonComponent = () => {
           >
             {cartList?.map((cartItem) => (
               <div
-                className="bg-white py-6  border-b-2 border-[#F3F2ED] last:border-b-0"
+                className="bg-white py-6  border-b-2 border-alabaster last:border-b-0"
                 key={cartItem.id}
               >
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div className="relative flex-shrink-0 border border-[#F3F2ED]">
+                  <div className="relative flex-shrink-0 border border-alabaster">
                     <div className="absolute top-0 left-0 bg-primary text-white text-xs xs:text-sm font-semibold px-3 py-1  z-10">
                       Qty: {cartItem?.quantity}
                     </div>
@@ -184,13 +189,13 @@ const CheckoutCommonComponent = () => {
             <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold">
               Order Summary
             </p>
-            <p className="my-4 border-t-2 border-[#0000001A]" />
+            <p className="my-4 border-t-2 border-black_opacity_10" />
             <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-              Subtotal: <span className="">${getSubTotal()}</span>
+              Subtotal: <span>${getSubTotal()}</span>
             </p>
             {pathname === "/checkout" ? (
               <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-                Sales Tax <span className="">Calculated at next step</span>
+                Sales Tax {calculateNextStep}
               </p>
             ) : (
               <div className="flex justify-between pt-4 text-baseblack">
@@ -209,7 +214,7 @@ const CheckoutCommonComponent = () => {
             )}
             {pathname === "/checkout" ? (
               <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-                Shipping <span className="">Calculated at next step</span>
+                Shipping {calculateNextStep}
               </p>
             ) : (
               <div className="flex justify-between pt-4 text-baseblack">
@@ -223,17 +228,17 @@ const CheckoutCommonComponent = () => {
             )}
 
             {/* <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-          Subtotal: <span className="">${getSubTotal()}</span>
+          Subtotal: <span >${getSubTotal()}</span>
         </p> */}
-            <p className="my-4 border-t-2 border-[#0000001A]" />
+            <p className="my-4 border-t-2 border-black_opacity_10" />
 
             {pathname === "/checkout" ? (
               <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-                Grand Total: <span className="">${getSubTotal()}</span>
+                Grand Total: <span>${getSubTotal()}</span>
               </p>
             ) : (
               <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-                Grand Total: <span className="">${renderTotalAmount}</span>
+                Grand Total: <span>${renderTotalAmount}</span>
               </p>
             )}
 
@@ -287,11 +292,11 @@ const CheckoutCommonComponent = () => {
             <section className="px-2 xs:px-6 max-h-[45vh] overflow-y-auto">
               {cartList?.map((cartItem) => (
                 <div
-                  className="bg-white py-6  border-b-2 border-[#F3F2ED] last:border-b-0"
+                  className="bg-white py-6  border-b-2 border-alabaster last:border-b-0"
                   key={cartItem.id}
                 >
                   <div className="flex flex-row  gap-4">
-                    <div className="relative flex-shrink-0 h-fit border border-[#F3F2ED]">
+                    <div className="relative flex-shrink-0 h-fit border border-alabaster">
                       <div className="absolute top-0 left-0 bg-primary text-white text-xs xs:text-sm font-semibold px-3 py-1  z-10">
                         Qty: {cartItem?.quantity}
                       </div>
@@ -347,11 +352,11 @@ const CheckoutCommonComponent = () => {
             {/* Your summary section */}
             <section className="px-2 pt-4 pb-4">
               <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-                Subtotal: <span className="">${getSubTotal()}</span>
+                Subtotal: <span>${getSubTotal()}</span>
               </p>
               {pathname === "/checkout" ? (
                 <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-                  Sales Tax <span className="">Calculated at next step</span>
+                  Sales Tax {calculateNextStep}
                 </p>
               ) : (
                 <div className="flex justify-between pt-4 text-baseblack">
@@ -370,7 +375,7 @@ const CheckoutCommonComponent = () => {
               )}
               {pathname === "/checkout" ? (
                 <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-                  Shipping <span className="">Calculated at next step</span>
+                  Shipping {calculateNextStep}
                 </p>
               ) : (
                 <div className="flex justify-between pt-4 text-baseblack">
@@ -384,17 +389,17 @@ const CheckoutCommonComponent = () => {
               )}
 
               {/* <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-          Subtotal: <span className="">${getSubTotal()}</span>
+          Subtotal: <span >${getSubTotal()}</span>
         </p> */}
-              <p className="my-4 border-t-2 border-[#0000001A]" />
+              <p className="my-4 border-t-2 border-black_opacity_10" />
 
               {pathname === "/checkout" ? (
                 <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-                  Grand Total: <span className="">${getSubTotal()}</span>
+                  Grand Total: <span>${getSubTotal()}</span>
                 </p>
               ) : (
                 <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-                  Grand Total: <span className="">${renderTotalAmount}</span>
+                  Grand Total: <span>${renderTotalAmount}</span>
                 </p>
               )}
 

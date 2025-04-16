@@ -78,7 +78,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
       )}
 
       <div className="relative z-3 bg-transparent p-4 h-full">
-        <div className="flex justify-between items-center border-b border-[#C8C8C6] pb-4">
+        <div className="flex justify-between items-center border-b border-gray-c8 pb-4">
           <h2 className="text-lg font-semibold">All Filters</h2>
           <button
             onClick={() => {
@@ -100,7 +100,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
         </div>
 
         <div>
-          <div className="border-b border-[#C8C8C6]">
+          <div className="border-b border-gray-c8">
             <button
               className={`w-full flex items-center justify-between ${
                 isOpenKey("sortBy") ? "pt-4 pb-2" : "py-4"
@@ -137,7 +137,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               </div>
             </div>
           </div>
-          <div className="border-b border-[#C8C8C6]">
+          <div className="border-b border-gray-c8">
             <button
               className={`w-full flex items-center justify-between ${
                 isOpenKey("settingStyle") ? "pt-4 pb-2" : "py-4"
@@ -195,7 +195,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
           {uniqueVariations.map((variation) => (
             <div
               key={variation.variationId}
-              className="border-b border-[#C8C8C6]"
+              className="border-b border-gray-c8"
             >
               <button
                 className={`w-full flex items-center justify-between ${
