@@ -110,7 +110,7 @@ export const ShippingForm = dynamic(
     ssr: false,
   }
 );
-export const HomePage = dynamic(() => import("./ui/HomePage.jsx"), {
+export const HomePage = dynamic(() => import("./ui/home/HomePage.jsx"), {
   ssr: false,
 });
 export const CheckoutPage = dynamic(
@@ -153,3 +153,7 @@ export const ProgressiveVed = dynamic(
     ssr: false,
   }
 );
+
+export const CustomVideo = dynamic(() => import("./ui/custom-video.jsx"), {
+  ssr: false,
+});

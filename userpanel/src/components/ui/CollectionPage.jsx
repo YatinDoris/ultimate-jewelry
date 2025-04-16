@@ -18,7 +18,7 @@ import { Autoplay } from "swiper/modules";
 // import { collections } from "@/app/(shop)/page";
 import KeyFeatures from "@/components/ui/KeyFeatures";
 import SettingStyleCategorySwiper from "@/components/ui/settingStyleSwiper";
-import { collections } from "./HomePage";
+import { collections } from "./home/HomePage";
 
 const collectionSwiper = [
   {
@@ -95,7 +95,7 @@ export default function CollectionPage() {
       </section>
       {/* Setting Style Swiper */}
       <section className="container pt-10 md:pt-14 lg:pt-20 2xl:pt-20">
-        <h2 className="text-center text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-castoro ">
+        <h2 className="text-center text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-castoro capitalize">
           {collectionTitle}
         </h2>
         <SettingStyleCategorySwiper
