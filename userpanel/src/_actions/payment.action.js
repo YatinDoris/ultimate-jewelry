@@ -2,15 +2,16 @@ import { messageType } from "@/_helper/constants";
 import { paymentService } from "@/_services";
 import {
   setCheckPIStatusLoader,
-  setLoading,
+  setPaymentIntentLoader,
   setPaymentIntentMessage,
-  setPaymentMessage,
+  setPaymentStatusLoader,
+  setPaymentStatusMessage,
 } from "@/store/slices/paymentSlice";
 
 export const handleCreatePaymentIntentError = (message = "") => {
   return (dispatch) => {
     dispatch(
-      setPaymentMessage({
+      setPaymentIntentMessage({
         type: message ? messageType.ERROR : "",
         message,
       })
@@ -21,8 +22,8 @@ export const handleCreatePaymentIntentError = (message = "") => {
 export const createPaymentIntent = (payload, abortController) => {
   return async (dispatch) => {
     try {
-      dispatch(setPaymentMessage({ type: "", message: "" }));
-      dispatch(setLoading(true));
+      dispatch(setPaymentIntentMessage({ type: "", message: "" }));
+      dispatch(setPaymentIntentLoader(true));
 
       const response = await paymentService.createPaymentIntent(
         payload,
@@ -32,7 +33,7 @@ export const createPaymentIntent = (payload, abortController) => {
         return response.encoded;
       } else {
         dispatch(
-          setPaymentMessage({
+          setPaymentIntentMessage({
             message: response?.message || "Something went wrong",
             type: messageType.ERROR,
           })
@@ -42,11 +43,14 @@ export const createPaymentIntent = (payload, abortController) => {
     } catch (error) {
       const errorMessage = error?.message || "Something went wrong";
       dispatch(
-        setPaymentMessage({ message: errorMessage, type: messageType.ERROR })
+        setPaymentIntentMessage({
+          message: errorMessage,
+          type: messageType.ERROR,
+        })
       );
       return false;
     } finally {
-      dispatch(setLoading(false));
+      dispatch(setPaymentIntentLoader(false));
     }
   };
 };
@@ -99,4 +103,48 @@ export const cancelPaymentIntent = (payload) => {
       return false;
     }
   };
+};
+
+export const updateBillingAddress = (payload) => {
+  return async (dispatch) => {
+    try {
+      const response = await paymentService.updateBillingAddress(payload);
+      if (response) {
+        return response;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  };
+};
+
+export const updatePaymentStatus = (payload) => async (dispatch) => {
+  try {
+    dispatch(setPaymentStatusMessage({ message: "", type: "" }));
+    dispatch(setPaymentStatusLoader(false));
+
+    const response = await paymentService.updatePaymentStatus(payload);
+
+    if (response?.success) {
+      return response?.data;
+    }
+    dispatch(
+      setPaymentStatusMessage({
+        message: response?.message,
+        type: messageType.ERROR,
+      })
+    );
+    return false;
+  } catch (error) {
+    dispatch(
+      setPaymentStatusMessage({
+        message: error?.message,
+        type: messageType.ERROR,
+      })
+    );
+    return false;
+  } finally {
+    dispatch(setPaymentStatusLoader(false));
+  }
 };

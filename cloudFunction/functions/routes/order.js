@@ -24,7 +24,7 @@ router.get(
   getAllOrder
 );
 router.post("/insertOrder", jwtAuth, userAuth, insertOrder);
-router.post("/updatePaymentStatus", jwtAuth, userAuth, updatePaymentStatus);
+router.post("/updatePaymentStatus", updatePaymentStatus);
 router.post(
   "/sendPendingOrderMail",
   jwtAuth,
@@ -43,11 +43,6 @@ router.post(
   allUsersAndAdminPageAuth(ordersPageId),
   cancelOrder
 );
-router.delete(
-  "/:orderId",
-  jwtAuth,
-  allUsersAndAdminPageAuth(ordersPageId),
-  deleteOrder
-);
+router.delete("/:orderId", deleteOrder);
 
 module.exports = router;

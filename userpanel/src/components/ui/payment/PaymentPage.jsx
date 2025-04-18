@@ -20,6 +20,26 @@ import {
   checkPaymentIntentStatus,
 } from "@/_actions/payment.action";
 import ErrorMessage from "../ErrorMessage";
+import { messageType } from "@/_helper/constants";
+// ---------- stripe -----------------------
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { stripePublishableKey } from "@/_helper";
+const stripePromise = loadStripe(stripePublishableKey);
+// const appearance = {
+//   theme: "night",
+//   variables: {
+//     colorPrimary: "#0570de",
+//     colorBackground: "black",
+//     colorText: "#ffffff", // label color
+//     colorDanger: "red", // error color
+//     fontFamily: "Ideal Sans, system-ui, sans-serif",
+//     spacingUnit: "4px",
+//     borderRadius: "4px",
+//     // See all possible variables below
+//   },
+// };
+// ---------- stripe -----------------------
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
@@ -28,20 +48,19 @@ const PaymentPage = () => {
 
   const { cartLoading, cartList } = useSelector(({ cart }) => cart);
 
-  const { checkPIStatusLoader, paymentIntentMessage } = useSelector(
-    ({ payment }) => payment
-  );
+  const { checkPIStatusLoader, paymentIntentMessage, paymentIntentStatus } =
+    useSelector(({ payment }) => payment);
 
   // decode secret data
 
   const getDecodedData = useCallback((secretData) => {
     const decoded = atob(decodeURIComponent(secretData));
     const parsedDecoded = JSON.parse(decoded);
-    // const clientSecret = parsedDecoded?.clientSecret;
-    // const orderId = parsedDecoded?.orderId;
-    // const paymentIntentId = parsedDecoded?.paymentIntentId;
     return parsedDecoded;
   }, []);
+
+  // const { clientSecret, orderId } = getDecodedData(secretData);
+  // console.log(clientSecret, "clientSecret");
 
   // abortcontroller
   const abortControllerRef = useRef(null);
@@ -55,9 +74,8 @@ const PaymentPage = () => {
   useEffect(() => {
     verifyPaymentIntent();
     return () => {
-      console.log("aaaaaaaa");
       terminatePaymentIntent();
-      // clearAbortController();
+      clearAbortController();
     };
   }, []);
 
@@ -90,7 +108,7 @@ const PaymentPage = () => {
       paymentIntentId: parsedDecoded?.paymentIntentId,
       orderId: parsedDecoded?.orderId,
     };
-    console.log(payload, "payload");
+
     dispatch(cancelPaymentIntent(payload));
   }, [dispatch, secretData]);
 
@@ -116,11 +134,28 @@ const PaymentPage = () => {
                 </div>
               ) : null}
               <AddressSummary />
-              {/* add condition when pI status is ok then render payment form */}
-              {paymentIntentMessage?.message ? (
+
+              {paymentIntentMessage?.message &&
+              paymentIntentMessage?.type !== messageType?.SUCCESS ? (
                 <ErrorMessage message={paymentIntentMessage?.message} />
               ) : (
-                <PaymentForm />
+                <div>
+                  {checkPIStatusLoader && <PaymentFormSkeleton />}
+                  {stripePromise &&
+                  getDecodedData(secretData)?.clientSecret &&
+                  paymentIntentStatus === "requires_payment_method" ? (
+                    <Elements
+                      stripe={stripePromise}
+                      options={{
+                        clientSecret: getDecodedData(secretData)?.clientSecret,
+                      }}
+                    >
+                      <PaymentForm
+                        orderId={getDecodedData(secretData)?.orderId}
+                      />
+                    </Elements>
+                  ) : null}
+                </div>
               )}
             </div>
 
@@ -177,6 +212,18 @@ const PaymentSkeleton = () => {
 
         <SkeletonLoader height="w-[20%] h-[40px]" />
       </div>
+    </div>
+  );
+};
+
+const PaymentFormSkeleton = () => {
+  return (
+    <div className="grid grid-cols-1 gap-4 auto-rows-min mt-5">
+      <SkeletonLoader height="w-full h-[70] md:h-[220px]  2xl:h-[150px]" />
+      <SkeletonLoader height="w-full h-[70] md:h-[220px]  2xl:h-[150px]" />
+      <SkeletonLoader height="w-full h-[70] md:h-[220px]  2xl:h-[150px]" />
+
+      <SkeletonLoader height="w-[20%] h-[40px]" />
     </div>
   );
 };

@@ -148,8 +148,8 @@ export const NotFoundPage = dynamic(() => import("./ui/NotFoundPage.jsx"), {
   ssr: false,
 });
 
-export const OrderSubmittedPage = dynamic(
-  () => import("./ui/order-submitted/OrderSubmittedPage.jsx"),
+export const OrderSuccessfulPage = dynamic(
+  () => import("./ui/order/OrderSuccessfulPage.jsx"),
   {
     ssr: false,
   }
