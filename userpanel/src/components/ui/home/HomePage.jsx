@@ -47,6 +47,7 @@ import HeroBanner from "../HeroBanner";
 import CategoryGallery from "./categoryGallery";
 import { helperFunctions } from "@/_helper";
 import KeyFeatures from "../KeyFeatures";
+
 const diamondShapes = [
   { image: diamondRound, titleAttr: "", altAttr: "", title: "Round" },
   { image: diamondOval, titleAttr: "", altAttr: "", title: "Oval" },

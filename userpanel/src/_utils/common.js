@@ -30,3 +30,5 @@ export const cardAnimation = {
   hidden: { opacity: 0, scale: 0.8 },
   visible: { opacity: 1, scale: 1, transition: { duration: 0.8 } },
 };
+
+export const ITEMS_PER_PAGE = 20;

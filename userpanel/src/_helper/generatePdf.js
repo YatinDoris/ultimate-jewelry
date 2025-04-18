@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import { helperFunctions } from "./helperFunctions";
 
 export const convertImageToBase64 = async (imageUrl) => {
@@ -24,66 +24,46 @@ export const convertImageToBase64 = async (imageUrl) => {
 };
 
 export const generatePDF = async (orderData, sizePage = "1") => {
-  let invoiceData = { ...orderData };
-
-  invoiceData = {
-    ...invoiceData,
+  const invoiceData = {
+    ...orderData,
     products: await Promise.all(
-      invoiceData?.products?.map(async (x) => ({
+      orderData?.products?.map(async (x) => ({
         ...x,
-        productImage: `data:image/png;base64,${await convertImageToBase64(
-          x?.productImage
-        )}`,
+        productImage: `data:image/png;base64,${await convertImageToBase64(x?.productImage)}`,
       }))
     ),
   };
 
   const doc = new jsPDF(sizePage, "pt", "a4");
   const date = new Date();
-  const formattedDate = `Date: ${
-    date.getMonth() + 1
-  } / ${date.getDate()} / ${date.getFullYear()}`;
-
-  const pageWidth = doc.internal.pageSize.width;
+  const formattedDate = `Date: ${date.getMonth() + 1} / ${date.getDate()} / ${date.getFullYear()}`;
+  const pageWidth = doc.internal.pageSize.getWidth();
   const topHeight = 25;
 
-  // Title
+  // Title and Order Info
   doc.setFontSize(20);
   doc.text("Invoice", pageWidth - 150, topHeight);
   doc.setFontSize(10);
-  doc
-    .text(formattedDate, pageWidth - 150, topHeight + 15)
-    .setFont(undefined, "bold");
+  doc.text(formattedDate, pageWidth - 150, topHeight + 15).setFont(undefined, "bold");
 
-  // Order Details
   doc.text("Order Details", 40, topHeight).setFont(undefined, "normal");
-
   doc.text(`Order Number: ${invoiceData?.orderNumber}`, 40, topHeight + 15);
-  doc.text(
-    `Order Date: ${new Date(invoiceData?.createdDate)?.toLocaleDateString()}`,
-    40,
-    topHeight + 30
-  );
+  doc.text(`Order Date: ${new Date(invoiceData?.createdDate)?.toLocaleDateString()}`, 40, topHeight + 30);
   doc.text(`Order Status: ${invoiceData?.orderStatus}`, 40, topHeight + 45);
-  doc
-    .text(`Payment Status: ${invoiceData?.paymentStatus}`, 40, topHeight + 60)
-    .setFont(undefined, "bold");
+  doc.text(`Payment Status: ${invoiceData?.paymentStatus}`, 40, topHeight + 60).setFont(undefined, "bold");
 
-  // Shipping Address
+  // Shipping Info
   doc.text("Shipping Address", 40, topHeight + 80).setFont(undefined, "normal");
-  doc.text(`Name: ${invoiceData?.shippingAddess?.name}`, 40, topHeight + 95);
-  doc.text(`Email: ${invoiceData?.shippingAddess?.email}`, 40, topHeight + 110);
+  doc.text(`Name: ${invoiceData?.shippingAddress?.name}`, 40, topHeight + 95);
+  doc.text(`Email: ${invoiceData?.shippingAddress?.email}`, 40, topHeight + 110);
   doc.text(
-    `Address: ${invoiceData.shippingAddess.address}, ${invoiceData.shippingAddess.city}, ${invoiceData.shippingAddess.state}, ${invoiceData.shippingAddess.country} - ${invoiceData.shippingAddess.pinCode}`,
+    `Address: ${invoiceData.shippingAddress.address}, ${invoiceData.shippingAddress.city}, ${invoiceData.shippingAddress.state}, ${invoiceData.shippingAddress.country} - ${invoiceData.shippingAddress.pinCode}`,
     40,
     topHeight + 125
   );
-  doc.text(
-    `Mobile: ${invoiceData?.shippingAddess?.mobile}`,
-    40,
-    topHeight + 140
-  );
+  doc.text(`Mobile: ${invoiceData?.shippingAddress?.mobile}`, 40, topHeight + 140);
 
+  // Table Headers and Body
   const headers = [["IMAGE", "PRODUCT", "QTY", "UNIT PRICE ($)", "TOTAL ($)"]];
   const data = invoiceData?.products?.map((x) => {
     const variations = x?.variations
@@ -104,18 +84,21 @@ export const generatePDF = async (orderData, sizePage = "1") => {
     ];
   });
 
-  let content = {
+  autoTable(doc, {
     theme: "grid",
     startY: 190,
     head: headers,
     body: data,
-    headStyles: { fillColor: [88, 164, 189] },
+    headStyles: { fillColor: [32, 42, 78] },
     columnStyles: {
       2: { halign: "center", valign: "center" },
       3: { cellWidth: 85, halign: "right", valign: "center" },
       4: { cellWidth: 70, halign: "right", valign: "center" },
     },
-    didDrawCell: async (data) => {
+    bodyStyles: {
+      minCellHeight: 35,
+    },
+    didDrawCell: (data) => {
       if (data?.column?.index === 0 && data?.row?.index >= 0) {
         const img = data?.cell?.raw?.image;
         if (img) {
@@ -123,63 +106,27 @@ export const generatePDF = async (orderData, sizePage = "1") => {
           const cellHeight = data?.cell?.height;
           const imgWidth = 30;
           const imgHeight = 33;
-          // Set Image to center
           const xOffset = data?.cell?.x + (cellWidth - imgWidth) / 2;
           const yOffset = data?.cell?.y + (cellHeight - imgHeight) / 2;
-          //   doc.addImage(img, xOffset, yOffset, imgWidth, imgWidth);
-          doc.addImage(
-            img,
-            "JPEG",
-            xOffset,
-            yOffset,
-            imgWidth,
-            imgWidth,
-            undefined,
-            "FAST"
-          );
+          doc.addImage(img, "JPEG", xOffset, yOffset, imgWidth, imgWidth, undefined, "FAST");
         }
       }
     },
-    bodyStyles: {
-      minCellHeight: 35, // Set the fixed height for each row
-    },
-  };
-
-  doc.autoTable(content);
+  });
 
   const bottomRightX = pageWidth - 150;
-  const bottomRightY = doc.previousAutoTable.finalY + 20;
+  const bottomRightY = doc.lastAutoTable.finalY + 20;
 
-  doc.text(
-    `Subtotal: $ ${helperFunctions.toFixedNumber(invoiceData?.subTotal)}`,
-    bottomRightX,
-    bottomRightY
-  );
-
-  // Display Shipping Charge
-  doc.text(
-    `Taxes: $ ${helperFunctions.toFixedNumber(invoiceData?.salesTax)}`,
-    bottomRightX,
-    bottomRightY + 15
-  );
-
-  // Display Taxes
+  doc.text(`Subtotal: $ ${helperFunctions.toFixedNumber(invoiceData?.subTotal)}`, bottomRightX, bottomRightY);
+  doc.text(`Taxes: $ ${helperFunctions.toFixedNumber(invoiceData?.salesTax)}`, bottomRightX, bottomRightY + 15);
   doc
     .text(
-      `Shipping Charge: $ ${helperFunctions.toFixedNumber(
-        invoiceData?.shippingCharge
-      )}`,
+      `Shipping Charge: $ ${helperFunctions.toFixedNumber(invoiceData?.shippingCharge)}`,
       bottomRightX,
       bottomRightY + 30
     )
     .setFont(undefined, "bold");
-
-  // Display Total Amount
-  doc.text(
-    `Total Amount: $ ${helperFunctions.toFixedNumber(invoiceData?.total)}`,
-    bottomRightX,
-    bottomRightY + 50
-  );
+  doc.text(`Total Amount: $ ${helperFunctions.toFixedNumber(invoiceData?.total)}`, bottomRightX, bottomRightY + 50);
 
   doc.save(`${invoiceData?.orderNumber}.pdf`);
 };
