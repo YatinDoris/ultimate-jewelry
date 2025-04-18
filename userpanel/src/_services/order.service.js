@@ -214,7 +214,7 @@ const getOrderDetailByOrderId = (orderId) => {
 //   });
 // };
 
-const cancelOrder = (payload, abortController) => async (dispatch) => {
+const cancelOrder = async (payload, abortController) => {
   try {
     if (payload) {
       const signal = abortController && abortController.signal;
@@ -223,18 +223,10 @@ const cancelOrder = (payload, abortController) => async (dispatch) => {
         sanitizeObject(payload),
         { signal }
       );
-      const { status, message } = response.data;
-
-      if (status === 200) {
-        toasterService.success(
-          message ||
-          "Your order has been cancelled and refund will be initiated"
-        );
+      if (response) {
         return response.data;
-      } else {
-        dispatch(setOrderMessage({ message, type: "" }));
-        return false;
       }
+      return false;
     }
   } catch (error) {
     console.log('error :', error)

@@ -2,15 +2,13 @@
 import { fetchOrderDetail, fetchOrderHistory } from "@/_actions/order.action";
 import { generatePDF, helperFunctions } from "@/_helper";
 import { ITEMS_PER_PAGE } from "@/_utils/common";
-import { GrayButton, LoadingPrimaryButton } from "@/components/ui/button";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import CustomBadge from "@/components/ui/CustomBadge";
-import Modal from "@/components/ui/Modal";
 import CancelOrderModel from "@/components/ui/order-history/OrderCancelModel";
 import Pagination from "@/components/ui/Pagination";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
 import Spinner from "@/components/ui/spinner";
-import { setIsHovered, setShowModal } from "@/store/slices/commonSlice";
+import { setShowModal } from "@/store/slices/commonSlice";
 import { setCurrentPage, setSelectedOrder } from "@/store/slices/orderSlice";
 import moment from "moment";
 import { useRouter } from "next/navigation";
@@ -19,6 +17,8 @@ import { BsDownload } from "react-icons/bs";
 import { IoEyeSharp } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
+import { setOrderLoading } from "../../../store/slices/orderSlice";
+import CancelOrder from "@/components/ui/order-history/CancelOrder";
 
 export default function OrderHistoryPage() {
   const router = useRouter();
@@ -27,12 +27,9 @@ export default function OrderHistoryPage() {
     orderList,
     orderLoading,
     currentPage,
-    cancelOrderLoading,
     selectedOrder,
-    invoiceLoading,
+    orderDetailLoading,
   } = useSelector(({ order }) => order);
-
-  const { showModal, isHovered } = useSelector(({ common }) => common);
 
   const loadData = useCallback(() => {
     dispatch(fetchOrderHistory());
@@ -46,11 +43,6 @@ export default function OrderHistoryPage() {
 
   const handlePageClick = ({ selected }) => {
     dispatch(setCurrentPage(selected));
-  };
-
-  const openCancelOrderModal = (orderId) => {
-    dispatch(setShowModal(true));
-    dispatch(setSelectedOrder(orderId));
   };
 
   const downloadInvoiceHandler = useCallback(
@@ -67,6 +59,12 @@ export default function OrderHistoryPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(setOrderLoading(false));
+    };
+  }, []);
 
   const renderTableHeading = () => {
     return (
@@ -159,19 +157,17 @@ export default function OrderHistoryPage() {
                       <IoEyeSharp
                         title="Order Detail"
                         className="cursor-pointer text-xl text-basegray"
-                        onClick={() => router.push(`/orderDetail/${order.id}`)}
+                        onClick={() =>
+                          router.push(`/order-history/${order.id}`)
+                        }
                       />
 
                       {["pending", "confirmed"].includes(order.orderStatus) &&
                       order.paymentStatus === "success" ? (
-                        <RxCross2
-                          title="Cancel Order"
-                          className="cursor-pointer text-xl text-[#DC3545]"
-                          onClick={() => openCancelOrderModal(order.id)}
-                        />
+                        <CancelOrder orderId={order.id} />
                       ) : null}
 
-                      {invoiceLoading && order.id === selectedOrder ? (
+                      {orderDetailLoading && order.id === selectedOrder ? (
                         <Spinner className="h-6" />
                       ) : (
                         <BsDownload
@@ -191,7 +187,7 @@ export default function OrderHistoryPage() {
       {!orderLoading && orderList.length > ITEMS_PER_PAGE && (
         <Pagination handlePageClick={handlePageClick} pageCount={pageCount} />
       )}
-      {showModal ? <CancelOrderModel /> : null}
+      {/* {showModal ? <CancelOrderModel /> : null} */}
     </div>
   );
 }

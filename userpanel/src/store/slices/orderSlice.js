@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   orderList: [],
-  orderDetail: {},
+  orderDetail: null,
   orderLoading: false,
   orderMessage: { message: "", type: "" },
   cancelOrderLoading: false,
   currentPage: 0,
-  invoiceLoading: false,
+  orderDetailLoading: false,
   selectedOrder: ""
 };
 
@@ -21,8 +21,8 @@ const orderSlice = createSlice({
     setOrderDetail: (state, action) => {
       state.orderDetail = action.payload;
     },
-    setInvoiceLoading: (state, action) => {
-      state.invoiceLoading = action.payload;
+    setOrderDetailLoading: (state, action) => {
+      state.orderDetailLoading = action.payload;
     },
     setOrderLoading: (state, action) => {
       state.orderLoading = action.payload;
@@ -50,7 +50,7 @@ export const {
   setCancelOrderLoading,
   setOrderMessage,
   setOrderDetail,
-  setInvoiceLoading
+  setOrderDetailLoading
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

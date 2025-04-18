@@ -16,7 +16,7 @@ const Modal = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div
-        className={`mx-5 md:mx-0 bg-offwhite  relative shadow-xl w-full max-w-4xl p-0 ${className}`}
+        className={`mx-5 md:mx-0 bg-offwhite  relative shadow-xl w-full max-w-4xl md:max-w-2xl lg:max-w-4xl p-0 ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top: Title & Close */}

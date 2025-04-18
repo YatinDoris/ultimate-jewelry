@@ -168,7 +168,7 @@ export default function NavigationHeader() {
                         className={`fixed left-0 right-0 ${
                           isHeaderVisible
                             ? "top-[65px] 2xl:top-[70px]"
-                            : "top-[37px]"
+                            : "top-[36px]"
                         } bg-white shadow-lg z-50 border-t-[0.5px] border-basegray`}
                       >
                         <div className="container flex justify-between p-6">

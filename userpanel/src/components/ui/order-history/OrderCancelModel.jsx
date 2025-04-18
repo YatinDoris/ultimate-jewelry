@@ -1,37 +1,87 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import {
+  Formik,
+  Form,
+  Field,
+  ErrorMessage as FormikErrorMessage,
+} from "formik";
 import * as Yup from "yup";
 
-import { GrayButton, LoadingPrimaryButton } from "../button";
-import { setIsHovered, setShowModal } from "@/store/slices/commonSlice";
 import Modal from "../Modal";
+import Alert from "../Alert";
+import ErrorMessage from "../ErrorMessage";
+import { GrayButton, LoadingPrimaryButton } from "../button";
 
-// Replace with your actual action
-// import { cancelOrder } from "@/store/slices/orderSlice";
+import { setIsHovered, setShowModal } from "@/store/slices/commonSlice";
+import { orderCancel } from "@/_actions/order.action";
+import { setOrderMessage } from "@/store/slices/orderSlice";
+import { messageType } from "@/_helper/constants";
+import { useAlertTimeout } from "@/hooks/use-alert-timeout";
 
-export default function CancelOrderModel() {
+export default function CancelOrderModal() {
   const dispatch = useDispatch();
-  const { cancelOrderLoading, isHovered } = useSelector(({ order }) => order);
+  const { cancelOrderLoading, selectedOrder, orderMessage } = useSelector(
+    (state) => state.order
+  );
+  const { isHovered } = useSelector((state) => state.common);
+
+  const abortControllerRef = useRef(null);
+
+  useEffect(() => {
+    if (orderMessage.type === messageType.SUCCESS) {
+      useAlertTimeout(orderMessage, () =>
+        dispatch(setOrderMessage({ message: "", type: "" }))
+      );
+    }
+  }, [orderMessage, dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(setOrderMessage({ message: "", type: "" }));
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [dispatch]);
 
   const initialValues = {
     reason: "",
   };
 
-  const validationSchema = Yup.object({
+  const validationSchema = Yup.object().shape({
     reason: Yup.string()
       .required("Reason is required")
       .min(5, "Reason must be at least 5 characters"),
   });
 
-  const handleSubmit = (values) => {
-    console.log("Submitted reason:", values.reason);
-    // Dispatch your cancel order action here
-    // dispatch(cancelOrder(values.reason));
+  const handleSubmit = async (values) => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const payload = {
+      orderId: selectedOrder,
+      cancelReason: values.reason,
+    };
+
+    const response = await dispatch(
+      orderCancel(payload, { signal: controller.signal })
+    );
+    if (response) {
+      dispatch(setShowModal(false));
+    }
   };
 
   return (
-    <Modal titleClassName="!text-center" title="Cancel Order" footer={null}>
+    <Modal title="Cancel Order" titleClassName="!text-center" footer={null}>
+      {orderMessage?.type === messageType.SUCCESS && (
+        <Alert message={orderMessage.message} type={orderMessage.type} />
+      )}
+
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -47,16 +97,20 @@ export default function CancelOrderModel() {
                 as="textarea"
                 id="reason"
                 name="reason"
-                rows="4"
+                rows={4}
                 placeholder="Enter cancellation reason..."
-                className="mt-1 block w-full  border border-[#DFDFDF] shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2"
+                className="mt-1 block w-full border border-[#DFDFDF] shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2"
               />
-              <ErrorMessage
+              <FormikErrorMessage
                 name="reason"
                 component="div"
                 className="text-red-500 text-sm mt-1"
               />
             </div>
+
+            {orderMessage?.type === messageType.ERROR && (
+              <ErrorMessage message={orderMessage.message} className="mb-3" />
+            )}
 
             <div className="flex gap-6">
               <GrayButton

@@ -19,7 +19,7 @@ const CustomBadge = ({ status, children, className = "" }) => {
 
   return (
     <span
-      className={`px-3 py-[8px] capitalize text-[13px] font-semibold ${textClass} ${bgClass} ${className}`}
+      className={`px-3 py-[6px] capitalize text-[13px] font-semibold ${textClass} ${bgClass} ${className}`}
       style={style}
     >
       {children}
