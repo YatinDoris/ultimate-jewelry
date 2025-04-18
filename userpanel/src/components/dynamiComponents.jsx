@@ -179,3 +179,25 @@ export const CartNotFound = dynamic(
     ssr: false,
   }
 );
+
+export const Layout = dynamic(() => import("./layout/Layout.jsx"), {
+  ssr: false,
+});
+
+export const PaymentPage = dynamic(
+  () => import("./ui/payment/PaymentPage.jsx"),
+  {
+    ssr: false,
+  }
+);
+
+export const AddressSummary = dynamic(() => import("./ui/AddressSummary.jsx"), {
+  ssr: false,
+});
+
+export const PaymentForm = dynamic(
+  () => import("./ui/payment/PaymentForm.jsx"),
+  {
+    ssr: false,
+  }
+);

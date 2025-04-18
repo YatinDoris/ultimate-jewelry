@@ -23,6 +23,7 @@ const createPaymentIntent = (payload, abortController) => {
         };
         const encoded = btoa(JSON.stringify(secretData));
         resolve({ success: true, encoded });
+        return encoded;
       } else {
         resolve({ success: false, message });
       }
@@ -32,6 +33,60 @@ const createPaymentIntent = (payload, abortController) => {
   });
 };
 
+const checkPaymentIntentStatus = async (payload, abortController) => {
+  try {
+    if (payload) {
+      const signal = abortController && abortController.signal;
+      const response = await axios.post(
+        "/stripe/check-payment-intent-status",
+        sanitizeObject(payload),
+        { signal }
+      );
+      const { status, paymentIntentStatus } = response.data;
+      if (status === 200 && paymentIntentStatus) {
+        return { success: true, data: response.data };
+      }
+    }
+    return {
+      success: false,
+      message: "Something went wrong with the payment. Please try again later.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error?.message,
+    };
+  }
+};
+
+const cancelPaymentIntent = (payload) => {
+  try {
+    if (payload) {
+      const response = axios.post(
+        "/stripe/cancel-payment-intent",
+        sanitizeObject(payload)
+      );
+      return {
+        success: true,
+        data: response?.data,
+      };
+    }
+    return {
+      success: false,
+      message:
+        "Something went wrong with the cancel payment intent. Please try again later.",
+    };
+  } catch (error) {
+    console.error("cancel payment error : ", error?.message);
+    return {
+      success: false,
+      message: error?.message,
+    };
+  }
+};
+
 export const paymentService = {
   createPaymentIntent,
+  checkPaymentIntentStatus,
+  cancelPaymentIntent,
 };

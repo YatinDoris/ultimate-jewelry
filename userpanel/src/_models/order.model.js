@@ -59,7 +59,7 @@ export const orderModel = {
     require: true,
     ref: "products",
   },
-  shippingAddess: {
+  shippingAddress: {
     type: {
       email: {
         type: String,

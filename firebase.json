@@ -1,21 +1,6 @@
 {
   "hosting": [
     {
-      "site": "qa-ultimate-jewelry",
-      "public": "cloudFunction/functions/public",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "function": "userPanelServer"
-        }
-      ]
-    },
-    {
       "target": "admin",
       "public": "newAdminPanel/dist",
       "ignore": [

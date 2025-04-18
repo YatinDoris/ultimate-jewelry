@@ -4,6 +4,8 @@ const initialState = {
   loading: false,
   updatePaymentStatusLoader: false,
   checkPIStatusLoader: false,
+  paymentIntentMessage: { type: "", message: "" },
+  paymentIntentStatus: false,
   paymentMessage: { type: "", message: "" },
 };
 
@@ -17,9 +19,17 @@ const paymentSlice = createSlice({
     setUpdatePaymentStatusLoader: (state, action) => {
       state.updatePaymentStatusLoader = action.payload;
     },
+
     setCheckPIStatusLoader: (state, action) => {
       state.checkPIStatusLoader = action.payload;
     },
+    setPaymentIntentMessage: (state, action) => {
+      state.paymentIntentMessage = action.payload;
+    },
+    setPaymentIntentStatus: (state, action) => {
+      state.paymentIntentStatus = action.payload;
+    },
+
     setPaymentMessage: (state, action) => {
       state.paymentMessage = action.payload;
     },
@@ -33,6 +43,8 @@ export const {
   setLoading,
   setUpdatePaymentStatusLoader,
   setCheckPIStatusLoader,
+  setPaymentIntentMessage,
+  setPaymentIntentStatus,
   setPaymentMessage,
   clearPaymentMessage,
 } = paymentSlice.actions;

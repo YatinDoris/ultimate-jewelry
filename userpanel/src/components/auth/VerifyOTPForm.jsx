@@ -20,6 +20,7 @@ import {
   insertMultipleProductsIntoCart,
 } from "@/_actions/cart.action";
 import ErrorMessage from "../ui/ErrorMessage";
+import { setAuthToken } from "@/interceptors/httpInterceptor";
 
 // ----------------------------------------------------------------------
 
@@ -115,6 +116,7 @@ const VerifyOTPForm = () => {
         Cookies.set("token", response?.userData?.token);
         router.push("/");
         addToCartFromLocalStorage();
+        setAuthToken();
       }
     },
     [dispatch, router, email]

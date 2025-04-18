@@ -27,34 +27,35 @@ dotenv.config();
 */
 const createPaymentIntent = async (req, res) => {
   try {
-    const userData = req.userData;
-    const findPattern = {
-      key: "userId",
-      value: userData?.id,
-    };
-    const userWiseCartData = await cartService.find(findPattern);
+    const userData = req?.userData;
 
     const allActiveProductsData = await productService.getAllActiveProducts();
+    if (userData) {
+      const findPattern = {
+        key: "userId",
+        value: userData?.id,
+      };
+      const userWiseCartData = await cartService.find(findPattern);
+      req.body.userId = userData?.id;
+      req.body.cartList = userWiseCartData
+        .map((cartItem) => {
+          const foundProduct = allActiveProductsData.find(
+            (product) => product.id === cartItem.productId
+          );
+          if (!foundProduct) return;
 
-    req.body.userId = userData?.id;
-    req.body.cartList = userWiseCartData
-      .map((cartItem) => {
-        const foundProduct = allActiveProductsData.find(
-          (product) => product.id === cartItem.productId
-        );
-        if (!foundProduct) return;
+          const { sellingPrice } = calculateProductPrice(
+            foundProduct,
+            cartItem.variations
+          );
 
-        const { sellingPrice } = calculateProductPrice(
-          foundProduct,
-          cartItem.variations
-        );
-
-        return {
-          ...cartItem,
-          quantityWiseSellingPrice: sellingPrice * cartItem.quantity,
-        };
-      })
-      .filter((item) => item);
+          return {
+            ...cartItem,
+            quantityWiseSellingPrice: sellingPrice * cartItem.quantity,
+          };
+        })
+        .filter((item) => item);
+    }
 
     const { createdOrder } = await createOrder(
       req.body,
@@ -64,7 +65,7 @@ const createPaymentIntent = async (req, res) => {
     if (createdOrder) {
       const {
         id: orderId,
-        shippingAddess,
+        shippingAddress,
         total,
         products,
         orderNumber,
@@ -72,14 +73,14 @@ const createPaymentIntent = async (req, res) => {
       console.log(createdOrder, "createdOrder");
       stripe.customers
         .create({
-          name: shippingAddess.name,
-          email: shippingAddess.email,
+          name: shippingAddress.name,
+          email: shippingAddress.email,
           address: {
-            line1: shippingAddess.address,
-            postal_code: shippingAddess.pinCode,
-            city: shippingAddess.city,
-            state: shippingAddess.state,
-            country: shippingAddess.country,
+            line1: shippingAddress.address,
+            postal_code: shippingAddress.pinCode,
+            city: shippingAddress.city,
+            state: shippingAddress.state,
+            country: shippingAddress.country,
           },
           metadata: {
             orderId: orderId,
@@ -95,13 +96,13 @@ const createPaymentIntent = async (req, res) => {
                 enabled: true,
               },
               shipping: {
-                name: shippingAddess.name,
+                name: shippingAddress.name,
                 address: {
-                  line1: shippingAddess.address,
-                  postal_code: shippingAddess.pinCode,
-                  city: shippingAddess.city,
-                  state: shippingAddess.state,
-                  country: shippingAddess.country,
+                  line1: shippingAddress.address,
+                  postal_code: shippingAddress.pinCode,
+                  city: shippingAddress.city,
+                  state: shippingAddress.state,
+                  country: shippingAddress.country,
                 },
               },
               customer: customer.id,
@@ -268,16 +269,16 @@ const createOrder = async (payload, activeProductsList, res) => {
       companyName,
       apartment,
       shippingCharge,
-    } = payload;
+    } = payload || {};
     // required
     cartList = Array.isArray(cartList) ? cartList : [];
     countryName = sanitizeValue(countryName) ? countryName.trim() : null;
     firstName = sanitizeValue(firstName) ? firstName.trim() : null;
     lastName = sanitizeValue(lastName) ? lastName.trim() : null;
     address = sanitizeValue(address) ? address.trim() : null;
-    stateCode = sanitizeValue(stateCode) ? stateCode.trim() : null;
     city = sanitizeValue(city) ? city.trim() : null;
     state = sanitizeValue(state) ? state.trim() : null;
+    stateCode = sanitizeValue(stateCode) ? stateCode.trim() : null;
     pinCode = pinCode ? Number(pinCode) : null;
     mobile = mobile ? Number(mobile) : null;
     email = sanitizeValue(email) ? email.trim() : null;
@@ -286,10 +287,24 @@ const createOrder = async (payload, activeProductsList, res) => {
     companyName = sanitizeValue(companyName) ? companyName.trim() : "";
     apartment = sanitizeValue(apartment) ? apartment.trim() : "";
     shippingCharge = shippingCharge ? +Number(shippingCharge).toFixed(2) : 0;
+    console.log(
+      cartList.length,
+      // userId ,
+      firstName,
+      lastName,
+      address,
+      stateCode,
+      countryName,
+      city,
+      state,
+      pinCode,
+      mobile,
+      email
+    );
 
     if (
       cartList.length &&
-      userId &&
+      // userId &&
       firstName &&
       lastName &&
       address &&
@@ -340,7 +355,7 @@ const createOrder = async (payload, activeProductsList, res) => {
         });
       }
 
-      const shippingAddess = {
+      const shippingAddress = {
         country: countryName,
         name: `${firstName} ${lastName}`,
         companyName: companyName,
@@ -377,7 +392,7 @@ const createOrder = async (payload, activeProductsList, res) => {
             cartQuantity: item.quantity,
           };
         }),
-        shippingAddess: shippingAddess,
+        shippingAddress: shippingAddress,
         subTotal: subTotal,
         // discount : ,
         salesTax: salesTax,
@@ -428,6 +443,12 @@ const createOrder = async (payload, activeProductsList, res) => {
         }
       }
     } else {
+      if (!cartList?.length) {
+        return res.json({
+          status: 400,
+          message: message.custom("Cart data not found"),
+        });
+      }
       return res.json({
         status: 400,
         message: message.INVALID_DATA,
@@ -803,7 +824,7 @@ const refundPaymentForReturn = async (req, res) => {
               if (
                 !refundsList?.length ||
                 refundsList?.filter((x) => x?.status === "canceled")?.length ===
-                refundsList?.length
+                  refundsList?.length
               ) {
                 returnUpdatePatternWithRefund.returnPaymentStatus =
                   "refund_initialization_failed";
@@ -881,12 +902,12 @@ const sendRefundStatusEmail = (evenyStatus, orderData) => {
   }
 
   const { subject, description } = getMailTemplateForRefundStatus(
-    orderData.shippingAddess.name,
+    orderData.shippingAddress.name,
     orderData.orderNumber,
     statusKey
   );
 
-  sendMail(orderData.shippingAddess.email, subject, description);
+  sendMail(orderData.shippingAddress.email, subject, description);
 };
 
 module.exports = {

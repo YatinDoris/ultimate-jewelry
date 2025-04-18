@@ -36,7 +36,7 @@ export const addressesModel = {
   },
   pinCode: {
     type: Number,
-    default: [true, "zipcode is required"],
+    default: [true, "pinCode is required"],
   },
   mobile: {
     type: Number,

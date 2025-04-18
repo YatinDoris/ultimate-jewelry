@@ -3,6 +3,7 @@
 ## Enabling CORS in Firebase Storage
 
 To enable CORS for Firebase Storage, follow these steps:
+https://www.youtube.com/watch?v=tvCIEsk4Uas
 
 1. Create a `cors.json` file with the following content:
 
@@ -45,17 +46,6 @@ Modify the `firebase.json` file as follows:
 ```json
 {
   "hosting": [
-    {
-      "site": "qa-ultimate-jewelry",
-      "public": "cloudFunction/functions/public",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [
-        {
-          "source": "**",
-          "function": "userPanelServer"
-        }
-      ]
-    },
     {
       "target": "admin",
       "public": "newAdminPanel/dist",
