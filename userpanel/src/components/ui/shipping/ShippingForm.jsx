@@ -27,13 +27,9 @@ const shippingForm = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { isHovered } = useSelector(({ common }) => common);
-  const {
-    isSubmitted,
-    selectedShippingCharge,
-    activeIndex,
-    selectedShippingAddress,
-  } = useSelector(({ checkout }) => checkout);
+  const { isHovered, isSubmitted } = useSelector(({ common }) => common);
+  const { selectedShippingCharge, activeIndex, selectedShippingAddress } =
+    useSelector(({ checkout }) => checkout);
 
   const { cartList } = useSelector(({ cart }) => cart);
   const { loading, paymentMessage } = useSelector(({ payment }) => payment);
@@ -94,8 +90,8 @@ const shippingForm = () => {
         city: selectedShippingAddress?.city,
         state: selectedShippingAddress?.state,
         stateCode: selectedShippingAddress?.stateCode,
-        zipCode: Number(selectedShippingAddress?.zipCode),
-        phone: Number(selectedShippingAddress?.phone),
+        pinCode: Number(selectedShippingAddress?.pinCode),
+        mobile: Number(selectedShippingAddress?.mobile),
         email: selectedShippingAddress?.email,
         companyName: selectedShippingAddress?.companyName,
         apartment: selectedShippingAddress?.apartment,
@@ -118,9 +114,10 @@ const shippingForm = () => {
         if (subTotal < 199) {
           localStorage.setItem(
             "selectedShippingMethod",
-            JSON.stringify(shippingMethodsList?.[activeIndex])
+            JSON.stringify(shippingOptions?.[activeIndex])
           );
         }
+        dispatch(setIsSubmitted(false));
         router.push(`/payment/${res}`);
       }
     } catch (error) {
@@ -138,8 +135,8 @@ const shippingForm = () => {
     selectedShippingAddress?.city,
     selectedShippingAddress?.state,
     selectedShippingAddress?.stateCode,
-    selectedShippingAddress?.zipCode,
-    selectedShippingAddress?.phone,
+    selectedShippingAddress?.pinCode,
+    selectedShippingAddress?.mobile,
     selectedShippingAddress?.email,
     selectedShippingAddress?.companyName,
     selectedShippingAddress?.apartment,
@@ -194,7 +191,7 @@ const shippingForm = () => {
                     {selectedShippingAddress?.city},{" "}
                     {selectedShippingAddress?.state},{" "}
                     {selectedShippingAddress?.countryName} -{" "}
-                    {selectedShippingAddress?.zipCode}
+                    {selectedShippingAddress?.pinCode}
                   </span>
                 )}
             </div>
@@ -242,9 +239,6 @@ const shippingForm = () => {
               </span>
             </div>
           ))}
-          {isSubmitted && paymentMessage?.message ? (
-            <ErrorMessage message={paymentMessage?.message} />
-          ) : null}
         </div>
         <span className="mt-5 font-normal text-gray-500">
           <b className="text-baseblack">Note :</b> Free shipping over 199
@@ -252,7 +246,7 @@ const shippingForm = () => {
       </div>
 
       <div
-        className="uppercase mt-5 2xl:mt-8 w-full"
+        className="mt-5 2xl:mt-8 w-full"
         onMouseEnter={() => dispatch(setIsHovered(true))}
         onMouseLeave={() => dispatch(setIsHovered(false))}
       >
@@ -264,6 +258,9 @@ const shippingForm = () => {
         >
           CONTINUE PAYMENT
         </LoadingPrimaryButton>
+        {isSubmitted && paymentMessage?.message ? (
+          <ErrorMessage message={paymentMessage?.message} />
+        ) : null}
       </div>
     </div>
   );

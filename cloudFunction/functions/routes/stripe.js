@@ -11,14 +11,10 @@ const {
 const { jwtAuth, adminAuth, userAuth } = require("../middleware");
 const { ordersPageId, returnsPageId } = require("../utils/pagesList");
 
-router.post("/create-payment-intent", jwtAuth, userAuth, createPaymentIntent);
-router.post(
-  "/check-payment-intent-status",
-  jwtAuth,
-  userAuth,
-  checkPaymentIntentStatus
-);
-router.post("/cancel-payment-intent", jwtAuth, userAuth, cancelPaymentIntent);
+router.post("/create-payment-intent", createPaymentIntent);
+// router.post("/create-payment-intent", jwtAuth, userAuth, createPaymentIntent);
+router.post("/check-payment-intent-status", checkPaymentIntentStatus);
+router.post("/cancel-payment-intent", cancelPaymentIntent);
 router.post("/refundPayment", jwtAuth, adminAuth(ordersPageId), refundPayment);
 router.post(
   "/refundPaymentForReturn",

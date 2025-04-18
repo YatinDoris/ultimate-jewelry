@@ -1,5 +1,4 @@
 const functions = require("firebase-functions");
-const next = require("next");
 const express = require("express");
 const app = express();
 const compression = require("compression");
@@ -54,29 +53,6 @@ exports.cloudFunctionsApi = functions.https.onRequest(app);
 
 exports.helloWorld = functions.https.onRequest((req, res) => {
   res.send("hello response from hello world functions");
-});
-
-/**
- * Firebase Cloud Function to handle Next.js server-side rendering (SSR).
- *
- * This function initializes the Next.js app and sets up a request handler
- * to serve dynamic routes and pages. It ensures that the Next.js app is
- * prepared before handling any incoming HTTP requests.
- *
- * Usage:
- * - This function is deployed as a Firebase HTTPS function.
- * - It serves Next.js pages dynamically when users visit the hosted URL.
- *
- * @param {Object} req - The incoming HTTP request object.
- * @param {Object} res - The outgoing HTTP response object.
- */
-const isDev = process.env.NODE_ENV !== "production";
-const userPanelApp = next({ dev: isDev, conf: { distDir: ".next" } });
-const handle = userPanelApp.getRequestHandler();
-
-exports.userPanelServer = functions.https.onRequest(async (req, res) => {
-  await userPanelApp.prepare();
-  return handle(req, res);
 });
 
 // exports.api = functions.https.onRequest((req,res)=>{

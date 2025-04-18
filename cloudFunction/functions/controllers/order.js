@@ -116,11 +116,11 @@ const updatePaymentStatus = async (req, res) => {
           }
           // send mail for order status
           const { subject, description } = getMailTemplateForOrderStatus(
-            orderData.shippingAddess.name,
+            orderData.shippingAddress.name,
             orderData.orderNumber,
             orderData.orderStatus
           );
-          sendMail(orderData.shippingAddess.email, subject, description);
+          sendMail(orderData.shippingAddress.email, subject, description);
         }
         return res.json({
           status: 200,
@@ -165,11 +165,11 @@ const sendPendingOrderMail = async (req, res) => {
         if (orderData.paymentStatus === "pending") {
           // send mail for order status
           const { subject, description } = getMailTemplateForOrderStatus(
-            orderData.shippingAddess.name,
+            orderData.shippingAddress.name,
             orderData.orderNumber,
             "pending"
           );
-          sendMail(orderData.shippingAddess.email, subject, description);
+          sendMail(orderData.shippingAddress.email, subject, description);
           return res.json({
             status: 200,
             message: message.custom("Mail sent successfully for pending order"),
@@ -305,11 +305,11 @@ const updateOrderStatus = async (req, res) => {
         await orderService.findOneAndUpdate(findPattern, updatePattern);
         // send mail for order status
         const { subject, description } = getMailTemplateForOrderStatus(
-          orderData.shippingAddess.name,
+          orderData.shippingAddress.name,
           orderData.orderNumber,
           orderStatus
         );
-        sendMail(orderData.shippingAddess.email, subject, description);
+        sendMail(orderData.shippingAddress.email, subject, description);
         return res.json({
           status: 200,
           message: message.SUCCESS,
@@ -399,11 +399,11 @@ const cancelOrder = async (req, res) => {
           }, 5000); // 5 seconds
           // send mail for order status
           const { subject, description } = getMailTemplateForOrderStatus(
-            orderData.shippingAddess.name,
+            orderData.shippingAddress.name,
             orderData.orderNumber,
             "cancelled"
           );
-          sendMail(orderData.shippingAddess.email, subject, description);
+          sendMail(orderData.shippingAddress.email, subject, description);
           //update product qty
           updateProductQty(orderData.products);
           // integrate refund functionality
@@ -426,11 +426,11 @@ const cancelOrder = async (req, res) => {
                 );
                 // send mail for pending refund status
                 const { subject, description } = getMailTemplateForRefundStatus(
-                  orderData.shippingAddess.name,
+                  orderData.shippingAddress.name,
                   orderData.orderNumber,
                   "pending_refund"
                 );
-                sendMail(orderData.shippingAddess.email, subject, description);
+                sendMail(orderData.shippingAddress.email, subject, description);
               }
             })
             .catch((e) => {
@@ -451,11 +451,11 @@ const cancelOrder = async (req, res) => {
                 );
                 // send mail for refund initialized failed status
                 const { subject, description } = getMailTemplateForRefundStatus(
-                  orderData.shippingAddess.name,
+                  orderData.shippingAddress.name,
                   orderData.orderNumber,
                   "refund_initialization_failed"
                 );
-                sendMail(orderData.shippingAddess.email, subject, description);
+                sendMail(orderData.shippingAddress.email, subject, description);
               }
             });
         } else {

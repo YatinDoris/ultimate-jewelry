@@ -29,7 +29,7 @@ const countries = Country.getAllCountries();
 const validationSchema = yup.object({
   firstName: yup.string().trim().required("First Name is required"),
   lastName: yup.string().trim().required("Last Name is required"),
-  phone: yup
+  mobile: yup
     .string()
     .matches(/^\+?[0-9]{6,14}$/, "Invalid Mobile Number")
     .required("Phone is Required"),
@@ -43,9 +43,9 @@ const validationSchema = yup.object({
     .matches(/^[A-Za-z\s]+$/, "Only letters and spaces are allowed")
     .required("City is Required"),
   state: yup.string().required("Select a State"),
-  zipCode: yup
+  pinCode: yup
     .string()
-    .required("zipcode is a required")
+    .required("Zip code is a required")
     .matches(/^[0-9]+$/, "Must be only digits")
     .min(5, "Must be exactly 5 digits")
     .max(6, "Must be exactly 6 digits"),
@@ -82,11 +82,11 @@ const CheckoutForm = () => {
       city: "",
       state: "",
       stateCode: "",
-      zipCode: "",
+      pinCode: "",
       company: "",
       address: "",
       apartment: "",
-      phone: "",
+      mobile: "",
       ...(selectedShippingAddress || {}), // override from Redux
     };
   }, [selectedShippingAddress]);
@@ -132,9 +132,9 @@ const CheckoutForm = () => {
           city = "",
           state = "",
           country = "",
-          zipCode = "",
+          pinCode = "",
         } = fieldValues;
-        const addressLine = `${address} ${apartment} ${city} ${state} ${country} ${zipCode}`;
+        const addressLine = `${address} ${apartment} ${city} ${state} ${country} ${pinCode}`;
         const payload = {
           regionCode: country,
           addressLine: addressLine?.trim(),
@@ -212,11 +212,11 @@ const CheckoutForm = () => {
         state: address.state,
         stateCode: address.stateCode,
         city: address.city,
-        zipCode: address.zipCode,
+        pinCode: address.pinCode,
         company: address.companyName,
         address: address.address,
         apartment: address.apartment,
-        phone: address.phone,
+        mobile: address.mobile,
       };
       setValues(updatedValues);
       dispatch(setSelectedShippingAddress(updatedValues));
@@ -314,13 +314,13 @@ const CheckoutForm = () => {
                   type="text"
                   placeholder="Phone number"
                   className={`custom-input ${inputClassName}`}
-                  name="phone"
+                  name="mobile"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values?.phone || ""}
+                  value={values?.mobile || ""}
                 />
-                {touched?.phone && errors?.phone && (
-                  <ErrorMessage message={errors?.phone}></ErrorMessage>
+                {touched?.mobile && errors?.mobile && (
+                  <ErrorMessage message={errors?.mobile}></ErrorMessage>
                 )}
               </div>
               <div className="md:col-span-2 pb-8">
@@ -461,11 +461,11 @@ const CheckoutForm = () => {
                     className={`custom-input ${inputClassName}`}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values?.zipCode || ""}
-                    name="zipCode"
+                    value={values?.pinCode || ""}
+                    name="pinCode"
                   />
-                  {touched?.zipCode && errors?.zipCode && (
-                    <ErrorMessage message={errors?.zipCode}></ErrorMessage>
+                  {touched?.pinCode && errors?.pinCode && (
+                    <ErrorMessage message={errors?.pinCode}></ErrorMessage>
                   )}
                 </div>
               </div>

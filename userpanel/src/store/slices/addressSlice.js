@@ -11,9 +11,9 @@ export const addressObj = {
   apartment: "",
   city: "",
   state: "",
-  zipCode: "",
+  pinCode: "",
   country: defaultCountry,
-  phone: "",
+  mobile: "",
 };
 
 const initialState = {
