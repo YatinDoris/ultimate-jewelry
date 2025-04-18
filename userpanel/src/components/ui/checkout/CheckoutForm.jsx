@@ -94,6 +94,8 @@ const CheckoutForm = () => {
   const currentUser = helperFunctions.getCurrentUser();
   if (currentUser) {
     initialValues.email = currentUser.email;
+    initialValues.firstName = currentUser.firstName;
+    initialValues.lastName = currentUser.lastName;
   }
 
   const clearAbortController = useCallback(() => {

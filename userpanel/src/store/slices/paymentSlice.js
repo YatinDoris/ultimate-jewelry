@@ -1,52 +1,69 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  loading: false,
-  updatePaymentStatusLoader: false,
-  checkPIStatusLoader: false,
+  paymentIntentLoader: false,
   paymentIntentMessage: { type: "", message: "" },
-  paymentIntentStatus: false,
+
+  checkPIStatusLoader: false,
+  paymentIntentStatus: "", // requires_payment_method
+
+  paymentLoader: false,
   paymentMessage: { type: "", message: "" },
+
+  paymentStatusLoader: false,
+  paymentStatusMessage: { type: "", message: "" },
 };
 
 const paymentSlice = createSlice({
   name: "payment",
   initialState,
   reducers: {
-    setLoading: (state, action) => {
-      state.loading = action.payload;
+    setPaymentIntentLoader: (state, action) => {
+      state.paymentIntentLoader = action.payload;
     },
-    setUpdatePaymentStatusLoader: (state, action) => {
-      state.updatePaymentStatusLoader = action.payload;
+    setPaymentIntentMessage: (state, action) => {
+      state.paymentIntentMessage = action.payload;
     },
 
     setCheckPIStatusLoader: (state, action) => {
       state.checkPIStatusLoader = action.payload;
     },
-    setPaymentIntentMessage: (state, action) => {
-      state.paymentIntentMessage = action.payload;
-    },
     setPaymentIntentStatus: (state, action) => {
       state.paymentIntentStatus = action.payload;
     },
 
+    setPaymentLoader: (state, action) => {
+      state.paymentLoader = action.payload;
+    },
     setPaymentMessage: (state, action) => {
       state.paymentMessage = action.payload;
     },
     clearPaymentMessage: (state) => {
       state.paymentMessage = { type: "", message: "" };
     },
+
+    setPaymentStatusLoader: (state, action) => {
+      state.paymentStatusLoader = action.payload;
+    },
+    setPaymentStatusMessage: (state, action) => {
+      state.paymentStatusMessage = action.payload;
+    },
   },
 });
 
 export const {
-  setLoading,
-  setUpdatePaymentStatusLoader,
-  setCheckPIStatusLoader,
+  setPaymentIntentLoader,
   setPaymentIntentMessage,
+
+  setCheckPIStatusLoader,
   setPaymentIntentStatus,
+
+  setPaymentLoader,
   setPaymentMessage,
   clearPaymentMessage,
+
+  setPaymentStatusLoader,
+  setPaymentStatusMessage,
 } = paymentSlice.actions;
 
 export default paymentSlice.reducer;

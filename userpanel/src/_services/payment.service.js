@@ -1,5 +1,10 @@
 import axios from "axios";
-import { apiUrl, sanitizeObject } from "../_helper";
+import {
+  apiUrl,
+  fetchWrapperService,
+  ordersUrl,
+  sanitizeObject,
+} from "../_helper";
 
 const createPaymentIntent = (payload, abortController) => {
   return new Promise(async (resolve, reject) => {
@@ -85,8 +90,60 @@ const cancelPaymentIntent = (payload) => {
   }
 };
 
+const updateBillingAddress = async (payload) => {
+  try {
+    const { orderId, billingAddress } = payload;
+    if (payload) {
+      const orderData = await fetchWrapperService.findOne(ordersUrl, {
+        id: orderId,
+      });
+      if (orderData) {
+        const updatePattern = {
+          url: `${ordersUrl}/${orderId}`,
+          payload: {
+            billingAddress,
+          },
+        };
+        fetchWrapperService
+          ._update(updatePattern)
+          .then((response) => {
+            return true;
+          })
+          .catch((e) => {
+            return false;
+          });
+      }
+    }
+  } catch (error) {
+    console.error("update billing address error : ", error?.message);
+    return false;
+  }
+};
+
+const updatePaymentStatus = async (payload) => {
+  try {
+    if (payload) {
+      const response = await axios.post(
+        "order/updatePaymentStatus",
+        sanitizeObject(payload)
+      );
+      const { status, message, data } = response.data;
+      if (status === 200) {
+        return { success: true, data };
+      }
+      return { success: false, message };
+    }
+    return { success: false, message: "Payload not found" };
+  } catch (error) {
+    console.log("update payment status error : ", error?.message);
+    return { success: false, message: error?.message };
+  }
+};
+
 export const paymentService = {
   createPaymentIntent,
   checkPaymentIntentStatus,
   cancelPaymentIntent,
+  updateBillingAddress,
+  updatePaymentStatus,
 };

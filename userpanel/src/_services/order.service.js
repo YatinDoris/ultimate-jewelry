@@ -14,7 +14,6 @@ import { GOLD_COLOR, GOLD_TYPES } from "../_helper/constants";
 import { returnService } from "./return.service";
 import { setOrderMessage } from "@/store/slices/orderSlice";
 
-
 const getAllOrderList = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -45,7 +44,7 @@ const getAllOrderList = () => {
           ).length;
           const hasActiveReturns =
             isPendingOrApprovedOrReceivedReturnsCount ||
-              (rejectedCount > 0 && rejectedCount > 2)
+            (rejectedCount > 0 && rejectedCount > 2)
               ? false
               : true;
           return {
@@ -229,24 +228,24 @@ const cancelOrder = async (payload, abortController) => {
       return false;
     }
   } catch (error) {
-    console.log('error :', error)
+    console.log("error :", error);
     return false;
   }
 };
 
-// const deleteOrder = (orderId) => async (dispatch) => {
-//   try {
-//     orderId = sanitizeValue(orderId) ? orderId.trim() : null;
-//     if (orderId) {
-//       const response = axios.delete(`/order/${orderId}`);
-//       return response?.data;
-//     }
-//   } catch (error) {
-//     console.log("delete order error : ", error?.message);
-//     return false;
-//   } finally {
-//   }
-// };
+const deleteOrder = async (orderId) => {
+  try {
+    orderId = sanitizeValue(orderId) ? orderId.trim() : null;
+    if (orderId) {
+      const response = await axios.delete(`/order/${orderId}`);
+      return { success: true, data: response?.data };
+    }
+    return { success: false, message: "OrderId not found" };
+  } catch (error) {
+    console.log("delete order error : ", error?.message);
+    return { success: false, message: error?.message };
+  }
+};
 
 // const getTopSellingProducts = () => {
 //   return new Promise(async (resolve, reject) => {
@@ -327,7 +326,7 @@ export const orderService = {
   getAllOrderList,
   getOrderDetailByOrderId,
   cancelOrder,
-  // deleteOrder,
+  deleteOrder,
   // getTopSellingProducts,
   // getOrderDetailByOrderNumber,
 };

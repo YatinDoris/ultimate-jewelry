@@ -32,7 +32,9 @@ const shippingForm = () => {
     useSelector(({ checkout }) => checkout);
 
   const { cartList } = useSelector(({ cart }) => cart);
-  const { loading, paymentMessage } = useSelector(({ payment }) => payment);
+  const { paymentIntentLoader, paymentIntentMessage } = useSelector(
+    ({ payment }) => payment
+  );
 
   const [selectedMethod, setSelectedMethod] = useState("");
 
@@ -252,14 +254,14 @@ const shippingForm = () => {
       >
         <LoadingPrimaryButton
           className="w-full uppercase"
-          loading={loading}
+          loading={paymentIntentLoader}
           loaderType={isHovered ? "" : "white"}
           onClick={submitShippingMethod}
         >
           CONTINUE PAYMENT
         </LoadingPrimaryButton>
-        {isSubmitted && paymentMessage?.message ? (
-          <ErrorMessage message={paymentMessage?.message} />
+        {isSubmitted && paymentIntentMessage?.message ? (
+          <ErrorMessage message={paymentIntentMessage?.message} />
         ) : null}
       </div>
     </div>

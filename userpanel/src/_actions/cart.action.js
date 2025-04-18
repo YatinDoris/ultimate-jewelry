@@ -20,7 +20,7 @@ export const fetchCart = () => {
         dispatch(setCartList(cartData));
       }
     } catch (e) {
-      console.error(e);
+      console.error(e?.message);
     } finally {
       dispatch(setCartLoading(false));
     }
