@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import common from "./slices/commonSlice.js";
 import product from "./slices/productSlice.js";
 import cart from "./slices/cartSlice.js";
+import order from "./slices/orderSlice.js";
 import user from "./slices/userSlice.js";
 import address from "./slices/addressSlice.js";
 import checkout from "./slices/checkoutSlice.js";
@@ -17,6 +18,7 @@ const reducers = combineReducers({
   checkout,
   payment,
   subscriber,
+  order
 });
 
 const store = configureStore({

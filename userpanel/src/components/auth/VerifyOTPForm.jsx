@@ -1,5 +1,5 @@
 "use client";
-
+import Cookies from "js-cookie";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -112,6 +112,7 @@ const VerifyOTPForm = () => {
         resetForm();
         removeEmailFromStorage();
         localStorage.setItem("currentUser", JSON.stringify(response?.userData));
+        Cookies.set("token", response?.userData?.token);
         router.push("/");
         addToCartFromLocalStorage();
       }

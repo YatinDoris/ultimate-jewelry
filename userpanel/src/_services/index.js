@@ -9,3 +9,6 @@ export * from "./recentlyViewed.service";
 export * from "./address.service";
 export * from "./payment.service";
 export * from "./subscriber.service";
+export * from "./order.service";
+export * from "./return.service";
+export * from "./authentication.service";

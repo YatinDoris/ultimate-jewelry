@@ -1,19 +1,29 @@
-import React from "react";
-import { IoClose } from "react-icons/io5";
+import React, { useEffect } from "react";
 
-const Modal = ({ onClose, children, title, footer, className = "" }) => {
+const Modal = ({
+  children,
+  title,
+  footer,
+  className = "",
+  titleClassName = "",
+}) => {
+  useEffect(() => {
+    document.body.classList.add("overflow-hidden");
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, []);
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div
         className={`mx-5 md:mx-0 bg-offwhite  relative shadow-xl w-full max-w-4xl p-0 ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top: Title & Close */}
         <div className="flex justify-between items-center px-8 pt-8 pb-6 bg-white">
-          <h2 className="font-castoro text-lg md:text-xl xl:text-2xl text-baseblack">
+          <h2
+            className={`font-castoro text-lg md:text-xl xl:text-2xl text-baseblack ${titleClassName}`}
+          >
             {title}
           </h2>
         </div>

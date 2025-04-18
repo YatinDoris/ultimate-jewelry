@@ -123,26 +123,48 @@ const getCurrentUser = () => {
   return currentUser;
 };
 
+// const getStatusCustomBadge = (status) => {
+//   const statusMap = {
+//     pending: "#DDA14D",
+//     confirmed: "green",
+//     shipped: "#58a4bd",
+//     delivered: "yellow",
+//     cancelled: "red",
+//     success: "#73A37F",
+//     failed: "red",
+//     refunded: "yellow",
+//     pending_refund: "orange",
+//     failed_refund: "red",
+//     cancelled_refund: "red",
+//     refund_initialization_failed: "red",
+//     approved: "green",
+//     rejected: "red",
+//     received: "green",
+//   };
+
+//   return statusMap[status] || "yellow";
+// };
+
 const getStatusCustomBadge = (status) => {
   const statusMap = {
-    pending: "orange",
-    confirmed: "green",
-    shipped: "#58a4bd",
-    delivered: "yellow",
-    cancelled: "red",
-    success: "green",
-    failed: "red",
-    refunded: "yellow",
-    pending_refund: "orange",
-    failed_refund: "red",
-    cancelled_refund: "red",
-    refund_initialization_failed: "red",
-    approved: "green",
-    rejected: "red",
-    received: "green",
+    pending: "#F4A261", // Warm orange for "waiting" states
+    confirmed: "#2A9D8F", // Teal for positive confirmation
+    shipped: "#4A90E2", // Blue for in-progress transit
+    delivered: "#219653", // Green for successful completion
+    cancelled: "#E63946", // Red for cancellation
+    success: "#26A65B", // Bright green for general success
+    failed: "#D00000", // Dark red for errors
+    refunded: "#F4C430", // Yellow for refund completion
+    pending_refund: "#E76F51", // Coral for refund in progress
+    failed_refund: "#9B2226", // Deep red for refund failure
+    cancelled_refund: "#A61D24", // Slightly different red for refund cancellation
+    refund_initialization_failed: "#85182A", // Darker red for refund init failure
+    approved: "#009B77", // Emerald green for approvals
+    rejected: "#BF0603", // Strong red for rejections
+    received: "#006D77", // Deep teal for received items
   };
 
-  return statusMap[status] || "yellow";
+  return statusMap[status] || "#F4C430"; // Default to yellow for unknown statuses
 };
 
 const getLightShadeOfColor = (hexCode) => {

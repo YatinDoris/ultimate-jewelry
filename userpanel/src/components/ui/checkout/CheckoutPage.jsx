@@ -2,7 +2,7 @@
 import {
   CheckoutCommonComponent,
   CheckoutForm,
-  CheckoutAddressModal,
+  AddressVerificationModal,
   LatestProduct,
   CartNotFound,
 } from "@/components/dynamiComponents";
@@ -45,7 +45,7 @@ const Checkout = () => {
               )}
             </div>
           </div>
-          {showModal && <CheckoutAddressModal />}
+          {showModal && <AddressVerificationModal />}
 
           <section className="container pt-16 lg:pt-20 2xl:pt-36">
             <LatestProduct />

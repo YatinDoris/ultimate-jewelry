@@ -8,6 +8,14 @@ export const Header = dynamic(() => import("./layout/header.jsx"), {
 export const Footer = dynamic(() => import("./layout/footer.jsx"), {
   ssr: false,
 });
+
+export const ProfileHeader = dynamic(
+  () => import("./layout/profile/header.jsx"),
+  {
+    ssr: false,
+  }
+);
+
 export const ProgressiveImg = dynamic(() => import("./ui/progressive-img"), {
   ssr: false,
 });
@@ -23,6 +31,13 @@ export const StoreProvider = dynamic(() => import("@/store/provider"), {
 
 export const NavigationHeader = dynamic(
   () => import("./layout/navigationHeader"),
+  {
+    ssr: false,
+  }
+);
+
+export const ProfileNavigationHeader = dynamic(
+  () => import("./layout/profile/navigationHeader.jsx"),
   {
     ssr: false,
   }
@@ -97,8 +112,8 @@ export const CheckoutForm = dynamic(
     ssr: false,
   }
 );
-export const CheckoutAddressModal = dynamic(
-  () => import("./ui/checkout/CheckoutAddressModal.jsx"),
+export const AddressVerificationModal = dynamic(
+  () => import("./ui/checkout/AddressVerificationModal.jsx"),
   {
     ssr: false,
   }

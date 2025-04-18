@@ -1,10 +1,8 @@
 "use client";
 import React, { memo, useEffect } from "react";
-import ReactPaginate from "react-paginate";
 import useQueryParams from "@/hooks/useQueryParams";
 import ProductCard from "./productCard";
 import { useWindowSize } from "@/_helper/hooks";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setCurrentPage,
@@ -15,8 +13,8 @@ import SkeletonLoader from "../ui/skeletonLoader";
 import { VscSettings } from "react-icons/vsc";
 import { ProductFilterSidebar } from "../dynamiComponents";
 import ProductNotFound from "./productNotFound";
-
-const ITEMS_PER_PAGE = 20;
+import { ITEMS_PER_PAGE } from "@/_utils/common";
+import Pagination from "../ui/Pagination";
 
 const ProductGrid = memo(
   ({
@@ -175,24 +173,7 @@ const ProductGrid = memo(
         {!isLoading && !productList?.length && <ProductNotFound />}
 
         {pagination && !isLoading && productList.length > ITEMS_PER_PAGE && (
-          <div className="pt-10 md:pt-14 lg:pt-20 2xl:pt-20 flex justify-center">
-            <ReactPaginate
-              previousLabel={<FaAngleLeft className="text-xl text-primary" />}
-              nextLabel={<FaAngleRight className="text-xl text-primary" />}
-              breakLabel={<span className="text-xl">...</span>}
-              breakClassName={"text-primary"}
-              pageCount={pageCount}
-              marginPagesDisplayed={1}
-              pageRangeDisplayed={2}
-              onPageChange={handlePageClick}
-              containerClassName={"flex items-center gap-2"}
-              pageClassName={"px-4 py-2 rounded-md"}
-              activeClassName={"bg-primary text-white rounded px-4 py-2"}
-              previousClassName={"px-3 py-1 rounded-md"}
-              nextClassName={"px-3 py-1 rounded-md"}
-              disabledClassName={"opacity-50 cursor-not-allowed"}
-            />
-          </div>
+          <Pagination handlePageClick={handlePageClick} pageCount={pageCount} />
         )}
       </>
     );

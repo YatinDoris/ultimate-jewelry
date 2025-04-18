@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { helperFunctions } from "@/_helper";
 import { setOpenProfileDropdown } from "@/store/slices/commonSlice";
 import { useRouter } from "next/navigation";
@@ -16,6 +17,7 @@ export default function ProfileDropdown({ className = "" }) {
 
   const logOutHandler = () => {
     localStorage.clear();
+    Cookies.remove("token");
     dispatch(fetchCart());
     router.push("/");
   };
