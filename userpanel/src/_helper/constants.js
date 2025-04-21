@@ -33,6 +33,7 @@ export const GOLD_COLOR = "Gold Color";
 
 export const TOP_SELLING_PRODUCTS = "Top Selling Products";
 export const FLASH_DEALS = "Flash Deals";
+export const Start_WITH_SETTING = "Start With Setting";
 
 export const ENGAGEMENT_RINGS = [
   {
