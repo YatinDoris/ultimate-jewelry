@@ -15,7 +15,7 @@ import miniLogo from "@/assets/images/logo-2.webp";
 import { CustomImg } from "../dynamiComponents";
 import CartPopup from "../ui/CartPopup";
 import { helperFunctions } from "@/_helper";
-import { FLASH_DEALS } from "@/_helper/constants";
+import { FLASH_DEALS, Start_WITH_SETTING } from "@/_helper/constants";
 import { GoHeart } from "react-icons/go";
 import ProfileDropdown from "../ui/ProfileDropdown";
 import SkeletonLoader from "../ui/skeletonLoader";
@@ -123,7 +123,9 @@ export default function NavigationHeader() {
               }`}
             >
               <HeaderLinkButton
-                href={`#`}
+                href={`/customize/${helperFunctions.stringReplacedWithUnderScore(
+                  Start_WITH_SETTING
+                )}`}
                 className="rounded-none flex items-center gap-1 hover:!text-primary"
               >
                 Engagement
@@ -304,7 +306,9 @@ export default function NavigationHeader() {
                   {FLASH_DEALS}
                 </HeaderLinkButton>
                 <HeaderLinkButton
-                  href={`#`}
+                  href={`/customize/${helperFunctions.stringReplacedWithUnderScore(
+                    START_WITH_A_DIAMOND
+                  )}`}
                   onClick={() => {
                     dispatch(setIsHeaderVisible(false));
                   }}
