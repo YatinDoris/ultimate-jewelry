@@ -1,13 +1,7 @@
 import { messageType } from "@/_helper/constants";
 import { orderService } from "@/_services";
-import {
-  setCancelOrderLoading,
-  setOrderDetailLoading,
-  setOrderDetail,
-  setOrderList,
-  setOrderLoading,
-  setOrderMessage,
-} from "@/store/slices/orderSlice";
+
+import { setCancelOrderLoading, setOrderDetailLoading, setOrderDetail, setOrderList, setOrderLoading, setOrderMessage, setInvoiceLoading } from "@/store/slices/orderSlice";
 
 // actions/orderActions.js or similar
 export const fetchOrderHistory = () => {
@@ -71,8 +65,7 @@ export const fetchOrderDetail = (orderId) => {
     try {
       const orderDetail = await orderService.getOrderDetailByOrderId(orderId);
       if (orderDetail) {
-        dispatch(setOrderDetail(orderDetail));
-        console.log("orderDetail", orderDetail);
+        dispatch(setOrderDetail(orderDetail))
         return orderDetail;
       }
       return false;
@@ -95,6 +88,25 @@ export const deleteOrder = (orderId) => {
       return false;
     } catch (error) {
       return false;
+    }
+  };
+};
+
+export const fetchInvoiceOrderDetail = (orderId) => {
+  return async (dispatch) => {
+    dispatch(setInvoiceLoading(true))
+    try {
+      const orderDetail = await orderService.getOrderDetailByOrderId(orderId);
+      if (orderDetail) {
+        dispatch(setOrderDetail(orderDetail))
+        return orderDetail;
+      }
+      return false;
+    } catch (e) {
+      console.log('e', e)
+      return false;
+    } finally {
+      dispatch(setInvoiceLoading(false))
     }
   };
 };
