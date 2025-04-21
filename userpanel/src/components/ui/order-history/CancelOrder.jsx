@@ -16,7 +16,7 @@ export default function CancelOrder({ orderId }) {
     <>
       <RxCross2
         title="Cancel Order"
-        className="cursor-pointer text-xl text-[#DC3545]"
+        className={`cursor-pointer text-xl !text-[#DC3545]`}
         onClick={() => openCancelOrderModal(orderId)}
       />
       {showModal ? <CancelOrderModel /> : null}
