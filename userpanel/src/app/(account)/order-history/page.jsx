@@ -1,24 +1,22 @@
 "use client";
-import { fetchOrderDetail, fetchOrderHistory } from "@/_actions/order.action";
-import { generatePDF, helperFunctions } from "@/_helper";
+import { fetchOrderHistory } from "@/_actions/order.action";
+import { helperFunctions } from "@/_helper";
 import { ITEMS_PER_PAGE } from "@/_utils/common";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import CustomBadge from "@/components/ui/CustomBadge";
-import CancelOrderModel from "@/components/ui/order-history/OrderCancelModel";
 import Pagination from "@/components/ui/Pagination";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
 import Spinner from "@/components/ui/spinner";
-import { setShowModal } from "@/store/slices/commonSlice";
-import { setCurrentPage, setSelectedOrder } from "@/store/slices/orderSlice";
+import { setCurrentPage } from "@/store/slices/orderSlice";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
-import { BsDownload } from "react-icons/bs";
 import { IoEyeSharp } from "react-icons/io5";
-import { RxCross2 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
 import { setOrderLoading } from "../../../store/slices/orderSlice";
 import CancelOrder from "@/components/ui/order-history/CancelOrder";
+import DownloadInvoice from "@/components/ui/order-history/downloadInvoice";
+import { setShowModal } from "@/store/slices/commonSlice";
 
 export default function OrderHistoryPage() {
   const router = useRouter();
@@ -28,7 +26,7 @@ export default function OrderHistoryPage() {
     orderLoading,
     currentPage,
     selectedOrder,
-    orderDetailLoading,
+    invoiceLoading,
   } = useSelector(({ order }) => order);
 
   const loadData = useCallback(() => {
@@ -45,18 +43,8 @@ export default function OrderHistoryPage() {
     dispatch(setCurrentPage(selected));
   };
 
-  const downloadInvoiceHandler = useCallback(
-    async (orderId) => {
-      dispatch(setSelectedOrder(orderId));
-      const orderDetail = await dispatch(fetchOrderDetail(orderId));
-      if (orderDetail) {
-        generatePDF(orderDetail);
-      }
-    },
-    [dispatch]
-  );
-
   useEffect(() => {
+    dispatch(setShowModal(false));
     loadData();
   }, [loadData]);
 
@@ -167,14 +155,10 @@ export default function OrderHistoryPage() {
                         <CancelOrder orderId={order.id} />
                       ) : null}
 
-                      {orderDetailLoading && order.id === selectedOrder ? (
+                      {invoiceLoading && order.id === selectedOrder ? (
                         <Spinner className="h-6" />
                       ) : (
-                        <BsDownload
-                          title="Download Invoice"
-                          className="cursor-pointer text-xl text-basegray"
-                          onClick={() => downloadInvoiceHandler(order.id)}
-                        />
+                        <DownloadInvoice orderId={order.id} />
                       )}
                     </div>
                   </td>
@@ -187,7 +171,6 @@ export default function OrderHistoryPage() {
       {!orderLoading && orderList.length > ITEMS_PER_PAGE && (
         <Pagination handlePageClick={handlePageClick} pageCount={pageCount} />
       )}
-      {/* {showModal ? <CancelOrderModel /> : null} */}
     </div>
   );
 }

@@ -7,6 +7,7 @@ const initialState = {
   cancelOrderLoading: false,
   currentPage: 0,
   orderDetailLoading: false,
+  invoiceLoading: false,
   selectedOrder: ""
 };
 
@@ -24,6 +25,11 @@ const orderSlice = createSlice({
     setOrderDetailLoading: (state, action) => {
       state.orderDetailLoading = action.payload;
     },
+    // Order Detail Invoice Download Loading State
+    setInvoiceLoading: (state, action) => {
+      state.invoiceLoading = action.payload;
+    },
+    // 
     setOrderLoading: (state, action) => {
       state.orderLoading = action.payload;
     },
@@ -50,7 +56,8 @@ export const {
   setCancelOrderLoading,
   setOrderMessage,
   setOrderDetail,
-  setOrderDetailLoading
+  setOrderDetailLoading,
+  setInvoiceLoading
 } = orderSlice.actions;
 
 export default orderSlice.reducer;
