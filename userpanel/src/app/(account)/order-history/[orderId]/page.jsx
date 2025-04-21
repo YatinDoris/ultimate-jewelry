@@ -103,15 +103,12 @@ export default function OrderDetailPage() {
         <div className="container my-8">
           <div className="flex justify-end">
             <div className="flex gap-4 mb-2">
-              {console.log(
-                "invoiceLoading && orderId === selectedOrder",
-                invoiceLoading && orderId === selectedOrder
-              )}
               {invoiceLoading && orderId === selectedOrder ? (
                 <Spinner className="h-6" />
               ) : (
                 <DownloadInvoice orderId={orderId} />
               )}
+
               {["pending", "confirmed"].includes(orderDetail.orderStatus) &&
               orderDetail.paymentStatus === "success" ? (
                 <CancelOrder orderId={orderId} />
