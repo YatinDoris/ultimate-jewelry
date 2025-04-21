@@ -202,6 +202,7 @@ const getCollectionsTypeWiseProduct = (collectionType, collectionTitle) => {
 
           return {
             productName: product.productName,
+            isDiamondFilter: product?.isDiamondFilter || false,
             images: product.images.slice(0, 2),
             video: product.video,
             id: product.id,
@@ -640,6 +641,77 @@ const getSingleProductDataById = async ({ productId }) => {
   });
 };
 
+const getCustomizeProduct = (collectionType, collectionTitle) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      collectionType = sanitizeValue(collectionType)
+        ? collectionType.trim()
+        : null;
+      collectionTitle = sanitizeValue(collectionTitle)
+        ? collectionTitle.trim()
+        : null;
+
+      if (!collectionType || !collectionTitle) {
+        reject(new Error("Invalid Data"));
+        return;
+      }
+
+      const allActiveProductsData = await getAllActiveProducts();
+
+      // Filter by collection type
+      let filteredData = [];
+      if (collectionType === "categories") {
+        filteredData = allActiveProductsData.filter(
+          (item) =>
+            item.categoryName.toLowerCase() === collectionTitle.toLowerCase()
+        );
+      }
+
+      // Further filter to only include products with isDiamondFilter: true
+      filteredData = filteredData.filter(item => item.isDiamondFilter === true);
+
+      const customizeProductList = helperFunctions
+        .sortByField(filteredData)
+        .map((product) => {
+
+          // Price Formula Here
+          const { price = 0 } = helperFunctions.getMinPriceVariCombo(
+            product.variComboWithQuantity
+          );
+
+          return {
+            productName: product.productName,
+            isDiamondFilter: product?.isDiamondFilter || false,
+            images: product.images.slice(0, 2),
+            video: product.video,
+            id: product.id,
+            basePrice: price,
+            baseSellingPrice: helperFunctions.getSellingPrice(
+              price,
+              product.discount
+            ),
+            discount: product.discount,
+            variations: product.variations,
+            createdDate: product.createdDate,
+            goldTypeVariations: product?.variations?.find(
+              (x) => x?.variationName.toLowerCase() === GOLD_TYPES.toLowerCase()
+            )?.variationTypes,
+            goldColorVariations: product?.variations?.find(
+              (x) => x?.variationName.toLowerCase() === GOLD_COLOR.toLowerCase()
+            )?.variationTypes,
+            settingStyleNamesWithImg: product?.settingStyleNamesWithImg,
+          };
+        });
+
+      resolve(customizeProductList);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+
+
 export const productService = {
   getAllActiveProducts,
   getLatestProducts,
@@ -650,4 +722,5 @@ export const productService = {
   getFilteredDiamondProducts,
   getSingleProductDataById,
   getProcessProducts,
+  getCustomizeProduct,
 };

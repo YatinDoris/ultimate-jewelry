@@ -201,3 +201,7 @@ export const PaymentForm = dynamic(
     ssr: false,
   }
 );
+
+export const HeroSwiper = dynamic(() => import("./ui/HeroSwiper.jsx"), {
+  ssr: false,
+});
