@@ -101,7 +101,7 @@ export default function OrderHistoryPage() {
                         key={`cell-${rowIndex}-${colIndex}`}
                         className="px-6 py-4"
                       >
-                        <SkeletonLoader height="h-4" />
+                        <SkeletonLoader height="h-4 2xl:h-6" />
                       </td>
                     ))}
                   </tr>

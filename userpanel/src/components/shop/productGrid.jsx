@@ -90,7 +90,7 @@ const ProductGrid = memo(
     const getProductLink = ({ queryParams, isDiamondSettingPage, product }) => {
       if (!isDiamondSettingPage) return null;
       const { dId, format } = queryParams || {};
-      const basePath = `/engagement-rings/product-detail/${product?.id}`;
+      const basePath = `/customize/product-detail/${product?.id}`;
       const queryString = dId
         ? `?dId=${dId}&format=${format}`
         : `?format=${format}`;

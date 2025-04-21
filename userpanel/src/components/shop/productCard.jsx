@@ -2,7 +2,7 @@ import { helperFunctions } from "@/_helper";
 import Link from "next/link";
 import { ProgressiveImg } from "../dynamiComponents";
 
-export default function ProductCard({
+export default function   ProductCard({
   img,
   video,
   title,

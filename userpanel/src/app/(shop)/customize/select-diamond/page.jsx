@@ -1,5 +1,7 @@
+import SelectDiamondPage from "@/components/ui/customize/select-diamond/page";
+
 const SelectDiamond = () => {
-  return <div>Diaomnd</div>;
+  return <SelectDiamondPage />;
 };
 
 export default SelectDiamond;

@@ -346,3 +346,7 @@ export const messageType = {
   INFO: "INFO",
   WARNING: "WARNING",
 };
+
+export const CATEGORIES = "categories";
+export const RING = "Ring";
+

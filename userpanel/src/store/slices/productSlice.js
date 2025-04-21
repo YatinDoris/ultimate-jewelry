@@ -15,6 +15,8 @@ const initialState = {
   showFilterSidebar: false,
   uniqueFilterOptions: {},
   selectedSettingStyles: "",
+  customizeProductList: [],
+  customizeProductLoading: false,
 };
 
 const productSlice = createSlice({
@@ -49,7 +51,7 @@ const productSlice = createSlice({
       state.productQuantity = action.payload;
     },
 
-
+    // Filter Sidebar States
     setSortByValue: (state, action) => {
       state.selectedSortByValue = action.payload;
     },
@@ -78,7 +80,15 @@ const productSlice = createSlice({
     },
     setSelectedSettingStyle: (state, action) => {
       state.selectedSettingStyles = action.payload;
-    }
+    },
+
+    // Customize Product List States
+    setCustomizeProductList: (state, action) => {
+      state.customizeProductList = action.payload;
+    },
+    setCustomizeProductLoading: (state, action) => {
+      state.customizeProductLoading = action.payload;
+    },
   },
 });
 
@@ -99,7 +109,10 @@ export const {
   setOpenKeys,
   toggleOpenKey,
   setUniqueFilterOptions,
-  setSelectedSettingStyle
+  setSelectedSettingStyle,
+
+  setCustomizeProductList,
+  setCustomizeProductLoading
 } = productSlice.actions;
 
 export default productSlice.reducer;
