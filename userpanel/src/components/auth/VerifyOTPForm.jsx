@@ -94,9 +94,12 @@ const VerifyOTPForm = () => {
       const payload = {
         cartData: storageData,
       };
-      await dispatch(insertMultipleProductsIntoCart(payload));
-      dispatch(fetchCart());
-      localStorage.removeItem("cart");
+      const resp = await dispatch(insertMultipleProductsIntoCart(payload));
+
+      if (resp) {
+        dispatch(fetchCart());
+        localStorage.removeItem("cart");
+      }
     }
   }, [dispatch]);
 

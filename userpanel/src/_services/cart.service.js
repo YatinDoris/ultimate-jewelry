@@ -7,6 +7,7 @@ import {
   sanitizeObject,
 } from "../_helper";
 import { productService } from "./product.service";
+import { MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT } from "@/_helper/constants";
 
 const getAllCartWithProduct = () => {
   return new Promise(async (resolve, reject) => {
@@ -23,13 +24,17 @@ const getAllCartWithProduct = () => {
       } else {
         cartData = getCartItemOnOffline();
       }
+
       const allActiveProductsData = await productService.getAllActiveProducts();
       const customizations = await productService.getAllCustomizations();
+
       const cartDataWithProduct = cartData.map((cartItem) => {
         const findedProduct = allActiveProductsData.find(
           (product) => product.id === cartItem.productId
         );
+
         if (findedProduct) {
+          // Enrich variations with names
           const variationArray = cartItem.variations.map((variItem) => {
             const findedCustomizationType =
               customizations.customizationSubType.find(
@@ -37,29 +42,81 @@ const getAllCartWithProduct = () => {
               );
             return {
               ...variItem,
-              variationName: customizations.customizationType.find(
-                (x) => x.id === variItem.variationId
-              ).title,
-              variationTypeName: findedCustomizationType.title,
+              variationName:
+                customizations.customizationType.find(
+                  (x) => x.id === variItem.variationId
+                )?.title || "Unknown",
+              variationTypeName: findedCustomizationType?.title || "Unknown",
             };
           });
-          const { quantity, price } = helperFunctions.getVariComboPriceQty(
-            findedProduct.variComboWithQuantity,
-            variationArray
-          );
+
+          let price = 0;
+          let quantity = 0;
+
+          // Handle customized products (with diamondDetail)
+          const cartItemDiamondDetail = cartItem?.diamondDetail;
+          if (cartItemDiamondDetail && findedProduct?.isDiamondFilter) {
+            try {
+              const customProductPrice =
+                helperFunctions.calculateCustomProductPrice(
+                  findedProduct,
+                  variationArray
+                );
+
+              const diamondPrice = helperFunctions.calculateDiamondPrice({
+                caratWeight: cartItemDiamondDetail?.caratWeight,
+                clarity: cartItemDiamondDetail?.clarity,
+                color: cartItemDiamondDetail?.color,
+              });
+
+              price = customProductPrice + diamondPrice;
+              quantity = MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT;
+            } catch (err) {
+              console.error(
+                "Error calculating custom product or diamond price:",
+                err.message
+              );
+              price = 0;
+              quantity = 0;
+            }
+          } else {
+            const variCombo = helperFunctions.getVariComboPriceQty(
+              findedProduct.variComboWithQuantity,
+              variationArray
+            );
+            price = variCombo.price || 0;
+            quantity = variCombo.quantity || 0;
+          }
+
+          const sellingPrice = helperFunctions.getSellingPrice({
+            price,
+            discount: findedProduct.discount,
+            isCustomized: !!cartItem?.diamondDetail,
+          });
+
+          const diamondDetail = cartItem?.diamondDetail
+            ? {
+                ...cartItem?.diamondDetail,
+                shapeName: findedProduct.diamondFilters?.diamondShapes.find(
+                  (shape) => shape.id === cartItem?.diamondDetail?.shapeId
+                )?.title,
+              }
+            : null;
+
           return {
             ...cartItem,
             productName: findedProduct.productName,
-            productImage: findedProduct.images[0].image,
+            productImage: findedProduct.images[0]?.image || "",
             productQuantity: quantity,
             quantityWisePrice: price * cartItem.quantity,
-            quantityWiseSellingPrice:
-              helperFunctions.getSellingPrice(price, findedProduct.discount) *
-              cartItem.quantity,
-            productDiscount: findedProduct.discount,
+            quantityWiseSellingPrice: sellingPrice * cartItem.quantity,
+            productDiscount: findedProduct.discount || 0,
             variations: variationArray,
+            diamondDetail,
           };
-        } else return cartItem;
+        } else {
+          return cartItem; // Return as-is if product not found
+        }
       });
 
       resolve(cartDataWithProduct);
@@ -73,89 +130,168 @@ const insertProductIntoCart = (params) => {
   return new Promise(async (resolve, reject) => {
     try {
       const uuid = uid();
-      let { productId, quantity, variations } = sanitizeObject(params);
+      let { productId, quantity, variations, diamondDetail } =
+        sanitizeObject(params);
 
       productId = productId ? productId.trim() : null;
       quantity = quantity ? Number(quantity) : 0;
       variations = Array.isArray(variations) ? variations : [];
-      if (productId && variations.length && quantity && uuid) {
-        const productData = await fetchWrapperService.findOne(productsUrl, {
-          id: productId,
-        });
-        if (productData) {
-          if (!isValidVariationsArray(productData.variations, variations)) {
-            reject(
-              new Error(
-                "Invalid variation or variation does not exits in this product"
-              )
-            );
-            return;
-          }
-          const { quantity: availableQty } =
-            helperFunctions.getVariComboPriceQty(
-              productData.variComboWithQuantity,
-              variations
-            );
-          if (quantity <= 0 || quantity > availableQty) {
-            reject(new Error("Invalid cart quantity!"));
-            return;
-          }
-          const cartData = await cartService.getAllCartWithProduct();
-          const filteredData = cartData.filter((cartItem) => {
-            // Check if the product id matches
-            if (cartItem.productId === productId) {
-              // Check if all variations exist in the cartItem's variations array
-              return variations.every((variant) => {
-                return cartItem.variations.some((itemVariant) => {
-                  return (
-                    itemVariant.variationId === variant.variationId &&
-                    itemVariant.variationTypeId === variant.variationTypeId
-                  );
-                });
-              });
-            }
-            return false;
-          });
-          if (filteredData.length) {
-            reject(new Error("product already exits in cart"));
-            return;
-          }
+      diamondDetail = diamondDetail || null; // Handle optional diamondDetail
 
-          let insertPattern = {
-            id: uuid,
-            productId,
-            quantity,
-            variations,
-            createdDate: Date.now(),
-            updatedDate: Date.now(),
-          };
-          const userData = helperFunctions.getCurrentUser();
-          if (userData) {
-            insertPattern.userId = userData.id;
-            const createPattern = {
-              url: `${cartsUrl}/${uuid}`,
-              insertPattern: insertPattern,
-            };
-            fetchWrapperService
-              .create(createPattern)
-              .then((response) => {
-                resolve(insertPattern);
-              })
-              .catch((e) => {
-                reject(new Error("An error occurred during cart creation."));
-              });
-          } else {
-            localStorage.setItem(
-              "cart",
-              JSON.stringify([...cartData, insertPattern])
-            );
-            resolve(insertPattern);
-          }
-        } else {
-          reject(new Error("product data not found!"));
-        }
-      } else {
+      if (!productId || !variations.length || !quantity || !uuid) {
         reject(new Error("Invalid Data"));
+        return;
+      }
+
+      // Fetch product data
+      const productData = await fetchWrapperService.findOne(productsUrl, {
+        id: productId,
+      });
+
+      if (!productData) {
+        reject(new Error("Product data not found!"));
+        return;
+      }
+
+      // Validate variations
+      if (!isValidVariationsArray(productData.variations, variations)) {
+        reject(
+          new Error(
+            "Invalid variation or variation does not exist in this product"
+          )
+        );
+        return;
+      }
+
+      // Validate quantity for non-customized products
+      if (!diamondDetail) {
+        const variCombo = helperFunctions.getVariComboPriceQty(
+          productData.variComboWithQuantity,
+          variations
+        );
+        const availableQty = variCombo.quantity;
+        if (quantity <= 0 || quantity > availableQty) {
+          reject(new Error("Invalid cart quantity!"));
+          return;
+        }
+      }
+
+      // Handle customized product (diamondDetail present)
+      if (diamondDetail) {
+        // Validate diamondDetail structure
+        const { shapeId, caratWeight, clarity, color, price } = diamondDetail;
+        if (!shapeId || !caratWeight || !clarity || !color || !price) {
+          reject(new Error("Invalid diamond detail parameters"));
+          return;
+        }
+
+        // Validate against product's diamondFilters
+        if (!productData.isDiamondFilter) {
+          reject(new Error("Product does not support diamond customization"));
+          return;
+        }
+
+        const { diamondShapeIds, caratWeightRange } =
+          productData.diamondFilters;
+        if (!diamondShapeIds.includes(shapeId)) {
+          reject(new Error("Invalid diamond shape for this product"));
+          return;
+        }
+        if (
+          caratWeight < caratWeightRange.min ||
+          caratWeight > caratWeightRange.max
+        ) {
+          reject(new Error("Invalid carat weight for this product"));
+          return;
+        }
+
+        // Validate diamond price (assuming you have a function to calculate/verify it)
+        const calculatedDiamondPrice =
+          await helperFunctions.calculateDiamondPrice({
+            caratWeight,
+            clarity,
+            color,
+          }); // Implement this function based on your formula
+        if (calculatedDiamondPrice !== price) {
+          reject(new Error("Invalid diamond price"));
+          return;
+        }
+
+        // For customized products, quantity validation may depend on diamond availability
+        // Assuming quantity is valid if diamond price is provided (adjust as needed)
+        if (quantity <= 0) {
+          reject(new Error("Invalid cart quantity!"));
+          return;
+        }
+      }
+
+      // Check for duplicate cart items
+      const cartData = await cartService.getAllCartWithProduct();
+      const filteredData = cartData.filter((cartItem) => {
+        if (cartItem.productId === productId) {
+          const variationsMatch = variations.every((variant) =>
+            cartItem.variations.some(
+              (itemVariant) =>
+                itemVariant.variationId === variant.variationId &&
+                itemVariant.variationTypeId === variant.variationTypeId
+            )
+          );
+          if (variationsMatch && diamondDetail && cartItem?.diamondDetail) {
+            // For customized products, check if diamondDetail matches
+            return (
+              cartItem?.diamondDetail?.shapeId === diamondDetail?.shapeId &&
+              cartItem?.diamondDetail?.caratWeight ===
+                diamondDetail?.caratWeight &&
+              cartItem?.diamondDetail?.clarity === diamondDetail?.clarity &&
+              cartItem?.diamondDetail?.color === diamondDetail?.color
+            );
+          }
+          return variationsMatch && !diamondDetail && !cartItem?.diamondDetail;
+        }
+        return false;
+      });
+
+      if (filteredData.length) {
+        reject(new Error("Product already exists in cart"));
+        return;
+      }
+
+      // Prepare cart item
+      let insertPattern = {
+        id: uuid,
+        productId,
+        quantity,
+        variations,
+        createdDate: Date.now(),
+        updatedDate: Date.now(),
+      };
+
+      if (diamondDetail) {
+        delete diamondDetail.price;
+        insertPattern.diamondDetail = diamondDetail;
+      }
+
+      const userData = helperFunctions.getCurrentUser();
+      if (userData) {
+        insertPattern.userId = userData.id;
+        const createPattern = {
+          url: `${cartsUrl}/${uuid}`,
+          insertPattern,
+        };
+        fetchWrapperService
+          .create(createPattern)
+          .then((response) => {
+            resolve(insertPattern);
+          })
+          .catch((e) => {
+            reject(new Error("An error occurred during cart creation."));
+          });
+      } else {
+        localStorage.setItem(
+          "cart",
+          JSON.stringify([...cartData, insertPattern])
+        );
+        resolve(insertPattern);
       }
     } catch (e) {
       reject(e);
@@ -171,152 +307,208 @@ const insertMultipleProductsIntoCart = (params) => {
       const userData = helperFunctions.getCurrentUser();
       const createdOrUpdateCartData = [];
 
-      if (userData) {
-        if (cartData.length) {
-          for (let i = 0; i < cartData.length; i++) {
-            const element = cartData[i];
-            let { productId, quantity, variations } = element;
+      if (!userData) {
+        reject(new Error("Unauthorized"));
+        return;
+      }
 
-            productId = productId ? productId.trim() : null;
-            quantity = quantity ? Number(quantity) : 0;
-            variations = Array.isArray(variations) ? variations : [];
+      if (!cartData.length) {
+        reject(new Error("Invalid Data"));
+        return;
+      }
 
-            if (productId && variations.length && quantity) {
-              fetchWrapperService
-                .findOne(productsUrl, { id: productId })
-                .then((productData) => {
-                  if (productData) {
-                    if (
-                      isValidVariationsArray(productData.variations, variations)
-                    ) {
-                      const { quantity: availableQty } =
-                        helperFunctions.getVariComboPriceQty(
-                          productData.variComboWithQuantity,
-                          variations
-                        );
-                      if (quantity > 0 && availableQty >= quantity) {
-                        cartService
-                          .getAllCartWithProduct()
-                          .then((userWiseCartData) => {
-                            const filteredData = userWiseCartData.filter(
-                              (cartItem) => {
-                                // Check if the product id matches
-                                if (cartItem.productId === productId) {
-                                  // Check if all variations exist in the cartItem's variations array
-                                  return variations.every((variant) => {
-                                    return cartItem.variations.some(
-                                      (itemVariant) => {
-                                        return (
-                                          itemVariant.variationId ===
-                                            variant.variationId &&
-                                          itemVariant.variationTypeId ===
-                                            variant.variationTypeId
-                                        );
-                                      }
-                                    );
-                                  });
-                                }
-                                return false;
-                              }
-                            );
-                            if (filteredData.length) {
-                              const cartId = filteredData[0].id;
-                              const payload = {
-                                quantity:
-                                  Number(filteredData[0].quantity) +
-                                  Number(quantity),
-                              };
-                              const updatePattern = {
-                                url: `${cartsUrl}/${cartId}`,
-                                payload: payload,
-                              };
-                              fetchWrapperService
-                                ._update(updatePattern)
-                                .then((response) => {
-                                  const updatedData = {
-                                    ...filteredData[0],
-                                    quantity:
-                                      Number(filteredData[0].quantity) +
-                                      Number(quantity),
-                                  };
-                                  createdOrUpdateCartData.push(updatedData);
-                                  sendResponse();
-                                })
-                                .catch((e) => {
-                                  //   reject(
-                                  //     new Error(
-                                  //       "An error occurred during update cart."
-                                  //     )
-                                  //   );
-                                  sendResponse();
-                                });
-                            } else {
-                              const uuid = uid();
-                              const insertPattern = {
-                                id: uuid,
-                                userId: userData.id,
-                                productId,
-                                quantity,
-                                variations,
-                                createdDate: Date.now(),
-                                updatedDate: Date.now(),
-                              };
+      for (let i = 0; i < cartData.length; i++) {
+        const element = cartData[i];
 
-                              const createPattern = {
-                                url: `${cartsUrl}/${uuid}`,
-                                insertPattern: insertPattern,
-                              };
-                              fetchWrapperService
-                                .create(createPattern)
-                                .then((response) => {
-                                  createdOrUpdateCartData.push(insertPattern);
-                                  sendResponse();
-                                })
-                                .catch((e) => {
-                                  // reject(
-                                  //   new Error("An error occurred during cart creation.")
-                                  // );
-                                  sendResponse();
-                                });
-                            }
-                          })
-                          .catch((e) => {
-                            // An error occurred during find cart data.
-                            sendResponse();
-                          });
-                      } else {
-                        //  reject(new Error("Invalid quantity!"));
-                        sendResponse();
-                      }
-                    } else {
-                      //  Invalid variation or variation does not exits in this product
-                      sendResponse();
-                    }
-                  } else {
-                    // product data not found!
-                    sendResponse();
-                  }
-                })
-                .catch((e) => {
-                  // An error occurred during find product data.
-                  sendResponse();
-                });
-            } else {
-              // Invalid Data.
-              sendResponse();
+        let { productId, quantity, variations, diamondDetail } =
+          sanitizeObject(element);
+
+        // Sanitize inputs
+        productId = productId ? productId.trim() : null;
+        quantity = quantity ? Number(quantity) : 0;
+        variations = Array.isArray(variations) ? variations : [];
+        diamondDetail = diamondDetail || null;
+
+        // Validate basic inputs
+        if (!productId || !variations.length || !quantity) {
+          sendResponse();
+          continue;
+        }
+
+        // Fetch product data
+        const productData = await fetchWrapperService.findOne(productsUrl, {
+          id: productId,
+        });
+
+        if (!productData) {
+          sendResponse();
+          continue;
+        }
+
+        // Validate variations
+        if (!isValidVariationsArray(productData.variations, variations)) {
+          sendResponse();
+          continue;
+        }
+
+        // Validate quantity for non-customized products
+        let availableQty = 0;
+        if (!diamondDetail) {
+          const variCombo = helperFunctions.getVariComboPriceQty(
+            productData.variComboWithQuantity,
+            variations
+          );
+          availableQty = variCombo.quantity;
+          if (quantity <= 0 || quantity > availableQty) {
+            sendResponse();
+            continue;
+          }
+        }
+
+        // Handle customized product (diamondDetail present)
+        if (diamondDetail) {
+          // Validate diamondDetail structure
+          const { shapeId, caratWeight, clarity, color } = diamondDetail;
+
+          if (!shapeId || !caratWeight || !clarity || !color) {
+            sendResponse();
+            continue;
+          }
+
+          // Validate against product's diamondFilters
+          if (!productData.isDiamondFilter) {
+            sendResponse();
+            continue;
+          }
+
+          const { diamondShapeIds, caratWeightRange } =
+            productData.diamondFilters;
+          if (!diamondShapeIds.includes(shapeId)) {
+            sendResponse();
+            continue;
+          }
+          if (
+            caratWeight < caratWeightRange.min ||
+            caratWeight > caratWeightRange.max
+          ) {
+            sendResponse();
+            continue;
+          }
+
+          // Validate quantity for customized products
+
+          if (quantity <= 0 || quantity > MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT) {
+            sendResponse();
+            continue;
+          }
+        }
+
+        // Check for duplicate cart items
+        const userWiseCartData = await cartService.getAllCartWithProduct();
+        const filteredData = userWiseCartData.filter((cartItem) => {
+          if (cartItem.productId === productId) {
+            const variationsMatch = variations.every((variant) =>
+              cartItem.variations.some(
+                (itemVariant) =>
+                  itemVariant.variationId === variant.variationId &&
+                  itemVariant.variationTypeId === variant.variationTypeId
+              )
+            );
+            if (variationsMatch && diamondDetail && cartItem?.diamondDetail) {
+              return (
+                cartItem?.diamondDetail?.shapeId === diamondDetail?.shapeId &&
+                cartItem?.diamondDetail?.caratWeight ===
+                  diamondDetail?.caratWeight &&
+                cartItem?.diamondDetail?.clarity === diamondDetail?.clarity &&
+                cartItem?.diamondDetail?.color === diamondDetail?.color
+              );
             }
+            return (
+              variationsMatch && !diamondDetail && !cartItem?.diamondDetail
+            );
+          }
+          return false;
+        });
 
-            function sendResponse() {
-              if (i === cartData.length - 1) {
-                resolve({ createdOrUpdateCartData });
-              }
+        if (filteredData.length) {
+          // Update existing cart item
+          const cartId = filteredData[0].id;
+          const existingQuantity = Number(filteredData[0].quantity);
+          const requestedQuantity = Number(quantity);
+          let newQuantity = existingQuantity + requestedQuantity;
+
+          // Validate total quantity against max limit
+          if (!diamondDetail) {
+            // Non-customized product: use variCombo quantity
+            if (newQuantity > availableQty) {
+              newQuantity = availableQty; // Cap at available quantity
+            }
+          } else {
+            // Customized product: use MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT
+            if (newQuantity > MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT) {
+              newQuantity = MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT; // Cap at max allowed for custom products
             }
           }
+          if (newQuantity <= 0) {
+            sendResponse();
+            continue;
+          }
+
+          const payload = {
+            quantity: newQuantity,
+            updatedDate: Date.now(),
+          };
+          const updatePattern = {
+            url: `${cartsUrl}/${cartId}`,
+            payload: payload,
+          };
+          try {
+            await fetchWrapperService._update(updatePattern);
+            const updatedData = {
+              ...filteredData[0],
+              quantity: newQuantity,
+              updatedDate: Date.now(),
+            };
+            createdOrUpdateCartData.push(updatedData);
+          } catch (e) {
+            // Skip to next item on error
+          }
         } else {
-          reject(new Error("Invalid Data"));
+          // Create new cart item
+          const uuid = uid();
+          let insertPattern = {
+            id: uuid,
+            userId: userData.id,
+            productId,
+            quantity,
+            variations,
+            createdDate: Date.now(),
+            updatedDate: Date.now(),
+          };
+
+          if (diamondDetail) {
+            insertPattern.diamondDetail = diamondDetail;
+          }
+
+          const createPattern = {
+            url: `${cartsUrl}/${uuid}`,
+            insertPattern,
+          };
+          try {
+            await fetchWrapperService.create(createPattern);
+            createdOrUpdateCartData.push(insertPattern);
+          } catch (e) {
+            // Skip to next item on error
+          }
         }
-      } else {
-        reject(new Error("unauthorized"));
+
+        function sendResponse() {
+          if (i === cartData.length - 1) {
+            resolve({ createdOrUpdateCartData });
+          }
+        }
+
+        sendResponse();
       }
     } catch (e) {
       reject(e);

@@ -301,10 +301,10 @@ const deleteOrder = async (orderId) => {
 //           return {
 //             ...foundProduct,
 //             basePrice: price,
-//             baseSellingPrice: helperFunctions.getSellingPrice(
+//             baseSellingPrice: helperFunctions.getSellingPrice({
 //               price,
-//               foundProduct.discount
-//             ),
+//               discount:foundProduct.discount
+//             }),
 //             discount: foundProduct.discount,
 //             goldTypeVariations: foundProduct?.variations?.find(
 //               (x) => x?.variationName.toLowerCase() === GOLD_TYPES.toLowerCase()

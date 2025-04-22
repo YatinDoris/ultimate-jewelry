@@ -48,10 +48,10 @@ const getAllRecentlyViewedWithProduct = () => {
             productName: foundProduct.productName,
             images: foundProduct.images.slice(0, 2),
             basePrice: price,
-            baseSellingPrice: helperFunctions.getSellingPrice(
+            baseSellingPrice: helperFunctions.getSellingPrice({
               price,
-              foundProduct.discount
-            ),
+              discount: product.discount,
+            }),
             discount: foundProduct.discount,
             createdDate: recentlyViewedItem.createdDate,
             updatedDate: recentlyViewedItem.updatedDate,

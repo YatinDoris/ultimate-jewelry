@@ -1,6 +1,4 @@
-import { fetchWrapperService, helperFunctions, menuUrl, sanitizeObject } from "@/_helper";
-import { GOLD_COLOR, GOLD_TYPES } from "@/_helper/constants";
-
+import { fetchWrapperService, helperFunctions, menuUrl } from "@/_helper";
 
 export const getAllMenuData = () => {
   return new Promise(async (resolve, reject) => {
@@ -139,10 +137,10 @@ export const getAllMenuList = () => {
 //           return {
 //             ...product,
 //             basePrice: price,
-//             baseSellingPrice: helperFunctions.getSellingPrice(
+//             baseSellingPrice: helperFunctions.getSellingPrice({
 //               price,
-//               product.discount
-//             ),
+//               discount:product.discount
+//             }),
 //             discount: product.discount,
 //             goldTypeVariations: product?.variations?.find(
 //               (x) => x?.variationName.toLowerCase() === GOLD_TYPES.toLowerCase()

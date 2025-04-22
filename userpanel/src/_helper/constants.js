@@ -350,3 +350,21 @@ export const messageType = {
 export const CATEGORIES = "categories";
 export const RING = "Ring";
 
+export const METAL_PRICES = {
+  "10K": 45, // Example price for 10k gold
+  "14K": 60, // Example price for 14k gold
+};
+export const PRICE_MULTIPLIER = 1.264;
+
+export const CLARITY_COLOR_PRICES = {
+  SI2: { J: 3000, I: 3200, H: 3400, G: 3600, F: 3800, E: 4000, D: 4200 },
+  SI1: { J: 3500, I: 3700, H: 3900, G: 4100, F: 4300, E: 4500, D: 4700 },
+  VS2: { J: 4000, I: 4200, H: 4400, G: 4600, F: 4800, E: 5000, D: 5200 },
+  VS1: { J: 4500, I: 4700, H: 4900, G: 5100, F: 5300, E: 5500, D: 5700 },
+  VVS2: { J: 5000, I: 5200, H: 5400, G: 5600, F: 5800, E: 6000, D: 6200 },
+  VVS1: { J: 5500, I: 5700, H: 5900, G: 6100, F: 6300, E: 6500, D: 6700 },
+  IF: { J: 6000, I: 6200, H: 6400, G: 6600, F: 6800, E: 7000, D: 7200 },
+  FL: { J: 6500, I: 6700, H: 6900, G: 7100, F: 7300, E: 7500, D: 7700 },
+};
+
+export const MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT = 5;
