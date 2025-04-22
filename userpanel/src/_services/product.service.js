@@ -12,7 +12,6 @@ import { diamondShapeService } from "./diamondShape.service";
 import { homeService } from "./home.service";
 import { settingStyleService } from "./settingStyle.service";
 
-
 const getAllActiveProducts = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -35,26 +34,27 @@ const getAllActiveProducts = () => {
             (id) =>
               collectionData.find((collection) => collection?.id === id)?.title
           ),
-          settingStyleNamesWithImg: product?.settingStyleIds?.map((id) =>
-            settingStyleData.find((style) => style?.id === id)
-          ) || [],
+          settingStyleNamesWithImg:
+            product?.settingStyleIds?.map((id) =>
+              settingStyleData.find((style) => style?.id === id)
+            ) || [],
 
           diamondFilters: product.isDiamondFilter
             ? {
-              ...product?.diamondFilters,
-              diamondShapes: product?.diamondFilters.diamondShapeIds?.map(
-                (shapeId) => {
-                  const foundedShape = diamondShapeList?.find(
-                    (shape) => shape?.id === shapeId
-                  );
-                  return {
-                    title: foundedShape?.title,
-                    image: foundedShape?.image,
-                    id: foundedShape?.id,
-                  };
-                }
-              ),
-            }
+                ...product?.diamondFilters,
+                diamondShapes: product?.diamondFilters.diamondShapeIds?.map(
+                  (shapeId) => {
+                    const foundedShape = diamondShapeList?.find(
+                      (shape) => shape?.id === shapeId
+                    );
+                    return {
+                      title: foundedShape?.title,
+                      image: foundedShape?.image,
+                      id: foundedShape?.id,
+                    };
+                  }
+                ),
+              }
             : product?.diamondFilters,
           categoryName: menuData.categories.find(
             (category) => category.id === product.categoryId
@@ -111,10 +111,10 @@ const getLatestProducts = (length = 8) => {
             video: product.video,
             id: product.id,
             basePrice: price,
-            baseSellingPrice: helperFunctions.getSellingPrice(
+            baseSellingPrice: helperFunctions.getSellingPrice({
               price,
-              product.discount
-            ),
+              discount: product.discount,
+            }),
             discount: product.discount,
             goldTypeVariations: product?.variations?.find(
               (x) => x?.variationName.toLowerCase() === GOLD_TYPES.toLowerCase()
@@ -207,10 +207,10 @@ const getCollectionsTypeWiseProduct = (collectionType, collectionTitle) => {
             video: product.video,
             id: product.id,
             basePrice: price,
-            baseSellingPrice: helperFunctions.getSellingPrice(
+            baseSellingPrice: helperFunctions.getSellingPrice({
               price,
-              product.discount
-            ),
+              discount: product.discount,
+            }),
             discount: product.discount,
             variations: product.variations,
             createdDate: product.createdDate,
@@ -220,8 +220,7 @@ const getCollectionsTypeWiseProduct = (collectionType, collectionTitle) => {
             goldColorVariations: product?.variations?.find(
               (x) => x?.variationName.toLowerCase() === GOLD_COLOR.toLowerCase()
             )?.variationTypes,
-            settingStyleNamesWithImg:
-              product?.settingStyleNamesWithImg,
+            settingStyleNamesWithImg: product?.settingStyleNamesWithImg,
           };
         });
       resolve(collectionTypeWiseProductsList);
@@ -237,20 +236,34 @@ const getProcessProducts = async (singleProductData) => {
     const settingStyleData = await settingStyleService.getAllSettingStyles();
     const menuData = await homeService.getAllMenuData();
     const customizations = await productService.getAllCustomizations();
+    const diamondShapeList = await diamondShapeService.getAllDiamondShapes();
 
     let convertedProductData = singleProductData;
+
+    // Map collection titles
     convertedProductData.collectionNames =
       convertedProductData?.collectionIds?.map(
         (id) =>
           collectionData.find((collection) => collection?.id === id)?.title
       );
+
+    // Map setting style data with images
     convertedProductData.settingStyleNamesWithImg =
       convertedProductData?.settingStyleIds?.map((id) =>
         settingStyleData.find((style) => style?.id === id)
       );
+
+    // Map category name
     convertedProductData.categoryName = menuData.categories.find(
       (category) => category.id === convertedProductData.categoryId
     )?.title;
+
+    // Map subcategory name
+    if (convertedProductData?.subCategoryId) {
+      convertedProductData.subCategoryName = menuData.subCategories.find(
+        (subCategory) => subCategory.id === convertedProductData.subCategoryId
+      )?.title;
+    }
 
     // convertedProductData.subCategoryName = menuData.subCategories.find(
     //   (subCategory) => subCategory.id === convertedProductData.subCategoryId
@@ -263,25 +276,46 @@ const getProcessProducts = async (singleProductData) => {
     //         ?.title
     //   );
 
-    convertedProductData.subCategoryId && {
-      subCategoryName: menuData.subCategories.find(
-        (subCategory) => subCategory.id === convertedProductData.subCategoryId
-      )?.title,
-    },
-      convertedProductData?.productTypeIds?.length && {
-        productTypeNames: convertedProductData.productTypeIds
+    // Map product type names
+    if (convertedProductData?.productTypeIds?.length) {
+      convertedProductData.productTypeNames =
+        convertedProductData.productTypeIds
           .map(
             (id) =>
               menuData.productTypes.find(
                 (productType) => productType?.id === id
               )?.title
           )
+          .filter(Boolean);
+    }
+
+    // Handle variations
+    convertedProductData.variations = helperFunctions.getVariationsArray(
+      convertedProductData.variations,
+      customizations
+    );
+
+    // Map diamond filters
+    if (convertedProductData?.isDiamondFilter) {
+      convertedProductData.diamondFilters = {
+        ...convertedProductData?.diamondFilters,
+        diamondShapes: convertedProductData?.diamondFilters?.diamondShapeIds
+          ?.map((shapeId) => {
+            const foundShape = diamondShapeList?.find(
+              (shape) => shape?.id === shapeId
+            );
+            return foundShape
+              ? {
+                  title: foundShape?.title,
+                  image: foundShape?.image,
+                  id: foundShape?.id,
+                }
+              : null;
+          })
           .filter(Boolean),
-      },
-      (convertedProductData.variations = helperFunctions.getVariationsArray(
-        convertedProductData.variations,
-        customizations
-      ));
+      };
+    }
+
     return convertedProductData;
   } catch (error) {
     throw error;
@@ -348,10 +382,10 @@ const getReletedProducts = (productName) => {
                 images: product.images.slice(0, 2),
                 id: product.id,
                 basePrice: price,
-                baseSellingPrice: helperFunctions.getSellingPrice(
+                baseSellingPrice: helperFunctions.getSellingPrice({
                   price,
-                  product.discount
-                ),
+                  discount: product.discount,
+                }),
                 discount: product.discount,
                 goldTypeVariations: product?.variations?.find(
                   (x) =>
@@ -490,15 +524,15 @@ const getFilteredDiamondProducts = (params) => {
           // Filter by product type
           const isProductTypeValid = selectedProductTypes?.length
             ? selectedProductTypes.some((type) =>
-              product?.productTypeNames.includes(type?.value)
-            )
+                product?.productTypeNames.includes(type?.value)
+              )
             : true;
 
           // Filter by collection
           const isCollectionValid = selectedCollections?.length
             ? selectedCollections.some((collection) =>
-              product?.collectionNames?.includes(collection?.value)
-            )
+                product?.collectionNames?.includes(collection?.value)
+              )
             : true;
 
           // Filter by setting style
@@ -507,32 +541,32 @@ const getFilteredDiamondProducts = (params) => {
           );
           const isSettingStyleValid = selectedSettingStyles?.length
             ? selectedSettingStyles.some((style) =>
-              settingStyleNames?.includes(style?.value)
-            )
+                settingStyleNames?.includes(style?.value)
+              )
             : true;
 
           // Filter by variations
           const isVariationValid = selectedVariations?.length
             ? selectedVariations.every((selectedVariation) => {
-              const productVariation = product?.variations?.find(
-                (v) =>
-                  v?.variationName.toLowerCase() ===
-                  selectedVariation.title.toLowerCase()
-              );
+                const productVariation = product?.variations?.find(
+                  (v) =>
+                    v?.variationName.toLowerCase() ===
+                    selectedVariation.title.toLowerCase()
+                );
 
-              if (!productVariation) return false;
+                if (!productVariation) return false;
 
-              // Check if any selected value matches the product's variation types
-              return selectedVariation.selectedValues.length
-                ? selectedVariation.selectedValues.some((selectedValue) =>
-                  productVariation.variationTypes.some(
-                    (variationType) =>
-                      variationType.variationTypeName.toLowerCase() ===
-                      selectedValue.value.toLowerCase()
-                  )
-                )
-                : true;
-            })
+                // Check if any selected value matches the product's variation types
+                return selectedVariation.selectedValues.length
+                  ? selectedVariation.selectedValues.some((selectedValue) =>
+                      productVariation.variationTypes.some(
+                        (variationType) =>
+                          variationType.variationTypeName.toLowerCase() ===
+                          selectedValue.value.toLowerCase()
+                      )
+                    )
+                  : true;
+              })
             : true;
 
           // Filter by price range
@@ -541,10 +575,10 @@ const getFilteredDiamondProducts = (params) => {
           );
           const isPriceValid = priceRangeValues?.length
             ? productPrices.some(
-              (price) =>
-                price >= (priceRangeValues[0] || 0) &&
-                price <= (priceRangeValues[1] || Infinity)
-            )
+                (price) =>
+                  price >= (priceRangeValues[0] || 0) &&
+                  price <= (priceRangeValues[1] || Infinity)
+              )
             : true;
 
           return (
@@ -567,10 +601,10 @@ const getFilteredDiamondProducts = (params) => {
             images: product.images.slice(0, 2),
             id: product.id,
             basePrice: price,
-            baseSellingPrice: helperFunctions.getSellingPrice(
+            baseSellingPrice: helperFunctions.getSellingPrice({
               price,
-              product.discount
-            ),
+              discount: product.discount,
+            }),
             discount: product.discount,
             goldTypeVariations: product?.variations?.find(
               (x) => x?.variationName.toLowerCase() === GOLD_TYPES.toLowerCase()
@@ -668,12 +702,13 @@ const getCustomizeProduct = (collectionType, collectionTitle) => {
       }
 
       // Further filter to only include products with isDiamondFilter: true
-      filteredData = filteredData.filter(item => item.isDiamondFilter === true);
+      filteredData = filteredData.filter(
+        (item) => item.isDiamondFilter === true
+      );
 
       const customizeProductList = helperFunctions
         .sortByField(filteredData)
         .map((product) => {
-
           // Price Formula Here
           const { price = 0 } = helperFunctions.getMinPriceVariCombo(
             product.variComboWithQuantity
@@ -709,8 +744,6 @@ const getCustomizeProduct = (collectionType, collectionTitle) => {
     }
   });
 };
-
-
 
 export const productService = {
   getAllActiveProducts,

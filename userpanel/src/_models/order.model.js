@@ -44,15 +44,34 @@ export const orderModel = {
           ref: "variation",
         },
         productPrice: {
-          // its represent variation price with single quantity
-          type: Number,
+          type: Number, // Represents variation price for non-customized or base price for customized with single quantity
         },
         unitAmount: {
-          // its represent variation price with multiply quantity
-          type: Number,
+          type: Number, // Total price (variation price + diamond price) * quantity
         },
         cartQuantity: {
           type: Number,
+        },
+        diamondDetail: {
+          // New field for customized products
+          type: {
+            shapeId: {
+              type: String,
+            },
+            caratWeight: {
+              type: Number,
+            },
+            clarity: {
+              type: String,
+            },
+            color: {
+              type: String,
+            },
+            price: {
+              type: Number, // Diamond price
+            },
+          },
+          required: false, // Optional for non-customized products
         },
       },
     ],
