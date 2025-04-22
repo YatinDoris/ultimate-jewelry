@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-export const defaultOpenKeys = ['sortBy']
+export const defaultOpenKeys = ["sortBy"];
 const initialState = {
   productLoading: false,
   recentlyProductLoading: false,
@@ -10,13 +10,14 @@ const initialState = {
   currentPage: 0,
   selectedVariations: [],
   productQuantity: 1,
-  selectedSortByValue: 'date_new_to_old',
+  selectedSortByValue: "date_new_to_old",
   openKeys: defaultOpenKeys,
   showFilterSidebar: false,
   uniqueFilterOptions: {},
   selectedSettingStyles: "",
   customizeProductList: [],
   customizeProductLoading: false,
+  productMessage: { message: "", type: "" },
 };
 
 const productSlice = createSlice({
@@ -51,6 +52,10 @@ const productSlice = createSlice({
       state.productQuantity = action.payload;
     },
 
+    setProductMessage: (state, action) => {
+      state.productMessage = action.payload;
+    },
+
     // Filter Sidebar States
     setSortByValue: (state, action) => {
       state.selectedSortByValue = action.payload;
@@ -70,7 +75,7 @@ const productSlice = createSlice({
       state.showFilterSidebar = action.payload;
     },
     resetFilters: (state) => {
-      state.selectedSortByValue = 'date_new_to_old';
+      state.selectedSortByValue = "date_new_to_old";
       state.selectedVariations = {};
       state.openKeys = defaultOpenKeys;
       state.selectedSettingStyles = "";
@@ -102,7 +107,7 @@ export const {
   setCurrentPage,
   setSelectedVariations,
   setProductQuantity,
-
+  setProductMessage,
   setSortByValue,
   setShowFilterSidebar,
   resetFilters,
@@ -112,7 +117,7 @@ export const {
   setSelectedSettingStyle,
 
   setCustomizeProductList,
-  setCustomizeProductLoading
+  setCustomizeProductLoading,
 } = productSlice.actions;
 
 export default productSlice.reducer;

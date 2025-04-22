@@ -90,11 +90,11 @@ const ProductGrid = memo(
     const getProductLink = ({ queryParams, isDiamondSettingPage, product }) => {
       if (!isDiamondSettingPage) return null;
       const { dId, format } = queryParams || {};
-      const basePath = `/customize/product-detail/${product?.id}`;
-      const queryString = dId
-        ? `?dId=${dId}&format=${format}`
-        : `?format=${format}`;
-      return `${basePath}${queryString}`;
+      const basePath = `/customize/start-with-setting/${product?.id}`;
+      // const queryString = dId
+      //   ? `?dId=${dId}&format=${format}`
+      //   : `?format=${format}`;
+      return `${basePath}`;
     };
 
     useEffect(() => {

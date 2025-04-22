@@ -13,6 +13,8 @@ const initialState = {
   showModal: false,
   isChecked: false,
   isSubmitted: false,
+  customProductDetails: {},
+  customizeLoader: false,
 };
 
 const commonSlice = createSlice({
@@ -58,6 +60,14 @@ const commonSlice = createSlice({
     setIsSubmitted(state, action) {
       state.isSubmitted = action.payload;
     },
+
+    // For Customization steps
+    setCustomProductDetails(state, action) {
+      state.customProductDetails = action.payload;
+    },
+    setCustomizeLoader(state, action) {
+      state.customizeLoader = action.payload;
+    },
   },
 });
 
@@ -74,6 +84,8 @@ export const {
   setShowModal,
   setIsChecked,
   setIsSubmitted,
+  setCustomizeLoader,
+  setCustomProductDetails,
 } = commonSlice.actions;
 
 export default commonSlice.reducer;

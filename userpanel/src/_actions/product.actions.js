@@ -6,8 +6,10 @@ import {
   setRecentlyProductLoading,
   setRecentlyViewProductList,
   setUniqueFilterOptions,
+  setProductMessage,
 } from "@/store/slices/productSlice";
 import { productService, recentlyViewedService } from "@/_services";
+import { messageType } from "@/_helper/constants";
 
 export const fetchLatestProductList = (length) => {
   return async (dispatch) => {
@@ -40,8 +42,10 @@ export const fetchCollectionsTypeWiseProduct = (
           collectionTitle
         );
       if (collectionsTypeWiseProductList) {
-        const tempUniqueFilterOptions = getUniqueFilterOptions(collectionsTypeWiseProductList)
-        const uniqueFilterOptions = { ...tempUniqueFilterOptions }
+        const tempUniqueFilterOptions = getUniqueFilterOptions(
+          collectionsTypeWiseProductList
+        );
+        const uniqueFilterOptions = { ...tempUniqueFilterOptions };
         dispatch(setUniqueFilterOptions(uniqueFilterOptions));
         dispatch(setCollectionTypeProductList(collectionsTypeWiseProductList));
         dispatch(setProductLoading(false));
@@ -59,6 +63,7 @@ export const fetchProductDetailByProductName = (productName) => {
     try {
       dispatch(setProductDetail({}));
       dispatch(setProductLoading(true));
+      dispatch(setProductMessage({ message: "", type: "" }));
 
       const productDetail = await productService.getSingleProduct(productName);
 
@@ -68,7 +73,15 @@ export const fetchProductDetailByProductName = (productName) => {
         return productDetail;
       }
     } catch (e) {
+      const errorMessage = e?.message || "Something went wrong";
       dispatch(setProductDetail({}));
+      dispatch(
+        setProductMessage({
+          message: errorMessage || "Unable to fetch product by name",
+          type: messageType.ERROR,
+        })
+      );
+    } finally {
       dispatch(setProductLoading(false));
     }
   };
@@ -123,16 +136,19 @@ const getUniqueFilterOptions = (productList) => {
   });
 
   // Convert uniqueVariations Map to array
-  const variationsArray = Array.from(uniqueVariations.values()).map((variation) => ({
-    ...variation,
-    variationTypes: Array.from(variation.variationTypes.values()),
-  }));
+  const variationsArray = Array.from(uniqueVariations.values()).map(
+    (variation) => ({
+      ...variation,
+      variationTypes: Array.from(variation.variationTypes.values()),
+    })
+  );
 
   // Process unique setting styles with Set for uniqueness
   const uniqueSettingStyles = Array.from(
     new Set(tempSettingStyles.map((item) => item.title))
   ).map((title) => {
-    const { image, id } = tempSettingStyles.find((item) => item.title === title) || {};
+    const { image, id } =
+      tempSettingStyles.find((item) => item.title === title) || {};
     return { title, value: id, image };
   });
 
@@ -140,7 +156,7 @@ const getUniqueFilterOptions = (productList) => {
     uniqueVariations: variationsArray,
     uniqueSettingStyles,
   };
-}
+};
 
 // export const fetchReletedProducts = (productName) => {
 //   return async (dispatch, getState) => {
@@ -184,10 +200,10 @@ export const fetchRecentlyViewedProducts = () => {
         await recentlyViewedService.getAllRecentlyViewedWithProduct();
 
       if (recentlyViewedProductsList) {
-        dispatch(setRecentlyViewProductList(recentlyViewedProductsList))
+        dispatch(setRecentlyViewProductList(recentlyViewedProductsList));
       }
     } catch (e) {
-      dispatch(setRecentlyViewProductList([]))
+      dispatch(setRecentlyViewProductList([]));
     } finally {
       dispatch(setRecentlyProductLoading(false));
     }
@@ -205,38 +221,43 @@ export const addUpdateRecentlyViewedProducts = (params) => {
         await recentlyViewedService.getAllRecentlyViewedWithProduct();
 
       if (recentlyViewedProductsList) {
-        dispatch(setRecentlyViewProductList(recentlyViewedProductsList))
+        dispatch(setRecentlyViewProductList(recentlyViewedProductsList));
       }
     } catch (e) {
-      dispatch(setRecentlyViewProductList([]))
+      dispatch(setRecentlyViewProductList([]));
     } finally {
       dispatch(setRecentlyProductLoading(false));
     }
   };
 };
 
-// export const fetchSingleProductDataById = (productId) => {
-//   return async (dispatch, getState) => {
-//     try {
-//       dispatch({
-//         type: actionTypes.FETCH_SINGLE_PRODUCT_LOADER,
-//         singleProductDataById: {},
-//         isLoading: true,
-//       });
-//       const singleProductDataById = await productService?.getSingleProductDataById({ productId });
+export const fetchSingleProductDataById = (productId) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(setProductLoading(true));
+      dispatch(setProductDetail({}));
+      dispatch(setProductMessage({ message: "", type: "" }));
 
-//       if (singleProductDataById) {
-//         dispatch({
-//           type: actionTypes.FETCH_SINGLE_PRODUCT_DATA_BY_ID,
-//           singleProductDataById,
-//         });
-//         return singleProductDataById;
-//       }
-//     } catch (e) {
-//       dispatch({
-//         type: actionTypes.FETCH_SINGLE_PRODUCT_DATA_BY_ID,
-//         singleProductDataById: {},
-//       });
-//     }
-//   };
-// };
+      const productData = await productService.getSingleProductDataById({
+        productId,
+      });
+
+      if (productData) {
+        dispatch(setProductDetail(productData));
+        return productData; // Optional: in case the caller wants it
+      }
+    } catch (error) {
+      console.error("Failed to fetch product by ID:", error);
+      dispatch(setProductDetail({}));
+      const errorMessage = err?.message || "Something went wrong";
+      dispatch(
+        setProductMessage({
+          message: errorMessage,
+          type: messageType.ERROR,
+        })
+      );
+    } finally {
+      dispatch(setProductLoading(false));
+    }
+  };
+};

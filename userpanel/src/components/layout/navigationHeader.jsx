@@ -123,9 +123,7 @@ export default function NavigationHeader() {
               }`}
             >
               <HeaderLinkButton
-                href={`/customize/${helperFunctions.stringReplacedWithUnderScore(
-                  Start_WITH_SETTING
-                )}`}
+                href={`/customize/start-with-setting`}
                 className="rounded-none flex items-center gap-1 hover:!text-primary"
               >
                 Engagement
@@ -306,9 +304,7 @@ export default function NavigationHeader() {
                   {FLASH_DEALS}
                 </HeaderLinkButton>
                 <HeaderLinkButton
-                  href={`/customize/${helperFunctions.stringReplacedWithUnderScore(
-                    START_WITH_A_DIAMOND
-                  )}`}
+                  href={`/customize/start-with-setting`}
                   onClick={() => {
                     dispatch(setIsHeaderVisible(false));
                   }}

@@ -3,78 +3,6 @@ import { CustomImg } from "@/components/dynamiComponents";
 import Link from "next/link";
 
 const StepsGrid = ({ steps = [], currentStep }) => {
-  // return (
-  //   <div className="mx-12">
-  //     {/* <div className="flex  bg-[#F7F7F7] border border-gray-e2 w-full">
-  //     {steps.map((step, index) => (
-  //       <div key={`breadcrumb-${index}`} className="flex items-center">
-  //         <div className="px-3 py-3 xss:px-5 text-center whitespace-nowrap">
-  //           <span
-  //             className={`text-base  ${
-  //               index === currentStep
-  //                 ? "font-bold text-baseblack md:!text-base"
-  //                 : "text-gray-500"
-  //             }`}
-  //           >
-  //             <span className="hidden md:inline">
-  //               {index + 1}. {step}
-  //             </span>
-  //             <span className="inline md:hidden">
-  //               {index === currentStep ? `${index + 1}. ${step}` : index + 1}
-  //             </span>
-  //           </span>
-  //         </div>
-  //         {index < steps.length - 1 && (
-  //           <div className="h-full">
-  //             <CustomImg srcAttr={breadCrumbArrow} altAttr="" titleAttr="" />
-  //           </div>
-  //         )}
-  //       </div>
-  //     ))}
-  //   </div> */}
-  //     <div className="flex bg-[#F7F7F7] border border-gray-e2 w-full">
-  //       <div className="flex items-center">
-  //         <div className="px-4 py-3  text-sm md:text-base font-semibold text-gray-700 whitespace-nowrap">
-  //           Design Your Ring
-  //         </div>
-  //         <div className="flex items-center pr-2">
-  //           <CustomImg srcAttr={breadCrumbArrow} altAttr="" titleAttr="" />
-  //         </div>
-  //       </div>
-  //       {steps.map((step, index) => (
-  //         <div
-  //           key={`breadcrumb-${index}`}
-  //           className="flex items-center flex-1 "
-  //         >
-  //           {/* Step */}
-  //           <div className="flex-1 px-3 py-3 xss:px-5  whitespace-nowrap">
-  //             <span
-  //               className={`block text-base ${
-  //                 index === currentStep
-  //                   ? "font-bold text-baseblack md:!text-base"
-  //                   : "text-gray-500"
-  //               }`}
-  //             >
-  //               <span className="hidden md:inline">
-  //                 {index + 1}. {step}
-  //               </span>
-  //               <span className="inline md:hidden">
-  //                 {index === currentStep ? `${index + 1}. ${step}` : index + 1}
-  //               </span>
-  //             </span>
-  //           </div>
-  //           {/* Arrow (except last) */}
-  //           {index < steps.length - 1 && (
-  //             <div className="flex items-center pr-2">
-  //               <CustomImg srcAttr={breadCrumbArrow} altAttr="" titleAttr="" />
-  //             </div>
-  //           )}
-  //         </div>
-  //       ))}
-  //     </div>
-  //   </div>
-  // );
-
   return (
     <div className="flex bg-[#F7F7F7] border border-gray-e2 mx-auto w-fit md:w-full">
       {/* Fixed label on the left */}
@@ -134,7 +62,7 @@ const StepsGrid = ({ steps = [], currentStep }) => {
             </span>
           </div>
           {step.icon && (
-            <div className="hidden lg:block mt-1 px-8">
+            <div className="hidden xl:block mt-1  2xl:pr-8">
               <CustomImg
                 srcAttr={step.icon}
                 altAttr={`${step.label} icon`}
@@ -148,12 +76,12 @@ const StepsGrid = ({ steps = [], currentStep }) => {
 
           {/* Arrow after each step except the last */}
           {index < steps.length - 1 && (
-            <div className="flex items-center pr-2">
+            <div className="flex items-center 2xl:pr-2">
               <CustomImg
                 srcAttr={breadCrumbArrow}
                 altAttr=""
                 titleAttr=""
-                className="h-full"
+                className="!h-[71px]"
               />
             </div>
           )}
