@@ -205,3 +205,25 @@ export const PaymentForm = dynamic(
 export const HeroSwiper = dynamic(() => import("./ui/HeroSwiper.jsx"), {
   ssr: false,
 });
+
+export const CompleteRingPage = dynamic(
+  () => import("./ui/customize/complete-ring/page.jsx"),
+  {
+    ssr: false,
+  }
+);
+
+export const StartWithSettingDetailpage = dynamic(
+  () =>
+    import("./ui/customize/start-with-setting/StartWithSettingDetailpage.jsx"),
+  {
+    ssr: false,
+  }
+);
+
+export const ProductDetailPage = dynamic(
+  () => import("./ui/product/ProductDetailPage.jsx"),
+  {
+    ssr: false,
+  }
+);

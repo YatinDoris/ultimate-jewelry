@@ -85,7 +85,6 @@ const PaymentForm = ({ orderId }) => {
       billing.country &&
       billing.postal_code &&
       billing.state;
-    console.log(isValidShipping, isValidBilling);
     if (!isValidShipping || !isValidBilling) {
       return false;
     }
