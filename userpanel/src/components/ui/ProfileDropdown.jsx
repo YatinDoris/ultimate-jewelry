@@ -19,6 +19,7 @@ export default function ProfileDropdown({ className = "" }) {
     localStorage.clear();
     Cookies.remove("token");
     dispatch(fetchCart());
+    dispatch(setOpenProfileDropdown(false));
     router.push("/");
   };
 

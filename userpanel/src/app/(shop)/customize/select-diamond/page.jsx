@@ -1,4 +1,4 @@
-import SelectDiamondPage from "@/components/ui/customize/select-diamond/page";
+import { SelectDiamondPage } from "@/components/dynamiComponents";
 
 const SelectDiamond = () => {
   return <SelectDiamondPage />;
