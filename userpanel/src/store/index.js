@@ -8,6 +8,7 @@ import address from "./slices/addressSlice.js";
 import checkout from "./slices/checkoutSlice.js";
 import payment from "./slices/paymentSlice.js";
 import subscriber from "./slices/subscriberSlice.js";
+import selectedDiamond from "./slices/selectDiamondSlice.js";
 
 const reducers = combineReducers({
   common,
@@ -18,7 +19,8 @@ const reducers = combineReducers({
   checkout,
   payment,
   subscriber,
-  order
+  order,
+  selectedDiamond
 });
 
 const store = configureStore({

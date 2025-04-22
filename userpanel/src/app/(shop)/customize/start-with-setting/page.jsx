@@ -1,4 +1,4 @@
-import StartWithSettingPage from "@/components/ui/customize/start-with-setting/page";
+import { StartWithSettingPage } from "@/components/dynamiComponents";
 
 const page = () => {
   return <StartWithSettingPage />;

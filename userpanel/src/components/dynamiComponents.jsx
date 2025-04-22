@@ -227,3 +227,17 @@ export const ProductDetailPage = dynamic(
     ssr: false,
   }
 );
+
+export const SelectDiamondPage = dynamic(
+  () => import("./ui/customize/select-diamond/page.jsx"),
+  {
+    ssr: false,
+  }
+);
+
+export const StartWithSettingPage = dynamic(
+  () => import("./ui/customize/start-with-setting/page.jsx"),
+  {
+    ssr: false,
+  }
+);
