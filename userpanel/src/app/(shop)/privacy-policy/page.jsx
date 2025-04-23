@@ -70,7 +70,7 @@ const privacySections = [
 
 const TermsAndConditions = () => {
   return (
-    <div className="flex flex-col mt-8 lg:mt-12 ">
+    <div className="flex flex-col">
       <CommonBgHeading
         title="Privacy Policy"
         backText="Back To Home"
