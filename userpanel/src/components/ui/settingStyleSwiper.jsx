@@ -15,6 +15,7 @@ import { setSelectedSettingStyle } from "@/store/slices/productSlice";
 export default function SettingStyleCategorySwiper({
   settingStyleCategories = [],
   loading = false,
+  className,
 }) {
   const dispatch = useDispatch();
   const swiperRef = useRef(null);
@@ -43,7 +44,9 @@ export default function SettingStyleCategorySwiper({
   return (
     <div>
       {loading ? (
-        <div className="pt-10 md:pt-14 lg:pt-20 2xl:pt-20 mx-10 lg:mx-20 2xl:mx-28 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 6xl:grid-cols-7 gap-4">
+        <div
+          className={`pt-10 md:pt-14 lg:pt-20 2xl:pt-20 mx-10 lg:mx-20 2xl:mx-28 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 6xl:grid-cols-7 gap-4 ${className}`}
+        >
           {Array.from({ length: diamondColumnCount }).map((_, index) => (
             <div key={index}>
               <SkeletonLoader height="h-32 lg:h-36 2xl:h-48 aspect-square" />
@@ -54,7 +57,9 @@ export default function SettingStyleCategorySwiper({
           ))}
         </div>
       ) : settingStyleCategories?.length ? (
-        <div className="pt-10 md:pt-14 lg:pt-20 2xl:pt-20 mx-10 lg:mx-20 2xl:mx-28">
+        <div
+          className={`pt-10 md:pt-14 lg:pt-20 2xl:pt-20 mx-10 lg:mx-20 2xl:mx-28 ${className}`}
+        >
           <div className="relative">
             <button
               className={`absolute top-1/2 left-0 -translate-x-8 lg:-translate-x-10 -translate-y-1/2 ${

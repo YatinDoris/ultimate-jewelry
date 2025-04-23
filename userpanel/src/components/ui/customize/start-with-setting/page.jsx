@@ -9,9 +9,12 @@ import diamond from "@/assets/images/customize/customize-diamond-black.svg";
 import ringWithDiamondBlack from "@/assets/images/customize/customize-ringWithDiamond-black.svg";
 import { helperFunctions } from "@/_helper";
 import { setCustomProductDetails } from "@/store/slices/commonSlice";
+import SettingStyleCategorySwiper from "../../settingStyleSwiper";
 
 export default function StartWithSettingPage() {
-  // const { customProductDetails } = useSelector(({ common }) => common);
+  const { customizeProductList, customizeProductLoading, uniqueFilterOptions } =
+    useSelector(({ product }) => product);
+
   const dispatch = useDispatch();
   useEffect(() => {
     const customProduct = helperFunctions.getCustomProduct();
@@ -44,9 +47,6 @@ export default function StartWithSettingPage() {
       },
     ];
   }, []);
-  const { customizeProductList, customizeProductLoading } = useSelector(
-    ({ product }) => product
-  );
 
   const loadData = useCallback(() => {
     dispatch(fetchCustomizeProducts());
@@ -60,10 +60,15 @@ export default function StartWithSettingPage() {
 
   return (
     <>
-      <section className="container pt-8">
+      <section className="container pt-10 md:pt-14 lg:pt-10 2xl:pt-12">
         <StepsGrid steps={steps} currentStep={currentStep} />
-      </section>
-      <section className=" pt-10 md:pt-14 lg:pt-10 2xl:pt-12">
+        <div className="pb-8">
+          <SettingStyleCategorySwiper
+            settingStyleCategories={uniqueFilterOptions.uniqueSettingStyles}
+            loading={customizeProductLoading}
+            className={""}
+          />
+        </div>
         <ProductGrid
           productList={customizeProductList}
           pagination={true}

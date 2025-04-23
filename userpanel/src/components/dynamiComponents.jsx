@@ -241,3 +241,10 @@ export const StartWithSettingPage = dynamic(
     ssr: false,
   }
 );
+
+export const CaratWeightSlider = dynamic(
+  () => import("./ui/CaratWeightSlider.jsx"),
+  {
+    ssr: false,
+  }
+);
