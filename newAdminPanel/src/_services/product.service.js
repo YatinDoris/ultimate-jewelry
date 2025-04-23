@@ -162,6 +162,7 @@ const insertProduct = (params) => {
         diamondFilters,
       } = sanitizeObject(params);
 
+      // Sanitize and process inputs
       productName = productName ? productName.trim() : null;
       imageFiles = Array.isArray(imageFiles) ? imageFiles : [];
       thumbnailImageFile = typeof thumbnailImageFile === 'object' ? [thumbnailImageFile] : [];
@@ -174,7 +175,13 @@ const insertProduct = (params) => {
       categoryId = categoryId ? categoryId.trim() : null;
       subCategoryId = subCategoryId ? subCategoryId.trim() : null;
       productTypeIds = Array.isArray(productTypeIds) ? productTypeIds : [];
-      netWeight = !isNaN(netWeight) ? Number(netWeight) : 0;
+
+      // Process netWeight: Parse, round to 2 decimal places, and store as number
+      netWeight =
+        !isNaN(netWeight) && netWeight !== '' && netWeight !== null
+          ? Math.round(parseFloat(netWeight) * 100) / 100
+          : 0;
+
       shortDescription = shortDescription ? shortDescription.trim() : null;
       description = description ? description.trim() : null;
       variations = Array.isArray(variations) ? variations : [];
@@ -184,6 +191,7 @@ const insertProduct = (params) => {
       isDiamondFilter = isBoolean(isDiamondFilter) ? isDiamondFilter : false;
       diamondFilters = typeof diamondFilters === 'object' ? diamondFilters : {};
 
+      // Validate inputs
       if (
         productName &&
         imageFiles.length &&
@@ -245,10 +253,22 @@ const insertProduct = (params) => {
             return;
           }
         }
+
+        // Validate netWeight for isDiamondFilter
         if (isDiamondFilter) {
           const diamondFilterErrorMsg = validateDiamondFilters(diamondFilters);
           if (diamondFilterErrorMsg) {
             reject(new Error(diamondFilterErrorMsg));
+            return;
+          }
+          if (!netWeight || isNaN(netWeight)) {
+            reject(new Error('Invalid Net Weight: Must be a valid number'));
+            return;
+          }
+          // Ensure netWeight has exactly 2 decimal places
+          const netWeightString = netWeight.toFixed(2);
+          if (!/^\d+\.\d{2}$/.test(netWeightString)) {
+            reject(new Error('Net Weight must have exactly two decimal places'));
             return;
           }
         }
@@ -347,7 +367,7 @@ const insertProduct = (params) => {
                   categoryId,
                   subCategoryId,
                   productTypeIds: productTypeIds.map((id) => id?.trim()),
-                  netWeight,
+                  netWeight, // Stored as a number, rounded to 2 decimal places
                   shortDescription,
                   description,
                   variations: variationsArray,
@@ -375,7 +395,7 @@ const insertProduct = (params) => {
                   })
                   .catch((e) => {
                     reject(new Error('An error occurred during product creation.'));
-                    // whenever an error occurs for creating a product the file is deleted
+                    // Whenever an error occurs for creating a product, the files are deleted
                     if (fileNames && fileNames.length) {
                       fileNames.map((url) => deleteFile(productsUrl, url));
                     }
@@ -873,7 +893,13 @@ const updateProduct = (params) => {
           sku = sku ? sku.trim() : productData.sku;
           saltSKU = saltSKU ? saltSKU.trim() : productData.saltSKU;
           discount = !isNaN(discount) ? Number(discount) : productData.discount;
-          netWeight = !isNaN(netWeight) ? Number(netWeight) : productData.netWeight;
+
+          // Process netWeight: Parse, kneel to 2 decimal places, and store as number
+          netWeight =
+            !isNaN(netWeight) && netWeight !== '' && netWeight !== null
+              ? Math.round(parseFloat(netWeight) * 100) / 100
+              : 0;
+
           isDiamondFilter = isBoolean(isDiamondFilter) ? isDiamondFilter : false;
           diamondFilters =
             typeof diamondFilters === 'object' ? diamondFilters : productData?.diamondFilters || {};
@@ -894,6 +920,16 @@ const updateProduct = (params) => {
             const diamondFilterErrorMsg = validateDiamondFilters(diamondFilters);
             if (diamondFilterErrorMsg) {
               reject(new Error(diamondFilterErrorMsg));
+              return;
+            }
+            if (!netWeight || isNaN(netWeight)) {
+              reject(new Error('Invalid Net Weight: Must be a valid number'));
+              return;
+            }
+            // Ensure netWeight has exactly 2 decimal places
+            const netWeightString = netWeight.toFixed(2);
+            if (!/^\d+\.\d{2}$/.test(netWeightString)) {
+              reject(new Error('Net Weight must have exactly two decimal places'));
               return;
             }
           }
@@ -1105,7 +1141,7 @@ const updateProduct = (params) => {
               productTypeIds: Array.isArray(productTypeIds)
                 ? productTypeIds?.map((id) => id?.trim())
                 : productData.productTypeIds,
-              netWeight: netWeight,
+              netWeight, // Stored as a number, rounded to 2 decimal places
               shortDescription: shortDescription
                 ? shortDescription.trim()
                 : productData?.shortDescription || '',

@@ -307,7 +307,7 @@ export default function ProductsView() {
           >
             Export
           </LoadingButton>
-          <LoadingButton
+          {/* <LoadingButton
             variant="contained"
             color="success"
             onClick={bulkNewProduct}
@@ -315,7 +315,7 @@ export default function ProductsView() {
             startIcon={<AddIcon />}
           >
             Bulk New Product With API
-          </LoadingButton>
+          </LoadingButton> */}
 
           <Button variant="contained" startIcon={<AddIcon />} onClick={newProduct}>
             New Product
