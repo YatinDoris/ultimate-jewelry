@@ -58,10 +58,10 @@ const getAllCartWithProduct = () => {
           if (cartItemDiamondDetail && findedProduct?.isDiamondFilter) {
             try {
               const customProductPrice =
-                helperFunctions.calculateCustomProductPrice(
-                  findedProduct,
-                  variationArray
-                );
+                helperFunctions.calculateCustomProductPrice({
+                  netWeight: findedProduct?.netWeight,
+                  variations: variationArray,
+                });
 
               const diamondPrice = helperFunctions.calculateDiamondPrice({
                 caratWeight: cartItemDiamondDetail?.caratWeight,
