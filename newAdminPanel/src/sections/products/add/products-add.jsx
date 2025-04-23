@@ -123,6 +123,14 @@ const validationSchema = Yup.object({
     // If isDiamondFilter is false, diamondFilters is not required.
     return Yup.mixed().notRequired();
   }),
+  netWeight: Yup.lazy((value, { parent }) => {
+    if (parent.isDiamondFilter) {
+      return Yup.number()
+        .required('Net weight is required')
+        .positive('Net weight must be positive');
+    }
+    return Yup.mixed().notRequired();
+  }),
 });
 
 // ----------------------------------------------------------------------
@@ -577,7 +585,7 @@ export default function AddProductPage() {
                                 }}
                                 onBlur={handleBlur}
                                 name="shortDescription"
-                                label="Sort Description"
+                                label="Short Description"
                                 onChange={handleChange}
                                 value={values?.shortDescription || ''}
                                 error={!!(touched?.shortDescription && errors?.shortDescription)}
@@ -952,7 +960,13 @@ export default function AddProductPage() {
                                   name="netWeight"
                                   label="Net Weight"
                                   onBlur={handleBlur}
-                                  onChange={handleChange}
+                                  onChange={(event) => {
+                                    const value = event?.target?.value;
+                                    const roundedValue = value
+                                      ? Math.round(parseFloat(value) * 100) / 100
+                                      : '';
+                                    setFieldValue('netWeight', roundedValue);
+                                  }}
                                   value={values.netWeight || ''}
                                   error={!!(touched.netWeight && errors.netWeight)}
                                   helperText={

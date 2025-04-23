@@ -390,7 +390,7 @@ const DiamondShape = () => {
                       name="title"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      label="Setting Style Title"
+                      label="Diamond Shape Title"
                       value={values.title || ''}
                       error={!!(touched.title && errors.title)}
                       helperText={touched.title && errors.title ? errors.title : ''}
