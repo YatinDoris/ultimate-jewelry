@@ -87,7 +87,7 @@ export const fetchProductDetailByProductName = (productName) => {
   };
 };
 
-const getUniqueFilterOptions = (productList) => {
+export const getUniqueFilterOptions = (productList) => {
   const uniqueVariations = new Map(); // Use Map for O(1) lookups
   const tempSettingStyles = [];
 

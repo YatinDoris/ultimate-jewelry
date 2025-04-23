@@ -2,15 +2,16 @@ import noDataImg from "@/assets/images/no-data.webp";
 import { PrimaryLinkButton } from "../ui/button";
 import { CustomImg } from "../dynamiComponents";
 
-export default function ProductNotFound({
+export default function CommonNotFound({
   message = "Sorry, No product Found",
   subMessage = "You can Try Our Different Product...",
+  notFoundImg = noDataImg,
 }) {
   return (
     <section className="h-[60vh] lg:h-[70vh] gap-8 lg:gap-10 flex flex-col justify-center items-center text-center">
       <CustomImg
-        srcAttr={noDataImg}
-        className="w-44 md:w-52 lg:w-56 2xl:w-auto"
+        srcAttr={notFoundImg}
+        className="w-44 md:w-52 lg:w-64 2xl:w-auto"
         altAttr=""
         titleAttr=""
       />

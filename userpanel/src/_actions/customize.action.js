@@ -1,6 +1,7 @@
 import { CATEGORIES, RING } from "@/_helper/constants";
 import { productService } from "@/_services";
-import { setCustomizeProductList, setCustomizeProductLoading } from "@/store/slices/productSlice";
+import { setCustomizeProductList, setCustomizeProductLoading, setUniqueFilterOptions } from "@/store/slices/productSlice";
+import { getUniqueFilterOptions } from "./product.actions";
 
 export const fetchCustomizeProducts = () => {
     return async (dispatch) => {
@@ -12,6 +13,15 @@ export const fetchCustomizeProducts = () => {
                     CATEGORIES,
                     RING
                 );
+            if (customizProductList) {
+                const tempUniqueFilterOptions = getUniqueFilterOptions(
+                    customizProductList
+                );
+                const uniqueFilterOptions = { ...tempUniqueFilterOptions };
+                console.log('first', uniqueFilterOptions)
+                dispatch(setUniqueFilterOptions(uniqueFilterOptions));
+            }
+
             dispatch(setCustomizeProductList(customizProductList));
         } catch (e) {
             dispatch(setCustomizeProductList([]));
