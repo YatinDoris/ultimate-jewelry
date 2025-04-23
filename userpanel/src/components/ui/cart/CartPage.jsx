@@ -1,5 +1,6 @@
 "use client";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import stepArrow from "@/assets/icons/3stepArrow.svg";
 import deleteIcon from "@/assets/icons/delete.svg";
 import {
   CartNotFound,
@@ -40,6 +41,7 @@ const paymentOptions = [
 const CartPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const [openDiamondDetailId, setOpenDiamondDetailId] = useState(null);
 
   const { isChecked, isSubmitted } = useSelector(({ common }) => common);
   const {
@@ -269,6 +271,85 @@ const CartPage = () => {
                           <ErrorMessage message={removeCartErrorMessage} />
                         ) : null}
                       </div>
+
+                      {cartItem?.diamondDetail && (
+                        <div className="mt-6 border rounded  max-w-sm">
+                          <div className="flex items-center justify-between px-4 py-2 border-b  bg-alabaster">
+                            <h4 className="font-semibold text-lg">
+                              Diamond Detail
+                            </h4>
+                            <button
+                              className={`transition-transform duration-300 ${
+                                openDiamondDetailId === cartItem.id
+                                  ? "rotate-0"
+                                  : "rotate-180"
+                              }`}
+                              onClick={() =>
+                                setOpenDiamondDetailId((prev) =>
+                                  prev === cartItem.id ? null : cartItem.id
+                                )
+                              }
+                            >
+                              <CustomImg
+                                srcAttr={stepArrow}
+                                altAttr=""
+                                titleAttr=""
+                                className="w-5 h-5 transition-transform duration-200 "
+                              />
+                            </button>
+                          </div>
+
+                          {openDiamondDetailId === cartItem.id && (
+                            <>
+                              <div className="flex {diamondDetail?.priceflex-col xs:flex-row xs:items-stretch">
+                                {/* Left column */}
+                                <div className="flex flex-col xs:flex-row xs:items-stretch">
+                                  <div className="flex flex-col">
+                                    <p className="font-medium text-base md:text-lg text-baseblack pt-2 px-4">
+                                      Lab Created{"  "}
+                                      {cartItem.diamondDetail.caratWeight}
+                                      {"  "}
+                                      Carat
+                                    </p>
+                                    <p className="font-medium text-base md:text-lg text-baseblack  pt-2 px-4">
+                                      {" "}
+                                      {cartItem.diamondDetail.shapeName} Diamond
+                                    </p>
+                                  </div>
+
+                                  <div className="hidden xs:block border-l border-gray-300 mx-2 h-16"></div>
+                                  {/* Right column */}
+                                  <div className="flex flex-col ">
+                                    <p className="font-medium text-base md:text-lg text-baseblack  pt-2 px-4">
+                                      Clarity-
+                                      {cartItem.diamondDetail.clarity}
+                                    </p>
+                                    <p className="font-medium text-base md:text-lg text-baseblack  pt-2 px-4">
+                                      Color- {cartItem.diamondDetail.color}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {cartItem.diamondDetail && (
+                                <div className="px-4 py-2 font-medium text-lg md:text-xl">
+                                  Diamond Price:{" "}
+                                  <span className="font-bold">
+                                    $
+                                    {helperFunctions.calculateDiamondPrice({
+                                      caratWeight: Number(
+                                        cartItem?.diamondDetail.caratWeight
+                                      ),
+                                      clarity: cartItem?.diamondDetail?.clarity,
+                                      color: cartItem?.diamondDetail?.color,
+                                    })}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -349,20 +349,14 @@ const calculateDiamondPrice = ({ caratWeight, clarity, color }) => {
  * - The metal price is determined by the variation with a valid metal type.
  * - PRICE_MULTIPLIER can account for making charges, design complexity, etc.
  *
- * @param {Object} product - The product object containing netWeight.
- * @param {number} product.netWeight - Net weight of the product in grams.
+ * @param {number} netWeight - Net weight of the product in grams.
  * @param {Array<Object>} variations - Array of variation objects containing variationTypeName.
  * @returns {number} The final customized product price, rounded to 2 decimal places.
  * @throws {Error} If inputs are invalid or no valid metal variation is found.
  */
-const calculateCustomProductPrice = (product, variations) => {
+const calculateCustomProductPrice = ({ netWeight, variations }) => {
   // Validate product and net weight
-  if (
-    !product ||
-    typeof product !== "object" ||
-    !Number.isFinite(product.netWeight) ||
-    product.netWeight <= 0
-  ) {
+  if (!Number.isFinite(netWeight) || netWeight <= 0) {
     throw new Error(
       "Invalid or missing product data. 'netWeight' must be a positive number."
     );
@@ -391,7 +385,7 @@ const calculateCustomProductPrice = (product, variations) => {
   const metalPricePerGram = METAL_PRICES[metalType];
 
   // Calculate and return final price
-  const rawPrice = metalPricePerGram * product.netWeight * PRICE_MULTIPLIER;
+  const rawPrice = metalPricePerGram * netWeight * PRICE_MULTIPLIER;
   return Number(rawPrice.toFixed(2));
 };
 

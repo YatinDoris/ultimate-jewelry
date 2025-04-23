@@ -81,7 +81,7 @@ export default function SelectDiamondPage() {
         <StepsGrid steps={steps} currentStep={currentStep} />
       </section>
       <section className="pt-10 md:pt-14 lg:pt-10 2xl:pt-12">
-        <ProductDetailPage isCustomizePage={true} />
+        <ProductDetailPage customizePage="completeRing" />
       </section>
     </>
   );

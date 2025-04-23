@@ -124,12 +124,14 @@ const shippingReturnContent = [
       "If your order arrives damaged or incorrect, contact us immediately for a resolution.",
   },
 ];
-const ProductDetailPage = ({ isCustomizePage }) => {
+const ProductDetailPage = ({ customizePage }) => {
   const params = useParams();
   const dispatch = useDispatch();
   const router = useRouter();
   let { productName, productId } = params;
   let availableQty = 0;
+  const isCustomizePage =
+    customizePage === "completeRing" || customizePage === "setting";
   const {
     productDetail,
     productLoading,
@@ -277,18 +279,37 @@ const ProductDetailPage = ({ isCustomizePage }) => {
     }
     return false;
   }, [productDetail?.variations?.length, selectedVariations?.length]);
+  const hasDiamondDetails = !!customProductDetails?.diamondDetails;
+  let diamondDetail;
 
+  if (customProductDetails?.diamondDetails) {
+    const caratWeight = customProductDetails?.diamondDetails?.caratWeight;
+    const clarity = customProductDetails?.diamondDetails?.clarity?.value;
+    const color = customProductDetails?.diamondDetails?.color?.value;
+
+    diamondDetail = {
+      shapeId: customProductDetails?.diamondDetails?.shape?.id,
+      caratWeight,
+      clarity,
+      color,
+      price: helperFunctions.calculateDiamondPrice({
+        caratWeight: Number(caratWeight),
+        clarity,
+        color,
+      }),
+    };
+  }
   const addToCartHandler = useCallback(async () => {
     dispatch(setIsSubmitted(true));
     if (
       isInValidSelectedVariation ||
-      !availableQty ||
-      availableQty < productQuantity ||
-      !productQuantity
+      (!hasDiamondDetails &&
+        (!availableQty || availableQty < productQuantity || !productQuantity))
     ) {
       return;
     }
-    const payload = {
+
+    let payload = {
       productId: productDetail?.id,
       quantity: productQuantity,
       variations: selectedVariations?.map((selectedVari) => ({
@@ -296,7 +317,9 @@ const ProductDetailPage = ({ isCustomizePage }) => {
         variationTypeId: selectedVari?.variationTypeId,
       })),
     };
-
+    if (customProductDetails?.diamondDetails) {
+      payload.diamondDetail = diamondDetail;
+    }
     const response = await dispatch(insertProductIntoCart(payload));
     if (response) {
       router.push("/cart");
@@ -349,6 +372,46 @@ const ProductDetailPage = ({ isCustomizePage }) => {
       dispatch(setCustomizeLoader(false));
     }
   }, [isInValidSelectedVariation, productDetail?.id, selectedVariations]);
+
+  //Enricehd Variations all Variations details with name and id passed in it
+  const enrichedVariations = selectedVariations.map((selectedVar) => {
+    const matchedVariation = productDetail?.variations?.find(
+      (v) => v.variationId === selectedVar.variationId
+    );
+
+    const matchedType = matchedVariation?.variationTypes?.find(
+      (vt) => vt.variationTypeId === selectedVar.variationTypeId
+    );
+
+    return {
+      ...selectedVar,
+      variationName: matchedVariation?.variationName,
+      variationTypeName: matchedType?.variationTypeName,
+    };
+  });
+
+  //Enricehd Variations only with variationsTypeName passed in it
+  // const enrichedVariations = selectedVariations.map((selectedVar) => {
+  //   const matchedVariation = productDetail?.variations?.find(
+  //     (v) => v.variationId === selectedVar.variationId
+  //   );
+
+  //   const matchedType = matchedVariation?.variationTypes?.find(
+  //     (vt) => vt.variationTypeId === selectedVar.variationTypeId
+  //   );
+
+  //   return {
+  //     variationTypeName: matchedType?.variationTypeName,
+  //   };
+  // });
+
+  let customProductPrice = 0;
+  if (productDetail?.netWeight && selectedVariations?.length) {
+    customProductPrice = helperFunctions.calculateCustomProductPrice({
+      netWeight: Number(productDetail?.netWeight),
+      variations: enrichedVariations,
+    });
+  }
 
   return (
     <div
@@ -410,27 +473,37 @@ const ProductDetailPage = ({ isCustomizePage }) => {
                 </h2>
               )}
 
-              <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-6 lg:mb-10">
-                <span className="text-2xl md:text-3xl xl:text-4xl font-normal font-castoro">
-                  {selectedPrice
-                    ? `$${(
-                        selectedPrice *
-                        productQuantity *
-                        (1 - productDetail.discount / 100)
-                      ).toFixed(2)}`
-                    : "N/A"}
-                </span>
-                {productDetail?.discount ? (
-                  <span className="text-gray-500 line-through text-xl font-castoro">
-                    ${(selectedPrice * productQuantity).toFixed(2)}
+              {isCustomizePage ? (
+                <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-6 lg:mb-10">
+                  <span className="text-2xl md:text-3xl xl:text-4xl font-normal font-castoro">
+                    ${customProductPrice}
                   </span>
-                ) : null}
-                {productDetail?.discount ? (
-                  <span className="bg-primary text-white px-2 py-2 text-xs font-medium rounded">
-                    {`You Save ${productDetail?.discount}%`}
-                  </span>
-                ) : null}
-              </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-6 lg:mb-10">
+                    <span className="text-2xl md:text-3xl xl:text-4xl font-normal font-castoro">
+                      {selectedPrice
+                        ? `$${(
+                            selectedPrice *
+                            productQuantity *
+                            (1 - productDetail.discount / 100)
+                          ).toFixed(2)}`
+                        : "N/A"}
+                    </span>
+                    {productDetail?.discount ? (
+                      <span className="text-gray-500 line-through text-xl font-castoro">
+                        ${(selectedPrice * productQuantity).toFixed(2)}
+                      </span>
+                    ) : null}
+                    {productDetail?.discount ? (
+                      <span className="bg-primary text-white px-2 py-2 text-xs font-medium rounded">
+                        {`You Save ${productDetail?.discount}%`}
+                      </span>
+                    ) : null}
+                  </div>
+                </>
+              )}
 
               <div className="border-t  border-black_opacity_10" />
 
@@ -492,68 +565,85 @@ const ProductDetailPage = ({ isCustomizePage }) => {
                 handleSelect={handleSelect}
               />
 
-              {customProductDetails?.diamondDetails && (
-                <>
-                  <div className="border-t  border-black_opacity_10 mt-10" />
-                  <div className=" text-baseblack p-4 md:p-6 ">
-                    <div className="flex  items-start gap-2 mb-4">
-                      <div className="flex gap-1">
-                        <CustomImg
-                          srcAttr={diamondSvg}
-                          altAttr=""
-                          titleAttr=""
-                          className="w-8 h-8"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <p className="font-semibold text-xl">Diamond Detail:</p>
-                        <p className="pt-2 text-xl font-medium text-baseblack">
-                          Diamond Price:{" "}
-                          <span className="font-bold">$4,999</span>
-                        </p>
+              {customizePage === "completeRing" &&
+                customProductDetails?.diamondDetails && (
+                  <>
+                    <div className="border-t  border-black_opacity_10 mt-10" />
+                    <div className=" text-baseblack pt-4 md:pt-6 ">
+                      <div className="flex  items-start gap-2 mb-4">
+                        <div className="flex gap-1">
+                          <CustomImg
+                            srcAttr={diamondSvg}
+                            altAttr=""
+                            titleAttr=""
+                            className="w-8 h-8"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <p className="font-semibold text-xl">
+                            Diamond Detail:
+                          </p>
+                          <p className="pt-2 text-xl font-medium text-baseblack">
+                            Diamond Price:{" "}
+                            <span className="font-bold">
+                              ${diamondDetail?.price}
+                            </span>
+                          </p>
 
-                        <div className="flex mb-4 text-xl font-medium text-baseblack">
-                          <div className="flex flex-col gap-2 pr-4 ">
-                            <p>Lab Created 0.73 Carat</p>
-                            <p>Cushion Diamond</p>
-                          </div>
+                          <div className="mb-4 text-xl font-medium text-baseblack">
+                            <div className="flex flex-col xs:flex-row xs:items-stretch">
+                              {/* Left column */}
+                              <div className="flex flex-col xs:gap-2 xs:pr-4 ">
+                                <p>
+                                  Lab Created{"  "}
+                                  {
+                                    customProductDetails?.diamondDetails
+                                      ?.caratWeight
+                                  }
+                                  {"  "}
+                                  Carat
+                                </p>
+                                <p>
+                                  {" "}
+                                  {
+                                    customProductDetails?.diamondDetails?.shape
+                                      ?.title
+                                  }{" "}
+                                  Diamond
+                                </p>
+                              </div>
 
-                          <div className="border-l border-gray-300 mx-2"></div>
-
-                          <div className="flex flex-col gap-2 pl-4 ">
-                            <p>Clarity-VS1</p>
-                            <p>Color-E</p>
+                              <div className="hidden xs:block border-l border-gray-300 mx-2 h-16"></div>
+                              {/* Right column */}
+                              <div className="flex flex-col xs:gap-2 xs:pl-4 ">
+                                <p>
+                                  Clarity-
+                                  {
+                                    customProductDetails?.diamondDetails
+                                      ?.clarity?.value
+                                  }
+                                </p>
+                                <p>
+                                  Color-{" "}
+                                  {
+                                    customProductDetails?.diamondDetails?.color
+                                      ?.value
+                                  }
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </div>
-
-                        <div className="mb-4 text-xl font-medium text-baseblack">
-                          <div className="flex flex-col xs:flex-row xs:items-start">
-                            {/* Left column */}
-                            <div className="flex flex-col gap-2 xs:pr-4 ">
-                              <p>Lab Created 0.73 Carat</p>
-                              <p>Cushion Diamond</p>
-                            </div>
-
-                            {/* Divider */}
-                            <div className="hidden xs:block border-l border-gray-300 mx-2"></div>
-
-                            {/* Right column */}
-                            <div className="flex flex-col gap-2 xs:pl-4 ">
-                              <p>Clarity-VS1</p>
-                              <p>Color-E</p>
-                            </div>
-                          </div>
-                        </div>
                       </div>
+
+                      <p className="font-medium text-2xl">
+                        Final Price: $
+                        {(customProductPrice + diamondDetail?.price).toFixed(2)}
+                        <span className="font-semibold font-castoro"></span>
+                      </p>
                     </div>
-
-                    <p className="font-medium text-2xl">
-                      Final Price:{" "}
-                      <span className="font-semibold font-castoro">$1,995</span>
-                    </p>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
 
               <div className="mt-4 lg:mt-8 flex gap-4 items-center">
                 <div
@@ -561,7 +651,8 @@ const ProductDetailPage = ({ isCustomizePage }) => {
                   onMouseEnter={() => dispatch(setIsHovered(true))}
                   onMouseLeave={() => dispatch(setIsHovered(false))}
                 >
-                  {isCustomizePage ? (
+                  {/* In this the only setting page is there then only handle setting will be done expect then for compplete ring and normal product detail add to cart hanlder will come  */}
+                  {customizePage === "setting" ? (
                     <LoadingPrimaryButton
                       className="w-full uppercase"
                       loading={customizeLoader}
@@ -584,15 +675,14 @@ const ProductDetailPage = ({ isCustomizePage }) => {
                       loaderType={isHovered ? "" : "white"}
                       onClick={addToCartHandler}
                     >
-                      {!availableQty && !isInValidSelectedVariation
+                      {customProductDetails?.diamondDetails
+                        ? "COMPLETE RING"
+                        : !availableQty && !isInValidSelectedVariation
                         ? "OUT OF STOCK"
                         : "ADD TO BAG"}
                     </LoadingPrimaryButton>
                   )}
                 </div>
-                {/* <button className="p-3 hover:bg-gray-100 transition-all w-14 h-14">
-                    <CiHeart className="w-full h-full text-primary" />
-                  </button> */}
               </div>
               {isSubmitted && !selectedVariations?.length ? (
                 <ErrorMessage message={"Please select variants"} />
