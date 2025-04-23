@@ -105,7 +105,7 @@ const sections = [
 
 const TermsAndConditions = () => {
   return (
-    <div className="flex flex-col mt-8 lg:mt-12 ">
+    <div className="flex flex-col">
       <CommonBgHeading
         title="Terms and Conditions"
         backText="Back To Home"

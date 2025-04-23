@@ -43,7 +43,7 @@ export default function footer() {
       navLinks: [
         {
           title: "Returns",
-          href: "/return-history",
+          href: "/return-policy",
         },
         {
           title: "Shipping",
