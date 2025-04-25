@@ -48,9 +48,11 @@ export default function CollectionPage() {
   );
 
   const loadData = useCallback(async () => {
-    await dispatch(
-      fetchCollectionsTypeWiseProduct(collectionType, collectionTitle)
-    );
+    if (collectionType && collectionTitle) {
+      await dispatch(
+        fetchCollectionsTypeWiseProduct(collectionType, collectionTitle)
+      );
+    }
   }, [dispatch, collectionType, collectionTitle]);
 
   useEffect(() => {

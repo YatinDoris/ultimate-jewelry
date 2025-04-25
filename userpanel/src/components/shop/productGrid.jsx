@@ -150,6 +150,7 @@ const ProductGrid = memo(
               >
                 {currentProducts.map((product) => (
                   <ProductCard
+                    isDiamondSettingPage={isDiamondSettingPage}
                     key={`product-key-${product?.productName}`}
                     title={product?.productName}
                     discount={product?.discount}

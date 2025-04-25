@@ -21,6 +21,7 @@ import {
   ProgressiveImg,
   ProductSwiper,
   ProgressiveVed,
+  ProductNotFound,
 } from "@/components/dynamiComponents";
 import DetailPageSkeleton from "@/components/ui/DetailPageSkeleton";
 import KeyFeatures from "@/components/ui/KeyFeatures";
@@ -44,7 +45,10 @@ import {
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import { setCartMessage } from "@/store/slices/cartSlice";
 import ProductDetailSwipperSm from "@/components/shop/ProductDetailSwipperSm";
-import { messageType } from "@/_helper/constants";
+import {
+  MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT,
+  messageType,
+} from "@/_helper/constants";
 
 export const minProductQuantity = 1;
 export const maxProductQuantity = 5;
@@ -130,6 +134,8 @@ const ProductDetailPage = ({ customizePage }) => {
   const router = useRouter();
   let { productName, productId } = params;
   let availableQty = 0;
+
+  // Two Values avilable one is completeRing and other is setting used in 3 steps
   const isCustomizePage =
     customizePage === "completeRing" || customizePage === "setting";
   const {
@@ -198,6 +204,20 @@ const ProductDetailPage = ({ customizePage }) => {
     }
   }, [dispatch, productName, productId]);
 
+  // This use effect is used to handle the condtion as in the three steps if already selected product in cart and in complete ring i am getting so to remove the customProduct from local storage and redirect to cart page
+  useEffect(() => {
+    if (
+      isSubmitted &&
+      customizePage === "completeRing" &&
+      cartMessage?.message === "Product already exists in cart"
+    ) {
+      localStorage.removeItem("customProduct");
+      dispatch(setCustomProductDetails(null));
+      router.push("/cart");
+      dispatch(setIsSubmitted(false));
+    }
+  }, [cartMessage, customizePage, isSubmitted, dispatch, router]);
+
   useEffect(() => {
     loadData();
     dispatch(setProductQuantity(1));
@@ -237,10 +257,8 @@ const ProductDetailPage = ({ customizePage }) => {
       productDetail.variComboWithQuantity,
       selectedVariations
     );
-
     availableQty = quantity;
   }
-
   const handleSelect = useCallback(
     (variationId, variationTypeId) => {
       dispatch(setCartMessage({ message: "", type: "" }));
@@ -301,13 +319,17 @@ const ProductDetailPage = ({ customizePage }) => {
   }
   const addToCartHandler = useCallback(async () => {
     dispatch(setIsSubmitted(true));
-    if (
-      isInValidSelectedVariation ||
-      (!hasDiamondDetails &&
-        (!availableQty || availableQty < productQuantity || !productQuantity))
-    ) {
-      return;
-    }
+    if (isInValidSelectedVariation) return;
+
+    const isStandardProductInvalid =
+      !hasDiamondDetails &&
+      (!availableQty || !productQuantity || productQuantity > availableQty);
+
+    const isCustomProductInvalid =
+      hasDiamondDetails &&
+      (!productQuantity || productQuantity > MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT);
+
+    if (isStandardProductInvalid || isCustomProductInvalid) return;
 
     let payload = {
       productId: productDetail?.id,
@@ -317,11 +339,14 @@ const ProductDetailPage = ({ customizePage }) => {
         variationTypeId: selectedVari?.variationTypeId,
       })),
     };
-    if (customProductDetails?.diamondDetails) {
+    if (customProductDetails?.diamondDetails && isCustomizePage) {
       payload.diamondDetail = diamondDetail;
     }
     const response = await dispatch(insertProductIntoCart(payload));
+
     if (response) {
+      localStorage.removeItem("customProduct");
+      dispatch(setCustomProductDetails(null));
       router.push("/cart");
       dispatch(setIsSubmitted(false));
     }
@@ -332,6 +357,7 @@ const ProductDetailPage = ({ customizePage }) => {
     isInValidSelectedVariation,
     productDetail?.id,
     selectedVariations,
+    customizePage,
   ]);
 
   const handleSelectSetting = useCallback(() => {
@@ -374,13 +400,13 @@ const ProductDetailPage = ({ customizePage }) => {
   }, [isInValidSelectedVariation, productDetail?.id, selectedVariations]);
 
   //Enricehd Variations all Variations details with name and id passed in it
-  const enrichedVariations = selectedVariations.map((selectedVar) => {
+  const enrichedVariations = selectedVariations?.map((selectedVar) => {
     const matchedVariation = productDetail?.variations?.find(
-      (v) => v.variationId === selectedVar.variationId
+      (v) => v.variationId === selectedVar?.variationId
     );
 
     const matchedType = matchedVariation?.variationTypes?.find(
-      (vt) => vt.variationTypeId === selectedVar.variationTypeId
+      (vt) => vt.variationTypeId === selectedVar?.variationTypeId
     );
 
     return {
@@ -421,7 +447,7 @@ const ProductDetailPage = ({ customizePage }) => {
     >
       {productLoading ? (
         <DetailPageSkeleton />
-      ) : (
+      ) : productDetail && Object.keys(productDetail).length > 0 ? (
         <>
           <div className="container grid grid-cols-1 lg:grid-cols-[55%_auto] gap-12">
             <div className="hidden lg:block">
@@ -655,42 +681,57 @@ const ProductDetailPage = ({ customizePage }) => {
                   {customizePage === "setting" ? (
                     <LoadingPrimaryButton
                       className="w-full uppercase"
-                      loading={customizeLoader}
-                      disabled={customizeLoader || isInValidSelectedVariation}
+                      disabled={isInValidSelectedVariation}
                       loaderType={isHovered ? "" : "white"}
                       onClick={handleSelectSetting}
                     >
-                      {isInValidSelectedVariation
-                        ? "SELECT A VARIATION"
-                        : "SELECT THIS SETTING"}
+                      SELECT THIS SETTING
                     </LoadingPrimaryButton>
-                  ) : (
+                  ) : null}
+
+                  {customizePage === "completeRing" ? (
+                    <LoadingPrimaryButton
+                      className="w-full uppercase"
+                      loading={cartLoading}
+                      disabled={cartLoading || isInValidSelectedVariation}
+                      loaderType={isHovered ? "" : "white"}
+                      onClick={addToCartHandler}
+                    >
+                      COMPLETE RING
+                    </LoadingPrimaryButton>
+                  ) : null}
+
+                  {!customizePage ? (
                     <LoadingPrimaryButton
                       className="w-full uppercase"
                       loading={cartLoading}
                       disabled={
                         cartLoading ||
-                        (!availableQty && !isInValidSelectedVariation)
+                        !availableQty ||
+                        availableQty < 0 ||
+                        isInValidSelectedVariation
                       }
                       loaderType={isHovered ? "" : "white"}
                       onClick={addToCartHandler}
                     >
-                      {customProductDetails?.diamondDetails
-                        ? "COMPLETE RING"
-                        : !availableQty && !isInValidSelectedVariation
-                        ? "OUT OF STOCK"
-                        : "ADD TO BAG"}
+                      {availableQty && availableQty > 0
+                        ? "ADD TO BAG"
+                        : "OUT OF STOCK"}
                     </LoadingPrimaryButton>
-                  )}
+                  ) : null}
                 </div>
               </div>
               {isSubmitted && !selectedVariations?.length ? (
                 <ErrorMessage message={"Please select variants"} />
               ) : null}
-              {isSubmitted && cartMessage?.message ? (
+              {isSubmitted &&
+              cartMessage?.message &&
+              !(
+                customizePage === "completeRing" &&
+                cartMessage?.message === "Product already exists in cart"
+              ) ? (
                 <ErrorMessage message={cartMessage?.message} />
               ) : null}
-
               <div className="mt-4 lg:mt-6 flex items-center gap-3">
                 <p className="font-medium text-base md:text-xl text-gray-500">
                   Pay With:
@@ -735,21 +776,25 @@ const ProductDetailPage = ({ customizePage }) => {
           <div className="container pt-10 lg:pt-20 2xl:pt-28 md:p-6">
             <ProductDetailTabs />
           </div>
-          {!isCustomizePage && (
-            <>
-              <section className="pt-16 lg:pt-20 2xl:pt-40 container">
-                <ProductSwiper
-                  productList={recentlyViewProductList}
-                  loading={recentlyProductLoading}
-                  title="Recently viewed"
-                />
-              </section>
-            </>
-          )}
+          {!isCustomizePage &&
+            recentlyViewProductList &&
+            recentlyViewProductList.length > 0 && (
+              <>
+                <section className="pt-16 lg:pt-20 2xl:pt-40 container">
+                  <ProductSwiper
+                    productList={recentlyViewProductList}
+                    loading={recentlyProductLoading}
+                    title="Recently viewed"
+                  />
+                </section>
+              </>
+            )}
           <section className="pt-10 lg:pt-20 2xl:pt-28 container">
             <KeyFeatures />
           </section>
         </>
+      ) : (
+        <ProductNotFound textClassName="px-4 md:px-8 w-full md:w-[50%] lg:w-[35%] 2xl:w-[32%]" />
       )}
     </div>
   );
@@ -798,6 +843,27 @@ const ProductDetailTabs = () => {
                     </p>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {productDetail?.specifications?.length > 0 && (
+              <div className="pt-8">
+                <p className="inline-block font-semibold text-xl text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px]">
+                  Specifications
+                </p>
+
+                <div className="mt-4 flex flex-col gap-4">
+                  {productDetail.specifications.map((spec, index) => (
+                    <div key={index}>
+                      <p className="text-lg md:text-xl font-semibold text-baseblack">
+                        {spec.title}
+                      </p>
+                      <p className="text-base md:text-lg text-baseblack mt-1">
+                        {spec.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

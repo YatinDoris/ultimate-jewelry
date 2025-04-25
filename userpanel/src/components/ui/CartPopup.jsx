@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useCallback, useRef } from "react";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
+import stepArrow from "@/assets/icons/3stepArrow.svg";
+
 import {
   handleSelectCartItem,
   removeProductIntoCart,
@@ -10,12 +12,12 @@ import { helperFunctions } from "@/_helper";
 import Link from "next/link";
 import { GrayLinkButton, PrimaryButton } from "@/components/ui/button";
 import deleteIcon from "@/assets/icons/delete.svg";
-import cartImage from "@/assets/images/cart/cart.webp";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setIsCartOpen,
   setIsChecked,
   setIsSubmitted,
+  setOpenDiamondDetailDrawer,
 } from "@/store/slices/commonSlice";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
 import stripe from "@/assets/images/cart/stripe.webp";
@@ -25,6 +27,7 @@ import acima from "@/assets/images/cart/acima.webp";
 import { CartNotFound, CustomImg, ProgressiveImg } from "../dynamiComponents";
 import { useRouter } from "next/navigation";
 import ErrorMessage from "./ErrorMessage";
+import DiamondDetailDrawer from "./customize/DiamondDetailDrawer";
 
 const maxQuantity = 5;
 const minQuantity = 1;
@@ -38,11 +41,9 @@ const paymentOptions = [
 const CartPopup = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-
   const contentRef = useRef(null);
-  const { isCartOpen, isChecked, isSubmitted } = useSelector(
-    ({ common }) => common
-  );
+  const { isCartOpen, isChecked, isSubmitted, openDiamondDetailDrawer } =
+    useSelector(({ common }) => common);
   const {
     cartLoading,
     cartList,
@@ -50,7 +51,6 @@ const CartPopup = () => {
     updateCartQtyErrorMessage,
     removeCartErrorMessage,
   } = useSelector(({ cart }) => cart);
-
   const handleCartQuantity = useCallback(
     (type, cartItem) => {
       dispatch(handleSelectCartItem({ selectedCartItem: cartItem }));
@@ -164,7 +164,7 @@ const CartPopup = () => {
         <div className="flex flex-col h-full">
           <div className="shrink-0 p-4 border-b-2 border-black_opacity_10 flex justify-between items-center pt-8 xl:pt-8 2xl:pt-10 mb-6">
             <h2 className="text-xl md:text-2xl xl:text-3xl font-medium font-castoro text-baseblack">
-              My Bag({cartList?.length})
+              My Bag <span className="pl-2">({cartList?.length}) </span>
             </h2>
             <button
               onClick={closeCartPopup}
@@ -187,14 +187,14 @@ const CartPopup = () => {
                     className="border-b-2 border-alabaster last:border-b-0 pb-6 xl:pb-10 mb-10 last:mb-0"
                     key={cartItem.id}
                   >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex-shrink-0 border-2 border-alabaster">
+                    <div className="flex justify-between gap-4">
+                      <div className="flex-shrink-0 border-2 border-alabaster w-32 h-32 md:w-36 md:h-36 ">
                         <ProgressiveImg
                           src={cartItem?.productImage}
                           alt={cartItem?.productName}
                           width={100}
                           height={100}
-                          className="xs:w-36 xs:h-36 md:w-44 md:h-40 object-cover"
+                          className="object-cover w-full h-full"
                         />
                       </div>
                       <div className="flex-1 w-full">
@@ -207,39 +207,53 @@ const CartPopup = () => {
                           >
                             {cartItem.productName}
                           </Link>
-                          <p className="text-2xl font-medium font-castoro">
-                            {cartItem?.productDiscount ? (
-                              <span className="text-lg text-gray-500 line-through mr-2">
-                                $
-                                {helperFunctions.toFixedNumber(
-                                  cartItem?.quantityWisePrice
-                                )}
-                              </span>
-                            ) : null}
-                            $
-                            {helperFunctions.toFixedNumber(
-                              cartItem?.quantityWiseSellingPrice
-                            )}
-                          </p>
+                          {cartItem?.diamondDetail ? (
+                            <p className="font-castoro text-base md:text-xl lg:text-2xl font-medium text-baseblack">
+                              $
+                              {(
+                                helperFunctions.calculateCustomProductPrice({
+                                  netWeight: cartItem?.netWeight,
+                                  variations: cartItem?.variations,
+                                }) * (cartItem?.quantity || 1)
+                              ).toFixed(2)}
+                            </p>
+                          ) : (
+                            <p className="text-base md:text-xl lg:text-2xl font-medium font-castoro">
+                              {cartItem?.productDiscount ? (
+                                <span className="text-lg text-gray-500 line-through mr-2">
+                                  $
+                                  {helperFunctions.toFixedNumber(
+                                    cartItem?.quantityWisePrice
+                                  )}
+                                </span>
+                              ) : null}
+                              $
+                              {helperFunctions.toFixedNumber(
+                                cartItem?.quantityWiseSellingPrice
+                              )}
+                            </p>
+                          )}
                         </div>
-                        <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
+                        <div className="text-baseblack flex flex-wrap gap-1 md:gap-x-4 md:gap-y-2 pt-1 md:pt-2">
                           {cartItem.variations.map((variItem) => (
                             <div
-                              className="border-2 border-black_opacity_10 text-sm xs:text-base p-1 md:p-2 font-medium"
+                              className="border md:border-2 border-black_opacity_10  text-xs lg:text-base p-1 md:px-2 font-medium"
                               key={variItem.variationId}
                             >
                               <span className="font-bold">
                                 {variItem.variationName}:{" "}
-                              </span>
+                              </span>{" "}
                               {variItem.variationTypeName}
                             </div>
                           ))}
                         </div>
-                        <div className="flex items-center space-x-2 pt-4">
-                          <h3 className="text-lg font-medium">Qty:</h3>
-                          <div className="flex items-center bg-alabaster px-2">
+                        <div className="flex items-center gap-x-1 pt-1 md:pt-2">
+                          <h3 className="text-[12px] md:text-base lg:text-lg font-medium">
+                            Qty:
+                          </h3>
+                          <div className="flex items-center bg-alabaster px-1 lg:px-2">
                             <button
-                              className={`px-1 py-1 text-xl font-medium text-black ${
+                              className={`lg:px-1 lg:py-1 text-[12px] md:text-lg lg:text-xl font-medium text-black ${
                                 cartItem?.quantity <= minQuantity
                                   ? "opacity-50 cursor-not-allowed"
                                   : ""
@@ -251,17 +265,18 @@ const CartPopup = () => {
                             >
                               −
                             </button>
+
                             {selectedCartItem.id === cartItem.id &&
                             updateCartQtyErrorMessage ? (
                               <ErrorMessage
                                 message={updateCartQtyErrorMessage}
                               />
                             ) : null}
-                            <span className="px-4 text-xl font-medium text-black">
+                            <span className="px-2 md:px-4 text-[12px] md:text-lg lg:text-xl font-medium text-black">
                               {cartItem.quantity}
                             </span>
                             <button
-                              className={`px-1 py-1 text-xl font-medium text-black ${
+                              className={`md:px-1 py-1 text-[12px] md:text-lg lg:text-xl font-medium text-black ${
                                 cartItem?.quantity >= maxQuantity ||
                                 cartItem.quantity >= cartItem.productQuantity
                                   ? "opacity-50 cursor-not-allowed"
@@ -278,23 +293,41 @@ const CartPopup = () => {
                               +
                             </button>
                           </div>
+                          {selectedCartItem.id === cartItem.id &&
+                          removeCartErrorMessage ? (
+                            <ErrorMessage message={removeCartErrorMessage} />
+                          ) : null}
                           <button
-                            className="font-medium px-3 py-1 cursor-pointer flex items-center justify-center transition-all duration-200"
+                            className="font-medium px-3  cursor-pointer flex items-center justify-center transition-all duration-200"
                             onClick={() => removeFromCart(cartItem)}
                           >
                             <CustomImg
                               srcAttr={deleteIcon}
                               altAttr=""
                               titleAttr=""
-                              className="w-6 h-6 transition-transform duration-200 hover:scale-110"
+                              className="md:w-6 md:h-6 h-4 w-4 transition-transform duration-200 hover:scale-110"
                             />
                           </button>
-                          {selectedCartItem.id === cartItem.id &&
-                          removeCartErrorMessage ? (
-                            <ErrorMessage message={removeCartErrorMessage} />
-                          ) : null}
+                        </div>
+                        <div className="hidden xs:block mt-4">
+                          <DiamondDetailDrawer
+                            cartItem={cartItem}
+                            openDiamondDetailDrawer={openDiamondDetailDrawer}
+                            dispatch={dispatch}
+                            setOpenDiamondDetailDrawer={
+                              setOpenDiamondDetailDrawer
+                            }
+                          />
                         </div>
                       </div>
+                    </div>
+                    <div className="xs:hidden mt-4">
+                      <DiamondDetailDrawer
+                        cartItem={cartItem}
+                        openDiamondDetailDrawer={openDiamondDetailDrawer}
+                        dispatch={dispatch}
+                        setOpenDiamondDetailDrawer={setOpenDiamondDetailDrawer}
+                      />
                     </div>
                   </div>
                 ))}

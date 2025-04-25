@@ -8,6 +8,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { HeaderLinkButton } from "./button";
 import { fetchCart } from "@/_actions/cart.action";
+import { setOpenDropdownMobile } from "../../store/slices/commonSlice";
 
 export default function ProfileDropdown({ className = "" }) {
   const dispatch = useDispatch();
@@ -19,7 +20,6 @@ export default function ProfileDropdown({ className = "" }) {
     localStorage.clear();
     Cookies.remove("token");
     dispatch(fetchCart());
-    dispatch(setOpenProfileDropdown(false));
     router.push("/");
   };
 
@@ -92,7 +92,10 @@ export default function ProfileDropdown({ className = "" }) {
                   <HeaderLinkButton
                     key={`mobile-dropdown-${index}`}
                     href={link.href || "#"}
-                    onClick={link.onClick || undefined}
+                    onClick={() => {
+                      if (link.onClick) link.onClick();
+                      dispatch(setOpenProfileDropdown(false));
+                    }}
                     className="py-1 hover:!text-primary"
                   >
                     {link.title}

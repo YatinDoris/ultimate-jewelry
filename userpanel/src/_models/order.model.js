@@ -44,10 +44,17 @@ export const orderModel = {
           ref: "variation",
         },
         productPrice: {
-          type: Number, // Represents variation price for non-customized or base price for customized with single quantity
+          type: Number,
+          // Base price of the product variation:
+          // - For non-customized products: this is the standard variation price.
+          // - For customized products: this is the custom product price excluding any diamond-related pricing.
         },
+
         unitAmount: {
-          type: Number, // Total price (variation price + diamond price) * quantity
+          type: Number,
+          // Final total price after multiplying with quantity:
+          // - For non-customized products: productPrice * quantity.
+          // - For customized products: (productPrice + diamond price) * quantity.
         },
         cartQuantity: {
           type: Number,

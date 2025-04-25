@@ -1,6 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
-import stepArrow from "@/assets/icons/3stepArrow.svg";
+import { useCallback, useEffect } from "react";
 import deleteIcon from "@/assets/icons/delete.svg";
 import {
   CartNotFound,
@@ -12,7 +11,6 @@ import paypal from "@/assets/images/cart/paypal.webp";
 import snapFinance from "@/assets/images/cart/snapFinance.webp";
 import acima from "@/assets/images/cart/acima.webp";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
-import cartImage from "@/assets/images/cart/cart.webp";
 import KeyFeatures from "@/components/ui/KeyFeatures";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -26,9 +24,14 @@ import Link from "next/link";
 import { LinkButton, PrimaryButton } from "@/components/ui/button";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import { setDeleteLoader } from "@/store/slices/cartSlice";
-import { setIsChecked, setIsSubmitted } from "@/store/slices/commonSlice";
+import {
+  setIsChecked,
+  setIsSubmitted,
+  setOpenDiamondDetailDrawer,
+} from "@/store/slices/commonSlice";
 import { useRouter } from "next/navigation";
 import ErrorMessage from "../ErrorMessage";
+import DiamondDetailDrawer from "../customize/DiamondDetailDrawer";
 const maxQuantity = 5;
 const minQuantity = 1;
 const paymentOptions = [
@@ -41,9 +44,10 @@ const paymentOptions = [
 const CartPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [openDiamondDetailId, setOpenDiamondDetailId] = useState(null);
 
-  const { isChecked, isSubmitted } = useSelector(({ common }) => common);
+  const { isChecked, isSubmitted, openDiamondDetailDrawer } = useSelector(
+    ({ common }) => common
+  );
   const {
     cartLoading,
     cartList,
@@ -149,6 +153,36 @@ const CartPage = () => {
     dispatch(setIsChecked(false));
   }, []);
 
+  const setCustomProductInLocalStorage = (cartItem) => {
+    if (!cartItem?.diamondDetail) return;
+
+    const customProduct = {
+      productId: cartItem.productId,
+      selectedVariations: cartItem.variations.map((v) => ({
+        variationId: v.variationId,
+        variationTypeId: v.variationTypeId,
+      })),
+      diamondDetails: {
+        shape: {
+          title: cartItem.diamondDetail.shapeName,
+          image: cartItem.productImage,
+          id: cartItem.diamondDetail.shapeId,
+        },
+        clarity: {
+          title: "",
+          value: cartItem.diamondDetail.clarity,
+        },
+        color: {
+          title: "",
+          value: cartItem.diamondDetail.color,
+        },
+        caratWeight: cartItem.diamondDetail.caratWeight,
+      },
+    };
+
+    localStorage.setItem("customProduct", JSON.stringify(customProduct));
+  };
+
   return (
     <div className="mx-auto pt-10 lg:pt-10 2xl:pt-12">
       {cartLoading ? (
@@ -161,29 +195,35 @@ const CartPage = () => {
             <div className="w-full lg:w-2/3">
               {cartList?.map((cartItem) => (
                 <div
-                  className="bg-white mb-6 py-6 px-2 xs:px-6"
+                  className="bg-white mb-6 py-4 md:py-6 px-2  xs:px-6"
                   key={cartItem.id}
                 >
-                  <div className="flex flex-col md:flex-row  justify-between gap-8">
-                    <div className="flex-shrink-0 border border-alabaster">
+                  <div className="flex gap-2 md:gap-6">
+                    <div>
                       <ProgressiveImg
                         src={cartItem?.productImage}
                         alt={cartItem?.productName}
-                        className="w-36 h-36 md:w-48 md:h-48 object-cover"
+                        className="w-32 md:w-40 border border-alabaster"
                       />
                     </div>
                     <div className="flex-1 w-full">
-                      <div className="flex flex-col xs:flex-row xs:justify-between text-center items-center">
+                      <div className="grid grid-cols-2 xs:flex-row xs:justify-between">
                         <Link
-                          href={`/products/${cartItem.productName
-                            .split(" ")
-                            .join("_")}`}
-                          className="text-lg font-medium"
+                          href={
+                            cartItem?.diamondDetail
+                              ? "/customize/complete-ring"
+                              : `/products/${cartItem.productName
+                                  .split(" ")
+                                  .join("_")}`
+                          }
+                          onClick={() =>
+                            setCustomProductInLocalStorage(cartItem)
+                          }
+                          className="text-sm md:text-base lg:text-lg font-medium flex-wrap"
                         >
                           {cartItem.productName}
                         </Link>
-
-                        <p className="text-2xl font-medium font-castoro">
+                        <p className="text-base md:text-xl lg:text-2xl font-medium font-castoro text-end">
                           {cartItem?.productDiscount ? (
                             <span className="text-lg text-gray-500 line-through mr-2">
                               $
@@ -198,10 +238,11 @@ const CartPage = () => {
                           )}
                         </p>
                       </div>
-                      <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
+
+                      <div className="text-baseblack flex flex-wrap gap-1 md:gap-x-4 md:gap-y-2 pt-1 md:pt-2">
                         {cartItem.variations.map((variItem) => (
                           <div
-                            className="border-2 border-black_opacity_10 text-sm xs:text-base p-1 px-2 font-medium"
+                            className="border md:border-2 border-black_opacity_10  text-xs lg:text-base p-1 md:px-2 font-medium"
                             key={variItem.variationId}
                           >
                             <span className="font-bold">
@@ -212,11 +253,25 @@ const CartPage = () => {
                         ))}
                       </div>
 
-                      <div className="flex items-center space-x-2 pt-4">
-                        <h3 className="text-lg font-medium">Qty:</h3>
-                        <div className="flex items-center bg-alabaster px-2">
+                      {cartItem?.diamondDetail && (
+                        <p className="font-castoro text-base md:text-xl lg:text-2xl font-medium text-baseblack  md:pt-4 pt-2">
+                          $
+                          {(
+                            helperFunctions.calculateCustomProductPrice({
+                              netWeight: cartItem?.netWeight,
+                              variations: cartItem?.variations,
+                            }) * (cartItem?.quantity || 1)
+                          ).toFixed(2)}
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-x-1 pt-1 md:pt-2">
+                        <h3 className="text-[12px] md:text-base lg:text-lg font-medium">
+                          Qty:
+                        </h3>
+                        <div className="flex items-center bg-alabaster px-1 lg:px-2">
                           <button
-                            className={`px-1 py-1 text-xl font-medium text-black ${
+                            className={`lg:px-1 lg:py-1 text-[12px] md:text-lg lg:text-xl font-medium text-black ${
                               cartItem?.quantity <= minQuantity
                                 ? "opacity-50 cursor-not-allowed"
                                 : ""
@@ -232,11 +287,11 @@ const CartPage = () => {
                           updateCartQtyErrorMessage ? (
                             <ErrorMessage message={updateCartQtyErrorMessage} />
                           ) : null}
-                          <span className="px-4 text-xl font-medium text-black">
+                          <span className="px-2 md:px-4 text-[12px] md:text-lg lg:text-xl font-medium text-black">
                             {cartItem.quantity}
                           </span>
                           <button
-                            className={`px-1 py-1 text-xl font-medium text-black ${
+                            className={`md:px-1 py-1 text-[12px] md:text-lg lg:text-xl font-medium text-black ${
                               cartItem?.quantity >= maxQuantity ||
                               cartItem.quantity >= cartItem.productQuantity
                                 ? "opacity-50 cursor-not-allowed"
@@ -255,7 +310,7 @@ const CartPage = () => {
                         </div>
 
                         <button
-                          className="font-medium px-3 py-1 cursor-pointer flex items-center justify-center transition-all duration-200"
+                          className="font-medium px-3  cursor-pointer flex items-center justify-center transition-all duration-200"
                           onClick={() => removeFromCart(cartItem)}
                           disabled={deleteLoader}
                         >
@@ -263,94 +318,35 @@ const CartPage = () => {
                             srcAttr={deleteIcon}
                             altAttr=""
                             titleAttr=""
-                            className="w-6 h-6 transition-transform duration-200 hover:scale-110"
+                            className="md:w-6 md:h-6 h-4 w-4 transition-transform duration-200 hover:scale-110"
                           />
                         </button>
+
                         {selectedCartItem.id === cartItem.id &&
                         removeCartErrorMessage ? (
                           <ErrorMessage message={removeCartErrorMessage} />
                         ) : null}
                       </div>
-
-                      {cartItem?.diamondDetail && (
-                        <div className="mt-6 border rounded  max-w-sm">
-                          <div className="flex items-center justify-between px-4 py-2 border-b  bg-alabaster">
-                            <h4 className="font-semibold text-lg">
-                              Diamond Detail
-                            </h4>
-                            <button
-                              className={`transition-transform duration-300 ${
-                                openDiamondDetailId === cartItem.id
-                                  ? "rotate-0"
-                                  : "rotate-180"
-                              }`}
-                              onClick={() =>
-                                setOpenDiamondDetailId((prev) =>
-                                  prev === cartItem.id ? null : cartItem.id
-                                )
-                              }
-                            >
-                              <CustomImg
-                                srcAttr={stepArrow}
-                                altAttr=""
-                                titleAttr=""
-                                className="w-5 h-5 transition-transform duration-200 "
-                              />
-                            </button>
-                          </div>
-
-                          {openDiamondDetailId === cartItem.id && (
-                            <>
-                              <div className="flex {diamondDetail?.priceflex-col xs:flex-row xs:items-stretch">
-                                {/* Left column */}
-                                <div className="flex flex-col xs:flex-row xs:items-stretch">
-                                  <div className="flex flex-col">
-                                    <p className="font-medium text-base md:text-lg text-baseblack pt-2 px-4">
-                                      Lab Created{"  "}
-                                      {cartItem.diamondDetail.caratWeight}
-                                      {"  "}
-                                      Carat
-                                    </p>
-                                    <p className="font-medium text-base md:text-lg text-baseblack  pt-2 px-4">
-                                      {" "}
-                                      {cartItem.diamondDetail.shapeName} Diamond
-                                    </p>
-                                  </div>
-
-                                  <div className="hidden xs:block border-l border-gray-300 mx-2 h-16"></div>
-                                  {/* Right column */}
-                                  <div className="flex flex-col ">
-                                    <p className="font-medium text-base md:text-lg text-baseblack  pt-2 px-4">
-                                      Clarity-
-                                      {cartItem.diamondDetail.clarity}
-                                    </p>
-                                    <p className="font-medium text-base md:text-lg text-baseblack  pt-2 px-4">
-                                      Color- {cartItem.diamondDetail.color}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {cartItem.diamondDetail && (
-                                <div className="px-4 py-2 font-medium text-lg md:text-xl">
-                                  Diamond Price:{" "}
-                                  <span className="font-bold">
-                                    $
-                                    {helperFunctions.calculateDiamondPrice({
-                                      caratWeight: Number(
-                                        cartItem?.diamondDetail.caratWeight
-                                      ),
-                                      clarity: cartItem?.diamondDetail?.clarity,
-                                      color: cartItem?.diamondDetail?.color,
-                                    })}
-                                  </span>
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      )}
+                      <div className="hidden xs:block mt-4">
+                        <DiamondDetailDrawer
+                          cartItem={cartItem}
+                          openDiamondDetailDrawer={openDiamondDetailDrawer}
+                          dispatch={dispatch}
+                          setOpenDiamondDetailDrawer={
+                            setOpenDiamondDetailDrawer
+                          }
+                        />
+                      </div>
                     </div>
+                  </div>
+
+                  <div className=" xs:hidden mt-4">
+                    <DiamondDetailDrawer
+                      cartItem={cartItem}
+                      openDiamondDetailDrawer={openDiamondDetailDrawer}
+                      dispatch={dispatch}
+                      setOpenDiamondDetailDrawer={setOpenDiamondDetailDrawer}
+                    />
                   </div>
                 </div>
               ))}
@@ -358,7 +354,7 @@ const CartPage = () => {
               <div className="mt-4 flex flex-col md:flex-row gap-6">
                 <LinkButton
                   href="/"
-                  className="!text-baseblack !font-medium  w-fit !py-6 !bg-transparent !text-lg hover:!border-black hover:!bg-black hover:!text-white !border-black_opacity_10 !border-2"
+                  className="!text-white !font-medium  w-fit !py-6 !bg-[#202A4E] !text-lg hover:!border-[#202A4E] hover:!bg-transparent hover:!text-[#202A4E] !border-black_opacity_10 !border !rounded-none"
                 >
                   Continue Shopping
                 </LinkButton>
@@ -366,17 +362,17 @@ const CartPage = () => {
             </div>
 
             <div className="w-full lg:w-1/3 bg-white py-6 lg:py-10 px-2 xs:px-6  self-start">
-              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold">
+              <p className="xs:text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold">
                 Order Total: <span className="">${getOrderTotal()}</span>
               </p>
-              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
+              <p className="xs:text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
                 Discount Offer: <span className="">-${getDiscountTotal()}</span>
               </p>
-              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
+              <p className="xs:text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
                 Subtotal: <span className="">${getSubTotal()}</span>
               </p>
               <p className="my-4 border-t-2 border-black_opacity_10" />
-              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold pt-2">
+              <p className="xs:text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-2">
                 Grand Total: <span>${grandTotal}</span>
               </p>
 
@@ -458,15 +454,17 @@ const CartPage = () => {
                 </div>
 
                 <div className="flex items-center gap-3 ">
-                  <p className="font-medium text-lg text-gray-500">Pay With:</p>
-                  <div className="flex gap-6 flex-wrap">
+                  <p className="font-medium text-base 2xl:text-lg text-gray-500">
+                    Pay With:
+                  </p>
+                  <div className="flex gap-2 gap2xl:gap-6 flex-wrap">
                     {paymentOptions.map((option, index) => (
                       <CustomImg
                         key={index}
                         srcAttr={option.img}
                         titleAttr={option.titleAttr}
                         altAttr={option.altAttr}
-                        className="object-contain w-auto h-auto"
+                        className="object-contain  w-12  lg:w-10 2xl:w-auto 2xl:h-auto"
                       />
                     ))}
                   </div>

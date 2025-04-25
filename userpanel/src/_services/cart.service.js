@@ -112,6 +112,7 @@ const getAllCartWithProduct = () => {
             quantityWiseSellingPrice: sellingPrice * cartItem.quantity,
             productDiscount: findedProduct.discount || 0,
             variations: variationArray,
+            netWeight: findedProduct?.netWeight,
             diamondDetail,
           };
         } else {

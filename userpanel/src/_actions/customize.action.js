@@ -18,7 +18,6 @@ export const fetchCustomizeProducts = () => {
                     customizProductList
                 );
                 const uniqueFilterOptions = { ...tempUniqueFilterOptions };
-                console.log('first', uniqueFilterOptions)
                 dispatch(setUniqueFilterOptions(uniqueFilterOptions));
             }
 

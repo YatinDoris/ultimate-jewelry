@@ -9,10 +9,10 @@ import {
   rightToLeftAnimation,
 } from "@/_utils/common";
 import { CustomImg } from "../dynamiComponents";
-import Link from "next/link";
 
 const AnimatedSection = ({
   description = [],
+  points = [],
   title = "",
   direction = "LTR",
   img = "",
@@ -20,21 +20,17 @@ const AnimatedSection = ({
   altAttr = "",
   children,
   className = "",
+  imgClassName = "",
   titleClassName = "",
-  btnLink = "",
-  btnText = "",
   pointsDescription = "",
-  points = [],
-  isPrimaryColor = false,
 }) => {
   const controls = useAnimation();
   const [ref, inView] = useInView({ threshold: 0.2 });
   const contentAnimation =
     direction === "LTR" ? rightToLeftAnimation : leftToRightAnimation;
   const layoutDirection =
-    direction === "LTR"
-      ? "flex-col lg:flex-row"
-      : "flex-col lg:flex-row-reverse";
+    direction === "LTR" ? "lg:flex-row" : "lg:flex-row-reverse";
+
   useEffect(() => {
     if (inView) {
       controls.start("visible");
@@ -44,79 +40,70 @@ const AnimatedSection = ({
   return (
     <section
       ref={ref}
-      className={`w-full sm:px-4 md:px-6 lg:px-0 flex ${layoutDirection} items-center justify-between gap-4 !text-baseblack ${className}`}
+      className={`overflow-hidden flex flex-col ${layoutDirection} items-center justify-between ${className}`}
     >
+      {/* Image Section */}
       <motion.div
         initial="hidden"
         animate={controls}
         variants={cardAnimation}
-        className="h-[40vh] md:h-[60vh] lg:h-[85vh] xl:h-[88vh] w-full xxs:w-full lg:w-1/2 relative overflow-hidden mt-12 md:mt-0"
+        className="lg:h-[90vh] w-full xxs:w-full lg:w-1/2 aspect-square relative"
       >
-        "
         <CustomImg
-          srcAttr={img}
-          titleAttr={titleAttr}
-          altAttr={altAttr}
           fill
           priority
-          className="object-cover"
+          src={img}
+          alt={altAttr}
+          title={titleAttr}
+          className={`object-cover  ${imgClassName}`}
+          // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </motion.div>
 
+      {/* Content Section */}
       <motion.div
         initial="hidden"
         animate={controls}
         variants={contentAnimation}
-        className="w-full lg:w-[45%] flex flex-col items-center justify-center text-left sm:text-center sm:px-8 md:px-0 lg:mt-0 lg:mb-0 xl:pr-20 xl:pl-20 xxs:px-3  lg:items-start"
+        className="w-full lg:w-1/2 flex flex-col text-center lg:justify-center lg:items-center lg:text-left gap-3 xxs:gap-4 sm:gap-7 p-8 md:p-14 lg:p-0"
       >
-        <h2
-          className={`text-4xl lg:text-4xl md:text-5xl md:mb-0 mt-4 sm:mb-0 xxs:mt-0 lg:mt-6 lg:mb-0 2xl:mt-6 md:mt-4 2xl:text-4xl lg:leading-[50px] 2xl:leading-[60px] font-castoro ${titleClassName} ${isPrimaryColor ? "text-primary" : ""
-            } `}
-        >
-          {title}
-        </h2>
-        <div className="gap-y-2 xl:gap-y-5 flex flex-col mb-3 ">
-          {Array.isArray(description) &&
-            description.length > 0 &&
-            description.map((desc, i) => (
-              <p
-                key={`desc-${i}`}
-                className="font-figtree font-medium text-left text-base sm:text-xl xxs:px-2 md:px-0 sm:mb-2 lg:mt-0 md:text-2xl mt-3 lg:text-base leading-relaxed tracking-normal text-baseblack px-0"
-              >
-                {desc}
-              </p>
-            ))}
-        </div>
-
-        <div className="relative  group flex flex-col justify-center items-center">
-          <Link href={btnLink}>
-            <p className=" py-2 text-lg xl:text-xl font-semibold tracking-wide border-b-2 border-black w-fit">
-              {btnText}
+        <div className="lg:w-[75%]">
+          <h2
+            className={`text-2xl md:text-4xl mb-4 2xl:text-5xl lg:leading-[50px] font-castoro 2xl:leading-[60px] ${titleClassName}`}
+          >
+            {title}
+          </h2>
+          <div className="flex flex-col gap-4">
+            {description &&
+              description.map((desc, i) => {
+                return (
+                  <p
+                    key={`description-${i}`}
+                    className="text-[14px] font-medium md:text-sm 2xl:text-lg leading-relaxed"
+                  >
+                    {desc}
+                  </p>
+                );
+              })}
+          </div>
+          <div className="flex flex-col gap-4 text-start">
+            <p className="text-[14px] font-medium md:text-sm 2xl:text-lg">
+              {pointsDescription}
             </p>
-          </Link>
+            {points &&
+              points.map((point, i) => {
+                return (
+                  <p
+                    key={`point-${i}`}
+                    className="text-[14px] font-medium md:text-sm 2xl:text-lg leading-relaxed"
+                  >
+                    <span className="font-bold">{point.title}</span> :{" "}
+                    {point.description}
+                  </p>
+                );
+              })}
+          </div>
         </div>
-
-        {Array.isArray(points) && points.length > 0 && (
-          <>
-            {pointsDescription && (
-              <p className="font-figtree font-medium text-left items-start text-base sm:text-xl sm:mb-6 xxs:mb-4 sm:mt-0 lg:mb-4 lg:mt-0 md:text-2xl lg:text-base leading-relaxed tracking-normal text-baseblack px-1 mx-0 w-full">
-                {pointsDescription}
-              </p>
-            )}
-
-            <ul>
-              {points.map((point, index) => (
-                <li
-                  key={index}
-                  className="font-medium sm:text-xl lg:text-base text-left md:text-2xl xl:text-lg xxs:px-1 mb-2"
-                >
-                  <strong>{point.title}:</strong> {point.description}
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-
         {children}
       </motion.div>
     </section>

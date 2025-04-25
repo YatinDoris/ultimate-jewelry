@@ -41,20 +41,20 @@ const getAllActiveProducts = () => {
 
           diamondFilters: product.isDiamondFilter
             ? {
-                ...product?.diamondFilters,
-                diamondShapes: product?.diamondFilters.diamondShapeIds?.map(
-                  (shapeId) => {
-                    const foundedShape = diamondShapeList?.find(
-                      (shape) => shape?.id === shapeId
-                    );
-                    return {
-                      title: foundedShape?.title,
-                      image: foundedShape?.image,
-                      id: foundedShape?.id,
-                    };
-                  }
-                ),
-              }
+              ...product?.diamondFilters,
+              diamondShapes: product?.diamondFilters.diamondShapeIds?.map(
+                (shapeId) => {
+                  const foundedShape = diamondShapeList?.find(
+                    (shape) => shape?.id === shapeId
+                  );
+                  return {
+                    title: foundedShape?.title,
+                    image: foundedShape?.image,
+                    id: foundedShape?.id,
+                  };
+                }
+              ),
+            }
             : product?.diamondFilters,
           categoryName: menuData.categories.find(
             (category) => category.id === product.categoryId
@@ -306,10 +306,10 @@ const getProcessProducts = async (singleProductData) => {
             );
             return foundShape
               ? {
-                  title: foundShape?.title,
-                  image: foundShape?.image,
-                  id: foundShape?.id,
-                }
+                title: foundShape?.title,
+                image: foundShape?.image,
+                id: foundShape?.id,
+              }
               : null;
           })
           .filter(Boolean),
@@ -524,15 +524,15 @@ const getFilteredDiamondProducts = (params) => {
           // Filter by product type
           const isProductTypeValid = selectedProductTypes?.length
             ? selectedProductTypes.some((type) =>
-                product?.productTypeNames.includes(type?.value)
-              )
+              product?.productTypeNames.includes(type?.value)
+            )
             : true;
 
           // Filter by collection
           const isCollectionValid = selectedCollections?.length
             ? selectedCollections.some((collection) =>
-                product?.collectionNames?.includes(collection?.value)
-              )
+              product?.collectionNames?.includes(collection?.value)
+            )
             : true;
 
           // Filter by setting style
@@ -541,32 +541,32 @@ const getFilteredDiamondProducts = (params) => {
           );
           const isSettingStyleValid = selectedSettingStyles?.length
             ? selectedSettingStyles.some((style) =>
-                settingStyleNames?.includes(style?.value)
-              )
+              settingStyleNames?.includes(style?.value)
+            )
             : true;
 
           // Filter by variations
           const isVariationValid = selectedVariations?.length
             ? selectedVariations.every((selectedVariation) => {
-                const productVariation = product?.variations?.find(
-                  (v) =>
-                    v?.variationName.toLowerCase() ===
-                    selectedVariation.title.toLowerCase()
-                );
+              const productVariation = product?.variations?.find(
+                (v) =>
+                  v?.variationName.toLowerCase() ===
+                  selectedVariation.title.toLowerCase()
+              );
 
-                if (!productVariation) return false;
+              if (!productVariation) return false;
 
-                // Check if any selected value matches the product's variation types
-                return selectedVariation.selectedValues.length
-                  ? selectedVariation.selectedValues.some((selectedValue) =>
-                      productVariation.variationTypes.some(
-                        (variationType) =>
-                          variationType.variationTypeName.toLowerCase() ===
-                          selectedValue.value.toLowerCase()
-                      )
-                    )
-                  : true;
-              })
+              // Check if any selected value matches the product's variation types
+              return selectedVariation.selectedValues.length
+                ? selectedVariation.selectedValues.some((selectedValue) =>
+                  productVariation.variationTypes.some(
+                    (variationType) =>
+                      variationType.variationTypeName.toLowerCase() ===
+                      selectedValue.value.toLowerCase()
+                  )
+                )
+                : true;
+            })
             : true;
 
           // Filter by price range
@@ -575,10 +575,10 @@ const getFilteredDiamondProducts = (params) => {
           );
           const isPriceValid = priceRangeValues?.length
             ? productPrices.some(
-                (price) =>
-                  price >= (priceRangeValues[0] || 0) &&
-                  price <= (priceRangeValues[1] || Infinity)
-              )
+              (price) =>
+                price >= (priceRangeValues[0] || 0) &&
+                price <= (priceRangeValues[1] || Infinity)
+            )
             : true;
 
           return (
@@ -650,29 +650,31 @@ const getFilteredDiamondProducts = (params) => {
 };
 
 const getSingleProductDataById = async ({ productId }) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      productId = sanitizeValue(productId) ? productId.trim() : null;
-      if (!productId) {
-        reject(new Error("Invalid Data"));
-        return;
-      }
-      const productFindPattern = { id: productId };
+  try {
+    productId = sanitizeValue(productId) ? productId.trim() : null;
 
-      const singleProductData = await fetchWrapperService.findOne(
-        productsUrl,
-        productFindPattern
-      );
-      if (!singleProductData) {
-        reject(new Error("Product does not exist"));
-        return;
-      }
-      const processedProductData = await getProcessProducts(singleProductData);
-      resolve(processedProductData);
-    } catch (e) {
-      reject(e);
+    if (!productId) {
+      throw new Error("Invalid Data");
     }
-  });
+
+    const productFindPattern = { id: productId };
+
+    const singleProductData = await fetchWrapperService.findOne(
+      productsUrl,
+      productFindPattern
+    );
+
+    if (!singleProductData) {
+      throw new Error("Product does not exist");
+    }
+
+    const processedProductData = await getProcessProducts(singleProductData);
+    return processedProductData;
+
+  } catch (error) {
+    console.error("Error in getSingleProductDataById:", error);
+    throw error;
+  }
 };
 
 const getCustomizeProduct = (collectionType, collectionTitle) => {
@@ -710,9 +712,20 @@ const getCustomizeProduct = (collectionType, collectionTitle) => {
         .sortByField(filteredData)
         .map((product) => {
           // Price Formula Here
-          const { price = 0 } = helperFunctions.getMinPriceVariCombo(
-            product.variComboWithQuantity
-          );
+          const metalVariations = product?.variations?.find(
+            (x) => x?.variationName.toLowerCase() === GOLD_TYPES.toLowerCase()
+          )?.variationTypes;
+          const metalWiseCustomProdctPrices = metalVariations.map((metalItem) => {
+
+            return helperFunctions.calculateCustomProductPrice(
+              {
+                netWeight: product.netWeight,
+                variations: [metalItem]
+              }
+            )
+
+          });
+          const minCustomProductPrice = Math.min(...metalWiseCustomProdctPrices);
 
           return {
             productName: product.productName,
@@ -720,12 +733,8 @@ const getCustomizeProduct = (collectionType, collectionTitle) => {
             images: product.images.slice(0, 2),
             video: product.video,
             id: product.id,
-            basePrice: price,
-            baseSellingPrice: helperFunctions.getSellingPrice(
-              price,
-              product.discount
-            ),
-            discount: product.discount,
+            basePrice: minCustomProductPrice,
+            baseSellingPrice: minCustomProductPrice,
             variations: product.variations,
             createdDate: product.createdDate,
             goldTypeVariations: product?.variations?.find(

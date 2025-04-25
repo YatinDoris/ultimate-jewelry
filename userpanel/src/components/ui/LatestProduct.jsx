@@ -12,13 +12,11 @@ export default function LatestProduct() {
   useEffect(() => {
     dispatch(fetchLatestProductList(8));
   }, []);
-  return (
-    <div>
-      <ProductSwiper
-        productList={latestProductList}
-        loading={productLoading}
-        title="Latest Products"
-      />
-    </div>
-  );
+  return latestProductList && latestProductList.length > 0 ? (
+    <ProductSwiper
+      productList={latestProductList}
+      loading={productLoading}
+      title="Latest Products"
+    />
+  ) : null;
 }
