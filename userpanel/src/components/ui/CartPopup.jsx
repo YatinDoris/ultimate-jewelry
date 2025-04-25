@@ -210,10 +210,12 @@ const CartPopup = () => {
                           {cartItem?.diamondDetail ? (
                             <p className="font-castoro text-base md:text-xl lg:text-2xl font-medium text-baseblack">
                               $
-                              {helperFunctions.calculateCustomProductPrice({
-                                netWeight: cartItem?.netWeight,
-                                variations: cartItem?.variations,
-                              }) * (cartItem?.quantity || 1)}
+                              {(
+                                helperFunctions.calculateCustomProductPrice({
+                                  netWeight: cartItem?.netWeight,
+                                  variations: cartItem?.variations,
+                                }) * (cartItem?.quantity || 1)
+                              ).toFixed(2)}
                             </p>
                           ) : (
                             <p className="text-base md:text-xl lg:text-2xl font-medium font-castoro">
@@ -307,9 +309,19 @@ const CartPopup = () => {
                             />
                           </button>
                         </div>
+                        <div className="hidden xs:block mt-4">
+                          <DiamondDetailDrawer
+                            cartItem={cartItem}
+                            openDiamondDetailDrawer={openDiamondDetailDrawer}
+                            dispatch={dispatch}
+                            setOpenDiamondDetailDrawer={
+                              setOpenDiamondDetailDrawer
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="mt-4">
+                    <div className="xs:hidden mt-4">
                       <DiamondDetailDrawer
                         cartItem={cartItem}
                         openDiamondDetailDrawer={openDiamondDetailDrawer}
