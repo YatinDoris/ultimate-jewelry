@@ -15,15 +15,17 @@ const DiamondDetailDrawer = ({
 
   return (
     <div className="mt-6 border max-w-sm">
-      <div className="flex items-center justify-between px-4 py-1 md:py-2 border-b bg-alabaster">
+      <div
+        className="flex w-full items-center justify-between px-4 py-1 md:py-2 border-b bg-alabaster  cursor-pointer"
+        onClick={() =>
+          dispatch(setOpenDiamondDetailDrawer(isOpen ? null : cartItem.id))
+        }
+      >
         <h4 className="font-semibold text-sm md:text-lg">Diamond Detail</h4>
         <button
           className={`transition-transform duration-300 ${
             isOpen ? "rotate-0" : "rotate-180"
           }`}
-          onClick={() =>
-            dispatch(setOpenDiamondDetailDrawer(isOpen ? null : cartItem.id))
-          }
         >
           <CustomImg
             srcAttr={stepArrow}

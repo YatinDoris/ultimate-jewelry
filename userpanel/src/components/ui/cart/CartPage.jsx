@@ -256,10 +256,12 @@ const CartPage = () => {
                       {cartItem?.diamondDetail && (
                         <p className="font-castoro text-base md:text-xl lg:text-2xl font-medium text-baseblack  md:pt-4 pt-2">
                           $
-                          {helperFunctions.calculateCustomProductPrice({
-                            netWeight: cartItem?.netWeight,
-                            variations: cartItem?.variations,
-                          }) * (cartItem?.quantity || 1)}
+                          {(
+                            helperFunctions.calculateCustomProductPrice({
+                              netWeight: cartItem?.netWeight,
+                              variations: cartItem?.variations,
+                            }) * (cartItem?.quantity || 1)
+                          ).toFixed(2)}
                         </p>
                       )}
 
@@ -360,17 +362,17 @@ const CartPage = () => {
             </div>
 
             <div className="w-full lg:w-1/3 bg-white py-6 lg:py-10 px-2 xs:px-6  self-start">
-              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold">
+              <p className="xs:text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold">
                 Order Total: <span className="">${getOrderTotal()}</span>
               </p>
-              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
+              <p className="xs:text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
                 Discount Offer: <span className="">-${getDiscountTotal()}</span>
               </p>
-              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
+              <p className="xs:text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
                 Subtotal: <span className="">${getSubTotal()}</span>
               </p>
               <p className="my-4 border-t-2 border-black_opacity_10" />
-              <p className="text-lg xl:text-xl text-baseblack flex justify-between font-semibold pt-2">
+              <p className="xs:text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-2">
                 Grand Total: <span>${grandTotal}</span>
               </p>
 
