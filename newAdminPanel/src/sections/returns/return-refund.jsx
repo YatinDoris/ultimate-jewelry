@@ -94,7 +94,7 @@ const ReturnRefund = () => {
           item?.stripeRefundId?.toLowerCase().includes(searchKey) ||
           item?.stripeARNNumber?.toLowerCase().includes(searchKey) ||
           item?.stripeRefundFailureReason?.toLowerCase().includes(searchKey) ||
-          item?.shippingAddess?.mobile?.toString().toLowerCase().includes(searchKey))
+          item?.shippingAddress?.mobile?.toString().toLowerCase().includes(searchKey))
       );
     };
 

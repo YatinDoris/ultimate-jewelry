@@ -318,6 +318,46 @@ const formatDecimalNumber = (value) => {
 
 const capitalizeTitle = (title) => title?.charAt(0).toUpperCase() + title?.slice(1).toLowerCase();
 
+const getDiamondDetailArray = (diamondDetail) => {
+  if (!diamondDetail || typeof diamondDetail !== 'object') {
+    return [];
+  }
+
+  // Define property mappings
+  const propertyMappings = [
+    {
+      key: 'shapeId',
+      label: 'Shape',
+      value: diamondDetail?.shapeName || 'N/A',
+    },
+    {
+      key: 'price',
+      label: 'Diamond Price',
+      value: diamondDetail.price ? `$${diamondDetail.price.toFixed(2)}` : 'N/A',
+    },
+    {
+      key: 'caratWeight',
+      label: 'Carat Weight',
+      value: diamondDetail.caratWeight ? `${diamondDetail.caratWeight} ct` : 'N/A',
+    },
+    {
+      key: 'clarity',
+      label: 'Clarity',
+      value: diamondDetail.clarity || 'N/A',
+    },
+    {
+      key: 'color',
+      label: 'Color',
+      value: diamondDetail.color || 'N/A',
+    },
+  ];
+
+  // Filter out properties that are not present in diamondDetail (except shapeId, which uses shapeName)
+  return propertyMappings.filter(
+    (prop) => prop.key === 'shapeId' || diamondDetail[prop.key] !== undefined
+  );
+};
+
 export const helperFunctions = {
   getCurrentUser,
   getVariationsArray,
@@ -350,4 +390,5 @@ export const helperFunctions = {
   formatMeasurement,
   formatDecimalNumber,
   capitalizeTitle,
+  getDiamondDetailArray,
 };

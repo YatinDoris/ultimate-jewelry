@@ -107,9 +107,9 @@ const OrderList = () => {
             ?.toLowerCase()
             .includes(searchKey) ||
           item?.orderNumber?.toLowerCase().includes(searchKey) ||
-          item?.shippingAddess?.name?.toLowerCase().includes(searchKey) ||
-          item?.shippingAddess?.email?.toLowerCase().includes(searchKey) ||
-          item?.shippingAddess?.mobile?.toString().toLowerCase().includes(searchKey))
+          item?.shippingAddress?.name?.toLowerCase().includes(searchKey) ||
+          item?.shippingAddress?.email?.toLowerCase().includes(searchKey) ||
+          item?.shippingAddress?.mobile?.toString().toLowerCase().includes(searchKey))
       );
     };
 
@@ -444,12 +444,12 @@ const OrderList = () => {
                         <TableRow key={`order-${i}`}>
                           <TableCell sx={{ width: '80px' }}>{x?.srNo}</TableCell>
                           <TableCell sx={{ minWidth: '150px' }}>
-                            {x?.shippingAddess?.name}
+                            {x?.shippingAddress?.name}
                           </TableCell>
                           <TableCell sx={{ minWidth: '270px' }}>
-                            {x?.shippingAddess?.email}
+                            {x?.shippingAddress?.email}
                           </TableCell>
-                          <TableCell>{x?.shippingAddess?.mobile}</TableCell>
+                          <TableCell>{x?.shippingAddress?.mobile}</TableCell>
                           <TableCell>{x?.orderNumber}</TableCell>
                           <TableCell sx={{ minWidth: '180px' }}>
                             {moment(x?.createdDate).format('MM-DD-YYYY hh:mm a')}

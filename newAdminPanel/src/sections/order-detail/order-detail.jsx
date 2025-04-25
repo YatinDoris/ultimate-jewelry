@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
@@ -193,9 +193,9 @@ const OrderDetail = () => {
                               gap={2}
                               direction={'row'}
                               flexWrap={'noWrap'}
-                              alignItems={'center'}
+                              // alignItems={'center'}
                             >
-                              <Box sx={{ width: '75px', height: '75px', flexShrink: 0 }}>
+                              <Box sx={{ width: '80px', height: '80px', flexShrink: 0 }}>
                                 <Box
                                   sx={{
                                     p: 0.5,
@@ -218,7 +218,7 @@ const OrderDetail = () => {
                                 </Box>
                               </Box>
 
-                              <Box minWidth={'300px'} width={'100%'}>
+                              <Box minWidth={'250px'} width={'100%'}>
                                 {x?.productName}
                                 <Stack direction={'row'} gap={1} flexWrap={'wrap'}>
                                   {x?.variations?.map((y, j) => (
@@ -233,9 +233,43 @@ const OrderDetail = () => {
                                     </Stack>
                                   ))}
                                 </Stack>
-                                <Box sx={{ fontSize: '12px' }} mt={1}>
-                                  {fCurrency(x?.productPrice)} per item
-                                </Box>
+                                {!x?.diamondDetail ? (
+                                  <Box sx={{ fontSize: '12px' }} mt={1}>
+                                    {fCurrency(x?.productPrice)}
+                                    per item
+                                  </Box>
+                                ) : (
+                                  <>
+                                    <Box sx={{ fontSize: '12px' }} mt={1}>
+                                      {fCurrency(x?.productPrice)} {''}
+                                      Product Price per item
+                                    </Box>
+                                    <Box sx={{ fontSize: '12px' }}>
+                                      {fCurrency(x?.diamondDetail.price)} {''}
+                                      Diamond Price per item
+                                    </Box>
+                                    <Typography variant="subtitle2" mt={2}>
+                                      Diamond Detail
+                                    </Typography>
+                                    <Stack direction={'row'} gap={1} flexWrap={'wrap'}>
+                                      {helperFunctions
+                                        .getDiamondDetailArray(x?.diamondDetail)
+                                        .map(({ label, value }, index) => {
+                                          return (
+                                            <Stack key={`dia-${index}`}>
+                                              <Typography variant="caption">{label}</Typography>
+                                              <Label
+                                                color={'default'}
+                                                sx={{ width: 'fit-content', fontSize: '11px' }}
+                                              >
+                                                {value}
+                                              </Label>
+                                            </Stack>
+                                          );
+                                        })}
+                                    </Stack>
+                                  </>
+                                )}
                               </Box>
                               <Stack direction={'row'} alignItems={'center'} sx={font14}>
                                 <Box width={'60px'}>x{x?.cartQuantity}</Box>
@@ -318,32 +352,32 @@ const OrderDetail = () => {
                         <Typography variant="h6">Shipping</Typography>
                         <Stack direction={'row'} sx={font14} gap={1}>
                           <Box sx={sx}>Name </Box>
-                          <Box sx={sxPrimaryColor}>{selectedOrder?.shippingAddess?.name}</Box>
+                          <Box sx={sxPrimaryColor}>{selectedOrder?.shippingAddress?.name}</Box>
                         </Stack>
 
                         <Stack direction={'row'} sx={font14} gap={1}>
                           <Box sx={sx}>Address </Box>
                           <Box sx={sxPrimaryColor}>
-                            {selectedOrder?.shippingAddess?.apartment
-                              ? selectedOrder?.shippingAddess?.apartment
+                            {selectedOrder?.shippingAddress?.apartment
+                              ? selectedOrder?.shippingAddress?.apartment
                               : null}{' '}
-                            {selectedOrder?.shippingAddess?.address}
+                            {selectedOrder?.shippingAddress?.address}
                             {', '}
-                            {selectedOrder?.shippingAddess?.city}
+                            {selectedOrder?.shippingAddress?.city}
                             {', '}
-                            {selectedOrder?.shippingAddess?.country}
+                            {selectedOrder?.shippingAddress?.country}
                             {', '}
-                            {selectedOrder?.shippingAddess?.pinCode}
+                            {selectedOrder?.shippingAddress?.pinCode}
                           </Box>
                         </Stack>
 
                         <Stack direction={'row'} sx={font14} gap={1}>
                           <Box sx={sx}>Mobile </Box>
-                          <Box sx={sxPrimaryColor}>{selectedOrder?.shippingAddess?.mobile}</Box>
+                          <Box sx={sxPrimaryColor}>{selectedOrder?.shippingAddress?.mobile}</Box>
                         </Stack>
                         <Stack direction={'row'} sx={font14} gap={1}>
                           <Box sx={sx}>Email </Box>
-                          <Box sx={sxPrimaryColor}>{selectedOrder?.shippingAddess?.email}</Box>
+                          <Box sx={sxPrimaryColor}>{selectedOrder?.shippingAddress?.email}</Box>
                         </Stack>
                         {selectedOrder?.trackingNumber ? (
                           <Stack direction={'row'} sx={font14} gap={1}>
