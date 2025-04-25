@@ -51,7 +51,6 @@ const CartPopup = () => {
     updateCartQtyErrorMessage,
     removeCartErrorMessage,
   } = useSelector(({ cart }) => cart);
-  console.log("cartList", cartList);
   const handleCartQuantity = useCallback(
     (type, cartItem) => {
       dispatch(handleSelectCartItem({ selectedCartItem: cartItem }));
