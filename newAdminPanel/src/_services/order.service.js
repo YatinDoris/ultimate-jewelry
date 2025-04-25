@@ -9,6 +9,7 @@ import moment from 'moment';
 import { usersService } from './users.service';
 import { helperFunctions } from '../_helpers/helperFunctions';
 import { refundStatuses, setOrderRefundLoader } from '../store/slices/refundSlice';
+import { diamondShapeService } from './diamondShape.service';
 
 const getAllOrderList = () => {
   return new Promise(async (resolve, reject) => {
@@ -36,6 +37,7 @@ const getOrderDetailByOrderId = (orderId) => {
           const customizationType = await customizationTypeService.getAllCustomizationTypes();
           const customizationSubType =
             await customizationSubTypeService.getAllCustomizationSubTypes();
+          const allDiamondShapeList = await diamondShapeService.getAllDiamondShape();
 
           const customizations = {
             customizationType,
@@ -67,11 +69,20 @@ const getOrderDetailByOrderId = (orderId) => {
                   variationTypeName: findedCustomizationType.title,
                 };
               });
+              const foundedShape = allDiamondShapeList?.find(
+                (shape) => shape.id === orderProductItem?.diamondDetail?.shapeId
+              );
               return {
                 ...orderProductItem,
                 productName: findedProduct.productName,
                 productImage: findedProduct.images[0].image,
                 variations: variationArray,
+                diamondDetail: orderProductItem?.diamondDetail
+                  ? {
+                      ...orderProductItem?.diamondDetail,
+                      shapeName: foundedShape?.title,
+                    }
+                  : undefined,
               };
             }
             return orderProductItem;
