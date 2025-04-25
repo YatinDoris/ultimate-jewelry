@@ -34,6 +34,7 @@ import {
 } from "@/_actions/payment.action";
 import { deleteOrder } from "@/_actions/order.action";
 import { fetchCart } from "@/_actions/cart.action";
+import { setCartList } from "@/store/slices/cartSlice";
 
 const paymentFormInitialValues = {
   address: null,
@@ -228,7 +229,7 @@ const PaymentForm = ({ orderId }) => {
 
           localStorage.removeItem("address");
           localStorage.removeItem("selectedShippingMethod");
-          // dispatch(fetchCart());
+          dispatch(setCartList([]));
         }
       } catch (error) {
         console.error("Error occurred while updating payment status:", error);

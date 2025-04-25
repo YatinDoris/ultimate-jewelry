@@ -11,23 +11,19 @@ import { fetchCart } from "@/_actions/cart.action";
 import { setIsNewYorkState } from "@/store/slices/checkoutSlice";
 import { usePathname } from "next/navigation";
 import { HiChevronUp, HiChevronDown } from "react-icons/hi";
+import { setOpenDiamondDetailDrawer } from "@/store/slices/commonSlice";
+import DiamondDetailDrawer from "../customize/DiamondDetailDrawer";
 
 const salesTaxPerc = 0.08; // 8%
 
 const CheckoutCommonComponent = () => {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
+  const { openDiamondDetailDrawer } = useSelector(({ common }) => common);
   const pathname = usePathname();
   const { cartList } = useSelector((state) => state.cart);
   const { isNewYorkState } = useSelector(({ checkout }) => checkout);
   const { selectedShippingCharge } = useSelector(({ checkout }) => checkout);
-  // const getOrderTotal = useCallback(() => {
-  //   const total = cartList.reduce(
-  //     (acc, item) => acc + item.quantityWisePrice,
-  //     0
-  //   );
-  //   return helperFunctions.toFixedNumber(total);
-  // }, [cartList]);
   useEffect(() => {
     if (!cartList.length) {
       dispatch(fetchCart());
@@ -43,16 +39,6 @@ const CheckoutCommonComponent = () => {
       dispatch(setIsNewYorkState(newYorkState));
     }
   }, [dispatch, isNewYorkState]);
-
-  // const getDiscountTotal = useCallback(() => {
-  //   const totalDiscount = cartList.reduce((acc, item) => {
-  //     if (item.productDiscount) {
-  //       return acc + (item.quantityWisePrice - item.quantityWiseSellingPrice);
-  //     }
-  //     return acc;
-  //   }, 0);
-  //   return helperFunctions.toFixedNumber(totalDiscount);
-  // }, [cartList]);
 
   const getSubTotal = useCallback(() => {
     const total = cartList.reduce(
@@ -132,8 +118,8 @@ const CheckoutCommonComponent = () => {
                 className="bg-white py-6  border-b-2 border-alabaster last:border-b-0"
                 key={cartItem.id}
               >
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div className="relative flex-shrink-0 border border-alabaster">
+                <div className="flex flex-col md:flex-row justify-between gap-4">
+                  <div className="relative flex border border-alabaster w-36 h-36 md:w-36 md:h-36 mx-auto">
                     <div className="absolute top-0 left-0 bg-primary text-white text-xs xs:text-sm font-semibold px-3 py-1  z-10">
                       Qty: {cartItem?.quantity}
                     </div>
@@ -141,17 +127,17 @@ const CheckoutCommonComponent = () => {
                     <ProgressiveImg
                       src={cartItem?.productImage}
                       alt={cartItem?.productName}
-                      className="w-36 h-36 md:w-36 md:h-36 object-cover"
+                      className="object-cover w-full h-full"
                     />
                   </div>
 
                   <div className="flex-1 w-full">
-                    <div className="flex flex-col xs:flex-row xs:justify-between text-center items-center">
-                      <p className="text-lg md:text-xl font-semibold">
+                    <div className="flex flex-col xs:flex-row xs:justify-between  items-center">
+                      <p className="text-lg 2xl:text-xl font-semibold">
                         {cartItem.productName}
                       </p>
 
-                      <p className="text-2xl font-medium font-castoro pt-1">
+                      <p className="text-xl 2xl:text-2xl font-medium font-castoro pt-1">
                         $
                         {helperFunctions.toFixedNumber(
                           cartItem?.quantityWiseSellingPrice
@@ -159,6 +145,20 @@ const CheckoutCommonComponent = () => {
                       </p>
                     </div>
 
+                    {cartItem?.diamondDetail && (
+                      <p className="font-castoro text-xl 2xl:text-2xl font-medium text-baseblack">
+                        $
+                        {helperFunctions
+                          .calculateCustomProductPrice({
+                            netWeight: cartItem?.netWeight,
+                            variations: cartItem?.variations,
+                          })
+                          .toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                          })}
+                        {cartItem?.quantity > 1 && ` × ${cartItem.quantity}`}
+                      </p>
+                    )}
                     <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
                       {cartItem.variations.map((variItem) => (
                         <div
@@ -172,15 +172,34 @@ const CheckoutCommonComponent = () => {
                         </div>
                       ))}
                     </div>
-
-                    <div className=" text-sm font-semibold xs:text-base px-2  w-fit mt-2">
-                      $
-                      {helperFunctions.toFixedNumber(
-                        cartItem?.quantityWiseSellingPrice / cartItem.quantity
-                      )}{" "}
-                      | Per Item
+                    {!cartItem?.diamondDetail && (
+                      <div className=" text-sm font-semibold xs:text-base px-2  w-fit mt-2">
+                        $
+                        {helperFunctions.toFixedNumber(
+                          cartItem?.quantityWiseSellingPrice / cartItem.quantity
+                        )}{" "}
+                        | Per Item
+                      </div>
+                    )}
+                    <div className="hidden xl:block mt-4">
+                      <DiamondDetailDrawer
+                        cartItem={cartItem}
+                        isCheckoutPage={true}
+                        openDiamondDetailDrawer={openDiamondDetailDrawer}
+                        dispatch={dispatch}
+                        setOpenDiamondDetailDrawer={setOpenDiamondDetailDrawer}
+                      />
                     </div>
                   </div>
+                </div>
+                <div className="xl:hidden mt-4">
+                  <DiamondDetailDrawer
+                    cartItem={cartItem}
+                    isCheckoutPage={true}
+                    openDiamondDetailDrawer={openDiamondDetailDrawer}
+                    dispatch={dispatch}
+                    setOpenDiamondDetailDrawer={setOpenDiamondDetailDrawer}
+                  />
                 </div>
               </div>
             ))}
@@ -238,13 +257,10 @@ const CheckoutCommonComponent = () => {
               </p>
             ) : (
               <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-                Grand Total: <span>${renderTotalAmount}</span>
+                Grand Total: <span>${renderTotalAmount.toFixed(2)}</span>
               </p>
             )}
 
-            {/* <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold ">
-          Grand Total: <span>${grandTotal}</span>
-        </p> */}
             <div className="py-6 2xl:py-10">
               <div className="flex items-center justify-center gap-4 mb-4">
                 <div className="flex-grow h-px bg-gray-300" />
@@ -279,7 +295,10 @@ const CheckoutCommonComponent = () => {
           onClick={() => setIsOpen(!isOpen)}
           className="w-full flex justify-between items-center bg-primary text-white px-4 py-3 font-semibold rounded-t"
         >
-          <span>Order Summary ${getSubTotal()}</span>
+          <div className="flex justify-between w-full">
+            <span>Order Summary</span>
+            <span className="px-1">${getSubTotal()}</span>
+          </div>
           {isOpen ? (
             <HiChevronUp className="w-5 h-5" />
           ) : (
@@ -291,61 +310,100 @@ const CheckoutCommonComponent = () => {
           <div className="bg-white shadow-inner border border-t-0 border-gray-200 rounded-b">
             <section className="px-2 xs:px-6 max-h-[45vh] overflow-y-auto">
               {cartList?.map((cartItem) => (
-                <div
-                  className="bg-white py-6  border-b-2 border-alabaster last:border-b-0"
-                  key={cartItem.id}
-                >
-                  <div className="flex flex-row  gap-4">
-                    <div className="relative flex-shrink-0 h-fit border border-alabaster">
-                      <div className="absolute top-0 left-0 bg-primary text-white text-xs xs:text-sm font-semibold px-3 py-1  z-10">
-                        Qty: {cartItem?.quantity}
+                <>
+                  <div
+                    className="bg-white py-6  border-b-2 border-alabaster last:border-b-0"
+                    key={`cartItem-${cartItem.productName}`}
+                  >
+                    <div className="flex flex-row  gap-4">
+                      <div className="relative flex-shrink-0 h-fit border border-alabaster">
+                        <div className="absolute top-0 left-0 bg-primary text-white text-xs xs:text-sm font-semibold px-3 py-1  z-10">
+                          Qty: {cartItem?.quantity}
+                        </div>
+
+                        <ProgressiveImg
+                          src={cartItem?.productImage}
+                          alt={cartItem?.productName}
+                          className="w-28 h-28 object-cover"
+                        />
                       </div>
 
-                      <ProgressiveImg
-                        src={cartItem?.productImage}
-                        alt={cartItem?.productName}
-                        className="w-28 h-28 object-cover"
+                      <div className="flex-1 w-full">
+                        <div className="flex flex-col xs:flex-row xs:justify-between ">
+                          <p className="text-lg md:text-xl font-semibold">
+                            {cartItem.productName}
+                          </p>
+
+                          <p className="text-2xl font-medium font-castoro pt-1">
+                            $
+                            {helperFunctions.toFixedNumber(
+                              cartItem?.quantityWiseSellingPrice
+                            )}
+                          </p>
+                        </div>
+
+                        <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
+                          {cartItem.variations.map((variItem) => (
+                            <div
+                              className="border-2  text-sm xs:text-base px-2 font-medium"
+                              key={variItem.variationId}
+                            >
+                              <span className="font-bold">
+                                {variItem.variationName}:{" "}
+                              </span>{" "}
+                              {variItem.variationTypeName}
+                            </div>
+                          ))}
+                        </div>
+                        {cartItem?.diamondDetail && (
+                          <p className="font-castoro text-lg md:text-xl lg:text-2xl font-medium text-baseblack pt-2">
+                            $
+                            {helperFunctions
+                              .calculateCustomProductPrice({
+                                netWeight: cartItem?.netWeight,
+                                variations: cartItem?.variations,
+                              })
+                              .toLocaleString("en-US", {
+                                minimumFractionDigits: 2,
+                              })}
+                            {cartItem?.quantity > 1 &&
+                              ` × ${cartItem.quantity}`}
+                          </p>
+                        )}
+                        {!cartItem?.diamondDetail && (
+                          <div className=" text-sm font-semibold xs:text-base px-2  w-fit mt-2">
+                            $
+                            {helperFunctions.toFixedNumber(
+                              cartItem?.quantityWiseSellingPrice /
+                                cartItem.quantity
+                            )}{" "}
+                            | Per Item
+                          </div>
+                        )}
+                        <div className="hidden xs:block mt-4">
+                          <DiamondDetailDrawer
+                            cartItem={cartItem}
+                            isCheckoutPage={true}
+                            openDiamondDetailDrawer={openDiamondDetailDrawer}
+                            dispatch={dispatch}
+                            setOpenDiamondDetailDrawer={
+                              setOpenDiamondDetailDrawer
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="xs:hidden mt-4">
+                      <DiamondDetailDrawer
+                        cartItem={cartItem}
+                        isCheckoutPage={true}
+                        openDiamondDetailDrawer={openDiamondDetailDrawer}
+                        dispatch={dispatch}
+                        setOpenDiamondDetailDrawer={setOpenDiamondDetailDrawer}
                       />
                     </div>
-
-                    <div className="flex-1 w-full">
-                      <div className="flex flex-col xs:flex-row xs:justify-between ">
-                        <p className="text-lg md:text-xl font-semibold">
-                          {cartItem.productName}
-                        </p>
-
-                        <p className="text-2xl font-medium font-castoro pt-1">
-                          $
-                          {helperFunctions.toFixedNumber(
-                            cartItem?.quantityWiseSellingPrice
-                          )}
-                        </p>
-                      </div>
-
-                      <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
-                        {cartItem.variations.map((variItem) => (
-                          <div
-                            className="border-2  text-sm xs:text-base px-2 font-medium"
-                            key={variItem.variationId}
-                          >
-                            <span className="font-bold">
-                              {variItem.variationName}:{" "}
-                            </span>{" "}
-                            {variItem.variationTypeName}
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className=" text-sm font-semibold xs:text-base px-2  w-fit mt-2">
-                        $
-                        {helperFunctions.toFixedNumber(
-                          cartItem?.quantityWiseSellingPrice / cartItem.quantity
-                        )}{" "}
-                        | Per Item
-                      </div>
-                    </div>
                   </div>
-                </div>
+                </>
               ))}
             </section>
 
@@ -388,9 +446,6 @@ const CheckoutCommonComponent = () => {
                 </div>
               )}
 
-              {/* <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold pt-4">
-          Subtotal: <span >${getSubTotal()}</span>
-        </p> */}
               <p className="my-4 border-t-2 border-black_opacity_10" />
 
               {pathname === "/checkout" ? (
@@ -403,9 +458,6 @@ const CheckoutCommonComponent = () => {
                 </p>
               )}
 
-              {/* <p className="text-lg 2xl:text-xl text-baseblack flex justify-between font-semibold ">
-          Grand Total: <span>${grandTotal}</span>
-        </p> */}
               <div className="py-4">
                 <div className="flex items-center justify-center gap-4 mb-4">
                   <div className="flex-grow h-px bg-gray-300" />

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { set } from "firebase/database";
 
 const initialState = {
   menuList: [],
@@ -15,6 +16,7 @@ const initialState = {
   isSubmitted: false,
   customProductDetails: {},
   customizeLoader: false,
+  openDiamondDetailDrawer: "",
 };
 
 const commonSlice = createSlice({
@@ -68,6 +70,9 @@ const commonSlice = createSlice({
     setCustomizeLoader(state, action) {
       state.customizeLoader = action.payload;
     },
+    setOpenDiamondDetailDrawer(state, action) {
+      state.openDiamondDetailDrawer = action.payload;
+    },
   },
 });
 
@@ -86,6 +91,7 @@ export const {
   setIsSubmitted,
   setCustomizeLoader,
   setCustomProductDetails,
+  setOpenDiamondDetailDrawer,
 } = commonSlice.actions;
 
 export default commonSlice.reducer;

@@ -57,7 +57,10 @@ const shippingForm = () => {
     const address = localStorage.getItem("address");
     const getParsedAddress = address ? JSON.parse(address) : null;
     const subTotal = helperFunctions.getSubTotal(cartList);
-
+    const savedShippingMethod = localStorage.getItem("selectedShippingMethod");
+    const parsedSavedMethod = savedShippingMethod
+      ? JSON.parse(savedShippingMethod)
+      : null;
     if (!getParsedAddress) {
       router.push("/checkout");
       return;
@@ -66,10 +69,21 @@ const shippingForm = () => {
     if (subTotal > 199) {
       dispatch(setSelectedShippingCharge(0));
     } else {
-      const initSelectedOption = shippingOptions?.[0]?.price;
-      dispatch(setSelectedShippingCharge(initSelectedOption));
+      const matchedIndex = shippingOptions.findIndex(
+        (option) => option.name === parsedSavedMethod?.name
+      );
+      if (matchedIndex !== -1) {
+        setSelectedMethod(parsedSavedMethod.name);
+        dispatch(setSelectedShippingCharge(parsedSavedMethod.price));
+        dispatch(setActiveIndex(matchedIndex));
+      } else {
+        // fallback to default
+        setSelectedMethod(shippingOptions?.[0]?.name);
+        dispatch(setSelectedShippingCharge(shippingOptions?.[0]?.price));
+        dispatch(setActiveIndex(0));
+      }
     }
-    dispatch(setActiveIndex(0));
+
     return () => {
       clearAbortController();
     };
@@ -99,7 +113,6 @@ const shippingForm = () => {
         apartment: selectedShippingAddress?.apartment,
         shippingCharge: subTotal < 199 ? selectedShippingCharge : 0,
       };
-
       if (!cartList.length) {
         dispatch(handleCreatePaymentIntentError("cart data not found"));
         return;
@@ -209,7 +222,7 @@ const shippingForm = () => {
       <div>
         <h3 className="font-semibold text-lg mb-3">Shipping Method:</h3>
         <div className="flex flex-col gap-2 md:gap-4">
-          {shippingOptions.map((option) => (
+          {shippingOptions.map((option, index) => (
             <div
               key={option.name}
               className={`flex justify-between items-center px-4 py-4 cursor-pointer ${
@@ -228,6 +241,7 @@ const shippingForm = () => {
                   onChange={() => {
                     setSelectedMethod(option.name);
                     dispatch(setSelectedShippingCharge(option.price));
+                    dispatch(setActiveIndex(index));
                   }}
                   className="form-radio  w-6 h-5"
                   disabled={renderTotalAmount > 199}
