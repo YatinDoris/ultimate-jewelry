@@ -59,9 +59,6 @@ const PaymentPage = () => {
     return parsedDecoded;
   }, []);
 
-  // const { clientSecret, orderId } = getDecodedData(secretData);
-  // console.log(clientSecret, "clientSecret");
-
   // abortcontroller
   const abortControllerRef = useRef(null);
   const clearAbortController = useCallback(() => {
@@ -193,7 +190,7 @@ const PaymentSkeleton = () => {
       className={`container grid grid-cols-1 lg:grid-cols-[70%_auto] gap-12 pt-12`}
     >
       <div>
-        {Array(2)
+        {Array(4)
           .fill(skeletons)
           .flat()
           .map((skeleton, index) => (
@@ -219,9 +216,12 @@ const PaymentSkeleton = () => {
 const PaymentFormSkeleton = () => {
   return (
     <div className="grid grid-cols-1 gap-4 auto-rows-min mt-5">
-      <SkeletonLoader height="w-full h-[70] md:h-[220px]  2xl:h-[150px]" />
-      <SkeletonLoader height="w-full h-[70] md:h-[220px]  2xl:h-[150px]" />
-      <SkeletonLoader height="w-full h-[70] md:h-[220px]  2xl:h-[150px]" />
+      {Array.from({ length: 7 }).map((_, index) => (
+        <SkeletonLoader
+          key={index}
+          height="w-full h-[20px] md:h-[25px] 2xl:h-[30px]"
+        />
+      ))}
 
       <SkeletonLoader height="w-[20%] h-[40px]" />
     </div>

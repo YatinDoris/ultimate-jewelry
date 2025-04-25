@@ -248,3 +248,10 @@ export const CaratWeightSlider = dynamic(
     ssr: false,
   }
 );
+
+export const ProductNotFound = dynamic(
+  () => import("./ui/product/ProductNotFound.jsx"),
+  {
+    ssr: false,
+  }
+);

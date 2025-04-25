@@ -125,7 +125,7 @@ export const LoadingPrimaryButton = ({
   type = "button",
   className,
   children,
-  loading = true,
+  loading = false,
   loaderType = "",
   loadingClassName = "",
   ...rest
