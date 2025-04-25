@@ -136,3 +136,4 @@ export const CLARITY_COLOR_PRICES = {
 };
 
 export const MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT = 5;
+export const ENGAGEMENT = "Engagement";

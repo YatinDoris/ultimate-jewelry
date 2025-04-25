@@ -232,30 +232,24 @@ export const addUpdateRecentlyViewedProducts = (params) => {
 };
 
 export const fetchSingleProductDataById = (productId) => {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
+    dispatch(setProductLoading(true));
+    dispatch(setProductDetail({}));
+    dispatch(setProductMessage({ message: "", type: "" }));
+
     try {
-      dispatch(setProductLoading(true));
-      dispatch(setProductDetail({}));
-      dispatch(setProductMessage({ message: "", type: "" }));
+      const productData = await productService.getSingleProductDataById({ productId });
 
-      const productData = await productService.getSingleProductDataById({
-        productId,
-      });
-
-      if (productData) {
-        dispatch(setProductDetail(productData));
-        return productData; // Optional: in case the caller wants it
-      }
+      dispatch(setProductDetail(productData));
+      return productData;
     } catch (error) {
-      console.error("Failed to fetch product by ID:", error);
-      dispatch(setProductDetail({}));
-      const errorMessage = err?.message || "Something went wrong";
       dispatch(
         setProductMessage({
-          message: errorMessage,
+          message: error.message || "Something went wrong",
           type: messageType.ERROR,
         })
       );
+      return null;
     } finally {
       dispatch(setProductLoading(false));
     }

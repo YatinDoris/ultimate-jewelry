@@ -44,10 +44,12 @@ export default function footer() {
         {
           title: "Returns",
           href: "/return-policy",
+          target: "_blank",
         },
         {
           title: "Shipping",
           href: "/shipping",
+          target: "_blank",
         },
         {
           title: "Warranty",
@@ -133,7 +135,11 @@ export default function footer() {
                         {link?.navLinks?.length &&
                           link?.navLinks?.map((nav, index) => {
                             return (
-                              <Link href={nav.href || "#"} key={`nav-${index}`}>
+                              <Link
+                                href={nav.href || "#"}
+                                target={nav?.target || "_self"}
+                                key={`nav-${index}`}
+                              >
                                 <li className="py-1 2xl:text-lg">
                                   {nav.title}
                                 </li>
@@ -170,8 +176,8 @@ export default function footer() {
                     </div>
                   );
                 })}{" "}
-              <div className="2xl:col-span-3 md:place-self-end">
-                <div className="flex flex-col flex-wrap lg:flex-row md:justify-end md:items-end gap-2 lg:gap-4 2xl:text-lg">
+              <div className="2xl:col-span-3 2xl:self-end">
+                <div className="flex flex-col flex-wrap lg:flex-row 2xl:justify-end gap-2 lg:gap-4 2xl:text-lg">
                   <ul className="md:list-disc">
                     <li>© 2025 Katanoff.com</li>
                   </ul>

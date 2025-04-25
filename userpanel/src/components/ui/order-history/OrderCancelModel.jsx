@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Formik,
@@ -22,23 +22,19 @@ import { useAlertTimeout } from "@/hooks/use-alert-timeout";
 export default function CancelOrderModal() {
   const dispatch = useDispatch();
   const { cancelOrderLoading, selectedOrder, orderMessage } = useSelector(
-    (state) => state.order
+    ({ order }) => order
   );
-  const { isHovered } = useSelector((state) => state.common);
+  const { isHovered } = useSelector(({ common }) => common);
 
   const abortControllerRef = useRef(null);
 
-  useEffect(() => {
-    if (orderMessage.type === messageType.SUCCESS) {
-      useAlertTimeout(orderMessage, () =>
-        dispatch(setOrderMessage({ message: "", type: "" }))
-      );
-    }
-  }, [orderMessage, dispatch]);
+  useAlertTimeout(orderMessage, () =>
+    dispatch(setOrderMessage({ message: "", type: "" }))
+  );
 
   useEffect(() => {
     return () => {
-      dispatch(setOrderMessage({ message: "", type: "" }));
+      // dispatch(setOrderMessage({ message: "", type: "" }));
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
