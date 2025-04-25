@@ -13,8 +13,10 @@ const {
 } = require("../utils/template");
 const { sendMail } = require("../helpers/mail");
 const { createOrder } = require("../controllers/stripe");
-const { calculateProductPrice } = require("../helpers/calculateAmount");
-const { getCurrentDate } = require("../helpers/common");
+const {
+  getCurrentDate,
+  getNonCustomizedProducts,
+} = require("../helpers/common");
 
 /**
   This API is used for create order.
@@ -31,24 +33,7 @@ const insertOrder = async (req, res) => {
     const allActiveProductsData = await productService.getAllActiveProducts();
 
     req.body.userId = userData?.id;
-    req.body.cartList = userWiseCartData
-      .map((cartItem) => {
-        const foundProduct = allActiveProductsData.find(
-          (product) => product.id === cartItem.productId
-        );
-        if (!foundProduct) return;
-
-        const { sellingPrice } = calculateProductPrice(
-          foundProduct,
-          cartItem.variations
-        );
-
-        return {
-          ...cartItem,
-          quantityWiseSellingPrice: sellingPrice * cartItem.quantity,
-        };
-      })
-      .filter((item) => item);
+    req.body.cartList = userWiseCartData;
 
     const { createdOrder } = await createOrder(
       req.body,
@@ -215,8 +200,12 @@ const deleteOrder = async (req, res) => {
       if (orderData) {
         if (orderData.paymentStatus === "pending") {
           await orderService.deleteOne(findPattern);
-          //update product qty
-          await updateProductQty(orderData.products);
+          //  update product qty for non-customized products
+          const nonCustomizedProducts = getNonCustomizedProducts(
+            orderData.products
+          );
+
+          await updateProductQty(nonCustomizedProducts);
           const paymentIntent = await stripeService.cancelPaymentIntent(
             orderData.stripePaymentIntentId
           );
@@ -404,8 +393,13 @@ const cancelOrder = async (req, res) => {
             "cancelled"
           );
           sendMail(orderData.shippingAddress.email, subject, description);
-          //update product qty
-          updateProductQty(orderData.products);
+          //  update product qty for non-customized products
+          const nonCustomizedProducts = getNonCustomizedProducts(
+            orderData.products
+          );
+
+          await updateProductQty(nonCustomizedProducts);
+
           // integrate refund functionality
           const refundPaymentParams = {
             paymentIntentId: paymentIntent.id,

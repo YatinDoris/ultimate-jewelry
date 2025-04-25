@@ -10,16 +10,22 @@ const orderNum = require("../helpers/orderNum");
 const message = require("../utils/messages");
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-const { getVariComboPriceQty } = require("../helpers/variationWiseQty");
 const {
-  calculateAmount,
-  calculateProductPrice,
+  calculateCustomProductPrice,
+  calculateDiamondPrice,
+  getSellingPrice,
+  calculateSubTotal,
 } = require("../helpers/calculateAmount");
 const { areArraysEqual } = require("../helpers/areArraysEqual");
 const { updateProductQty } = require("../services/product");
 const dotenv = require("dotenv");
 const { getMailTemplateForRefundStatus } = require("../utils/template");
 const { sendMail } = require("../helpers/mail");
+const { getVariComboPriceQty } = require("../helpers/variationWiseQty");
+const {
+  MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT,
+  getNonCustomizedProducts,
+} = require("../helpers/common");
 dotenv.config();
 
 /**
@@ -37,24 +43,7 @@ const createPaymentIntent = async (req, res) => {
       };
       const userWiseCartData = await cartService.find(findPattern);
       req.body.userId = userData?.id;
-      req.body.cartList = userWiseCartData
-        .map((cartItem) => {
-          const foundProduct = allActiveProductsData.find(
-            (product) => product.id === cartItem.productId
-          );
-          if (!foundProduct) return;
-
-          const { sellingPrice } = calculateProductPrice(
-            foundProduct,
-            cartItem.variations
-          );
-
-          return {
-            ...cartItem,
-            quantityWiseSellingPrice: sellingPrice * cartItem.quantity,
-          };
-        })
-        .filter((item) => item);
+      req.body.cartList = userWiseCartData;
     }
 
     const { createdOrder } = await createOrder(
@@ -109,7 +98,7 @@ const createPaymentIntent = async (req, res) => {
               description: `Payment for Order Number ${orderNumber}`,
             })
             .then(async (paymentIntent) => {
-              // after success updte order with paymenIntentId and customerId
+              // After success, update order with paymentIntentId and customerId
               const findPattern = {
                 orderId: orderId,
               };
@@ -127,12 +116,16 @@ const createPaymentIntent = async (req, res) => {
               });
             })
             .catch(async (e) => {
-              // remove order from database and update product qty also remove customer from stripe
+              // Remove order from database
               const findPattern = {
                 orderId: orderId,
               };
               await orderService.deleteOne(findPattern);
-              await updateProductQty(products);
+
+              // update product qty for non-customized products
+              const nonCustomizedProducts = getNonCustomizedProducts(products);
+              await updateProductQty(nonCustomizedProducts);
+              // remove customer from stripe
               const deleted = await stripe.customers.del(customer.id);
               return res.json({
                 status: 500,
@@ -141,12 +134,15 @@ const createPaymentIntent = async (req, res) => {
             });
         })
         .catch(async (e) => {
-          // remove order from database and update product qty
+          // remove order from database
           const findPattern = {
             orderId: orderId,
           };
           await orderService.deleteOne(findPattern);
-          await updateProductQty(products);
+          // update product qty for non-customized products
+          const nonCustomizedProducts = getNonCustomizedProducts(products);
+          await updateProductQty(nonCustomizedProducts);
+
           return res.json({
             status: 500,
             message: message.SERVER_ERROR,
@@ -224,9 +220,15 @@ const cancelPaymentIntent = async (req, res) => {
         const paymentIntent = await stripe.paymentIntents.cancel(
           paymentIntentId
         );
-        // remove order from database and update product qty
+        // remove order from database
         await orderService.deleteOne(findPattern);
-        await updateProductQty(orderData.products);
+
+        //  update product qty for non-customized products
+        const nonCustomizedProducts = getNonCustomizedProducts(
+          orderData.products
+        );
+        await updateProductQty(nonCustomizedProducts);
+
         return res.json({
           status: 200,
           message: message.SUCCESS,
@@ -270,7 +272,8 @@ const createOrder = async (payload, activeProductsList, res) => {
       apartment,
       shippingCharge,
     } = payload || {};
-    // required
+
+    // Sanitize inputs
     cartList = Array.isArray(cartList) ? cartList : [];
     countryName = sanitizeValue(countryName) ? countryName.trim() : null;
     firstName = sanitizeValue(firstName) ? firstName.trim() : null;
@@ -287,172 +290,275 @@ const createOrder = async (payload, activeProductsList, res) => {
     companyName = sanitizeValue(companyName) ? companyName.trim() : "";
     apartment = sanitizeValue(apartment) ? apartment.trim() : "";
     shippingCharge = shippingCharge ? +Number(shippingCharge).toFixed(2) : 0;
-    console.log(
-      cartList.length,
-      // userId ,
-      firstName,
-      lastName,
-      address,
-      stateCode,
-      countryName,
-      city,
-      state,
-      pinCode,
-      mobile,
-      email
-    );
 
+    // Validate required fields
     if (
-      cartList.length &&
-      // userId &&
-      firstName &&
-      lastName &&
-      address &&
-      stateCode &&
-      countryName &&
-      city &&
-      state &&
-      pinCode &&
-      mobile &&
-      email
+      !cartList?.length ||
+      !firstName ||
+      !lastName ||
+      !address ||
+      !stateCode ||
+      !countryName ||
+      !city ||
+      !state ||
+      !pinCode ||
+      !mobile ||
+      !email
     ) {
-      const availableCartItems = cartList
-        .map((cartItem) => {
-          const foundProduct = activeProductsList.find(
-            (product) => product.id === cartItem.productId
-          );
-          if (!foundProduct) return;
-          const { quantity: availableQuantity } = getVariComboPriceQty(
-            foundProduct.variComboWithQuantity,
-            cartItem.variations
-          );
-          if (
-            !isNaN(availableQuantity) &&
-            availableQuantity &&
-            Number(cartItem.quantity) <= Number(availableQuantity)
-          ) {
-            return cartItem;
-            //   if(Number(cartItem.quantity) <= Number(availableQuantity)){
-            //     return cartItem;
-            //   }
-            //   else{
-            //     return {
-            //       ...cartItem,
-            //       quantity : availableQuantity
-            //     }
-            //   }
-          }
-        })
-        .filter((item) => item);
-
-      if (
-        !availableCartItems.length &&
-        cartList.length !== availableCartItems.length
-      ) {
-        return res.json({
-          status: 409,
-          message: message.custom("Insufficient quantity available"),
-        });
-      }
-
-      const shippingAddress = {
-        country: countryName,
-        name: `${firstName} ${lastName}`,
-        companyName: companyName,
-        address: address,
-        apartment: apartment,
-        city: city,
-        state: state,
-        stateCode: stateCode,
-        pinCode: pinCode,
-        mobile: mobile,
-        email: email,
-      };
-
-      const subTotal = calculateAmount(activeProductsList, availableCartItems);
-      const isNewYorkSate = state.toLowerCase() === "New York".toLowerCase();
-      const salesTaxPerc = isNewYorkSate ? 8 : 0;
-      const salesTax = +(subTotal * (salesTaxPerc / 100)).toFixed(2);
-      const total = subTotal + shippingCharge + salesTax;
-
-      const orderItem = {
-        orderNumber: await orderNum.generateOrderId(),
-        userId: userId,
-        products: availableCartItems.map((item) => {
-          return {
-            productId: item.productId,
-            variations: item.variations.map((variItem) => {
-              return {
-                variationId: variItem.variationId,
-                variationTypeId: variItem.variationTypeId,
-              };
-            }),
-            productPrice: item.quantityWiseSellingPrice / item.quantity, // its represent variation price with single quantity
-            unitAmount: item.quantityWiseSellingPrice, // its represent variation price with multiply quantity
-            cartQuantity: item.quantity,
-          };
-        }),
-        shippingAddress: shippingAddress,
-        subTotal: subTotal,
-        // discount : ,
-        salesTax: salesTax,
-        salesTaxPercentage: salesTaxPerc,
-        shippingCharge: shippingCharge,
-        total: total,
-        stripeCustomerId: "",
-        stripePaymentIntentId: "",
-        orderStatus: "pending",
-        paymentStatus: "pending",
-        cancelReason: "",
-      };
-      const createdOrder = await orderService.create(orderItem);
-      //   update product Qty
-      for (let i = 0; i < availableCartItems.length; i++) {
-        const cartItem = availableCartItems[i];
-        const findedProduct = activeProductsList.find(
-          (product) => product.id === cartItem.productId
-        );
-        if (findedProduct) {
-          const tempCombiArray = findedProduct.variComboWithQuantity;
-          const index = findedProduct.variComboWithQuantity.findIndex(
-            (combination) => {
-              const array1 = combination.combination;
-              const array2 = cartItem.variations;
-              return areArraysEqual(array1, array2);
-            }
-          );
-          if (index !== -1) {
-            tempCombiArray[index].quantity =
-              tempCombiArray[index].quantity - cartItem.quantity;
-          }
-
-          //execute update query
-          const findPattern = {
-            productId: findedProduct.id,
-          };
-          const updatePattern = {
-            variComboWithQuantity: tempCombiArray,
-          };
-          await productService.findOneAndUpdate(findPattern, updatePattern);
-        }
-
-        if (availableCartItems.length == i + 1) {
-          return {
-            createdOrder,
-          };
-        }
-      }
-    } else {
-      if (!cartList?.length) {
-        return res.json({
-          status: 400,
-          message: message.custom("Cart data not found"),
-        });
-      }
       return res.json({
         status: 400,
-        message: message.INVALID_DATA,
+        message: !cartList?.length
+          ? message.custom("Cart data not found")
+          : message.INVALID_DATA,
       });
+    }
+
+    // Process cart items
+    const allCustomizations = await productService.getAllCustomizations();
+
+    const availableCartItems = [];
+    for (const cartItem of cartList) {
+      const { productId, quantity, variations, diamondDetail } = cartItem;
+      if (
+        !productId ||
+        !Array.isArray(variations) ||
+        !variations.length ||
+        !quantity
+      ) {
+        continue; // Skip invalid cart items
+      }
+
+      const product = activeProductsList.find((p) => p.id === productId);
+
+      if (!product) {
+        continue; // Skip if product not found
+      }
+
+      let adjustedQuantity = Number(quantity);
+      let productPrice = 0; // To store productPrice as per orderModel
+      let diamondPrice = 0;
+      let price = 0;
+      let isCustomized = !!diamondDetail;
+
+      // Validate variations (ensure they exist in product.variations)
+      const isValidVariations = product?.variComboWithQuantity?.some((combo) =>
+        combo.combination.every((item) =>
+          variations?.some(
+            (selected) =>
+              selected?.variationId === item?.variationId &&
+              selected?.variationTypeId === item?.variationTypeId
+          )
+        )
+      );
+
+      if (!isValidVariations) {
+        continue; // Skip if variations are invalid
+      }
+
+      // Map variations to include variationTypeName and variationName
+      const enrichedVariations = variations.map((variation) => {
+        const type = allCustomizations.customizationType.find(
+          (t) => t.id === variation.variationId
+        );
+        const subType = allCustomizations.customizationSubType.find(
+          (s) => s.id === variation.variationTypeId
+        );
+        return {
+          variationId: variation.variationId,
+          variationName: type?.title || "Unknown Variation",
+          variationTypeId: variation.variationTypeId,
+          variationTypeName: subType?.title || "Unknown Type",
+        };
+      });
+
+      if (isCustomized) {
+        // Handle customized product with diamondDetail
+
+        if (!product.isDiamondFilter) {
+          continue; // Skip if product does not support diamond customization
+        }
+
+        const { shapeId, caratWeight, clarity, color } = diamondDetail || {};
+        if (!shapeId || !caratWeight || !clarity || !color) {
+          continue; // Skip if diamondDetail is incomplete
+        }
+
+        // Validate diamond filters
+
+        const { diamondShapeIds, caratWeightRange } = product.diamondFilters;
+
+        if (
+          !diamondShapeIds.includes(shapeId) ||
+          caratWeight < caratWeightRange.min ||
+          caratWeight > caratWeightRange.max
+        ) {
+          continue; // Skip if diamond details are invalid
+        }
+
+        // Validate quantity for customized product
+        if (
+          adjustedQuantity <= 0 ||
+          adjustedQuantity > MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT
+        ) {
+          adjustedQuantity = Math.min(
+            quantity,
+            MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT
+          );
+        }
+
+        // Calculate price for customized product
+        try {
+          const customProductPrice = calculateCustomProductPrice({
+            netWeight: product.netWeight,
+            variations: enrichedVariations,
+          });
+          diamondPrice = calculateDiamondPrice({
+            caratWeight,
+            clarity,
+            color,
+          });
+          productPrice = customProductPrice; // productPrice excludes diamond price
+          price = customProductPrice + diamondPrice;
+        } catch (e) {
+          continue; // Skip if price calculation fails
+        }
+      } else {
+        // Handle non-customized product
+        const variCombo = getVariComboPriceQty(
+          product.variComboWithQuantity,
+          variations
+        );
+        if (
+          !variCombo ||
+          isNaN(variCombo.quantity) ||
+          variCombo.quantity <= 0
+        ) {
+          continue; // Skip if variation combo is invalid or out of stock
+        }
+
+        // Validate and adjust quantity
+        if (adjustedQuantity <= 0 || adjustedQuantity > variCombo.quantity) {
+          adjustedQuantity = Math.min(quantity, variCombo.quantity);
+        }
+        productPrice = variCombo.price || 0; // productPrice is the variation price
+        price = variCombo.price || 0;
+      }
+
+      // Calculate selling price with discount
+      const sellingPrice = getSellingPrice({
+        price,
+        discount: product?.discount || 0,
+        isCustomized,
+      });
+
+      availableCartItems.push({
+        ...cartItem,
+        diamondDetail: isCustomized
+          ? {
+              ...diamondDetail,
+              price: diamondPrice, // Reuse the calculated diamond price
+            }
+          : undefined, // Set to undefined for non-customized products
+        quantity: adjustedQuantity,
+        quantityWiseSellingPrice: sellingPrice * adjustedQuantity,
+        productPrice, // Price per unit
+      });
+    }
+
+    // Check if valid cart items exist
+    if (!availableCartItems.length) {
+      return res.json({
+        status: 409,
+        message: "No valid items in cart or insufficient quantity available",
+      });
+    }
+
+    // Create shipping address
+    const shippingAddress = {
+      country: countryName,
+      name: `${firstName} ${lastName}`,
+      companyName,
+      address,
+      apartment,
+      city,
+      state,
+      stateCode,
+      pinCode,
+      mobile,
+      email,
+    };
+    const tempArr = availableCartItems.map((x) => ({
+      quantityWiseSellingPrice: x?.quantityWiseSellingPrice,
+    }));
+    const subTotal = calculateSubTotal(tempArr);
+    const isNewYorkSate = state.toLowerCase() === "New York".toLowerCase();
+    const salesTaxPerc = isNewYorkSate ? 8 : 0;
+    const salesTax = +(subTotal * (salesTaxPerc / 100)).toFixed(2);
+    const total = +(subTotal + shippingCharge + salesTax).toFixed(2);
+
+    const orderItem = {
+      orderNumber: await orderNum.generateOrderId(),
+      userId: userId,
+      products: availableCartItems.map((item) => {
+        return {
+          productId: item.productId,
+          variations: item.variations.map((variItem) => {
+            return {
+              variationId: variItem.variationId,
+              variationTypeId: variItem.variationTypeId,
+            };
+          }),
+          productPrice: item.productPrice,
+          unitAmount: item.quantityWiseSellingPrice,
+          cartQuantity: item.quantity,
+          diamondDetail: item.diamondDetail || null,
+        };
+      }),
+      shippingAddress,
+      subTotal,
+      // discount : ,
+      salesTax,
+      salesTaxPercentage: salesTaxPerc,
+      shippingCharge,
+      total,
+      stripeCustomerId: "",
+      stripePaymentIntentId: "",
+      orderStatus: "pending",
+      paymentStatus: "pending",
+      cancelReason: "",
+    };
+    // Save order
+    const createdOrder = await orderService.create(orderItem);
+
+    //   update product Qty
+    for (let i = 0; i < availableCartItems.length; i++) {
+      const cartItem = availableCartItems[i];
+      const findedProduct = activeProductsList.find(
+        (product) => product.id === cartItem.productId
+      );
+      if (!cartItem?.diamondDetail && findedProduct) {
+        // Only update quantities for non-customized products
+        const tempCombiArray = [...findedProduct.variComboWithQuantity];
+
+        const index = tempCombiArray.findIndex((combination) =>
+          areArraysEqual(combination.combination, cartItem.variations)
+        );
+
+        if (index !== -1) {
+          tempCombiArray[index].quantity -= cartItem.quantity;
+        }
+
+        // Update product in database
+        const findPattern = { productId: findedProduct.id };
+        const updatePattern = { variComboWithQuantity: tempCombiArray };
+        await productService.findOneAndUpdate(findPattern, updatePattern);
+      }
+
+      if (availableCartItems.length == i + 1) {
+        return {
+          createdOrder,
+        };
+      }
     }
   } catch (e) {
     return res.json({
