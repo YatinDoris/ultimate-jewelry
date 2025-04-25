@@ -1,7 +1,6 @@
 const { returnService, userService } = require("../services/index");
 const sanitizeValue = require("../helpers/sanitizeParams");
 const message = require("../utils/messages");
-const { updateProductQty } = require("../services/product");
 const { getMailTemplateForReturnStatus } = require("../utils/template");
 const { sendMail } = require("../helpers/mail");
 const dotenv = require("dotenv");

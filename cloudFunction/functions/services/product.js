@@ -68,17 +68,13 @@ exportFunction.updateProductQty = async (products) => {
           (product) => product.id === orderProductItem.productId
         );
         if (findedProduct) {
-          const tempCombiArray = findedProduct.variComboWithQuantity;
-          const index = findedProduct.variComboWithQuantity.findIndex(
-            (combination) => {
-              const array1 = combination.combination;
-              const array2 = orderProductItem.variations;
-              return areArraysEqual(array1, array2);
-            }
+          const tempCombiArray = [...findedProduct.variComboWithQuantity];
+          const index = tempCombiArray.findIndex((combination) =>
+            areArraysEqual(combination.combination, orderProductItem.variations)
           );
+
           if (index !== -1) {
-            tempCombiArray[index].quantity =
-              tempCombiArray[index].quantity + orderProductItem.cartQuantity;
+            tempCombiArray[index].quantity += orderProductItem.cartQuantity;
           }
 
           //execute update query
