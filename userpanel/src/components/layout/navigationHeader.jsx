@@ -15,10 +15,10 @@ import miniLogo from "@/assets/images/logo-2.webp";
 import { CustomImg } from "../dynamiComponents";
 import CartPopup from "../ui/CartPopup";
 import { helperFunctions } from "@/_helper";
-import { FLASH_DEALS, Start_WITH_SETTING } from "@/_helper/constants";
-import { GoHeart } from "react-icons/go";
+import { ENGAGEMENT, FLASH_DEALS } from "@/_helper/constants";
 import ProfileDropdown from "../ui/ProfileDropdown";
 import SkeletonLoader from "../ui/skeletonLoader";
+import { usePathname } from "next/navigation";
 export default function NavigationHeader() {
   const dispatch = useDispatch();
   const {
@@ -30,6 +30,11 @@ export default function NavigationHeader() {
   } = useSelector(({ common }) => common);
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const pathname = usePathname();
+  const hideCartPopup =
+    pathname === "/checkout" ||
+    pathname === "/shipping" ||
+    pathname.startsWith("/payment");
 
   const closeAllDropdown = useCallback(() => {
     setTimeout(() => {
@@ -121,13 +126,105 @@ export default function NavigationHeader() {
               className={`relative ${
                 lastScrollY > 100 ? "py-2 lg:py-6" : "pb-4"
               }`}
+              onMouseEnter={() => {
+                dispatch(setOpenDropdown(ENGAGEMENT));
+              }}
+              onMouseLeave={() => {
+                dispatch(setOpenDropdown(null));
+              }}
             >
               <HeaderLinkButton
-                href={`/customize/start-with-setting`}
+                href={"#"}
                 className="rounded-none flex items-center gap-1 hover:!text-primary"
+                onClick={closeAllDropdown}
               >
-                Engagement
+                {ENGAGEMENT}
+                <div className="text-base 2xl:text-lg pb-0.5">
+                  <IoIosArrowDown
+                    className={`transition-all duration-300 ease-in-out transform ${
+                      openDropdown === ENGAGEMENT
+                        ? "rotate-180 scale-110"
+                        : "rotate-0 scale-100"
+                    }`}
+                  />
+                </div>
               </HeaderLinkButton>
+              {openDropdown === ENGAGEMENT && (
+                <div
+                  className={`fixed left-0 right-0 ${
+                    isHeaderVisible ? "top-[65px] 2xl:top-[70px]" : "top-[36px]"
+                  } bg-white shadow-lg z-50 border-t-[0.5px] border-basegray`}
+                >
+                  <div className="container flex justify-between p-6">
+                    <div className="grid grid-cols-3 divide-x divide-gray-e2 2xl:gap-y-10  ">
+                      <div className="flex flex-col gap-5 pe-10">
+                        <div>
+                          <HeaderLinkButton
+                            href={"#"}
+                            className="block !font-semibold capitalize text-primary !px-0 mb-1"
+                          >
+                            Custom Rings
+                          </HeaderLinkButton>
+                          <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+
+                          <div className="mt-3 flex flex-col gap-1">
+                            <HeaderLinkButton
+                              href={"/customize/start-with-setting"}
+                              className="text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                closeAllDropdown();
+                              }}
+                            >
+                              Start with a{" "}
+                              <span className="font-bold">Setting</span>
+                            </HeaderLinkButton>
+                          </div>
+                        </div>
+                        <div>
+                          <HeaderLinkButton
+                            href={"#"}
+                            className="block !font-semibold capitalize text-primary !px-0 mb-1"
+                          >
+                            Shop By Metal
+                          </HeaderLinkButton>
+                          <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                        </div>
+                      </div>
+                      <div className="px-10">
+                        <HeaderLinkButton
+                          href={"#"}
+                          className="block !font-semibold capitalize text-primary !px-0 mb-1"
+                        >
+                          Shop By Diamond Shape
+                        </HeaderLinkButton>
+                        <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                      </div>
+                      <div className="ps-10">
+                        <HeaderLinkButton
+                          href={"#"}
+                          className="block !font-semibold capitalize text-primary !px-0 mb-1"
+                        >
+                          Shop By Style
+                        </HeaderLinkButton>
+                        <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <CustomImg srcAttr={jewelry} className="w-80 2xl:w-96" />
+                      <div className="text-sm mt-3">
+                        <Link
+                          href={"#"}
+                          onClick={() => dispatch(setOpenDropdown(null))}
+                          className="underline hover:text-primary transition-all duration-300"
+                        >
+                          Shop Now
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </li>
 
             {menuList &&
@@ -151,15 +248,17 @@ export default function NavigationHeader() {
                       onClick={closeAllDropdown}
                     >
                       {item?.title}
-                      <div className="text-base 2xl:text-lg pb-0.5">
-                        <IoIosArrowDown
-                          className={`transition-all duration-300 ease-in-out transform ${
-                            openDropdown === item.title
-                              ? "rotate-180 scale-110"
-                              : "rotate-0 scale-100"
-                          }`}
-                        />
-                      </div>
+                      {hasSubCategories && (
+                        <div className="text-base 2xl:text-lg pb-0.5">
+                          <IoIosArrowDown
+                            className={`transition-all duration-300 ease-in-out transform ${
+                              openDropdown === item.title
+                                ? "rotate-180 scale-110"
+                                : "rotate-0 scale-100"
+                            }`}
+                          />
+                        </div>
+                      )}
                     </HeaderLinkButton>
 
                     {/* Dropdown for Desktop */}
@@ -258,7 +357,7 @@ export default function NavigationHeader() {
           <div className="text-xl flex py-6 items-center gap-5">
             <IoIosSearch />
             {/* <GoHeart /> */}
-            <CartPopup />
+            {!hideCartPopup && <CartPopup />}
             <ProfileDropdown className={"hidden lg:block"} />
           </div>
         ) : null}

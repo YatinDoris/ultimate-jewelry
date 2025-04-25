@@ -119,16 +119,16 @@ export default function OrderDetailPage() {
             {/* Left Panel */}
             <div className="flex flex-col gap-4">
               {/* Reserved Box */}
-              <div className="bg-white p-4 lg:p-6 min-h-[300px] lg:min-h-[400px]">
+              <div className="bg-white p-4 lg:p-6 min-h-[300px] lg:min-h-[400px] flex flex-col gap-6">
                 {orderDetail?.products?.map((product, index) => {
                   return (
-                    <div className="flex items-start gap-4" key={`${index}`}>
+                    <div className="flex items-center gap-4" key={`${index}`}>
                       <div className="relative">
                         <ProgressiveImg
                           src={product.productImage}
                           alt={product.productName}
                           title={product.productName}
-                          className={"w-52 md:w-40 border border-alabaster"}
+                          className={"w-60 md:w-44 border border-alabaster"}
                         />
                         <div className="absolute top-0 left-0 bg-primary text-white text-xs font-semibold px-2 py-1  z-10">
                           Qty: {product?.cartQuantity}
@@ -144,18 +144,18 @@ export default function OrderDetailPage() {
                             {helperFunctions.toFixedNumber(product?.unitAmount)}
                           </h3>
                         </div>
-                        <div className="flex flex-col md:flex-row gap-1.5 lg:gap-2 my-1.5 lg:my-3">
+
+                        <div className="flex flex-wrap gap-0.5 sm:gap-1 lg:gap-2 my-1 sm:my-1.5 lg:my-3">
                           {product?.variations?.map((variItem) => {
                             return (
                               <span
-                                className="flex p-1.5 w-fit border-[1.5px] text-xs lg:text-sm border-alabaster"
+                                className="flex p-1 md:p-1.5 w-fit border border-alabaster text-xs sm:text-xs lg:text-sm"
                                 key={helperFunctions.getRandomValue()}
                               >
-                                <p className="font-bold">
-                                  {variItem.variationName} :
-                                </p>{" "}
-                                &nbsp;
-                                <p className="mb-0 text-capitalize">
+                                <p className="font-bold text-xs sm:text-xs">
+                                  {variItem.variationName}:
+                                </p>
+                                <p className="mb-0 text-capitalize text-xs sm:text-xs pl-1">
                                   {variItem.variationTypeName}
                                 </p>
                               </span>

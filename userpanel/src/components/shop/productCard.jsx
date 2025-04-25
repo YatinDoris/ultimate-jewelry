@@ -2,7 +2,7 @@ import { helperFunctions } from "@/_helper";
 import Link from "next/link";
 import { ProgressiveImg } from "../dynamiComponents";
 
-export default function   ProductCard({
+export default function ProductCard({
   img,
   video,
   title,
@@ -11,6 +11,7 @@ export default function   ProductCard({
   price,
   goldColorVariations,
   productLink = "",
+  isDiamondSettingPage = false,
 }) {
   productLink =
     productLink ||
@@ -18,7 +19,7 @@ export default function   ProductCard({
 
   const originalPrice = discount
     ? parseFloat((price / (1 - discount / 100)).toFixed(2))
-    : price;
+    : null;
 
   return (
     <Link onClick={onClick} href={productLink} aria-label={title}>
@@ -39,7 +40,7 @@ export default function   ProductCard({
             muted
           />
         )}
-        {discount ? (
+        {!isDiamondSettingPage && discount ? (
           <div className="bg-primary absolute top-3 left-3 text-xs md:text-sm text-white px-2 py-1 md:px-3 md:py-1.5">
             {discount}% Off
           </div>
@@ -51,7 +52,11 @@ export default function   ProductCard({
 
         <div className="flex items-center gap-2 font-castoro">
           <p className="my-1 tracking-wider text-lg md:text-xl">${price}</p>
-          <span className="line-through text-gray-500">${originalPrice}</span>
+          {!isDiamondSettingPage && discount ? (
+            <p className="text-sm md:text-base text-gray-500 line-through">
+              ${originalPrice}
+            </p>
+          ) : null}
         </div>
 
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center w-full mt-3 gap-2 lg:gap-0">

@@ -14,6 +14,7 @@ import { fetchCart } from "@/_actions/cart.action";
 import { IoIosSearch } from "react-icons/io";
 import { GoHeart } from "react-icons/go";
 import ProfileDropdown from "../ui/ProfileDropdown";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -26,6 +27,12 @@ export default function Header() {
   useEffect(() => {
     dispatch(getMenuList());
   }, [dispatch]);
+
+  const pathname = usePathname();
+  const hideCartPopup =
+    pathname === "/checkout" ||
+    pathname === "/shipping" ||
+    pathname.startsWith("/payment");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,9 +89,16 @@ export default function Header() {
       document.body.style.overflow = "";
     };
   }, [isCartOpen]);
+
   useEffect(() => {
     dispatch(fetchCart());
   }, [dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(setIsMenuOpen(false));
+    };
+  }, []);
 
   return (
     <header
@@ -117,7 +131,7 @@ export default function Header() {
         <div className="text-xl flex items-center gap-5">
           <IoIosSearch />
           {/* <GoHeart /> */}
-          <CartPopup />
+          {!hideCartPopup && <CartPopup />}
           <ProfileDropdown className={"hidden lg:block"} />
         </div>
       </div>
