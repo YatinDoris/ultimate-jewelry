@@ -1,13 +1,13 @@
 "use client";
 import { fetchOrderHistory } from "@/_actions/order.action";
-import { helperFunctions } from "@/_helper";
+import { helperFunctions, messageType } from "@/_helper";
 import { ITEMS_PER_PAGE } from "@/_utils/common";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import CustomBadge from "@/components/ui/CustomBadge";
 import Pagination from "@/components/ui/Pagination";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
 import Spinner from "@/components/ui/spinner";
-import { setCurrentPage } from "@/store/slices/orderSlice";
+import { setCurrentPage, setOrderMessage } from "@/store/slices/orderSlice";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
@@ -17,6 +17,8 @@ import { setOrderLoading } from "../../../store/slices/orderSlice";
 import CancelOrder from "@/components/ui/order-history/CancelOrder";
 import DownloadInvoice from "@/components/ui/order-history/downloadInvoice";
 import { setShowModal } from "@/store/slices/commonSlice";
+import Alert from "@/components/ui/Alert";
+import { useAlertTimeout } from "@/hooks/use-alert-timeout";
 
 export default function OrderHistoryPage() {
   const router = useRouter();
@@ -27,7 +29,12 @@ export default function OrderHistoryPage() {
     currentPage,
     selectedOrder,
     invoiceLoading,
+    orderMessage,
   } = useSelector(({ order }) => order);
+
+  useAlertTimeout(orderMessage, () =>
+    dispatch(setOrderMessage({ message: "", type: "" }))
+  );
 
   const loadData = useCallback(() => {
     dispatch(fetchOrderHistory());
@@ -82,6 +89,9 @@ export default function OrderHistoryPage() {
   };
   return (
     <div>
+      {orderMessage?.type === messageType.SUCCESS && (
+        <Alert message={orderMessage.message} type={orderMessage.type} />
+      )}
       <CommonBgHeading title="Order History" />
 
       <div className="container my-10 relative overflow-x-auto">

@@ -31,7 +31,7 @@ const DiamondDetailDrawer = ({
             srcAttr={stepArrow}
             altAttr=""
             titleAttr=""
-            className="md:w-5 md:h-5 h-3 w-3 transition-transform duration-200"
+            className="md:w-4 md:h-4 h-3 w-3 transition-transform duration-200"
           />
         </button>
       </div>

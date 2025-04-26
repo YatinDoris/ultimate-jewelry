@@ -1,17 +1,14 @@
 "use client";
 import { HeaderLinkButton } from "@/components/ui/button";
-import {
-  setOpenDropdown,
-  setOpenDropdownMobile,
-} from "@/store/slices/commonSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import miniLogo from "@/assets/images/logo-2.webp";
 import { CustomImg } from "../../dynamiComponents";
 import CartPopup from "../../ui/CartPopup";
+import ProfileDropdown from "@/components/ui/ProfileDropdown";
 export default function NavigationHeader() {
   const dispatch = useDispatch();
   const { isMenuOpen } = useSelector(({ common }) => common);
@@ -95,9 +92,12 @@ export default function NavigationHeader() {
 
         {lastScrollY > 100 ? (
           <div className="text-xl flex py-6 items-center gap-5">
-            <IoIosSearch />
+            <Link href={"/search"}>
+              <IoIosSearch />
+            </Link>
             {/* <GoHeart /> */}
             <CartPopup />
+            <ProfileDropdown className={"hidden lg:block"} />
           </div>
         ) : null}
       </nav>
@@ -130,6 +130,7 @@ export default function NavigationHeader() {
                   </HeaderLinkButton>
                 );
               })}
+              <ProfileDropdown />
             </nav>
           </motion.div>
         )}

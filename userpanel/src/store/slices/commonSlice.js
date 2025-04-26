@@ -10,7 +10,7 @@ const initialState = {
   openDropdownMobile: false,
   isHovered: false,
   isCartOpen: false,
-  openProfileDropdown: false,
+  openProfileDropdown: null,
   showModal: false,
   isChecked: false,
   isSubmitted: false,
