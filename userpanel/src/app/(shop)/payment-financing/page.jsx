@@ -1,22 +1,30 @@
+import { companyEmail, companyPhoneNo } from "@/_helper";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
-import ReturnPolicyContent from "@/components/ui/ReturnPolicyContent";
+import PolicyContent from "@/components/ui/PolicyContent";
 const paymentFinancingSections = [
     {
         description: (
             <>
-                <p>At Katanoff, we take great pride in the quality and craftsmanship of our jewelry. Each piece is designed with care and built to last. To ensure your peace of mind, we offer a comprehensive warranty on all our fine and fashion jewelry.</p>
-                <p>Warranty Coverage</p>
+                <p>At Katanoff, we’re here to make shopping as smooth and flexible as possible. Whether you're paying in full or prefer to split it into installments, we have secure options designed with you in mind.</p>
             </>
         )
     },
     {
         description: (
             <>
-                <p><strong>Our standard warranty covers the following for a period of 12 months from the date of purchase:</strong></p>
+                <p><strong>Accepted Payment Methods</strong></p>
+            </>
+        ),
+    },
+    {
+        description: (
+            <>
+                <p><strong>We accept all major U.S. payment types:</strong></p>
                 <ul className="list-disc list-inside mt-2">
-                    <li>Manufacturing defects in materials or craftsmanship</li>
-                    <li>Broken clasps, loose prongs, or faulty chains</li>
-                    <li>Missing stones due to manufacturing issues</li>
+                    <li>Visa, MasterCard, American Express, Discover</li>
+                    <li>PayPal</li>
+                    <li>Apple Pay & Google Pay</li>
+                    <li>Shop Pay</li>
                 </ul>
             </>
         ),
@@ -24,19 +32,34 @@ const paymentFinancingSections = [
     {
         description: (
             <>
-                <p><strong>What’s Not Covered</strong></p>
+                <p>Your payment is processed securely with industry-standard encryption. We never store your card details.</p>
             </>
         ),
     },
     {
         description: (
             <>
-                <p><strong>Our warranty does not cover:</strong></p>
+                <p><strong>Sales Tax</strong></p>
+                <p>Applicable sales tax will be calculated based on your shipping address and shown during checkout, in accordance with U.S. state laws.</p>
+            </>
+        ),
+    },
+    {
+        description: (
+            <>
+                <p><strong>Flexible Financing with Shop Pay Installments</strong></p>
+            </>
+        ),
+    },
+    {
+        description: (
+            <>
+                <p>Want to spread out your payments? Choose Shop Pay Installments at checkout.</p>
+                <p>With Shop Pay, you can:</p>
                 <ul className="list-disc list-inside mt-2">
-                    <li>Normal wear and tear</li>
-                    <li>Lost or stolen items</li>
-                    <li>Damage caused by accidents, improper care, or unauthorized repair</li>
-                    <li>Scratches, dents, or tarnishing from regular use</li>
+                    <li>Split your purchase into 4 interest-free biweekly payments</li>
+                    <li>Or choose monthly financing options (for qualifying purchases)</li>
+                    <li>No hidden fees—you see your terms clearly before you commit</li>
                 </ul>
             </>
         ),
@@ -44,39 +67,28 @@ const paymentFinancingSections = [
     {
         description: (
             <>
-                <p><strong>How to Make a Warranty Claim</strong></p>
+                <p><strong>How it works:</strong></p>
             </>
         ),
     },
     {
         description: (
             <>
-                <p><strong>To initiate a claim, please email us at [Your Customer Service Email] with the following:</strong></p>
-                <ul className="list-disc list-inside mt-2">
-                    <li>Your order number or proof of purchase</li>
-                    <li>Photos of the item and the issue</li>
-                    <li>A brief description of the problem</li>
-                </ul>
-            </>
-        ),
-    },
-    {
-        description:
-            'Our team will review your claim and respond within 2–3 business days with the next steps. In some cases, items may need to be sent in for inspection.',
-    },
-    {
-        description: (
-            <>
-                <p><strong>Repairs Outside of Warranty</strong></p>
-                <p>We offer repair services even after your warranty period ends. Reach out to us for a quote and timeline.</p>
+                <ol className="list-decimal list-inside mt-2">
+                    <li>Add your items to the cart</li>
+                    <li>Select Shop Pay Installments at checkout</li>
+                    <li>Get an instant decision—no hard credit check for most plans</li>
+                    <li>Enjoy your jewelry now, pay over time</li>
+                </ol>
+                <p>Financing is available on purchases up to $17,500, subject to eligibility.</p>
             </>
         ),
     },
     {
         description: (
             <>
-                <p><strong>Questions?</strong></p>
-                <p>We're here to help. If you have any questions about your jewelry or our warranty policy, please contact us at [Your Contact Info].</p>
+                <p><strong>Questions or Special Requests?</strong></p>
+                <p>{`Need help with a large order or have a question about payment? Email us at ${companyEmail} or call us at ${companyPhoneNo}. We’re happy to assist!`}</p>
             </>
         ),
     },
@@ -91,7 +103,7 @@ const PaymentFinancing = () => {
                 backHref="/"
             />
             <div className="container">
-                <ReturnPolicyContent sections={paymentFinancingSections} />
+                <PolicyContent sections={paymentFinancingSections} />
             </div>
         </div>
     );

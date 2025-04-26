@@ -6,6 +6,7 @@ export default function CommonNotFound({
   message = "Sorry, No product Found",
   subMessage = "You can Try Our Different Product...",
   notFoundImg = noDataImg,
+  showButton = true,
 }) {
   return (
     <section className="h-[60vh] lg:h-[70vh] gap-8 lg:gap-10 flex flex-col justify-center items-center text-center">
@@ -21,11 +22,11 @@ export default function CommonNotFound({
           {message}
         </h3>
         <p className="text-base mt-2 font-semibold">{subMessage}</p>
-        <div className="flex justify-center mt-4">
+        {showButton ? <div className="flex justify-center mt-4">
           <PrimaryLinkButton href="/" className="w-[70%] text-sm 2xl:text-xl">
             BACK TO SHOP
           </PrimaryLinkButton>
-        </div>
+        </div> : null}
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
+import { companyEmail, companyPhoneNo } from "@/_helper";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
-import ReturnPolicyContent from "@/components/ui/ReturnPolicyContent";
+import PolicyContent from "@/components/ui/PolicyContent";
 const warrantySections = [
     {
         description: (
@@ -51,7 +52,7 @@ const warrantySections = [
     {
         description: (
             <>
-                <p><strong>To initiate a claim, please email us at [Your Customer Service Email] with the following:</strong></p>
+                <p><strong>{`To initiate a claim, please email us at ${companyEmail} with the following:`}</strong></p>
                 <ul className="list-disc list-inside mt-2">
                     <li>Your order number or proof of purchase</li>
                     <li>Photos of the item and the issue</li>
@@ -76,7 +77,7 @@ const warrantySections = [
         description: (
             <>
                 <p><strong>Questions?</strong></p>
-                <p>We're here to help. If you have any questions about your jewelry or our warranty policy, please contact us at [Your Contact Info].</p>
+                <p>We're here to help. If you have any questions about your jewelry or our warranty policy, please contact us at <strong>{companyPhoneNo}</strong>.</p>
             </>
         ),
     },
@@ -91,7 +92,7 @@ const Warranty = () => {
                 backHref="/"
             />
             <div className="container">
-                <ReturnPolicyContent sections={warrantySections} />
+                <PolicyContent sections={warrantySections} />
             </div>
         </div>
     );

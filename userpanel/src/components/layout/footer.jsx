@@ -3,7 +3,7 @@ import whiteLogo from "@/assets/images/white-logo.webp";
 import CustomImg from "../ui/custom-img";
 import {
   companyEmail,
-  contactNumber,
+  companyPhoneNo,
   facebookUrl,
   instagramUrl,
   pinterestUrl,
@@ -44,12 +44,10 @@ export default function footer() {
         {
           title: "Returns",
           href: "/return-policy",
-          target: "_blank",
         },
         {
           title: "Shipping",
-          href: "/shipping",
-          target: "_blank",
+          href: "/shipping-policy",
         },
         {
           title: "Warranty",
@@ -69,8 +67,8 @@ export default function footer() {
       title: "Contact",
       navLinks: [
         {
-          title: contactNumber,
-          href: `tel:${contactNumber}`,
+          title: companyPhoneNo,
+          href: `tel:${companyPhoneNo}`,
         },
         {
           title: "Email Us",
@@ -107,7 +105,7 @@ export default function footer() {
                   className="w-full h-48 md:h-64 lg:h-52 2xl:h-60 object-cover transform"
                   playsInline
                 >
-                  <source src={"/videos/footer.mov"} type="video/mp4" />
+                  <source src={"/videos/footer.mp4"} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>
@@ -137,7 +135,7 @@ export default function footer() {
                             return (
                               <Link
                                 href={nav.href || "#"}
-                                target={nav?.target || "_self"}
+                                target={nav?.target}
                                 key={`nav-${index}`}
                               >
                                 <li className="py-1 2xl:text-lg">

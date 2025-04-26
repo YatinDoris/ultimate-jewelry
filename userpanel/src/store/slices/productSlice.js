@@ -18,6 +18,11 @@ const initialState = {
   customizeProductList: [],
   customizeProductLoading: false,
   productMessage: { message: "", type: "" },
+  searchedProductList: [],
+  searchQuery: "",
+  resultCount: 0,
+  hasSearched: false,
+  productsPerPage: 8,
 };
 
 const productSlice = createSlice({
@@ -94,6 +99,22 @@ const productSlice = createSlice({
     setCustomizeProductLoading: (state, action) => {
       state.customizeProductLoading = action.payload;
     },
+    setSearchedProductList: (state, action) => {
+      state.searchedProductList = action.payload;
+    },
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload;
+    },
+    setResultCount: (state, action) => {
+      state.resultCount = action.payload;
+    },
+    setHasSearched: (state, action) => {
+      state.hasSearched = action.payload;
+    },
+    setProductsPerPage: (state, action) => {
+      state.productsPerPage = action.payload;
+    },
+    
   },
 });
 
@@ -115,9 +136,13 @@ export const {
   toggleOpenKey,
   setUniqueFilterOptions,
   setSelectedSettingStyle,
-
   setCustomizeProductList,
   setCustomizeProductLoading,
+  setSearchedProductList,
+  setSearchQuery,
+  setResultCount,
+  setHasSearched,
+  setProductsPerPage,
 } = productSlice.actions;
 
 export default productSlice.reducer;

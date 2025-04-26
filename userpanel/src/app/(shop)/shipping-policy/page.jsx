@@ -1,5 +1,6 @@
+import { companyEmail } from "@/_helper";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
-import ReturnPolicyContent from "@/components/ui/ReturnPolicyContent";
+import PolicyContent from "@/components/ui/PolicyContent";
 
 const privacySections = [
     {
@@ -71,7 +72,7 @@ const privacySections = [
         description: (
             <>
                 <p><strong>Questions?</strong></p>
-                <p>Need help with your delivery or a special shipping request? Reach out to us at help@katanoff.com —we’re here to help!</p>
+                <p>{`Need help with your delivery or a special shipping request? Reach out to us at ${companyEmail} —we’re here to help!`}</p>
             </>
         ),
     },
@@ -86,7 +87,7 @@ const ShippingPolicy = () => {
                 backHref="/"
             />
             <div className="container">
-                <ReturnPolicyContent sections={privacySections} />
+                <PolicyContent sections={privacySections} />
             </div>
         </div>
     );
