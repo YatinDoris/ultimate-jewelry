@@ -2,12 +2,11 @@ import {
   setReturnsList,
   setReturnDetail,
   setOrderDetail,
-  setReturnReqLoader,
-  setDeleteReturnReqLoader,
+  setDeleteReturnRequestLoader,
   setReturnMessage,
 } from "@/store/slices/returnSlice";
 
-import { returnService, orderService, toasterService } from "@/_services";
+import { returnService, orderService } from "@/_services";
 import { messageType } from "@/_helper/constants";
 
 export const fetchReturnsHistory = () => async (dispatch) => {
@@ -56,13 +55,13 @@ export const fetchOrderDetailByOrderNumber =
 
 export const createReturnRequest = (payload) => async (dispatch) => {
   dispatch(setReturnMessage({ message: "", type: "" }));
-  dispatch(setReturnReqLoader(true));
+  dispatch(setDeleteReturnRequestLoader(true));
   try {
     const response = await returnService.insertReturnRequest(payload);
     if (response) {
-      toasterService.success(
-        "Your return request has been successfully submitted. Please await confirmation"
-      );
+      // toasterService.success(
+      //   "Your return request has been successfully submitted. Please await confirmation"
+      // );
       return true;
     }
     return false;
@@ -71,7 +70,7 @@ export const createReturnRequest = (payload) => async (dispatch) => {
     dispatch(setReturnMessage({ message, type: messageType.ERROR }));
     return false;
   } finally {
-    dispatch(setReturnReqLoader(false));
+    dispatch(setDeleteReturnRequestLoader(false));
   }
 };
 
@@ -80,7 +79,7 @@ export const cancelReturnRequest = (payload) => async (dispatch) => {
   try {
     const response = await returnService.cancelReturnRequest(payload);
     if (response) {
-      toasterService.success("Your return request has been cancelled");
+      // toasterService.success("Your return request has been cancelled");
       return true;
     }
     return false;
@@ -93,11 +92,11 @@ export const cancelReturnRequest = (payload) => async (dispatch) => {
 
 export const deleteReturnRequest = (payload) => async (dispatch) => {
   dispatch(setReturnMessage({ message: "", type: "" }));
-  dispatch(setDeleteReturnReqLoader(true));
+  dispatch(setDeleteReturnRequestLoader(true));
   try {
     const response = await returnService.deleteReturnRequest(payload);
     if (response) {
-      toasterService.success("Your return request has been deleted");
+      // toasterService.success("Your return request has been deleted");
       return true;
     }
     return false;
@@ -106,6 +105,6 @@ export const deleteReturnRequest = (payload) => async (dispatch) => {
     dispatch(setReturnMessage({ message, type: messageType.ERROR }));
     return false;
   } finally {
-    dispatch(setDeleteReturnReqLoader(false));
+    dispatch(setDeleteReturnRequestLoader(false));
   }
 };

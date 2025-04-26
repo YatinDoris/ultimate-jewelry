@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -9,15 +10,12 @@ import {
 import * as Yup from "yup";
 
 import Modal from "../Modal";
-import Alert from "../Alert";
 import ErrorMessage from "../ErrorMessage";
 import { GrayButton, LoadingPrimaryButton } from "../button";
 
 import { setIsHovered, setShowModal } from "@/store/slices/commonSlice";
-import { orderCancel } from "@/_actions/order.action";
-import { setOrderMessage } from "@/store/slices/orderSlice";
+import { fetchOrderHistory, orderCancel } from "@/_actions/order.action";
 import { messageType } from "@/_helper/constants";
-import { useAlertTimeout } from "@/hooks/use-alert-timeout";
 
 export default function CancelOrderModal() {
   const dispatch = useDispatch();
@@ -28,13 +26,8 @@ export default function CancelOrderModal() {
 
   const abortControllerRef = useRef(null);
 
-  useAlertTimeout(orderMessage, () =>
-    dispatch(setOrderMessage({ message: "", type: "" }))
-  );
-
   useEffect(() => {
     return () => {
-      // dispatch(setOrderMessage({ message: "", type: "" }));
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -69,15 +62,12 @@ export default function CancelOrderModal() {
     );
     if (response) {
       dispatch(setShowModal(false));
+      dispatch(fetchOrderHistory());
     }
   };
 
   return (
     <Modal title="Cancel Order" titleClassName="!text-center" footer={null}>
-      {orderMessage?.type === messageType.SUCCESS && (
-        <Alert message={orderMessage.message} type={orderMessage.type} />
-      )}
-
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}

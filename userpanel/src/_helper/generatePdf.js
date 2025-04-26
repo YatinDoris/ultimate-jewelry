@@ -38,9 +38,8 @@ export const generatePDF = async (orderData, sizePage = "1") => {
 
   const doc = new jsPDF(sizePage, "pt", "a4");
   const date = new Date();
-  const formattedDate = `Date: ${
-    date.getMonth() + 1
-  } / ${date.getDate()} / ${date.getFullYear()}`;
+  const formattedDate = `Date: ${date.getMonth() + 1
+    } / ${date.getDate()} / ${date.getFullYear()}`;
   const pageWidth = doc.internal.pageSize.getWidth();
   const topHeight = 25;
 
@@ -85,24 +84,6 @@ export const generatePDF = async (orderData, sizePage = "1") => {
 
   // Table Headers and Body
   const headers = [["IMAGE", "PRODUCT", "QTY", "UNIT PRICE ($)", "TOTAL ($)"]];
-  // const data = invoiceData?.products?.map((x) => {
-  //   const variations = x?.variations
-  //     ?.map((y) => `* ${y?.variationName} : ${y?.variationTypeName}`)
-  //     .join("\n");
-  //   return [
-  //     {
-  //       content: "",
-  //       image: x?.productImage,
-  //       width: 35,
-  //       height: 35,
-  //       alias: x?.productName,
-  //     },
-  //     `${x?.productName}\n\n${variations}`,
-  //     x?.cartQuantity,
-  //     helperFunctions.toFixedNumber(x?.productPrice),
-  //     helperFunctions.toFixedNumber(x?.cartQuantity * x?.productPrice),
-  //   ];
-  // });
   const data = invoiceData?.products?.map((x) => {
     const variations = x?.variations
       ?.map((y) => `* ${y?.variationName} : ${y?.variationTypeName}`)
@@ -115,11 +96,11 @@ export const generatePDF = async (orderData, sizePage = "1") => {
 
     const diamondDetail = isDiamond
       ? `\n\nDiamond Details:\n` +
-        `- Carat: ${x.diamondDetail.caratWeight}\n` +
-        `- Clarity: ${x.diamondDetail.clarity}\n` +
-        `- Color: ${x.diamondDetail.color}\n` +
-        `- Price: $${helperFunctions.toFixedNumber(x.diamondDetail.price)}\n` +
-        `- Shape: ${x.diamondDetail.shapeName}`
+      `- Carat: ${x.diamondDetail.caratWeight}\n` +
+      `- Clarity: ${x.diamondDetail.clarity}\n` +
+      `- Color: ${x.diamondDetail.color}\n` +
+      `- Price: $${helperFunctions.toFixedNumber(x.diamondDetail.price)}\n` +
+      `- Shape: ${x.diamondDetail.shapeName}`
       : "";
 
     const unitPrice = isDiamond
@@ -154,6 +135,7 @@ export const generatePDF = async (orderData, sizePage = "1") => {
     },
     bodyStyles: {
       minCellHeight: 35,
+      textColor: '#2b2b2b'
     },
     didDrawCell: (data) => {
       if (data?.column?.index === 0 && data?.row?.index >= 0) {
@@ -161,8 +143,8 @@ export const generatePDF = async (orderData, sizePage = "1") => {
         if (img) {
           const cellWidth = data?.cell?.width;
           const cellHeight = data?.cell?.height;
-          const imgWidth = 30;
-          const imgHeight = 33;
+          const imgWidth = 60;
+          const imgHeight = 60;
           const xOffset = data?.cell?.x + (cellWidth - imgWidth) / 2;
           const yOffset = data?.cell?.y + (cellHeight - imgHeight) / 2;
           doc.addImage(

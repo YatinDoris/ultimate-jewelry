@@ -13,6 +13,7 @@ import { authenticationService } from "./authentication.service";
 import { GOLD_COLOR, GOLD_TYPES } from "../_helper/constants";
 import { returnService } from "./return.service";
 import { setOrderMessage } from "@/store/slices/orderSlice";
+import { diamondShapeService } from "./diamondShape.service";
 
 const getAllOrderList = () => {
   return new Promise(async (resolve, reject) => {
@@ -86,6 +87,9 @@ const getOrderDetailByOrderId = (orderId) => {
             productFindPattern
           );
           const customizations = await productService.getAllCustomizations();
+          const diamondShapeList =
+            await diamondShapeService.getAllDiamondShapes();
+
           if (orderDetail?.cancelledBy) {
             const adminAndUsersData =
               await authenticationService.getAllUserAndAdmin();
@@ -96,37 +100,15 @@ const getOrderDetailByOrderId = (orderId) => {
               orderDetail.cancelledByName = findedUserData.name;
             }
           }
-          orderDetail.products = orderDetail.products.map(
-            (orderProductItem) => {
-              const findedProduct = allActiveProductsData.find(
-                (product) => product.id === orderProductItem.productId
-              );
-              if (findedProduct) {
-                const variationArray = orderProductItem.variations.map(
-                  (variItem) => {
-                    const findedCustomizationType =
-                      customizations.customizationSubType.find(
-                        (x) => x.id === variItem.variationTypeId
-                      );
-                    return {
-                      ...variItem,
-                      variationName: customizations.customizationType.find(
-                        (x) => x.id === variItem.variationId
-                      ).title,
-                      variationTypeName: findedCustomizationType.title,
-                    };
-                  }
-                );
-                return {
-                  ...orderProductItem,
-                  productName: findedProduct.productName,
-                  productImage: findedProduct.images[0].image,
-                  variations: variationArray,
-                };
-              }
-              return orderProductItem;
-            }
+          orderDetail.products = orderDetail.products.map((orderProductItem) =>
+            processOrderProductItem({
+              orderProductItem,
+              allActiveProductsData,
+              customizations,
+              diamondShapeList,
+            })
           );
+
           resolve(orderDetail);
         } else {
           reject(new Error("Order does not exist"));
@@ -139,79 +121,72 @@ const getOrderDetailByOrderId = (orderId) => {
     }
   });
 };
+const trackOrderByOrderNumberAndEmail = (params) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Sanitize inputs
+      let { orderNumber, email } = sanitizeObject(params);
+      orderNumber = orderNumber ? orderNumber.trim() : null;
+      email = email ? email.trim().toLowerCase() : null;
 
-// const getOrderDetailByOrderNumber = (orderNumber) => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       orderNumber = sanitizeValue(orderNumber) ? orderNumber.trim() : null;
-//       if (orderNumber) {
-//         const orderDetail = await fetchWrapperService.findOne(ordersUrl, {
-//           orderNumber: orderNumber,
-//         });
+      if (!orderNumber || !email) {
+        reject(new Error("Invalid order number or email"));
+        return;
+      }
 
-//         if (orderDetail) {
-//           const productFindPattern = {
-//             url: productsUrl,
-//             key: "active",
-//             value: true,
-//           };
-//           const allActiveProductsData = await fetchWrapperService.find(
-//             productFindPattern
-//           );
-//           const customizations = await productService.getAllCustomizations();
-//           if (orderDetail?.cancelledBy) {
-//             const adminAndUsersData =
-//               await authenticationService.getAllUserAndAdmin();
-//             const findedUserData = adminAndUsersData.find(
-//               (item) => item.id === orderDetail.cancelledBy
-//             );
-//             if (findedUserData) {
-//               orderDetail.cancelledByName = findedUserData.name;
-//             }
-//           }
-//           orderDetail.products = orderDetail.products.map(
-//             (orderProductItem) => {
-//               const findedProduct = allActiveProductsData.find(
-//                 (product) => product.id === orderProductItem.productId
-//               );
-//               if (findedProduct) {
-//                 const variationArray = orderProductItem.variations.map(
-//                   (variItem) => {
-//                     const findedCustomizationType =
-//                       customizations.customizationSubType.find(
-//                         (x) => x.id === variItem.variationTypeId
-//                       );
-//                     return {
-//                       ...variItem,
-//                       variationName: customizations.customizationType.find(
-//                         (x) => x.id === variItem.variationId
-//                       ).title,
-//                       variationTypeName: findedCustomizationType.title,
-//                     };
-//                   }
-//                 );
-//                 return {
-//                   ...orderProductItem,
-//                   productName: findedProduct.productName,
-//                   productImage: findedProduct.images[0].image,
-//                   variations: variationArray,
-//                 };
-//               }
-//               return orderProductItem;
-//             }
-//           );
-//           resolve(orderDetail);
-//         } else {
-//           reject(new Error("Order does not exist"));
-//         }
-//       } else {
-//         reject(new Error("Invalid data"));
-//       }
-//     } catch (e) {
-//       reject(e);
-//     }
-//   });
-// };
+      // Fetch order by orderNumber
+      const orderDetail = await fetchWrapperService.findOne(ordersUrl, {
+        orderNumber,
+      });
+
+      if (!orderDetail) {
+        reject(new Error("Order does not exist"));
+        return;
+      }
+
+      // Verify email matches the order's shipping address email
+      if (orderDetail.shippingAddress?.email?.toLowerCase() !== email) {
+        reject(new Error("Unauthorized: Email does not match order"));
+        return;
+      }
+
+      // Fetch additional data for cancelled orders
+      if (orderDetail?.cancelledBy) {
+        const adminAndUsersData =
+          await authenticationService.getAllUserAndAdmin();
+        const findedUserData = adminAndUsersData.find(
+          (item) => item.id === orderDetail.cancelledBy
+        );
+        if (findedUserData) {
+          orderDetail.cancelledByName = findedUserData.name;
+        }
+      }
+      const productFindPattern = {
+        url: productsUrl,
+        key: "active",
+        value: true,
+      };
+      const allActiveProductsData = await fetchWrapperService.find(
+        productFindPattern
+      );
+      const customizations = await productService.getAllCustomizations();
+      const diamondShapeList = await diamondShapeService.getAllDiamondShapes();
+
+      orderDetail.products = orderDetail.products.map((orderProductItem) =>
+        processOrderProductItem({
+          orderProductItem,
+          allActiveProductsData,
+          customizations,
+          diamondShapeList,
+        })
+      );
+
+      resolve(orderDetail);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 
 const cancelOrder = async (payload, abortController) => {
   try {
@@ -322,11 +297,55 @@ const deleteOrder = async (orderId) => {
 //   });
 // };
 
+const processOrderProductItem = ({
+  orderProductItem,
+  allActiveProductsData,
+  customizations,
+  diamondShapeList,
+}) => {
+  const findedProduct = allActiveProductsData.find(
+    (product) => product.id === orderProductItem.productId
+  );
+
+  if (!findedProduct) {
+    return orderProductItem;
+  }
+
+  const variationArray = orderProductItem.variations.map((variItem) => {
+    const findedCustomizationType = customizations.customizationSubType.find(
+      (x) => x.id === variItem.variationTypeId
+    );
+    return {
+      ...variItem,
+      variationName: customizations.customizationType.find(
+        (x) => x.id === variItem.variationId
+      )?.title,
+      variationTypeName: findedCustomizationType?.title,
+    };
+  });
+  const diamondDetail = orderProductItem?.diamondDetail
+    ? {
+        ...orderProductItem?.diamondDetail,
+        shapeName: diamondShapeList?.find(
+          (shape) => shape.id === orderProductItem?.diamondDetail?.shapeId
+        )?.title,
+      }
+    : null;
+
+  return {
+    ...orderProductItem,
+    productName: findedProduct.productName,
+    productImage: findedProduct.images[0]?.image,
+    variations: variationArray,
+    diamondDetail,
+  };
+};
+
 export const orderService = {
   getAllOrderList,
   getOrderDetailByOrderId,
   cancelOrder,
   deleteOrder,
+  trackOrderByOrderNumberAndEmail,
   // getTopSellingProducts,
-  // getOrderDetailByOrderNumber,
 };

@@ -12,13 +12,68 @@ import { useCallback, useEffect, useState } from "react";
 import { IoIosArrowDown, IoIosSearch } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import miniLogo from "@/assets/images/logo-2.webp";
-import { CustomImg } from "../dynamiComponents";
+import { CustomImg, ProgressiveImg } from "../dynamiComponents";
 import CartPopup from "../ui/CartPopup";
 import { helperFunctions } from "@/_helper";
-import { ENGAGEMENT, FLASH_DEALS } from "@/_helper/constants";
+import { ENGAGEMENT, FLASH_DEALS, GOLD_COLOR } from "@/_helper/constants";
 import ProfileDropdown from "../ui/ProfileDropdown";
 import SkeletonLoader from "../ui/skeletonLoader";
 import { usePathname } from "next/navigation";
+import { diamondShapeService } from "@/_services";
+
+const uniqueFilterOptions = {
+  uniqueVariations: [
+    {
+      variationName: "Gold Color",
+      variationId: "118a0da082c",
+      variationTypes: [
+        {
+          variationTypeName: "Yellow Gold",
+          variationTypeId: "da082c06152",
+          variationTypeHexCode: "#E5CE83",
+        },
+        {
+          variationTypeName: "White Gold",
+          variationTypeId: "a082c061526",
+          variationTypeHexCode: "#E5E4E2",
+        },
+        {
+          variationTypeName: "Rose Gold",
+          variationTypeId: "082c061526e",
+          variationTypeHexCode: "#E7BA9A",
+        },
+      ],
+    },
+    {
+      variationName: "Shape",
+      variationId: "5a6593d30dc",
+      variationTypes: [
+        {
+          variationTypeName: "Oval",
+          variationTypeId: "40924dcb609",
+        },
+        {
+          variationTypeName: "Round",
+          variationTypeId: "a6593d30dcc",
+        },
+      ],
+    },
+  ],
+  uniqueSettingStyles: [
+    {
+      title: "Yellow Gold",
+      value: "a717a18a71f",
+      image:
+        "https://firebasestorage.googleapis.com/v0/b/qa-ultimate-jewelry.firebasestorage.app/o/ams%2FsettingStyle%2F1744100327982717a18a71ff.png?alt=media&token=97a0644b-cacd-407b-9bc1-b1d525645d4f",
+    },
+    {
+      title: "Oval",
+      value: "845a6593d30",
+      image:
+        "https://firebasestorage.googleapis.com/v0/b/qa-ultimate-jewelry.firebasestorage.app/o/ams%2FsettingStyle%2F174365763074045a6593d30d.png?alt=media&token=da54b082-12b0-4c87-9b3e-8e67994510e6",
+    },
+  ],
+};
 export default function NavigationHeader() {
   const dispatch = useDispatch();
   const {
@@ -30,6 +85,7 @@ export default function NavigationHeader() {
   } = useSelector(({ common }) => common);
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [diamondShapes, setDiamondShapes] = useState([]);
   const pathname = usePathname();
   const hideCartPopup =
     pathname === "/checkout" ||
@@ -53,6 +109,19 @@ export default function NavigationHeader() {
     handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const fetchDiamondShapes = async () => {
+      try {
+        const shapes = await diamondShapeService.getAllDiamondShapes();
+        setDiamondShapes(shapes);
+      } catch (error) {
+        console.error("Error fetching diamond shapes:", error);
+      }
+    };
+
+    fetchDiamondShapes();
   }, []);
 
   const staticLinks = [
@@ -156,15 +225,12 @@ export default function NavigationHeader() {
                   } bg-white shadow-lg z-50 border-t-[0.5px] border-basegray`}
                 >
                   <div className="container flex justify-between p-6">
-                    <div className="grid grid-cols-3 divide-x divide-gray-e2 2xl:gap-y-10  ">
-                      <div className="flex flex-col gap-5 pe-10">
+                    <div className="grid grid-cols-12 2xl:gap-y-10  w-full">
+                      <div className="flex flex-col gap-5 col-span-2">
                         <div>
-                          <HeaderLinkButton
-                            href={"#"}
-                            className="block !font-semibold capitalize text-primary !px-0 mb-1"
-                          >
+                          <p className="text-sm 2xl:text-base block !font-semibold capitalize text-primary !px-0 mb-1">
                             Custom Rings
-                          </HeaderLinkButton>
+                          </p>
                           <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
 
                           <div className="mt-3 flex flex-col gap-1">
@@ -182,44 +248,117 @@ export default function NavigationHeader() {
                           </div>
                         </div>
                         <div>
-                          <HeaderLinkButton
-                            href={"#"}
-                            className="block !font-semibold capitalize text-primary !px-0 mb-1"
-                          >
+                          <p className="text-sm 2xl:text-base block !font-semibold capitalize text-primary !px-0 mb-1">
                             Shop By Metal
-                          </HeaderLinkButton>
+                          </p>
                           <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+
+                          {uniqueFilterOptions.uniqueVariations.map(
+                            (item, index) => {
+                              return (
+                                <div
+                                  className="flex flex-col gap-2 mt-2"
+                                  key={`variation-${index}`}
+                                >
+                                  {item.variationName == GOLD_COLOR
+                                    ? item.variationTypes.map((item, index) => {
+                                        return (
+                                          <HeaderLinkButton
+                                            key={`variation-${index}2`}
+                                            href={"#"}
+                                            className="flex items-center gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              closeAllDropdown();
+                                            }}
+                                          >
+                                            <div
+                                              className="w-4 h-4 bg-transparent rounded-full"
+                                              style={{
+                                                border: `4px solid ${item?.variationTypeHexCode}`,
+                                              }}
+                                            ></div>{" "}
+                                            {item.variationTypeName}
+                                          </HeaderLinkButton>
+                                        );
+                                      })
+                                    : null}
+                                </div>
+                              );
+                            }
+                          )}
                         </div>
                       </div>
-                      <div className="px-10">
-                        <HeaderLinkButton
-                          href={"#"}
-                          className="block !font-semibold capitalize text-primary !px-0 mb-1"
-                        >
+                      <div className="col-span-4 px-10 border-x border-gray-e2 mx-10">
+                        <p className="text-sm 2xl:text-base block !font-semibold capitalize text-primary !px-0 mb-1">
                           Shop By Diamond Shape
-                        </HeaderLinkButton>
+                        </p>
                         <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                        <div className="grid grid-cols-3 gap-4 mt-3 text-center">
+                          {" "}
+                          {diamondShapes.map((item, index) => {
+                            return (
+                              <HeaderLinkButton
+                                key={`variation-${index}1`}
+                                href={`/customize/start-with-setting/${item?.id}`}
+                                className="gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  closeAllDropdown();
+                                }}
+                              >
+                                <ProgressiveImg
+                                  src={item?.image}
+                                  alt={item?.title}
+                                  className="w-8 h-8 inline-block"
+                                />
+                                <p className="mt-1">{item?.title}</p>
+                              </HeaderLinkButton>
+                            );
+                          })}
+                        </div>
                       </div>
-                      <div className="ps-10">
-                        <HeaderLinkButton
-                          href={"#"}
-                          className="block !font-semibold capitalize text-primary !px-0 mb-1"
-                        >
+                      <div className="col-span-2">
+                        <p className="text-sm 2xl:text-base block !font-semibold capitalize text-primary !px-0 mb-1">
                           Shop By Style
-                        </HeaderLinkButton>
+                        </p>
                         <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                        <div className="mt-3 flex flex-col gap-1">
+                          {uniqueFilterOptions.uniqueSettingStyles.map(
+                            (item, index) => {
+                              return (
+                                <HeaderLinkButton
+                                  key={`variation-${index}4`}
+                                  href={"#"}
+                                  className="flex items-center gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    closeAllDropdown();
+                                  }}
+                                >
+                                  <ProgressiveImg
+                                    src={item.image}
+                                    alt={item.title}
+                                    className="w-10 h-10 rounded-full"
+                                  />
+                                  {item.title}
+                                </HeaderLinkButton>
+                              );
+                            }
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <CustomImg srcAttr={jewelry} className="w-80 2xl:w-96" />
-                      <div className="text-sm mt-3">
-                        <Link
-                          href={"#"}
-                          onClick={() => dispatch(setOpenDropdown(null))}
-                          className="underline hover:text-primary transition-all duration-300"
-                        >
-                          Shop Now
-                        </Link>
+                      <div className="2xl:col-start-10 col-span-4 flex flex-col gap-1  ps-10 border-s border-gray-e2">
+                        <CustomImg srcAttr={jewelry} />
+                        <div className="text-sm mt-3">
+                          <Link
+                            href={"#"}
+                            onClick={() => dispatch(setOpenDropdown(null))}
+                            className="underline hover:text-primary transition-all duration-300"
+                          >
+                            Shop Now
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -355,10 +494,15 @@ export default function NavigationHeader() {
         )}
         {lastScrollY > 100 ? (
           <div className="text-xl flex py-6 items-center gap-5">
-            <IoIosSearch />
+            <Link href={"/search"}>
+              <IoIosSearch />
+            </Link>
             {/* <GoHeart /> */}
             {!hideCartPopup && <CartPopup />}
-            <ProfileDropdown className={"hidden lg:block"} />
+            <ProfileDropdown
+              className={"hidden lg:block"}
+              uniqueId={"desktop-nav-profile"}
+            />
           </div>
         ) : null}
       </nav>
@@ -402,15 +546,126 @@ export default function NavigationHeader() {
                 >
                   {FLASH_DEALS}
                 </HeaderLinkButton>
-                <HeaderLinkButton
-                  href={`/customize/start-with-setting`}
-                  onClick={() => {
-                    dispatch(setIsHeaderVisible(false));
-                  }}
-                  className="pt-3.5 border-t"
-                >
-                  Engagement
-                </HeaderLinkButton>
+                <div>
+                  <div
+                    className="flex justify-between pt-3.5 border-t"
+                    onClick={() =>
+                      dispatch(
+                        setOpenDropdownMobile(
+                          openDropdownMobile === ENGAGEMENT ? null : ENGAGEMENT
+                        )
+                      )
+                    }
+                  >
+                    <HeaderLinkButton
+                      href={"#"}
+                      className="text-gray-700 px-0 hover:text-black py-0.5"
+                      onClick={() => dispatch(setIsMenuOpen(false))}
+                    >
+                      {ENGAGEMENT}
+                    </HeaderLinkButton>
+
+                    <div className="text-base pb-0.5">
+                      <IoIosArrowDown
+                        className={`transition-all duration-300 ease-in-out transform ${
+                          openDropdownMobile === ENGAGEMENT
+                            ? "rotate-180 scale-110"
+                            : "rotate-0 scale-100"
+                        }`}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    className={`grid grid-cols-1 gap-4 overflow-hidden transition-all duration-300 ease-in-out  ${
+                      openDropdownMobile === ENGAGEMENT
+                        ? "max-h-96 opacity-100 translate-y-0"
+                        : "max-h-0 opacity-0 -translate-y-2"
+                    }`}
+                  >
+                    <div className="flex flex-col gap-2 mt-2 ms-4">
+                      <div className="relative">
+                        <p className="text-sm 2xl:text-base block !font-semibold capitalize text-primary !px-0 mb-1">
+                          Custom Rings
+                        </p>
+                        <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                      </div>
+                      <div className="flex flex-col gap-1 ms-3 mt-0.5">
+                        <HeaderLinkButton
+                          href={"/customize/start-with-setting"}
+                          className="text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                          onClick={() => dispatch(setIsMenuOpen(false))}
+                        >
+                          Start with a{" "}
+                          <span className="font-bold">Setting</span>
+                        </HeaderLinkButton>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2 mt-2 ms-4">
+                      <div className="relative">
+                        <p className="text-sm 2xl:text-base block !font-semibold capitalize text-primary !px-0 mb-1">
+                          Shop By Diamond Shape
+                        </p>
+                        <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                      </div>
+                      <div className="grid grid-cols-4 md:w-1/2 gap-4 mt-3 text-center">
+                        {" "}
+                        {diamondShapes.map((item, index) => {
+                          return (
+                            <HeaderLinkButton
+                              key={`variation-${index}1`}
+                              href={`/customize/start-with-setting/${item?.id}`}
+                              className="gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                closeAllDropdown();
+                              }}
+                            >
+                              <ProgressiveImg
+                                src={item?.image}
+                                alt={item?.title}
+                                className="w-8 h-8 inline-block"
+                              />
+                              <p className="mt-1">{item?.title}</p>
+                            </HeaderLinkButton>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2 mt-2 ms-4">
+                      <div className="relative">
+                        <p className="text-sm 2xl:text-base block !font-semibold capitalize text-primary !px-0 mb-1">
+                          Shop By Style
+                        </p>
+                        <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        {uniqueFilterOptions.uniqueSettingStyles.map(
+                          (item, index) => {
+                            return (
+                              <HeaderLinkButton
+                                key={`variation-${index}4`}
+                                href={"#"}
+                                className="flex items-center gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  closeAllDropdown();
+                                }}
+                              >
+                                <ProgressiveImg
+                                  src={item.image}
+                                  alt={item.title}
+                                  className="w-10 h-10 rounded-full"
+                                />
+                                {item.title}
+                              </HeaderLinkButton>
+                            );
+                          }
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 {menuList.map((item, index) => {
                   const hasSubCategories = item.subCategories?.length > 0;
@@ -521,7 +776,7 @@ export default function NavigationHeader() {
                     </div>
                   );
                 })}
-                <ProfileDropdown />
+                <ProfileDropdown uniqueId={"mobile-nav-profile"} />
               </nav>
             )}
           </motion.div>

@@ -129,10 +129,15 @@ export default function Header() {
         </Link>
 
         <div className="text-xl flex items-center gap-5">
-          <IoIosSearch />
+          <Link href={"/search"}>
+            <IoIosSearch />
+          </Link>
           {/* <GoHeart /> */}
           {!hideCartPopup && <CartPopup />}
-          <ProfileDropdown className={"hidden lg:block"} />
+          <ProfileDropdown
+            className={"hidden lg:block"}
+            uniqueId={"desktop-header-profile"}
+          />
         </div>
       </div>
 

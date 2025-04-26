@@ -13,6 +13,7 @@ import CartPopup from "../../ui/CartPopup";
 import { fetchCart } from "@/_actions/cart.action";
 import { IoIosSearch } from "react-icons/io";
 import { GoHeart } from "react-icons/go";
+import ProfileDropdown from "@/components/ui/ProfileDropdown";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -111,9 +112,12 @@ export default function Header() {
         </Link>
 
         <div className="text-xl flex items-center gap-5">
-          <IoIosSearch />
+          <Link href={"/search"}>
+            <IoIosSearch />
+          </Link>
           {/* <GoHeart /> */}
           <CartPopup />
+          <ProfileDropdown className={"hidden lg:block"} />
         </div>
       </div>
 

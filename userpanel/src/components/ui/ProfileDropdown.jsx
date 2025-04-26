@@ -2,19 +2,29 @@ import Cookies from "js-cookie";
 import { helperFunctions } from "@/_helper";
 import { setOpenProfileDropdown } from "@/store/slices/commonSlice";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { HiOutlineUser } from "react-icons/hi2";
 import { IoIosArrowDown } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { HeaderLinkButton } from "./button";
 import { fetchCart } from "@/_actions/cart.action";
-import { setOpenDropdownMobile } from "../../store/slices/commonSlice";
-
-export default function ProfileDropdown({ className = "" }) {
+import { useEffect } from "react";
+export default function ProfileDropdown({ className = "", uniqueId }) {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { openProfileDropdown } = useSelector(({ common }) => common);
+  const { openProfileDropdown, lastScrollY } = useSelector(
+    ({ common }) => common
+  );
   let currentUser = helperFunctions?.getCurrentUser();
+
+  const isOpen = openProfileDropdown === uniqueId;
+
+  const toggleDropdown = () => {
+    if (isOpen) {
+      dispatch(setOpenProfileDropdown(null));
+    } else {
+      dispatch(setOpenProfileDropdown(uniqueId));
+    }
+  };
 
   const logOutHandler = () => {
     localStorage.clear();
@@ -23,43 +33,32 @@ export default function ProfileDropdown({ className = "" }) {
     router.push("/");
   };
 
+  // useEffect(() => {
+  //   if (uniqueId === "desktop-header-profile" && lastScrollY > 100) {
+  //     dispatch(setOpenProfileDropdown(null));
+  //   }
+  // }, [uniqueId, lastScrollY]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const profileDropDown = [
-    {
-      title: "Home",
-      href: "/",
-    },
-    {
-      title: "Profile",
-      href: "/profile",
-    },
-    {
-      title: "Order History",
-      href: "/order-history",
-    },
-    {
-      title: "Return History",
-      href: "/return-history",
-    },
-    {
-      title: "Log Out",
-      onClick: logOutHandler,
-    },
+    { title: "Home", href: "/" },
+    { title: "Profile", href: "/profile" },
+    { title: "Order History", href: "/order-history" },
+    { title: "Return History", href: "/return-history" },
+    { title: "Log Out", onClick: logOutHandler },
   ];
 
   return (
     <div className={`${className}`}>
       {currentUser ? (
         <>
-          {/* Mobile Dropdown */}
+          {/* Mobile */}
           <div className="lg:hidden flex flex-col border-t pt-4">
             <p className="uppercase text-basegray my-1.5 font-semibold text-sm ps-3">
               Profile
             </p>
             <HeaderLinkButton
               className="text-gray-700 px-0 hover:text-black flex justify-between items-center w-full py-2.5"
-              onClick={() =>
-                dispatch(setOpenProfileDropdown(!openProfileDropdown))
-              }
+              onClick={toggleDropdown}
             >
               <div className="flex items-center gap-5">
                 <div className="h-7 w-7 rounded-full bg-primary text-white text-xs font-semibold flex justify-center items-center">
@@ -74,15 +73,14 @@ export default function ProfileDropdown({ className = "" }) {
               </div>
               <IoIosArrowDown
                 className={`transition-all text-primary duration-300 ease-in-out transform ${
-                  openProfileDropdown
-                    ? "rotate-180 scale-110"
-                    : "rotate-0 scale-100"
+                  isOpen ? "rotate-180 scale-110" : "rotate-0 scale-100"
                 }`}
               />
             </HeaderLinkButton>
+
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                openProfileDropdown
+                isOpen
                   ? "max-h-96 opacity-100 translate-y-0"
                   : "max-h-0 opacity-0 -translate-y-2"
               }`}
@@ -94,7 +92,7 @@ export default function ProfileDropdown({ className = "" }) {
                     href={link.href || "#"}
                     onClick={() => {
                       if (link.onClick) link.onClick();
-                      dispatch(setOpenProfileDropdown(false));
+                      dispatch(setOpenProfileDropdown(null)); // close after click
                     }}
                     className="py-1 hover:!text-primary"
                   >
@@ -105,11 +103,11 @@ export default function ProfileDropdown({ className = "" }) {
             </div>
           </div>
 
-          {/* Desktop Dropdown */}
+          {/* Desktop */}
           <div
             className="hidden lg:flex items-center justify-between gap-1 cursor-pointer relative"
-            onMouseEnter={() => dispatch(setOpenProfileDropdown(true))}
-            onMouseLeave={() => dispatch(setOpenProfileDropdown(false))}
+            onMouseEnter={() => dispatch(setOpenProfileDropdown(uniqueId))}
+            onMouseLeave={() => dispatch(setOpenProfileDropdown(null))}
           >
             <div className="h-7 w-7 rounded-full bg-primary text-white text-xs font-semibold flex justify-center items-center">
               {helperFunctions.getNameInitials(
@@ -119,14 +117,12 @@ export default function ProfileDropdown({ className = "" }) {
             </div>
             <IoIosArrowDown
               className={`transition-all text-primary duration-300 ease-in-out transform ${
-                openProfileDropdown
-                  ? "rotate-180 scale-110"
-                  : "rotate-0 scale-100"
+                isOpen ? "rotate-180 scale-110" : "rotate-0 scale-100"
               }`}
             />
             <div
               className={`absolute top-10 left-1/2 -translate-x-1/2 text-base w-44 2xl:w-52 bg-offwhite shadow-lg uppercase font-light z-50 overflow-hidden transition-all duration-300 ease-in-out ${
-                openProfileDropdown
+                isOpen
                   ? "max-h-96 opacity-100 translate-y-0"
                   : "max-h-0 opacity-0 -translate-y-2"
               }`}
@@ -137,7 +133,7 @@ export default function ProfileDropdown({ className = "" }) {
                     key={`desktop-dropdown-${index}`}
                     href={link.href || "#"}
                     onClick={link.onClick || undefined}
-                    className="block py-2 px-4 text-baseblack hover:!text-primary border-b hover:bg-gray-200  last:border-b-0"
+                    className="block py-2 px-4 text-baseblack hover:!text-primary border-b hover:bg-gray-200 last:border-b-0"
                   >
                     {link.title}
                   </HeaderLinkButton>
@@ -154,6 +150,7 @@ export default function ProfileDropdown({ className = "" }) {
           >
             <HiOutlineUser className="text-xl" />
           </HeaderLinkButton>
+          <div className="lg:hidden w-full h-[1px] bg-gray-e2 mb-2.5"></div>
           <HeaderLinkButton className="lg:hidden" href={"/auth/login"}>
             Login
           </HeaderLinkButton>
