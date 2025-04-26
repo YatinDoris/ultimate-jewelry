@@ -416,21 +416,6 @@ const ProductDetailPage = ({ customizePage }) => {
     };
   });
 
-  //Enricehd Variations only with variationsTypeName passed in it
-  // const enrichedVariations = selectedVariations.map((selectedVar) => {
-  //   const matchedVariation = productDetail?.variations?.find(
-  //     (v) => v.variationId === selectedVar.variationId
-  //   );
-
-  //   const matchedType = matchedVariation?.variationTypes?.find(
-  //     (vt) => vt.variationTypeId === selectedVar.variationTypeId
-  //   );
-
-  //   return {
-  //     variationTypeName: matchedType?.variationTypeName,
-  //   };
-  // });
-
   let customProductPrice = 0;
   if (productDetail?.netWeight && selectedVariations?.length) {
     customProductPrice = helperFunctions.calculateCustomProductPrice({
@@ -495,7 +480,7 @@ const ProductDetailPage = ({ customizePage }) => {
               </h2>
               {!isCustomizePage && (
                 <h2 className="text-base md:text-base text-basegray mt-2 font-castoro">
-                  sku: {productDetail?.saltSKU}
+                  sku: {productDetail?.sku}
                 </h2>
               )}
 
@@ -818,9 +803,9 @@ const ProductDetailTabs = () => {
               Information
             </p>
 
-            {productDetail?.saltSKU && (
+            {productDetail?.sku && (
               <p className="pt-4 text-lg md:text-xl text-baseblack">
-                SKU: {productDetail?.saltSKU}
+                SKU: {productDetail?.sku}
               </p>
             )}
             {productDetail?.shortDescription && (
