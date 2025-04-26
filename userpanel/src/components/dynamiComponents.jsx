@@ -250,9 +250,10 @@ export const CaratWeightSlider = dynamic(
 );
 
 export const OrderSummary = dynamic(
-  () => import("./ui/order-history/OrderSummary.jsx"), {
-  ssr: false,
-}
+  () => import("./ui/order-history/OrderSummary.jsx"),
+  {
+    ssr: false,
+  }
 );
 
 export const ProductNotFound = dynamic(
@@ -262,6 +263,12 @@ export const ProductNotFound = dynamic(
   }
 );
 
+export const ReturnRequestPage = dynamic(
+  () => import("./ui/return-request/ReturnRequestPage.jsx"),
+  {
+    ssr: false,
+  }
+);
 export const SearchProductPage = dynamic(
   () => import("./ui/SearchProductPage.jsx"),
   {

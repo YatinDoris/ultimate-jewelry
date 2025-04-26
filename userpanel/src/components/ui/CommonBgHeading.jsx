@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-const CommonBgHeading = ({ title, backText, backHref = "/" }) => {
+const CommonBgHeading = ({
+  title,
+  backText,
+  rightText,
+  rightTextHref = "/",
+  backHref = "/",
+}) => {
   return (
     <div className="w-full bg-alabaster mt-[90px] lg:mt-4 py-6">
       <div className=" mx-auto px-4 flex items-center justify-center relative container">
@@ -16,6 +22,13 @@ const CommonBgHeading = ({ title, backText, backHref = "/" }) => {
         <h1 className="text-2xl xl:text-3xl font-medium font-castoro text-baseblack">
           {title}
         </h1>
+
+        {rightText && (
+          <p className="text-baseblack font-castoro text-base lg:text-lg 2xl:text-xl  absolute right-0 xl:right-10 hidden xs:block">
+            {" "}
+            &lt; {rightText}
+          </p>
+        )}
       </div>
     </div>
   );

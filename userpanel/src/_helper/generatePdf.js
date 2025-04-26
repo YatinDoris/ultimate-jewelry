@@ -29,14 +29,18 @@ export const generatePDF = async (orderData, sizePage = "1") => {
     products: await Promise.all(
       orderData?.products?.map(async (x) => ({
         ...x,
-        productImage: `data:image/png;base64,${await convertImageToBase64(x?.productImage)}`,
+        productImage: `data:image/png;base64,${await convertImageToBase64(
+          x?.productImage
+        )}`,
       }))
     ),
   };
 
   const doc = new jsPDF(sizePage, "pt", "a4");
   const date = new Date();
-  const formattedDate = `Date: ${date.getMonth() + 1} / ${date.getDate()} / ${date.getFullYear()}`;
+  const formattedDate = `Date: ${
+    date.getMonth() + 1
+  } / ${date.getDate()} / ${date.getFullYear()}`;
   const pageWidth = doc.internal.pageSize.getWidth();
   const topHeight = 25;
 
@@ -44,31 +48,84 @@ export const generatePDF = async (orderData, sizePage = "1") => {
   doc.setFontSize(20);
   doc.text("Invoice", pageWidth - 150, topHeight);
   doc.setFontSize(10);
-  doc.text(formattedDate, pageWidth - 150, topHeight + 15).setFont(undefined, "bold");
+  doc
+    .text(formattedDate, pageWidth - 150, topHeight + 15)
+    .setFont(undefined, "bold");
 
   doc.text("Order Details", 40, topHeight).setFont(undefined, "normal");
   doc.text(`Order Number: ${invoiceData?.orderNumber}`, 40, topHeight + 15);
-  doc.text(`Order Date: ${new Date(invoiceData?.createdDate)?.toLocaleDateString()}`, 40, topHeight + 30);
+  doc.text(
+    `Order Date: ${new Date(invoiceData?.createdDate)?.toLocaleDateString()}`,
+    40,
+    topHeight + 30
+  );
   doc.text(`Order Status: ${invoiceData?.orderStatus}`, 40, topHeight + 45);
-  doc.text(`Payment Status: ${invoiceData?.paymentStatus}`, 40, topHeight + 60).setFont(undefined, "bold");
+  doc
+    .text(`Payment Status: ${invoiceData?.paymentStatus}`, 40, topHeight + 60)
+    .setFont(undefined, "bold");
 
   // Shipping Info
   doc.text("Shipping Address", 40, topHeight + 80).setFont(undefined, "normal");
   doc.text(`Name: ${invoiceData?.shippingAddress?.name}`, 40, topHeight + 95);
-  doc.text(`Email: ${invoiceData?.shippingAddress?.email}`, 40, topHeight + 110);
+  doc.text(
+    `Email: ${invoiceData?.shippingAddress?.email}`,
+    40,
+    topHeight + 110
+  );
   doc.text(
     `Address: ${invoiceData.shippingAddress.address}, ${invoiceData.shippingAddress.city}, ${invoiceData.shippingAddress.state}, ${invoiceData.shippingAddress.country} - ${invoiceData.shippingAddress.pinCode}`,
     40,
     topHeight + 125
   );
-  doc.text(`Mobile: ${invoiceData?.shippingAddress?.mobile}`, 40, topHeight + 140);
+  doc.text(
+    `Mobile: ${invoiceData?.shippingAddress?.mobile}`,
+    40,
+    topHeight + 140
+  );
 
   // Table Headers and Body
   const headers = [["IMAGE", "PRODUCT", "QTY", "UNIT PRICE ($)", "TOTAL ($)"]];
+  // const data = invoiceData?.products?.map((x) => {
+  //   const variations = x?.variations
+  //     ?.map((y) => `* ${y?.variationName} : ${y?.variationTypeName}`)
+  //     .join("\n");
+  //   return [
+  //     {
+  //       content: "",
+  //       image: x?.productImage,
+  //       width: 35,
+  //       height: 35,
+  //       alias: x?.productName,
+  //     },
+  //     `${x?.productName}\n\n${variations}`,
+  //     x?.cartQuantity,
+  //     helperFunctions.toFixedNumber(x?.productPrice),
+  //     helperFunctions.toFixedNumber(x?.cartQuantity * x?.productPrice),
+  //   ];
+  // });
   const data = invoiceData?.products?.map((x) => {
     const variations = x?.variations
       ?.map((y) => `* ${y?.variationName} : ${y?.variationTypeName}`)
       .join("\n");
+
+    const isDiamond = Boolean(x?.diamondDetail);
+
+    const nameLine = `${x?.productName}\n`; // one line space below name
+    const priceLine = `$${helperFunctions.toFixedNumber(x.productPrice)}`;
+
+    const diamondDetail = isDiamond
+      ? `\n\nDiamond Details:\n` +
+        `- Carat: ${x.diamondDetail.caratWeight}\n` +
+        `- Clarity: ${x.diamondDetail.clarity}\n` +
+        `- Color: ${x.diamondDetail.color}\n` +
+        `- Price: $${helperFunctions.toFixedNumber(x.diamondDetail.price)}\n` +
+        `- Shape: ${x.diamondDetail.shapeName}`
+      : "";
+
+    const unitPrice = isDiamond
+      ? Number(x.diamondDetail.price) + Number(x.productPrice)
+      : x.productPrice;
+
     return [
       {
         content: "",
@@ -77,10 +134,10 @@ export const generatePDF = async (orderData, sizePage = "1") => {
         height: 35,
         alias: x?.productName,
       },
-      `${x?.productName}\n\n${variations}`,
+      `${nameLine}${priceLine}\n${variations}${diamondDetail}`,
       x?.cartQuantity,
-      helperFunctions.toFixedNumber(x?.productPrice),
-      helperFunctions.toFixedNumber(x?.cartQuantity * x?.productPrice),
+      helperFunctions.toFixedNumber(unitPrice),
+      helperFunctions.toFixedNumber(x?.unitAmount),
     ];
   });
 
@@ -108,7 +165,16 @@ export const generatePDF = async (orderData, sizePage = "1") => {
           const imgHeight = 33;
           const xOffset = data?.cell?.x + (cellWidth - imgWidth) / 2;
           const yOffset = data?.cell?.y + (cellHeight - imgHeight) / 2;
-          doc.addImage(img, "JPEG", xOffset, yOffset, imgWidth, imgWidth, undefined, "FAST");
+          doc.addImage(
+            img,
+            "JPEG",
+            xOffset,
+            yOffset,
+            imgWidth,
+            imgWidth,
+            undefined,
+            "FAST"
+          );
         }
       }
     },
@@ -117,16 +183,30 @@ export const generatePDF = async (orderData, sizePage = "1") => {
   const bottomRightX = pageWidth - 150;
   const bottomRightY = doc.lastAutoTable.finalY + 20;
 
-  doc.text(`Subtotal: $ ${helperFunctions.toFixedNumber(invoiceData?.subTotal)}`, bottomRightX, bottomRightY);
-  doc.text(`Taxes: $ ${helperFunctions.toFixedNumber(invoiceData?.salesTax)}`, bottomRightX, bottomRightY + 15);
+  doc.text(
+    `Subtotal: $ ${helperFunctions.toFixedNumber(invoiceData?.subTotal)}`,
+    bottomRightX,
+    bottomRightY
+  );
+  doc.text(
+    `Taxes: $ ${helperFunctions.toFixedNumber(invoiceData?.salesTax)}`,
+    bottomRightX,
+    bottomRightY + 15
+  );
   doc
     .text(
-      `Shipping Charge: $ ${helperFunctions.toFixedNumber(invoiceData?.shippingCharge)}`,
+      `Shipping Charge: $ ${helperFunctions.toFixedNumber(
+        invoiceData?.shippingCharge
+      )}`,
       bottomRightX,
       bottomRightY + 30
     )
     .setFont(undefined, "bold");
-  doc.text(`Total Amount: $ ${helperFunctions.toFixedNumber(invoiceData?.total)}`, bottomRightX, bottomRightY + 50);
+  doc.text(
+    `Total Amount: $ ${helperFunctions.toFixedNumber(invoiceData?.total)}`,
+    bottomRightX,
+    bottomRightY + 50
+  );
 
   doc.save(`${invoiceData?.orderNumber}.pdf`);
 };

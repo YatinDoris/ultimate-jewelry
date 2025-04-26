@@ -184,7 +184,7 @@ const CartPage = () => {
   };
 
   return (
-    <div className="mx-auto pt-10 lg:pt-10 2xl:pt-12">
+    <div className="mx-auto pt-10  2xl:pt-12">
       {cartLoading ? (
         <CartSkeleton />
       ) : cartList?.length ? (
@@ -224,7 +224,8 @@ const CartPage = () => {
                           {cartItem.productName}
                         </Link>
                         <p className="text-base md:text-xl lg:text-2xl font-medium font-castoro text-end">
-                          {cartItem?.productDiscount ? (
+                          {cartItem?.productDiscount &&
+                          !cartItem?.diamondDetail ? (
                             <span className="text-lg text-gray-500 line-through mr-2">
                               $
                               {helperFunctions.toFixedNumber(

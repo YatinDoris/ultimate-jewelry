@@ -14,14 +14,14 @@ const DiamondDetailDrawer = ({
   const isOpen = openDiamondDetailDrawer === cartItem.id;
 
   return (
-    <div className="mt-6 border max-w-sm">
+    <div className="mt-2 xs:mt-4 border max-w-sm">
       <div
-        className="flex w-full items-center justify-between px-4 py-1 md:py-2 border-b bg-alabaster  cursor-pointer"
+        className="flex w-full items-center justify-between px-4 py-1 md:py-1 border-b bg-alabaster  cursor-pointer"
         onClick={() =>
           dispatch(setOpenDiamondDetailDrawer(isOpen ? null : cartItem.id))
         }
       >
-        <h4 className="font-semibold text-sm md:text-lg">Diamond Detail</h4>
+        <h4 className="font-semibold text-sm md:text-base">Diamond Detail</h4>
         <button
           className={`transition-transform duration-300 ${
             isOpen ? "rotate-0" : "rotate-180"
@@ -40,10 +40,10 @@ const DiamondDetailDrawer = ({
         <>
           <div className="flex flex-col xs:flex-row xs:items-stretch">
             <div className="flex flex-col">
-              <p className="font-medium text-sm md:text-lg text-baseblack pt-1 md:pt-2 px-4">
+              <p className="font-medium text-sm md:text-base text-baseblack pt-1 md:pt-2 px-4">
                 Lab Created {cartItem.diamondDetail.caratWeight} Carat
               </p>
-              <p className="font-medium text-sm md:text-lg text-baseblack pt-1 md:pt-2 px-4">
+              <p className="font-medium text-sm md:text-base text-baseblack pt-1 md:pt-2 px-4">
                 {cartItem.diamondDetail.shapeName} Diamond
               </p>
             </div>
@@ -51,16 +51,16 @@ const DiamondDetailDrawer = ({
             <div className="hidden xs:block border-l border-gray-300 mx-2 h-12 md:h-16" />
 
             <div className="flex flex-col">
-              <p className="font-medium text-sm md:text-lg text-baseblack pt-1 md:pt-2 px-4">
+              <p className="font-medium text-sm md:text-base text-baseblack pt-1 md:pt-2 px-4">
                 Clarity- {cartItem.diamondDetail.clarity}
               </p>
-              <p className="font-medium text-sm md:text-lg text-baseblack pt-1 md:pt-2 px-4">
+              <p className="font-medium text-sm md:text-base text-baseblack pt-1 md:pt-2 px-4">
                 Color- {cartItem.diamondDetail.color}
               </p>
             </div>
           </div>
 
-          <div className="px-4 md:py-2 py-1 font-medium text-sm md:text-xl">
+          <div className="px-4 md:py-2 py-1 font-medium text-sm md:text-lg">
             Diamond Price:{" "}
             {isCheckoutPage ? (
               <span className="font-bold">
@@ -74,7 +74,7 @@ const DiamondDetailDrawer = ({
                   .toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                   })}
-                {cartItem?.quantity > 1 && ` × ${cartItem.quantity}`}
+                {` × ${cartItem.quantity}`}
               </span>
             ) : (
               <span className="font-bold">

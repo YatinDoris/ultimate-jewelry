@@ -16,7 +16,7 @@ const Shippingpage = () => {
   const { cartLoading, cartList } = useSelector(({ cart }) => cart);
 
   return (
-    <div className="mx-auto pt-10 lg:pt-10 2xl:pt-12">
+    <div className="mx-auto pt-10 2xl:pt-12">
       {cartLoading ? (
         <ShippingSkeleton />
       ) : (
