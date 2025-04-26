@@ -56,24 +56,9 @@ export const databaseUrls = {
 // COMPANY_INFO
 export const companyEmail = process.env.NEXT_PUBLIC_COMPANY_EMAIL;
 export const companyPhoneNo = process.env.NEXT_PUBLIC_COMPANY_PHONE_NO;
-export const companyAddress = process.env.NEXT_PUBLIC_COMPANY_ADDRESS;
-export const companyLogo = process.env.COMPANY_LOGO;
 
 // SOCIAL_MEDIA_URL
-export const contactNumber = process.env.NEXT_PUBLIC_CONTACT_NUMBER;
 export const facebookUrl = process.env.NEXT_PUBLIC_FACEBOOK_URL;
 export const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL;
 export const tiktokUrl = process.env.NEXT_PUBLIC_TIKTOK_URL;
 export const pinterestUrl = process.env.NEXT_PUBLIC_PINTEREST_URL;
-
-// MAIL ASSETS
-export const facebookIconUrl = process.env.FACEBOOK_ICON_URL;
-export const callIconUrl = process.env.CALL_ICON_URL;
-export const locationUrl = process.env.NEXT_PUBLIC_LOCATION_URL;
-export const locationIconUrl = process.env.NEXT_PUBLIC_LOCATION_URL;
-
-// Google Analytics Configuration
-// export const googleAnalyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;
-
-// OTHER
-export const websiteUrl = process.env.NEXT_PUBLIC_WEBSITE_URL;

@@ -261,3 +261,10 @@ export const ProductNotFound = dynamic(
     ssr: false,
   }
 );
+
+export const SearchProductPage = dynamic(
+  () => import("./ui/SearchProductPage.jsx"),
+  {
+    ssr: false,
+  }
+);

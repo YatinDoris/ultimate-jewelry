@@ -7,6 +7,7 @@ import {
   setRecentlyViewProductList,
   setUniqueFilterOptions,
   setProductMessage,
+  setSearchedProductList,
 } from "@/store/slices/productSlice";
 import { productService, recentlyViewedService } from "@/_services";
 import { messageType } from "@/_helper/constants";
@@ -254,4 +255,24 @@ export const fetchSingleProductDataById = (productId) => {
       dispatch(setProductLoading(false));
     }
   };
+};
+
+
+export const fetchSearchedProducts = (params) => async (dispatch) => {
+  try {
+    dispatch(setProductLoading(true));
+    const response = await productService.searchProducts(params);
+    if (!response) {
+      dispatch(setSearchedProductList([]));
+      return [];
+    }
+    // set searched product list to redux store
+    dispatch(setSearchedProductList(response));
+    return response;
+  } catch (error) {
+    console.error("Search fetch error:", error);
+    return [];
+  } finally {
+    dispatch(setProductLoading(false));
+  }
 };

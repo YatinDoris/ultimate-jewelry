@@ -1,5 +1,6 @@
+import { companyEmail } from "@/_helper";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
-import ReturnPolicyContent from "@/components/ui/ReturnPolicyContent";
+import PolicyContent from "@/components/ui/PolicyContent";
 const privacySections = [
     {
         description:
@@ -31,7 +32,7 @@ const privacySections = [
             <>
                 <p><strong>How to Initiate a Return</strong></p>
                 <ol className="list-decimal list-inside mt-2">
-                    <li>Contact Us: Email our support team at [insert email] or fill out the return request form [insert link].</li>
+                    <li>{`Contact Us: Email our support team at ${companyEmail} or fill out the return request form.`}</li>
                     <li>Receive a Free Shipping Label: We'll email you a prepaid shipping label.</li>
                     <li>Pack & Ship: Securely pack your item with all original contents and drop it off at the nearest shipping center.</li>
                 </ol>
@@ -66,7 +67,7 @@ const privacySections = [
         description: (
             <>
                 <p><strong>Questions?</strong></p>
-                <p>We’re here to help! Reach out to us at help@katanoff.com, and we’ll be happy to guide you through the return process.</p>
+                <p>{`We’re here to help! Reach out to us at ${companyEmail}, and we’ll be happy to guide you through the return process.`}</p>
             </>
         ),
     },
@@ -81,7 +82,7 @@ const ReturnPolicy = () => {
                 backHref="/"
             />
             <div className="container ">
-                <ReturnPolicyContent sections={privacySections} />
+                <PolicyContent sections={privacySections} />
             </div>
         </div>
     );

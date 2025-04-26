@@ -1,4 +1,4 @@
-const ReturnPolicyContent = ({ sections = [] }) => {
+const PolicyContent = ({ sections = [] }) => {
     return (
         <div className="py-6 md:py-10">
             <div className="flex flex-col gap-8 text-gray-800 text-sm md:text-base leading-relaxed">
@@ -15,4 +15,4 @@ const ReturnPolicyContent = ({ sections = [] }) => {
     );
 };
 
-export default ReturnPolicyContent;
+export default PolicyContent;

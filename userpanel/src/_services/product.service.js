@@ -4,6 +4,7 @@ import {
   sanitizeValue,
   productsUrl,
   customizationUrl,
+  sanitizeObject,
 } from "../_helper";
 import { GOLD_COLOR, GOLD_TYPES } from "../_helper/constants";
 import { DIAMONDS_LIST } from "../_helper/diamondsList";
@@ -754,6 +755,87 @@ const getCustomizeProduct = (collectionType, collectionTitle) => {
   });
 };
 
+const searchProducts = (params) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let { searchValue } = sanitizeObject(params);
+      searchValue = searchValue ? searchValue.trim() : null;
+      if (searchValue) {
+        const allActiveProductsData =
+          await productService.getAllActiveProducts();
+
+        const searchResults = allActiveProductsData.filter((product) => {
+          const fieldsToSearch = [
+            product.categoryName,
+            product.subCategoryName,
+            product.sku,
+            product.saltSKU,
+            product.productName,
+          ];
+
+          if (
+            product.productTypeNames &&
+            Array.isArray(product.productTypeNames)
+          ) {
+            product.productTypeNames.forEach((productTypeName) => {
+              fieldsToSearch.push(productTypeName);
+            });
+          }
+
+          if (product.variations && Array.isArray(product.variations)) {
+            product.variations.forEach((variation) => {
+              fieldsToSearch.push(variation.variationName);
+              variation.variationTypes.forEach((variationType) => {
+                fieldsToSearch.push(variationType.variationTypeName);
+              });
+            });
+          }
+          if (
+            product.collectionNames &&
+            Array.isArray(product.collectionNames)
+          ) {
+            product.collectionNames.forEach((collection) => {
+              fieldsToSearch.push(collection);
+            });
+          }
+
+          // Check if any field contains the search term (case-insensitive)
+          return fieldsToSearch.some((field) =>
+            field
+              ? field.toLowerCase().includes(searchValue.toLowerCase())
+              : false
+          );
+        });
+        const updatedSearchResults = searchResults.map((product) => {
+          const { price = 0 } = helperFunctions.getMinPriceVariCombo(
+            product.variComboWithQuantity
+          );
+          return {
+            ...product,
+            basePrice: price,
+            baseSellingPrice: helperFunctions.getSellingPrice(
+              price,
+              product.discount
+            ),
+            discount: product.discount,
+            goldTypeVariations: product?.variations?.find(
+              (x) => x?.variationName.toLowerCase() === GOLD_TYPES.toLowerCase()
+            )?.variationTypes,
+            goldColorVariations: product?.variations?.find(
+              (x) => x?.variationName.toLowerCase() === GOLD_COLOR.toLowerCase()
+            )?.variationTypes,
+          };
+        });
+        resolve(updatedSearchResults);
+      } else {
+        reject(new Error("Invalid Data"));
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 export const productService = {
   getAllActiveProducts,
   getLatestProducts,
@@ -765,4 +847,5 @@ export const productService = {
   getSingleProductDataById,
   getProcessProducts,
   getCustomizeProduct,
+  searchProducts
 };
