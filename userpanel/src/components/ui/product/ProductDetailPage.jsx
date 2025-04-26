@@ -449,7 +449,7 @@ const ProductDetailPage = ({ customizePage }) => {
         <DetailPageSkeleton />
       ) : productDetail && Object.keys(productDetail).length > 0 ? (
         <>
-          <div className="container grid grid-cols-1 lg:grid-cols-[55%_auto] gap-12">
+          <div className="container grid grid-cols-1 lg:grid-cols-[55%_auto] gap-6 xs:gap-12">
             <div className="hidden lg:block">
               {" "}
               <div className="grid grid-cols-2 gap-4 auto-rows-min ">
@@ -490,7 +490,7 @@ const ProductDetailPage = ({ customizePage }) => {
             </div>
 
             <div className="flex flex-col lg:p-6">
-              <h2 className="text-2xl md:text-3xl font-medium">
+              <h2 className="text-xl xs:text-2xl md:text-3xl font-medium">
                 {productDetail?.productName}
               </h2>
               {!isCustomizePage && (
@@ -535,12 +535,12 @@ const ProductDetailPage = ({ customizePage }) => {
 
               {!isCustomizePage && (
                 <div className="mt-6 lg:mt-10 flex items-center gap-3">
-                  <p className="font-medium text-lg w-[110px] xs:w-[120px]">
+                  <p className="font-medium text-base  md:text-lg w-[100px] xs:w-[120px]">
                     Qty:
                   </p>
                   <div className="flex items-center py-2 bg-white">
                     <button
-                      className={`px-2 text-xl font-medium text-baseblack ${
+                      className={`px-2 text-base  md:text-xl font-medium text-baseblack ${
                         productQuantity <= minProductQuantity || !availableQty
                           ? "opacity-50 cursor-not-allowed"
                           : ""
@@ -557,11 +557,11 @@ const ProductDetailPage = ({ customizePage }) => {
                       −
                     </button>
 
-                    <span className="px-4 text-xl font-medium text-primary">
+                    <span className="px-4 text-base  md:text-xl font-medium text-primary">
                       {productQuantity}
                     </span>
                     <button
-                      className={`px-2 text-xl font-medium text-baseblack ${
+                      className={`px-2 text-base  md:text-xl font-medium text-baseblack ${
                         productQuantity >= maxProductQuantity ||
                         productQuantity >= availableQty
                           ? "opacity-50 cursor-not-allowed"

@@ -9,6 +9,7 @@ import checkout from "./slices/checkoutSlice.js";
 import payment from "./slices/paymentSlice.js";
 import subscriber from "./slices/subscriberSlice.js";
 import selectedDiamond from "./slices/selectDiamondSlice.js";
+import returns from "./slices/returnSlice.js";
 
 const reducers = combineReducers({
   common,
@@ -20,7 +21,8 @@ const reducers = combineReducers({
   payment,
   subscriber,
   order,
-  selectedDiamond
+  selectedDiamond,
+  returns,
 });
 
 const store = configureStore({

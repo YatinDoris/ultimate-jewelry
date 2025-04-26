@@ -10,10 +10,15 @@ const CartNotFound = ({ textClassName = "" }) => {
 
   return (
     <div className="flex flex-col items-center justify-center px-4 h-full">
-      <CustomImg srcAttr={cartImage} altAttr="" titleAttr="" className="w-80" />
+      <CustomImg
+        srcAttr={cartImage}
+        altAttr=""
+        titleAttr=""
+        className="lg:w-70"
+      />
 
       <p
-        className={`text-lg md:text-xl 2xl:text-3xl font-medium font-castoro text-baseblack mt-4 md:mt-6 text-center ${textClassName}`}
+        className={`text-lg md:text-xl 2xl:text-2xl font-medium font-castoro text-baseblack mt-4 md:mt-6 text-center ${textClassName}`}
       >
         Oops! Your cart is empty. Let’s fix that with some stunning jewelry
       </p>

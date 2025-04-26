@@ -156,7 +156,7 @@ const CheckoutCommonComponent = () => {
                           .toLocaleString("en-US", {
                             minimumFractionDigits: 2,
                           })}
-                        {cartItem?.quantity > 1 && ` × ${cartItem.quantity}`}
+                        {` × ${cartItem.quantity}`}
                       </p>
                     )}
                     <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
