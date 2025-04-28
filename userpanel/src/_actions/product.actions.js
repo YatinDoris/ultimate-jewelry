@@ -87,6 +87,42 @@ export const fetchProductDetailByProductName = (productName) => {
     }
   };
 };
+
+// export const fetchReletedProducts = (productName) => {
+//   return async (dispatch, getState) => {
+//     try {
+//       dispatch({
+//         type: actionTypes.START_LOADING,
+//         loaderId: "fetchDataLoader",
+//       });
+
+//       const reletedProductsList = await productService.getReletedProducts(
+//         productName
+//       );
+//       dispatch({
+//         type: actionTypes.STOP_LOADING,
+//         loaderId: "fetchDataLoader",
+//       });
+//       if (reletedProductsList) {
+//         dispatch({
+//           type: actionTypes.FETCH_RELETED_PRODUCT,
+//           reletedProductsList,
+//         });
+//       }
+//     } catch (e) {
+//       dispatch({
+//         type: actionTypes.FETCH_RELETED_PRODUCT,
+//         reletedProductsList: [],
+//       });
+//       dispatch({
+//         type: actionTypes.STOP_LOADING,
+//         loaderId: "fetchDataLoader",
+//       });
+//     }
+//   };
+// };
+
+
 export const getUniqueFilterOptions = (productList) => {
   const uniqueVariations = new Map(); // Use Map for O(1) lookups
   const tempSettingStyles = [];
