@@ -1,202 +1,147 @@
-// "use client";
-
-// import { useState } from "react";
-// import { Formik, Form, Field, ErrorMessage } from "formik";
-// import * as Yup from "yup";
-// import CommonBgHeading from "@/components/ui/CommonBgHeading";
-// import { LoadingPrimaryButton } from "@/components/ui/button";
-// import { OrderSummary } from "@/components/dynamiComponents";
-
-// export default function TrackOrderPage() {
-//     const [submittedData, setSubmittedData] = useState(null);
-//     const [showSummary, setShowSummary] = useState(false);
-
-//     const validationSchema = Yup.object().shape({
-//         OrderNumber: Yup.string().required("Order number is required"),
-//         OrderBillingEmail: Yup.string()
-//             .email("Invalid email")
-//             .required("Order billing email is required"),
-//     });
-
-//     const handleSubmit = (values, { setSubmitting }) => {
-//         setSubmittedData(values);
-//         setShowSummary(true);
-//         setSubmitting(false);
-//     };
-
-//     return (
-//         <div className="flex flex-col items-center min-h-screen bg-gray-50">
-//             <CommonBgHeading title="Order Tracking" />
-
-//             <div className="container">
-//                 <div className="container w-full max-w-md p-6 bg-white shadow-md mt-10">
-//                     <div className="text-right text-sm text-gray-600 mb-2">
-//                         <span className="text-red-500">*</span> Required Fields
-//                     </div>
-
-//                     <Formik
-//                         initialValues={{ OrderNumber: "", OrderBillingEmail: "" }}
-//                         validationSchema={validationSchema}
-//                         onSubmit={handleSubmit}
-//                     >
-//                         {({ isSubmitting }) => (
-//                             <Form>
-//                                 <div className="mb-4">
-//                                     <label htmlFor="OrderNumber" className="block text-sm font-medium text-gray-700 mb-1">
-//                                         Order Number <span className="text-red-500">*</span>
-//                                     </label>
-//                                     <Field
-//                                         type="text"
-//                                         name="OrderNumber"
-//                                         placeholder="Order Number"
-//                                         className="w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-//                                     />
-//                                     <ErrorMessage name="OrderNumber" component="div" className="text-red-500 text-sm mt-1" />
-//                                 </div>
-
-//                                 <div className="mb-4">
-//                                     <label htmlFor="OrderBillingEmail" className="block text-sm font-medium text-gray-700 mb-1">
-//                                         Order Billing Email <span className="text-red-500">*</span>
-//                                     </label>
-//                                     <Field
-//                                         type="email"
-//                                         name="OrderBillingEmail"
-//                                         placeholder="Order Billing Email"
-//                                         className="w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-//                                     />
-//                                     <ErrorMessage name="OrderBillingEmail" component="div" className="text-red-500 text-sm mt-1" />
-//                                 </div>
-
-//                                 <LoadingPrimaryButton
-//                                     className="w-full uppercase bg-blue-900 text-white py-3 hover:bg-blue-800 transition-colors"
-//                                     loading={isSubmitting}
-//                                     type="submit"
-//                                 >
-//                                     {isSubmitting ? "Submitting..." : "Submit"}
-//                                 </LoadingPrimaryButton>
-//                             </Form>
-//                         )}
-//                     </Formik>
-//                 </div>
-
-//                 {/* Show Order Summary */}
-//                 {showSummary && submittedData && (
-//                     <div className="container">
-//                         <OrderSummary orderId={submittedData.OrderNumber} />
-//                         {/* You can also pass email to OrderSummary if needed */}
-//                     </div>
-//                 )}
-//             </div>
-//         </div>
-//     );
-// }
-
-
 "use client";
 
-import { useState } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { useSelector, useDispatch } from "react-redux";
-import CommonBgHeading from "@/components/ui/CommonBgHeading";
+import { fetchTrackOrderByOrderNumberAndEmail } from "@/_actions/order.action";
 import { LoadingPrimaryButton } from "@/components/ui/button";
-import { OrderSummary } from "@/components/dynamiComponents";
-import { setUserRegisterLoading } from "@/store/slices/userSlice";
+import CommonBgHeading from "@/components/ui/CommonBgHeading";
+import CommonNotFound from "@/components/ui/CommonNotFound";
+import ErrorMessage from "@/components/ui/ErrorMessage";
+import OrderDetails from "@/components/ui/OrderDetail";
 import { setIsHovered } from "@/store/slices/commonSlice";
+import { useFormik } from "formik";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import * as Yup from "yup";
 
-export default function TrackOrderPage() {
-    const [submittedData, setSubmittedData] = useState(null);
-    const [showSummary, setShowSummary] = useState(false);
+export default function TrackYourOrderPage() {
+  const dispatch = useDispatch();
+  const { isHovered } = useSelector(({ common }) => common);
+  const { orderDetail, orderDetailLoading, trackOrderLoading, orderMessage } =
+    useSelector(({ order }) => order);
 
-    const validationSchema = Yup.object().shape({
-        OrderNumber: Yup.string().required("Order number is required"),
-        OrderBillingEmail: Yup.string()
-            .email("Invalid email")
-            .required("Order billing email is required"),
-    });
+  const orderDetailsRef = useRef(null);
 
-    const { userRegisterLoading, isHovered } = useSelector((state) => ({
-        userRegisterLoading: state.user.userRegisterLoading,
-        isHovered: state.common.isHovered,
-    }));
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
-    const dispatch = useDispatch();
+  const formik = useFormik({
+    initialValues: {
+      orderNumber: "",
+      email: "",
+    },
+    validationSchema: Yup.object({
+      orderNumber: Yup.string().required("Order Number is required"),
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Order email Email is required"),
+    }),
+    onSubmit: async (values) => {
+      await dispatch(fetchTrackOrderByOrderNumberAndEmail(values));
+      setFormSubmitted(true);
+    },
+  });
 
-    const handleSubmit = (values, { setSubmitting }) => {
-        setSubmittedData(values);
-        setShowSummary(true);
-        dispatch(setUserRegisterLoading(false)); // Example: set loading to false after submission
-        setSubmitting(false);
-    };
+  const { handleSubmit, getFieldProps, touched, errors } = formik;
 
-    return (
-        <div className="flex flex-col items-center min-h-screen bg-gray-50">
-            <CommonBgHeading title="Order Tracking" />
+  useEffect(() => {
+    if (orderDetailsRef.current) {
+      const topOffset =
+        orderDetailsRef.current.getBoundingClientRect().top +
+        window.pageYOffset;
+      const customOffset = 100;
+      window.scrollTo({ top: topOffset - customOffset, behavior: "smooth" });
+    }
+  }, [orderDetail]);
 
-            <div className="container">
-                <div className="container w-full max-w-md p-6 bg-white shadow-md mt-10">
-                    <div className="text-right text-sm text-gray-600 mb-2">
-                        <span className="text-red-500">*</span> Required Fields
-                    </div>
+  return (
+    <div>
+      <CommonBgHeading title="Order Tracking" />
 
-                    <Formik
-                        initialValues={{ OrderNumber: "", OrderBillingEmail: "" }}
-                        validationSchema={validationSchema}
-                        onSubmit={handleSubmit}
-                    >
-                        {({ isSubmitting }) => (
-                            <Form>
-                                <div className="mb-4">
-                                    <label htmlFor="OrderNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                                        Order Number <span className="text-red-500">*</span>
-                                    </label>
-                                    <Field
-                                        type="text"
-                                        name="OrderNumber"
-                                        placeholder="Order Number"
-                                        className="w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                    <ErrorMessage name="OrderNumber" component="div" className="text-red-500 text-sm mt-1" />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label htmlFor="OrderBillingEmail" className="block text-sm font-medium text-gray-700 mb-1">
-                                        Order Billing Email <span className="text-red-500">*</span>
-                                    </label>
-                                    <Field
-                                        type="email"
-                                        name="OrderBillingEmail"
-                                        placeholder="Order Billing Email"
-                                        className="w-full p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                    <ErrorMessage name="OrderBillingEmail" component="div" className="text-red-500 text-sm mt-1" />
-                                </div>
-
-                                <div
-                                    className="uppercase mt-6 2xl:mt-8 w-full"
-                                    onMouseEnter={() => dispatch(setIsHovered(true))}
-                                    onMouseLeave={() => dispatch(setIsHovered(false))}
-                                >
-                                    <LoadingPrimaryButton
-                                        className="w-full uppercase bg-blue-900 text-white py-3 hover:bg-blue-800 transition-colors"
-                                        loading={userRegisterLoading}
-                                        loaderType={isHovered ? "" : "white"}
-                                        type="submit"
-                                    >
-                                        {isSubmitting ? "Submitting..." : "Submit"}
-                                    </LoadingPrimaryButton>
-                                </div>
-                            </Form>
-                        )}
-                    </Formik>
-                </div>
-
-                {showSummary && submittedData && (
-                    <div className="container">
-                        <OrderSummary orderId={submittedData.OrderNumber} />
-                    </div>
-                )}
+      <section className="my-28 flex justify-center">
+        <div className="container w-full max-w-xl">
+          <div className="flex justify-end mb-2">
+            <p className="block text-sm font-semibold mb-2">
+              <span className="text-red-500">*</span>Required Fields
+            </p>
+          </div>
+          <form onSubmit={handleSubmit} noValidate className="bg-white p-10">
+            {/* Order Number Field */}
+            <div className="mb-6">
+              <label
+                htmlFor="orderNumber"
+                className="block text-sm font-semibold  mb-2"
+              >
+                Order Number <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="orderNumber"
+                type="text"
+                {...getFieldProps("orderNumber")}
+                placeholder="Enter your Order Number"
+                className="w-full border px-4 py-2 focus:outline-none"
+              />
+              {touched.orderNumber && errors.orderNumber && (
+                <ErrorMessage message={errors.orderNumber} />
+              )}
             </div>
+
+            {/* Email Field */}
+            <div className="mb-6">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold  mb-2"
+              >
+                Order Billing Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="email"
+                type="email"
+                {...getFieldProps("email")}
+                placeholder="Enter your Billing Email"
+                className="w-full border px-4 py-2 focus:outline-none"
+              />
+              {touched.email && errors.email && (
+                <ErrorMessage message={errors.email} />
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <div
+              className="uppercase mt-6 2xl:mt-8 w-full"
+              onMouseEnter={() => dispatch(setIsHovered(true))}
+              onMouseLeave={() => dispatch(setIsHovered(false))}
+            >
+              <LoadingPrimaryButton
+                type="submit"
+                className="w-full uppercase"
+                loading={trackOrderLoading}
+                loaderType={isHovered ? "" : "white"}
+              >
+                Submit
+              </LoadingPrimaryButton>
+            </div>
+            {orderMessage && (
+              <div className="mt-4">
+                <ErrorMessage message={orderMessage.message} />
+              </div>
+            )}
+          </form>
         </div>
-    );
+      </section>
+
+      {/* Order Details Section */}
+      <div ref={orderDetailsRef}>
+        {formSubmitted && (
+          <>
+            {orderDetail ? (
+              <OrderDetails
+                orderLoading={orderDetailLoading}
+                orderDetail={orderDetail}
+              />
+            ) : (
+              <CommonNotFound message={"Order Not Found!"} />
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
 }

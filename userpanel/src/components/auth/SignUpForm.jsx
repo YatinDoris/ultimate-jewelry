@@ -269,6 +269,15 @@ const SignUpForm = () => {
           type={userRegisterMessage?.type}
         />
       ) : null}
+      {/* Privacy Policy */}
+      <p className="absolute bottom-8 md:bottom-20 lg:bottom-4 2xl:bottom-20 2xl:right-28 md:right-28 right-10 lg:right-10  ">
+        <Link
+          href="/privacy-policy"
+          className="underline text-sm sm:text-base 2xl:text-lg text-basegray hover:text-primary transition-all duration-300"
+        >
+          Privacy Policy
+        </Link>
+      </p>
     </div>
   );
 };

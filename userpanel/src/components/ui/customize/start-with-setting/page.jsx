@@ -10,11 +10,17 @@ import ringWithDiamondBlack from "@/assets/images/customize/customize-ringWithDi
 import { helperFunctions } from "@/_helper";
 import { setCustomProductDetails } from "@/store/slices/commonSlice";
 import SettingStyleCategorySwiper from "../../settingStyleSwiper";
+import { useSearchParams } from "next/navigation";
+import {
+  setSelectedDiamondShape,
+  setSelectedSettingStyle,
+  setSelectedVariations,
+} from "@/store/slices/productSlice";
 
 export default function StartWithSettingPage() {
   const { customizeProductList, customizeProductLoading, uniqueFilterOptions } =
     useSelector(({ product }) => product);
-
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   useEffect(() => {
     const customProduct = helperFunctions.getCustomProduct();
@@ -57,6 +63,27 @@ export default function StartWithSettingPage() {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    const settingStyle = searchParams.get("settingStyle");
+    const diamondShape = searchParams.get("diamondShape");
+    const variationName = searchParams.get("variationName");
+    const variationTypeName = searchParams.get("variationTypeName");
+
+    if (settingStyle) {
+      dispatch(setSelectedSettingStyle(settingStyle));
+    }
+    if (diamondShape) {
+      dispatch(setSelectedDiamondShape(diamondShape));
+    }
+    if (variationName && variationTypeName) {
+      dispatch(
+        setSelectedVariations({
+          [variationName]: variationTypeName,
+        })
+      );
+    }
+  }, [dispatch, searchParams]);
 
   return (
     <>

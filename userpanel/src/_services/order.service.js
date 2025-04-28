@@ -10,9 +10,7 @@ import {
 import { productService } from "./product.service";
 import { authenticationService } from "./authentication.service";
 // import { handleCancelOrderError } from "../store/actions/orderActions";
-import { GOLD_COLOR, GOLD_TYPES } from "../_helper/constants";
 import { returnService } from "./return.service";
-import { setOrderMessage } from "@/store/slices/orderSlice";
 import { diamondShapeService } from "./diamondShape.service";
 
 const getAllOrderList = () => {
@@ -45,7 +43,7 @@ const getAllOrderList = () => {
           ).length;
           const hasActiveReturns =
             isPendingOrApprovedOrReceivedReturnsCount ||
-            (rejectedCount > 0 && rejectedCount > 2)
+              (rejectedCount > 0 && rejectedCount > 2)
               ? false
               : true;
           return {
@@ -325,11 +323,11 @@ const processOrderProductItem = ({
   });
   const diamondDetail = orderProductItem?.diamondDetail
     ? {
-        ...orderProductItem?.diamondDetail,
-        shapeName: diamondShapeList?.find(
-          (shape) => shape.id === orderProductItem?.diamondDetail?.shapeId
-        )?.title,
-      }
+      ...orderProductItem?.diamondDetail,
+      shapeName: diamondShapeList?.find(
+        (shape) => shape.id === orderProductItem?.diamondDetail?.shapeId
+      )?.title,
+    }
     : null;
 
   return {

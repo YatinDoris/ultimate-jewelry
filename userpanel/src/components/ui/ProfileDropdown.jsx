@@ -33,11 +33,16 @@ export default function ProfileDropdown({ className = "", uniqueId }) {
     router.push("/");
   };
 
-  // useEffect(() => {
-  //   if (uniqueId === "desktop-header-profile" && lastScrollY > 100) {
-  //     dispatch(setOpenProfileDropdown(null));
-  //   }
-  // }, [uniqueId, lastScrollY]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (
+      uniqueId === "desktop-header-profile" &&
+      openProfileDropdown === uniqueId
+    ) {
+      if (lastScrollY > 0) {
+        dispatch(setOpenProfileDropdown(null));
+      }
+    }
+  }, [lastScrollY, uniqueId, openProfileDropdown, dispatch]);
 
   const profileDropDown = [
     { title: "Home", href: "/" },

@@ -8,6 +8,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import jewelry from "@/assets/images/jewelry.webp";
+import preDesignedRing from "@/assets/images/pre-designed-ring.webp";
 import { useCallback, useEffect, useState } from "react";
 import { IoIosArrowDown, IoIosSearch } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,61 +20,23 @@ import { ENGAGEMENT, FLASH_DEALS, GOLD_COLOR } from "@/_helper/constants";
 import ProfileDropdown from "../ui/ProfileDropdown";
 import SkeletonLoader from "../ui/skeletonLoader";
 import { usePathname } from "next/navigation";
-import { diamondShapeService } from "@/_services";
+import { fetchCustomizeProducts } from "@/_actions/customize.action";
+import {
+  setSelectedSettingStyle,
+  setSelectedVariations,
+} from "@/store/slices/productSlice";
 
-const uniqueFilterOptions = {
-  uniqueVariations: [
-    {
-      variationName: "Gold Color",
-      variationId: "118a0da082c",
-      variationTypes: [
-        {
-          variationTypeName: "Yellow Gold",
-          variationTypeId: "da082c06152",
-          variationTypeHexCode: "#E5CE83",
-        },
-        {
-          variationTypeName: "White Gold",
-          variationTypeId: "a082c061526",
-          variationTypeHexCode: "#E5E4E2",
-        },
-        {
-          variationTypeName: "Rose Gold",
-          variationTypeId: "082c061526e",
-          variationTypeHexCode: "#E7BA9A",
-        },
-      ],
-    },
-    {
-      variationName: "Shape",
-      variationId: "5a6593d30dc",
-      variationTypes: [
-        {
-          variationTypeName: "Oval",
-          variationTypeId: "40924dcb609",
-        },
-        {
-          variationTypeName: "Round",
-          variationTypeId: "a6593d30dcc",
-        },
-      ],
-    },
-  ],
-  uniqueSettingStyles: [
-    {
-      title: "Yellow Gold",
-      value: "a717a18a71f",
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/qa-ultimate-jewelry.firebasestorage.app/o/ams%2FsettingStyle%2F1744100327982717a18a71ff.png?alt=media&token=97a0644b-cacd-407b-9bc1-b1d525645d4f",
-    },
-    {
-      title: "Oval",
-      value: "845a6593d30",
-      image:
-        "https://firebasestorage.googleapis.com/v0/b/qa-ultimate-jewelry.firebasestorage.app/o/ams%2FsettingStyle%2F174365763074045a6593d30d.png?alt=media&token=da54b082-12b0-4c87-9b3e-8e67994510e6",
-    },
-  ],
-};
+const staticLinks = [
+  {
+    title: "About Katanoff",
+    href: "/about-us",
+  },
+  {
+    title: "Education",
+    href: "/education",
+  },
+];
+
 export default function NavigationHeader() {
   const dispatch = useDispatch();
   const {
@@ -83,9 +46,10 @@ export default function NavigationHeader() {
     openDropdownMobile,
     menuLoading,
   } = useSelector(({ common }) => common);
+  const { uniqueFilterOptions } = useSelector(({ product }) => product);
+
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [diamondShapes, setDiamondShapes] = useState([]);
   const pathname = usePathname();
   const hideCartPopup =
     pathname === "/checkout" ||
@@ -97,6 +61,10 @@ export default function NavigationHeader() {
       dispatch(setOpenDropdown(null));
       dispatch(setOpenDropdownMobile(null));
     }, 200);
+  }, [dispatch]);
+
+  const loadData = useCallback(() => {
+    dispatch(fetchCustomizeProducts());
   }, [dispatch]);
 
   useEffect(() => {
@@ -112,28 +80,9 @@ export default function NavigationHeader() {
   }, []);
 
   useEffect(() => {
-    const fetchDiamondShapes = async () => {
-      try {
-        const shapes = await diamondShapeService.getAllDiamondShapes();
-        setDiamondShapes(shapes);
-      } catch (error) {
-        console.error("Error fetching diamond shapes:", error);
-      }
-    };
-
-    fetchDiamondShapes();
+    loadData();
   }, []);
 
-  const staticLinks = [
-    {
-      title: "About Katanoff",
-      href: "/about-us",
-    },
-    {
-      title: "Education",
-      href: "/education",
-    },
-  ];
   return (
     <header
       className={`w-full bg-white  z-40 transition-all duration-500 ease-in-out ${
@@ -253,35 +202,37 @@ export default function NavigationHeader() {
                           </p>
                           <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
 
-                          {uniqueFilterOptions.uniqueVariations.map(
-                            (item, index) => {
+                          {uniqueFilterOptions?.uniqueVariations?.map(
+                            (variation, index) => {
                               return (
                                 <div
                                   className="flex flex-col gap-2 mt-2"
                                   key={`variation-${index}`}
                                 >
-                                  {item.variationName == GOLD_COLOR
-                                    ? item.variationTypes.map((item, index) => {
-                                        return (
-                                          <HeaderLinkButton
-                                            key={`variation-${index}2`}
-                                            href={"#"}
-                                            className="flex items-center gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              closeAllDropdown();
-                                            }}
-                                          >
-                                            <div
-                                              className="w-4 h-4 bg-transparent rounded-full"
-                                              style={{
-                                                border: `4px solid ${item?.variationTypeHexCode}`,
+                                  {variation.variationName == GOLD_COLOR
+                                    ? variation.variationTypes.map(
+                                        (item, index) => {
+                                          return (
+                                            <HeaderLinkButton
+                                              key={`variation-${index}2`}
+                                              href={`/customize/start-with-setting?variationName=${variation?.variationName}&variationTypeName=${item?.variationTypeName}`}
+                                              className="flex items-center gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                closeAllDropdown();
                                               }}
-                                            ></div>{" "}
-                                            {item.variationTypeName}
-                                          </HeaderLinkButton>
-                                        );
-                                      })
+                                            >
+                                              <div
+                                                className="w-4 h-4 bg-transparent rounded-full"
+                                                style={{
+                                                  border: `4px solid ${item?.variationTypeHexCode}`,
+                                                }}
+                                              ></div>{" "}
+                                              {item.variationTypeName}
+                                            </HeaderLinkButton>
+                                          );
+                                        }
+                                      )
                                     : null}
                                 </div>
                               );
@@ -295,27 +246,30 @@ export default function NavigationHeader() {
                         </p>
                         <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
                         <div className="grid grid-cols-3 gap-4 mt-3 text-center">
-                          {" "}
-                          {diamondShapes.map((item, index) => {
-                            return (
-                              <HeaderLinkButton
-                                key={`variation-${index}1`}
-                                href={`/customize/start-with-setting/${item?.id}`}
-                                className="gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  closeAllDropdown();
-                                }}
-                              >
-                                <ProgressiveImg
-                                  src={item?.image}
-                                  alt={item?.title}
-                                  className="w-8 h-8 inline-block"
-                                />
-                                <p className="mt-1">{item?.title}</p>
-                              </HeaderLinkButton>
-                            );
-                          })}
+                          {uniqueFilterOptions?.uniqueDiamondShapes.length >
+                            0 &&
+                            uniqueFilterOptions?.uniqueDiamondShapes.map(
+                              (item, index) => {
+                                return (
+                                  <HeaderLinkButton
+                                    key={`diamond-shape-${index}`}
+                                    href={`/customize/start-with-setting?diamondShape=${item.id}`}
+                                    className="gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      closeAllDropdown();
+                                    }}
+                                  >
+                                    <ProgressiveImg
+                                      src={item?.image}
+                                      alt={item?.title}
+                                      className="w-8 h-8 inline-block"
+                                    />
+                                    <p className="mt-1">{item?.title}</p>
+                                  </HeaderLinkButton>
+                                );
+                              }
+                            )}
                         </div>
                       </div>
                       <div className="col-span-2">
@@ -324,32 +278,39 @@ export default function NavigationHeader() {
                         </p>
                         <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
                         <div className="mt-3 flex flex-col gap-1">
-                          {uniqueFilterOptions.uniqueSettingStyles.map(
-                            (item, index) => {
-                              return (
-                                <HeaderLinkButton
-                                  key={`variation-${index}4`}
-                                  href={"#"}
-                                  className="flex items-center gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    closeAllDropdown();
-                                  }}
-                                >
-                                  <ProgressiveImg
-                                    src={item.image}
-                                    alt={item.title}
-                                    className="w-10 h-10 rounded-full"
-                                  />
-                                  {item.title}
-                                </HeaderLinkButton>
-                              );
-                            }
-                          )}
+                          {uniqueFilterOptions?.uniqueSettingStyles.length &&
+                            uniqueFilterOptions?.uniqueSettingStyles.map(
+                              (item, index) => {
+                                return (
+                                  <HeaderLinkButton
+                                    key={`variation-${index}4`}
+                                    href={`/customize/start-with-setting?settingStyle=${item.value}`}
+                                    className="flex items-center gap-2 text-basegray hover:text-baseblack transition-all !px-0 duration-300 capitalize"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      closeAllDropdown();
+                                    }}
+                                  >
+                                    <ProgressiveImg
+                                      src={item.image}
+                                      alt={item.title}
+                                      className="w-10 h-10 rounded-full"
+                                    />
+                                    {item.title}
+                                  </HeaderLinkButton>
+                                );
+                              }
+                            )}
                         </div>
                       </div>
                       <div className="2xl:col-start-10 col-span-4 flex flex-col gap-1  ps-10 border-s border-gray-e2">
-                        <CustomImg srcAttr={jewelry} />
+                        <div className="mb-2">
+                          <p className="text-sm 2xl:text-base block !font-semibold capitalize text-primary !px-0 mb-1">
+                            Shop Pre-Designed Rings
+                          </p>
+                          <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                        </div>
+                        <CustomImg srcAttr={preDesignedRing} />
                         <div className="text-sm mt-3">
                           <Link
                             href={"#"}

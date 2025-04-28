@@ -5,7 +5,7 @@ import logo from "@/assets/images/logo-2.webp";
 
 const VeriftOTP = () => {
   return (
-    <div className="flex lg:flex-row h-full">
+    <div className="flex lg:flex-row h-screen">
       {/* Left Side */}
       <div className="lg:block hidden w-full lg:w-3/5 h-screen">
         <CustomImg
@@ -22,16 +22,6 @@ const VeriftOTP = () => {
             <CustomImg srcAttr={logo} className="w-40 md:w-52" />
           </Link>
           <VerifyOTPForm />
-
-          {/* Privacy Policy */}
-          <p className="flex justify-end">
-            <Link
-              href="/privacy-policy"
-              className="underline text-sm sm:text-base 2xl:text-lg text-basegray hover:text-primary transition-all duration-300"
-            >
-              Privacy Policy
-            </Link>
-          </p>
         </div>
       </div>
     </div>
