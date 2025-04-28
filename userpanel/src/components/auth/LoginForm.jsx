@@ -139,6 +139,7 @@ const LoginForm = () => {
           Sign Up
         </Link>
       </p>
+
       {sendOtpMessage?.type !== messageType?.SUCCESS ? (
         <Alert message={sendOtpMessage?.message} type={sendOtpMessage?.type} />
       ) : null}
@@ -146,6 +147,15 @@ const LoginForm = () => {
         message={userRegisterMessage?.message}
         type={userRegisterMessage?.type}
       />
+      {/* Privacy Policy */}
+      <p className="absolute bottom-14 md:bottom-20 lg:bottom-10 2xl:bottom-20 2xl:right-28 md:right-28 right-14 lg:right-14  ">
+        <Link
+          href="/privacy-policy"
+          className="underline text-sm sm:text-base 2xl:text-lg text-basegray hover:text-primary transition-all duration-300"
+        >
+          Privacy Policy
+        </Link>
+      </p>
     </div>
   );
 };

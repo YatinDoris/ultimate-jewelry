@@ -9,6 +9,7 @@ import {
   setOrderLoading,
   setOrderMessage,
   setInvoiceLoading,
+  setTrackOrderLoading,
 } from "@/store/slices/orderSlice";
 
 // actions/orderActions.js or similar
@@ -116,6 +117,31 @@ export const fetchInvoiceOrderDetail = (orderId) => {
     }
   };
 };
+
+export const fetchTrackOrderByOrderNumberAndEmail = (payload) => {
+  return async (dispatch) => {
+    dispatch(setOrderDetailLoading(true));
+    dispatch(setOrderMessage({ message: "", type: "" }));
+    dispatch(setOrderDetail(null));
+    dispatch(setTrackOrderLoading(true));
+    try {
+      const orderDetail = await orderService.trackOrderByOrderNumberAndEmail(
+        payload
+      );
+      if (orderDetail) {
+        dispatch(setOrderDetail(orderDetail));
+        return orderDetail;
+      }
+      return false;
+    } catch (e) {
+      dispatch(setOrderMessage({ message: e?.message, type: messageType.ERROR }));
+      return false;
+    } finally {
+      dispatch(setOrderDetailLoading(false));
+      dispatch(setTrackOrderLoading(false));
+    }
+  };
+}
 
 // export const handleCancelOrderError = (payload) => {
 //   return async (dispatch, getState) => {

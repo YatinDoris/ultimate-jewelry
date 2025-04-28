@@ -35,6 +35,7 @@ const ProductGrid = memo(
       selectedVariations,
       uniqueFilterOptions,
       selectedSettingStyles,
+      selectedDiamondShape,
     } = useSelector(({ product }) => product);
 
     const handlePageClick = ({ selected }) => {
@@ -75,10 +76,18 @@ const ProductGrid = memo(
       }
       return 0;
     });
-    if (selectedSettingStyles.length) {
+    if (selectedSettingStyles) {
       filteredItemsList = filteredItemsList.filter((product) => {
         return product?.settingStyleNamesWithImg?.some(
           (item) => item.id === selectedSettingStyles
+        );
+      });
+    }
+    if (selectedDiamondShape) {
+      filteredItemsList = filteredItemsList.filter((product) => {
+        console.log(" product?.diamondFilter", product);
+        return product?.diamondFilters?.diamondShapes?.some(
+          (item) => item.id === selectedDiamondShape
         );
       });
     }
@@ -121,13 +130,15 @@ const ProductGrid = memo(
           <div className="relative">
             {filteredItemsList.length && showFilter ? (
               <div
-                className={`flex ${showFilterSidebar ? "justify-end" : "justify-between"
-                  } mb-6 items-center`}
+                className={`flex ${
+                  showFilterSidebar ? "justify-end" : "justify-between"
+                } mb-6 items-center`}
               >
                 <button
                   onClick={() => dispatch(setShowFilterSidebar(true))}
-                  className={`${showFilterSidebar ? "hidden" : "block"
-                    } flex items-center gap-2 px-4 py-2 border shadow-sm bg-primary text-white hover:bg-gray-100 hover:border-primary hover:text-primary font-medium transition-all duration-300`}
+                  className={`${
+                    showFilterSidebar ? "hidden" : "block"
+                  } flex items-center gap-2 px-4 py-2 border shadow-sm bg-primary text-white hover:bg-gray-100 hover:border-primary hover:text-primary font-medium transition-all duration-300`}
                 >
                   <VscSettings className="text-xl" /> Filter
                 </button>
@@ -143,8 +154,9 @@ const ProductGrid = memo(
               />
               {/* Product Grid */}
               <div
-                className={`w-full grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 ${showFilterSidebar ? "lg:grid-cols-3" : "lg:grid-cols-4"
-                  } 6xl:grid-cols-6 gap-x-4 gap-y-6`}
+                className={`w-full grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 ${
+                  showFilterSidebar ? "lg:grid-cols-3" : "lg:grid-cols-4"
+                } 6xl:grid-cols-6 gap-x-4 gap-y-6`}
               >
                 {currentProducts.map((product) => (
                   <ProductCard

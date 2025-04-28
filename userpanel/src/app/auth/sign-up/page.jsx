@@ -24,14 +24,14 @@ const SignUp = () => {
           <SignUpForm />
 
           {/* Privacy Policy */}
-          <p className="flex justify-end">
+          {/* <p className="flex justify-end">
             <Link
               href="/privacy-policy"
               className="underline text-sm sm:text-base 2xl:text-lg text-basegray hover:text-primary transition-all duration-300"
             >
               Privacy Policy
             </Link>
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ const initialState = {
   showFilterSidebar: false,
   uniqueFilterOptions: {},
   selectedSettingStyles: "",
+  selectedDiamondShape: "",
   customizeProductList: [],
   customizeProductLoading: false,
   productMessage: { message: "", type: "" },
@@ -84,6 +85,7 @@ const productSlice = createSlice({
       state.selectedVariations = {};
       state.openKeys = defaultOpenKeys;
       state.selectedSettingStyles = "";
+      state.selectedDiamondShape = "";
     },
     setUniqueFilterOptions: (state, action) => {
       state.uniqueFilterOptions = action.payload;
@@ -114,7 +116,9 @@ const productSlice = createSlice({
     setProductsPerPage: (state, action) => {
       state.productsPerPage = action.payload;
     },
-    
+    setSelectedDiamondShape: (state, action) => {
+      state.selectedDiamondShape = action.payload;
+    },
   },
 });
 
@@ -143,6 +147,7 @@ export const {
   setResultCount,
   setHasSearched,
   setProductsPerPage,
+  setSelectedDiamondShape,
 } = productSlice.actions;
 
 export default productSlice.reducer;

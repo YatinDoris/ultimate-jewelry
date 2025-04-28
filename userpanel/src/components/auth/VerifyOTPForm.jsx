@@ -268,7 +268,15 @@ const VerifyOTPForm = () => {
           <Spinner loaderType="pleaseWait" className={"h-8"} />
         )}
       </div>
-
+      {/* Privacy Policy */}
+      <p className="absolute bottom-14 md:bottom-20 lg:bottom-10 2xl:bottom-20 2xl:right-28 md:right-28 right-14 lg:right-14  ">
+        <Link
+          href="/privacy-policy"
+          className="underline text-sm sm:text-base 2xl:text-lg text-basegray hover:text-primary transition-all duration-300"
+        >
+          Privacy Policy
+        </Link>
+      </p>
       {loginMessage?.type !== messageType?.SUCCESS ? (
         <Alert message={loginMessage?.message} type={loginMessage?.type} />
       ) : null}

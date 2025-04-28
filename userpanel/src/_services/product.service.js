@@ -678,35 +678,36 @@ const getSingleProductDataById = async ({ productId }) => {
   }
 };
 
-const getCustomizeProduct = (collectionType, collectionTitle) => {
+// const getCustomizeProduct = (collectionType, collectionTitle) => {
+const getCustomizeProduct = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      collectionType = sanitizeValue(collectionType)
-        ? collectionType.trim()
-        : null;
-      collectionTitle = sanitizeValue(collectionTitle)
-        ? collectionTitle.trim()
-        : null;
+      // collectionType = sanitizeValue(collectionType)
+      //   ? collectionType.trim()
+      //   : null;
+      // collectionTitle = sanitizeValue(collectionTitle)
+      //   ? collectionTitle.trim()
+      //   : null;
 
-      if (!collectionType || !collectionTitle) {
-        reject(new Error("Invalid Data"));
-        return;
-      }
+      // if (!collectionType || !collectionTitle) {
+      //   reject(new Error("Invalid Data"));
+      //   return;
+      // }
 
       const allActiveProductsData = await getAllActiveProducts();
 
-      // Filter by collection type
+      // // Filter by collection type
       let filteredData = [];
-      if (collectionType === "categories") {
-        filteredData = allActiveProductsData.filter(
-          (item) =>
-            item.categoryName.toLowerCase() === collectionTitle.toLowerCase()
-        );
-      }
+      // if (collectionType === "categories") {
+      //   filteredData = allActiveProductsData.filter(
+      //     (item) =>
+      //       item.categoryName.toLowerCase() === collectionTitle.toLowerCase()
+      //   );
+      // }
 
       // Further filter to only include products with isDiamondFilter: true
-      filteredData = filteredData.filter(
-        (item) => item.isDiamondFilter === true
+      filteredData = allActiveProductsData.filter(
+        (item) => item.isDiamondFilter
       );
 
       const customizeProductList = helperFunctions
@@ -727,12 +728,12 @@ const getCustomizeProduct = (collectionType, collectionTitle) => {
 
           });
           const minCustomProductPrice = Math.min(...metalWiseCustomProdctPrices);
-
           return {
             productName: product.productName,
             isDiamondFilter: product?.isDiamondFilter || false,
             images: product.images.slice(0, 2),
             video: product.video,
+            diamondFilters: product.diamondFilters,
             id: product.id,
             basePrice: minCustomProductPrice,
             baseSellingPrice: minCustomProductPrice,

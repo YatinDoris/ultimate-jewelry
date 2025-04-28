@@ -2,6 +2,7 @@ import { CATEGORIES, RING } from "@/_helper/constants";
 import { productService } from "@/_services";
 import { setCustomizeProductList, setCustomizeProductLoading, setUniqueFilterOptions } from "@/store/slices/productSlice";
 import { getUniqueFilterOptions } from "./product.actions";
+import { setUniqueDiamondShapes } from "@/store/slices/selectDiamondSlice";
 
 export const fetchCustomizeProducts = () => {
     return async (dispatch) => {
@@ -9,16 +10,17 @@ export const fetchCustomizeProducts = () => {
             dispatch(setCustomizeProductList([]));
             dispatch(setCustomizeProductLoading(true));
             const customizProductList =
-                await productService.getCustomizeProduct(
-                    CATEGORIES,
-                    RING
-                );
+                await productService.getCustomizeProduct();
+            // await productService.getCustomizeProduct(
+            //     CATEGORIES,
+            //     RING
+            // );
             if (customizProductList) {
                 const tempUniqueFilterOptions = getUniqueFilterOptions(
                     customizProductList
                 );
-                const uniqueFilterOptions = { ...tempUniqueFilterOptions };
-                dispatch(setUniqueFilterOptions(uniqueFilterOptions));
+
+                dispatch(setUniqueFilterOptions(tempUniqueFilterOptions));
             }
 
             dispatch(setCustomizeProductList(customizProductList));

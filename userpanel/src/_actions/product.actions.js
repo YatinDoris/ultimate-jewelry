@@ -88,9 +88,117 @@ export const fetchProductDetailByProductName = (productName) => {
   };
 };
 
+// export const getUniqueFilterOptions = (productList) => {
+//   const uniqueVariations = new Map(); // Use Map for O(1) lookups
+//   const tempSettingStyles = [];
+
+//   // Process each product
+//   productList.forEach((product) => {
+//     // Handle setting styles
+//     const settingStyles = product?.settingStyleNamesWithImg;
+//     if (settingStyles?.length) {
+//       tempSettingStyles.push(...settingStyles);
+//     }
+
+//     // Handle variations
+//     product.variations.forEach((variation) => {
+//       const { variationId, variationName, variationTypes } = variation;
+
+//       if (!uniqueVariations.has(variationId)) {
+//         // New variation: initialize with mapped variation types
+//         uniqueVariations.set(variationId, {
+//           variationName,
+//           variationId,
+//           variationTypes: new Map(
+//             variationTypes.map((type) => [
+//               type.variationTypeId,
+//               {
+//                 variationTypeName: type.variationTypeName,
+//                 variationTypeId: type.variationTypeId,
+//                 variationTypeHexCode: type.variationTypeHexCode ?? undefined,
+//               },
+//             ])
+//           ),
+//         });
+//       } else {
+//         // Existing variation: add new variation types
+//         const existingVariation = uniqueVariations.get(variationId);
+//         variationTypes.forEach((type) => {
+//           if (!existingVariation.variationTypes.has(type.variationTypeId)) {
+//             existingVariation.variationTypes.set(type.variationTypeId, {
+//               variationTypeName: type.variationTypeName,
+//               variationTypeId: type.variationTypeId,
+//               variationTypeHexCode: type.variationTypeHexCode ?? undefined,
+//             });
+//           }
+//         });
+//       }
+//     });
+//   });
+
+//   // Convert uniqueVariations Map to array
+//   const variationsArray = Array.from(uniqueVariations.values()).map(
+//     (variation) => ({
+//       ...variation,
+//       variationTypes: Array.from(variation.variationTypes.values()),
+//     })
+//   );
+
+//   // Process unique setting styles with Set for uniqueness
+//   const uniqueSettingStyles = Array.from(
+//     new Set(tempSettingStyles.map((item) => item.title))
+//   ).map((title) => {
+//     const { image, id } =
+//       tempSettingStyles.find((item) => item.title === title) || {};
+//     return { title, value: id, image };
+//   });
+
+//   return {
+//     uniqueVariations: variationsArray,
+//     uniqueSettingStyles,
+//   };
+// };
+
+// export const fetchReletedProducts = (productName) => {
+//   return async (dispatch, getState) => {
+//     try {
+//       dispatch({
+//         type: actionTypes.START_LOADING,
+//         loaderId: "fetchDataLoader",
+//       });
+
+//       const reletedProductsList = await productService.getReletedProducts(
+//         productName
+//       );
+//       dispatch({
+//         type: actionTypes.STOP_LOADING,
+//         loaderId: "fetchDataLoader",
+//       });
+//       if (reletedProductsList) {
+//         dispatch({
+//           type: actionTypes.FETCH_RELETED_PRODUCT,
+//           reletedProductsList,
+//         });
+//       }
+//     } catch (e) {
+//       dispatch({
+//         type: actionTypes.FETCH_RELETED_PRODUCT,
+//         reletedProductsList: [],
+//       });
+//       dispatch({
+//         type: actionTypes.STOP_LOADING,
+//         loaderId: "fetchDataLoader",
+//       });
+//     }
+//   };
+// };
+
+
 export const getUniqueFilterOptions = (productList) => {
   const uniqueVariations = new Map(); // Use Map for O(1) lookups
   const tempSettingStyles = [];
+  const uniqueShapeIds = new Set(); // For unique diamond shapes
+  const uniqueDiamondShapes = []; // To store unique diamond shapes
 
   // Process each product
   productList.forEach((product) => {
@@ -134,6 +242,16 @@ export const getUniqueFilterOptions = (productList) => {
         });
       }
     });
+
+    // Handle diamond shapes (if present in product)
+    if (product.isDiamondFilter && product.diamondFilters?.diamondShapes?.length) {
+      product.diamondFilters.diamondShapes.forEach((shape) => {
+        if (!uniqueShapeIds.has(shape.id)) {
+          uniqueShapeIds.add(shape.id);
+          uniqueDiamondShapes.push(shape);
+        }
+      });
+    }
   });
 
   // Convert uniqueVariations Map to array
@@ -156,42 +274,9 @@ export const getUniqueFilterOptions = (productList) => {
   return {
     uniqueVariations: variationsArray,
     uniqueSettingStyles,
+    uniqueDiamondShapes, // Include unique diamond shapes
   };
 };
-
-// export const fetchReletedProducts = (productName) => {
-//   return async (dispatch, getState) => {
-//     try {
-//       dispatch({
-//         type: actionTypes.START_LOADING,
-//         loaderId: "fetchDataLoader",
-//       });
-
-//       const reletedProductsList = await productService.getReletedProducts(
-//         productName
-//       );
-//       dispatch({
-//         type: actionTypes.STOP_LOADING,
-//         loaderId: "fetchDataLoader",
-//       });
-//       if (reletedProductsList) {
-//         dispatch({
-//           type: actionTypes.FETCH_RELETED_PRODUCT,
-//           reletedProductsList,
-//         });
-//       }
-//     } catch (e) {
-//       dispatch({
-//         type: actionTypes.FETCH_RELETED_PRODUCT,
-//         reletedProductsList: [],
-//       });
-//       dispatch({
-//         type: actionTypes.STOP_LOADING,
-//         loaderId: "fetchDataLoader",
-//       });
-//     }
-//   };
-// };
 
 export const fetchRecentlyViewedProducts = () => {
   return async (dispatch, getState) => {

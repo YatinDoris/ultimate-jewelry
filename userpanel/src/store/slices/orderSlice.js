@@ -9,8 +9,7 @@ const initialState = {
   orderDetailLoading: false,
   invoiceLoading: false,
   selectedOrder: "",
-  showSummary: false,
-  submittedData: null,
+  trackOrderLoading: false,
 };
 
 const orderSlice = createSlice({
@@ -47,11 +46,8 @@ const orderSlice = createSlice({
     setSelectedOrder: (state, action) => {
       state.selectedOrder = action.payload;
     },
-    setShowSummary: (state, action) => {
-      state.showSummary = action.payload;
-    },
-    setSubmittedData: (state, action) => {
-      state.submittedData = action.payload;
+    setTrackOrderLoading: (state, action) => {
+      state.trackOrderLoading = action.payload;
     },
 
   },
@@ -69,6 +65,7 @@ export const {
   setInvoiceLoading,
   setShowSummary,
   setSubmittedData,
+  setTrackOrderLoading
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

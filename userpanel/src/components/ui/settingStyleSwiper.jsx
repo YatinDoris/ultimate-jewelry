@@ -23,16 +23,33 @@ export default function SettingStyleCategorySwiper({
   const { diamondColumnCount } = useWindowSize();
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
+  const [showNavigationButtons, setShowNavigationButtons] = useState(false);
 
   const handleSwiperInit = (swiper) => {
     swiperRef.current = swiper;
     setIsBeginning(swiper.isBeginning);
     setIsEnd(swiper.isEnd);
+
+    const currentBreakpoint = swiper.currentBreakpoint;
+    const slidesPerView =
+      swiper.params.breakpoints?.[currentBreakpoint]?.slidesPerView ||
+      swiper.params.slidesPerView;
+    const totalSlides = swiper.slides.length;
+
+    setShowNavigationButtons(totalSlides > slidesPerView);
   };
 
   const handleSlideChange = (swiper) => {
     setIsBeginning(swiper.isBeginning);
     setIsEnd(swiper.isEnd);
+
+    const currentBreakpoint = swiper.currentBreakpoint;
+    const slidesPerView =
+      swiper.params.breakpoints?.[currentBreakpoint]?.slidesPerView ||
+      swiper.params.slidesPerView;
+    const totalSlides = swiper.slides.length;
+
+    setShowNavigationButtons(totalSlides > slidesPerView);
   };
   const handleStyleSelect = (style) => {
     const isSelected = selectedSettingStyles === style;
@@ -61,24 +78,28 @@ export default function SettingStyleCategorySwiper({
           className={`pt-10 md:pt-14 lg:pt-20 2xl:pt-20 mx-10 lg:mx-20 2xl:mx-28 ${className}`}
         >
           <div className="relative">
-            <button
-              className={`absolute top-1/2 left-0 -translate-x-8 lg:-translate-x-10 -translate-y-1/2 ${
-                isBeginning ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={() => swiperRef.current?.slidePrev()}
-              disabled={isBeginning}
-            >
-              <SlArrowLeft className="text-lg lg:text-xl" />
-            </button>
-            <button
-              className={`absolute top-1/2 -right-8 lg:-right-10 -translate-y-1/2 ${
-                isEnd ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={() => swiperRef.current?.slideNext()}
-              disabled={isEnd}
-            >
-              <SlArrowRight className="text-lg lg:text-xl" />
-            </button>
+            {showNavigationButtons && (
+              <button
+                className={`absolute top-1/2 left-0 -translate-x-8 lg:-translate-x-10 -translate-y-1/2 ${
+                  isBeginning ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={() => swiperRef.current?.slidePrev()}
+                disabled={isBeginning}
+              >
+                <SlArrowLeft className="text-lg lg:text-xl" />
+              </button>
+            )}
+            {showNavigationButtons && (
+              <button
+                className={`absolute top-1/2 -right-8 lg:-right-10 -translate-y-1/2 ${
+                  isEnd ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={() => swiperRef.current?.slideNext()}
+                disabled={isEnd}
+              >
+                <SlArrowRight className="text-lg lg:text-xl" />
+              </button>
+            )}
             <Swiper
               spaceBetween={20}
               modules={[Navigation]}

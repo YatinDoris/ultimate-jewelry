@@ -2,6 +2,7 @@ import {
   defaultOpenKeys,
   resetFilters,
   setOpenKeys,
+  setSelectedDiamondShape,
   setSelectedSettingStyle,
   setSelectedVariations,
   setShowFilterSidebar,
@@ -25,6 +26,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
     selectedSortByValue,
     selectedVariations,
     selectedSettingStyles,
+    selectedDiamondShape,
     uniqueFilterOptions,
   } = useSelector(({ product }) => product);
   const isOpenKey = (key) => openKeys.includes(key);
@@ -165,13 +167,13 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
 
                       return (
                         <div
-                          className={`text-center cursor-pointer `}
+                          className={`text-center cursor-pointer`}
                           onClick={() => {
                             dispatch(
                               setSelectedSettingStyle(settingStyle.value)
                             );
                           }}
-                          key={`setting-style-key-${settingStyle.value}`}
+                          key={`setting-style-${settingStyle.value}`}
                         >
                           <ProgressiveImg
                             className={`w-full  aspect-square object-cover !transition-none  border-2 border-transparent ${
@@ -183,6 +185,64 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                           />
                           <h2 className="text-base lg:text-sm font-semibold mt-2">
                             {settingStyle.title}
+                          </h2>
+                        </div>
+                      );
+                    }
+                  )}
+              </div>
+            </div>
+          </div>
+
+          <div className="border-b border-gray-c8">
+            <button
+              className={`w-full flex items-center justify-between ${
+                isOpenKey("diamondShape") ? "pt-4 pb-2" : "py-4"
+              }`}
+              onClick={() => dispatch(toggleOpenKey("diamondShape"))}
+            >
+              <p className="font-semibold mb-1">Diamond Shapes</p>
+              <span className="text-xl">
+                {isOpenKey("diamondShape") ? <FiMinus /> : <FiPlus />}
+              </span>
+            </button>
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                isOpenKey("diamondShape")
+                  ? "max-h-screen opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-4 pb-4 justify-center">
+                {uniqueFilterOptions?.uniqueDiamondShapes &&
+                  uniqueFilterOptions?.uniqueDiamondShapes.map(
+                    (diamondShape) => {
+                      const isSelected =
+                        selectedDiamondShape === diamondShape.id;
+                      return (
+                        <div
+                          key={`setting-diamond-shape-${diamondShape.id}`}
+                          className={`text-center cursor-pointer`}
+                          onClick={() => {
+                            dispatch(setSelectedDiamondShape(diamondShape.id));
+                          }}
+                        >
+                          <div
+                            className={`p-1.5 border-2 ${
+                              isSelected
+                                ? "border-primary"
+                                : "border-transparent"
+                            }`}
+                          >
+                            <ProgressiveImg
+                              className={`w-full aspect-square object-cover !transition-none`}
+                              src={diamondShape.image}
+                              alt={diamondShape.title}
+                              title={diamondShape.title}
+                            />
+                          </div>
+                          <h2 className="text-base lg:text-sm font-semibold mt-2">
+                            {diamondShape.title}
                           </h2>
                         </div>
                       );

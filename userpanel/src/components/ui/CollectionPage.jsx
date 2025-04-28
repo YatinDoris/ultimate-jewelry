@@ -10,7 +10,6 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import slide1 from "@/assets/images/collections/slide-1.webp";
-// import { collections } from "@/app/(shop)/page";
 import KeyFeatures from "@/components/ui/KeyFeatures";
 import SettingStyleCategorySwiper from "@/components/ui/settingStyleSwiper";
 import { collections } from "./home/HomePage";
@@ -56,8 +55,10 @@ export default function CollectionPage() {
   }, [dispatch, collectionType, collectionTitle]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    if (collectionType && collectionTitle) {
+      loadData();
+    }
+  }, [collectionType, collectionTitle, loadData]);
   return (
     <>
       {/* Swiper Section */}
