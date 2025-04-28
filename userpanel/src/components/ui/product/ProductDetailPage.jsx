@@ -670,7 +670,7 @@ const ProductDetailPage = ({ customizePage }) => {
                       loaderType={isHovered ? "" : "white"}
                       onClick={handleSelectSetting}
                     >
-                      SELECT THIS SETTING
+                      SELECT THIS OPTION
                     </LoadingPrimaryButton>
                   ) : null}
 
