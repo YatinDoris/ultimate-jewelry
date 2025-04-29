@@ -54,7 +54,6 @@ export default function CancelReturnRequestModel() {
       .min(5, "Reason must be at least 5 characters"),
   });
 
-  console.log("returnMessage", returnMessage);
   const handleSubmit = async (values) => {
     try {
       const payload = {

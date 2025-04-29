@@ -47,8 +47,6 @@ export default function OrderHistoryPage() {
     (currentPage + 1) * ITEMS_PER_PAGE
   );
 
-  console.log("paginatedOrder", paginatedOrder);
-
   const handlePageClick = ({ selected }) => {
     dispatch(setCurrentPage(selected));
   };
