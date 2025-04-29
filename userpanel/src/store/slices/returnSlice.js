@@ -1,15 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  isLoading: true,
+  returnLoader: false,
   returnsList: [],
-  detailLoader: true,
-  orderDetail: {},
+  detailLoader: false,
   returnDetail: {},
+  currentPage: 0,
   returnReqLoader: false,
   deleteReturnReqLoader: false,
   returnMessage: { message: "", type: "" },
   selectedProducts: [],
+  returnOrder: "",
 };
 
 const returnSlice = createSlice({
@@ -17,16 +18,13 @@ const returnSlice = createSlice({
   initialState,
   reducers: {
     setReturnsList: (state, action) => {
-      state.isLoading = false;
       state.returnsList = action.payload;
     },
-    setReturnDetail: (state, action) => {
-      state.detailLoader = false;
-      state.returnDetail = action.payload;
+    setReturnLoader: (state, action) => {
+      state.returnLoader = action.payload;
     },
-    setOrderDetail: (state, action) => {
-      state.detailLoader = false;
-      state.orderDetail = action.payload;
+    setReturnDetail: (state, action) => {
+      state.returnDetail = action.payload;
     },
     setReturnRequestLoader: (state, action) => {
       state.returnReqLoader = action.payload;
@@ -43,18 +41,26 @@ const returnSlice = createSlice({
     setSelectedProducts: (state, action) => {
       state.selectedProducts = action.payload;
     },
+    setCurrentPage: (state, action) => {
+      state.currentPage = action.payload;
+    },
+    setReturnOrder: (state, action) => {
+      state.returnOrder = action.payload;
+    },
   },
 });
 
 export const {
   setReturnsList,
   setReturnDetail,
-  setOrderDetail,
+  setReturnLoader,
   setReturnRequestLoader,
   setDeleteReturnRequestLoader,
   setReturnMessage,
   clearReturnMessage,
+  setCurrentPage,
   setSelectedProducts,
+  setReturnOrder,
 } = returnSlice.actions;
 
 export default returnSlice.reducer;

@@ -17,6 +17,7 @@ const initialState = {
   customProductDetails: {},
   customizeLoader: false,
   openDiamondDetailDrawer: "",
+  openDiamondDetailProductId: "",
 };
 
 const commonSlice = createSlice({
@@ -73,6 +74,9 @@ const commonSlice = createSlice({
     setOpenDiamondDetailDrawer(state, action) {
       state.openDiamondDetailDrawer = action.payload;
     },
+    setOpenDiamondDetailProductId(state, action) {
+      state.openDiamondDetailProductId = action.payload;
+    },
   },
 });
 
@@ -92,6 +96,7 @@ export const {
   setCustomizeLoader,
   setCustomProductDetails,
   setOpenDiamondDetailDrawer,
+  setOpenDiamondDetailProductId,
 } = commonSlice.actions;
 
 export default commonSlice.reducer;

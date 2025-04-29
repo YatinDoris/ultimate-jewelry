@@ -10,90 +10,88 @@ import {
 } from "../_helper";
 import { productService } from "./product.service";
 import { authenticationService } from "./authentication.service";
+import { diamondShapeService } from "./diamondShape.service";
 
-const hasInvalidProductsKey = (arrayOfProducts) => {
-  const isValidProductId = helperFunctions.isValidKeyName(
-    arrayOfProducts,
-    "productId"
-  );
-  const isValidUnitAmt = helperFunctions.isValidKeyName(
-    arrayOfProducts,
-    "unitAmount"
-  );
-  const isValidQty = helperFunctions.isValidKeyName(
-    arrayOfProducts,
-    "returnQuantity"
-  );
-  const isValidVariArray = helperFunctions.isValidKeyName(
-    arrayOfProducts,
-    "variations"
-  );
+const validateKeys = (objects, keys) =>
+  keys.every((key) => helperFunctions.isValidKeyName(objects, key));
 
-  const variationArray = arrayOfProducts[0]?.variations || [];
+const hasInvalidProductsKey = (products) => {
+  const requiredProductKeys = [
+    "productId",
+    "unitAmount",
+    "returnQuantity",
+    "variations",
+  ];
+  const requiredVariationKeys = ["variationId", "variationTypeId"];
+  const requiredDiamondKeys = [
+    "shapeId",
+    "caratWeight",
+    "clarity",
+    "color",
+    "price",
+  ];
 
-  const isValidVariId = helperFunctions.isValidKeyName(
-    variationArray,
-    "variationId"
-  );
-  const isValidVariTypeId = helperFunctions.isValidKeyName(
-    variationArray,
-    "variationTypeId"
+  const isInvalidProduct = !validateKeys(products, requiredProductKeys);
+  const isInvalidVariation = !validateKeys(
+    products[0]?.variations || [],
+    requiredVariationKeys
   );
 
-  return (
-    !isValidProductId ||
-    !isValidQty ||
-    !isValidUnitAmt ||
-    !isValidVariArray ||
-    !isValidVariId ||
-    !isValidVariTypeId
-  );
+  const diamondDetail = products[0]?.diamondDetail;
+  const isInvalidDiamond =
+    diamondDetail && !validateKeys([diamondDetail], requiredDiamondKeys);
+
+  return isInvalidProduct || isInvalidVariation || isInvalidDiamond;
 };
 
-export const getProductsArray = (arrayOfProducts) => {
-  return arrayOfProducts.map((product) => {
-    return {
+export const getProductsArray = (products) =>
+  products.map((product) => {
+    const { productPrice, returnQuantity, diamondDetail } = product;
+    const diamondPrice = diamondDetail?.price || 0;
+    const unitAmount = (productPrice + diamondPrice) * returnQuantity;
+
+    const mappedProduct = {
       productId: product.productId,
-      returnQuantity: product.returnQuantity,
-      productPrice: product.productPrice, // its represent variation price with single quantity
-      unitAmount: product.productPrice * product.returnQuantity, // its represent variation price with multiply quantity
-      variations: product.variations.map((variItem) => {
-        return {
-          variationId: variItem.variationId,
-          variationTypeId: variItem.variationTypeId,
-        };
-      }),
+      returnQuantity,
+      productPrice,
+      unitAmount,
+      variations: product.variations.map(
+        ({ variationId, variationTypeId }) => ({
+          variationId,
+          variationTypeId,
+        })
+      ),
     };
-  });
-};
 
-const validateProducts = (products, orderProducts) => {
-  // Check if every selected product is valid
-  const isValid = products.every((productItem) => {
-    // Find the corresponding product in orderProducts
-    const correspondingProduct = orderProducts.find(
+    if (diamondDetail) {
+      mappedProduct.diamondDetail = {
+        shapeId: diamondDetail.shapeId,
+        caratWeight: diamondDetail.caratWeight,
+        clarity: diamondDetail.clarity,
+        color: diamondDetail.color,
+        price: diamondPrice,
+      };
+    }
+
+    return mappedProduct;
+  });
+
+const validateProducts = (products, orderProducts) =>
+  products.every((product) => {
+    const match = orderProducts.find(
       (orderProduct) =>
-        orderProduct.productId === productItem.productId &&
+        orderProduct.productId === product.productId &&
         helperFunctions.areArraysEqual(
           orderProduct.variations,
-          productItem.variations
+          product.variations
         )
     );
-
-    // If the corresponding product is found
-    if (correspondingProduct) {
-      // Check if the quantities match and are not zero
-      return (
-        productItem.returnQuantity <= correspondingProduct.cartQuantity &&
-        productItem.returnQuantity > 0
-      );
-    } else {
-      // Corresponding product not found
-      return false;
-    }
+    return (
+      match &&
+      product.returnQuantity > 0 &&
+      product.returnQuantity <= match.cartQuantity
+    );
   });
-  return isValid;
-};
 
 const insertReturnRequest = (params) => {
   return new Promise(async (resolve, reject) => {
@@ -147,12 +145,14 @@ const insertReturnRequest = (params) => {
             (returnOrder) => returnOrder.status === "rejected"
           ).length;
 
-          const hasActiveReturns =
-            isPendingOrApprovedOrReceivedReturnsCount ||
-              (rejectedCount > 0 && rejectedCount > 2)
-              ? false
-              : true;
-
+          // const hasActiveReturns =
+          //   isPendingOrApprovedOrReceivedReturnsCount ||
+          //   (rejectedCount > 0 && rejectedCount > 2)
+          //     ? false
+          //     : true;
+          const hasActiveReturns = isPendingOrApprovedOrReceivedReturnsCount
+            ? false
+            : true;
           if (!hasActiveReturns) {
             reject(
               new Error(
@@ -423,6 +423,8 @@ const getReturnDetailByReturnId = (returnId) => {
             productFindPattern
           );
           const customizations = await productService.getAllCustomizations();
+          const diamondShapeList =
+            await diamondShapeService.getAllDiamondShapes();
 
           if (returnDetail?.userId) {
             const adminAndUsersData =
@@ -435,36 +437,15 @@ const getReturnDetailByReturnId = (returnId) => {
             }
           }
           returnDetail.products = returnDetail.products.map(
-            (returnProductItem) => {
-              const findedProduct = allActiveProductsData.find(
-                (product) => product.id === returnProductItem.productId
-              );
-              if (findedProduct) {
-                const variationArray = returnProductItem.variations.map(
-                  (variItem) => {
-                    const findedCustomizationType =
-                      customizations.customizationSubType.find(
-                        (x) => x.id === variItem.variationTypeId
-                      );
-                    return {
-                      ...variItem,
-                      variationName: customizations.customizationType.find(
-                        (x) => x.id === variItem.variationId
-                      ).title,
-                      variationTypeName: findedCustomizationType.title,
-                    };
-                  }
-                );
-                return {
-                  ...returnProductItem,
-                  productName: findedProduct.productName,
-                  productImage: findedProduct.images[0].image,
-                  variations: variationArray,
-                };
-              }
-              return returnProductItem;
-            }
+            (returnProductItem) =>
+              processReturnProductItem({
+                returnProductItem,
+                allActiveProductsData,
+                customizations,
+                diamondShapeList,
+              })
           );
+
           resolve(returnDetail);
         } else {
           reject(new Error("Return does not exist"));
@@ -476,6 +457,50 @@ const getReturnDetailByReturnId = (returnId) => {
       reject(e);
     }
   });
+};
+
+const processReturnProductItem = ({
+  returnProductItem,
+  allActiveProductsData,
+  customizations,
+  diamondShapeList,
+}) => {
+  const findedProduct = allActiveProductsData.find(
+    (product) => product.id === returnProductItem.productId
+  );
+
+  if (!findedProduct) {
+    return returnProductItem;
+  }
+
+  const variationArray = returnProductItem.variations.map((variItem) => {
+    const findedCustomizationType = customizations.customizationSubType.find(
+      (x) => x.id === variItem.variationTypeId
+    );
+    return {
+      ...variItem,
+      variationName: customizations.customizationType.find(
+        (x) => x.id === variItem.variationId
+      )?.title,
+      variationTypeName: findedCustomizationType?.title,
+    };
+  });
+  const diamondDetail = returnProductItem?.diamondDetail
+    ? {
+        ...returnProductItem?.diamondDetail,
+        shapeName: diamondShapeList?.find(
+          (shape) => shape.id === returnProductItem?.diamondDetail?.shapeId
+        )?.title,
+      }
+    : null;
+
+  return {
+    ...returnProductItem,
+    productName: findedProduct.productName,
+    productImage: findedProduct.images[0]?.image,
+    variations: variationArray,
+    diamondDetail,
+  };
 };
 
 export const returnService = {

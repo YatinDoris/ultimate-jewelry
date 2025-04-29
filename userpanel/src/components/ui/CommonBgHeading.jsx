@@ -26,7 +26,7 @@ const CommonBgHeading = ({
         {rightText && (
           <p className="text-baseblack font-castoro text-base lg:text-lg 2xl:text-xl  absolute right-0 xl:right-10 hidden xs:block">
             {" "}
-            &lt; {rightText}
+            {rightText}
           </p>
         )}
       </div>

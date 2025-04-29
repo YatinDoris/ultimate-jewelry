@@ -19,6 +19,7 @@ import DownloadInvoice from "@/components/ui/order-history/downloadInvoice";
 import { setShowModal } from "@/store/slices/commonSlice";
 import Alert from "@/components/ui/Alert";
 import { useAlertTimeout } from "@/hooks/use-alert-timeout";
+import { TbTruckReturn } from "react-icons/tb";
 
 export default function OrderHistoryPage() {
   const router = useRouter();
@@ -45,6 +46,8 @@ export default function OrderHistoryPage() {
     currentPage * ITEMS_PER_PAGE,
     (currentPage + 1) * ITEMS_PER_PAGE
   );
+
+  console.log("paginatedOrder", paginatedOrder);
 
   const handlePageClick = ({ selected }) => {
     dispatch(setCurrentPage(selected));
@@ -163,6 +166,18 @@ export default function OrderHistoryPage() {
                       {["pending", "confirmed"].includes(order.orderStatus) &&
                       order.paymentStatus === "success" ? (
                         <CancelOrder orderId={order.id} />
+                      ) : null}
+
+                      {["delivered"].includes(order.orderStatus) &&
+                      helperFunctions.isReturnValid(order.deliveryDate) &&
+                      order.hasActiveReturns ? (
+                        <TbTruckReturn
+                          title="Return Request"
+                          className={`cursor-pointer text-xl !text-[#DC3545]`}
+                          onClick={() =>
+                            router.push(`/return-request/${order.id}`)
+                          }
+                        />
                       ) : null}
 
                       {invoiceLoading && order.id === selectedOrder ? (

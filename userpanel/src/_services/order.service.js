@@ -43,7 +43,7 @@ const getAllOrderList = () => {
           ).length;
           const hasActiveReturns =
             isPendingOrApprovedOrReceivedReturnsCount ||
-              (rejectedCount > 0 && rejectedCount > 2)
+            (rejectedCount > 0 && rejectedCount > 2)
               ? false
               : true;
           return {
@@ -323,11 +323,11 @@ const processOrderProductItem = ({
   });
   const diamondDetail = orderProductItem?.diamondDetail
     ? {
-      ...orderProductItem?.diamondDetail,
-      shapeName: diamondShapeList?.find(
-        (shape) => shape.id === orderProductItem?.diamondDetail?.shapeId
-      )?.title,
-    }
+        ...orderProductItem?.diamondDetail,
+        shapeName: diamondShapeList?.find(
+          (shape) => shape.id === orderProductItem?.diamondDetail?.shapeId
+        )?.title,
+      }
     : null;
 
   return {

@@ -264,13 +264,27 @@ export const ProductNotFound = dynamic(
 );
 
 export const ReturnRequestPage = dynamic(
-  () => import("./ui/return-request/ReturnRequestPage.jsx"),
+  () => import("./ui/return/ReturnRequestPage.jsx"),
   {
     ssr: false,
   }
 );
 export const SearchProductPage = dynamic(
   () => import("./ui/SearchProductPage.jsx"),
+  {
+    ssr: false,
+  }
+);
+
+export const ReturnHistoryPage = dynamic(
+  () => import("./ui/return/ReturnHistoryPage.jsx"),
+  {
+    ssr: false,
+  }
+);
+
+export const ReturnDetails = dynamic(
+  () => import("./ui/return/ReturnDetails.jsx"),
   {
     ssr: false,
   }

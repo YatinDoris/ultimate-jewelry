@@ -156,7 +156,7 @@ const OrderDetails = ({
                             setOpenDiamondDetailDrawer={
                               setOpenDiamondDetailDrawer
                             }
-                            isCheckoutPage={true}
+                            isOrderPage={true}
                           />
                         </div>
                       )}
@@ -174,7 +174,7 @@ const OrderDetails = ({
                         openDiamondDetailDrawer={openDiamondDetailDrawer}
                         dispatch={dispatch}
                         setOpenDiamondDetailDrawer={setOpenDiamondDetailDrawer}
-                        isCheckoutPage={true}
+                        isOrderPage={true}
                       />
                     </div>
                   )}
