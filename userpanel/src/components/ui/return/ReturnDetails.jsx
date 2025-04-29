@@ -66,9 +66,6 @@ const ReturnDetails = () => {
     },
   ];
 
-  console.log("returnLoader", returnLoader);
-  console.log("returnDetails", returnDetail);
-
   return (
     <>
       {returnLoader ? (

@@ -73,12 +73,10 @@ const ReturnRequestPage = () => {
       const getSelectedProducts = updatedDetail.products.filter(
         (item) => item.isChecked === true
       );
-      console.log("getSelectedProducts", getSelectedProducts);
       dispatch(setSelectedProducts(getSelectedProducts));
     },
     [dispatch]
   );
-  console.log("selectedProducts", selectedProducts);
 
   const handleCheckboxChange = useCallback(
     (event, { productId, variations }) => {
@@ -117,7 +115,6 @@ const ReturnRequestPage = () => {
 
   const returnReqSubmit = useCallback(
     async (values, { resetForm }) => {
-      console.log("in submit function");
       try {
         if (!selectedProducts.length) {
           dispatch(
@@ -133,9 +130,7 @@ const ReturnRequestPage = () => {
           products: getProductsArray(selectedProducts),
           returnRequestReason: values.returnRequestReason,
         };
-        console.log("payload", payload);
         const response = await dispatch(createReturnRequest(payload));
-        console.log("response", response);
         if (response) {
           router.push("/return-history");
           resetForm();
@@ -163,9 +158,7 @@ const ReturnRequestPage = () => {
     validationSchema: validationSchema,
     onSubmit: returnReqSubmit,
   });
-  console.log("orderDetail", orderDetail);
   const bgHeadingText = `${selectedProducts?.length}  Selected Products`;
-  console.log("returnMessage", returnMessage);
   return (
     <>
       {orderLoading ? (
@@ -315,10 +308,6 @@ const ReturnRequestPage = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
-              {console.log(
-                "   !returnMessage?.type === messageType.SUCCESS",
-                !returnMessage?.type === messageType.SUCCESS
-              )}
 
               {(returnMessage && returnMessage.type !== messageType.SUCCESS) ||
               (touched.returnRequestReason && errors.returnRequestReason) ? (

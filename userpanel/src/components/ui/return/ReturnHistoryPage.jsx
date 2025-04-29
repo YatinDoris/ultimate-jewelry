@@ -35,8 +35,6 @@ export default function ReturnHistoryPage() {
   useAlertTimeout(returnMessage, () =>
     dispatch(setReturnMessage({ message: "", type: "" }))
   );
-
-  console.log("returnsList", returnsList);
   const loadData = useCallback(() => {
     dispatch(fetchReturnsHistory());
     dispatch(fetchOrderHistory());
@@ -47,8 +45,6 @@ export default function ReturnHistoryPage() {
     currentPage * ITEMS_PER_PAGE,
     (currentPage + 1) * ITEMS_PER_PAGE
   );
-
-  console.log("paginatedOrder", paginatedOrder);
 
   const handlePageClick = ({ selected }) => {
     dispatch(setCurrentPage(selected));
@@ -64,8 +60,6 @@ export default function ReturnHistoryPage() {
       dispatch(setReturnLoader(false));
     };
   }, []);
-
-  console.log("returnMessage", returnMessage);
 
   const renderTableHeading = () => {
     return (
