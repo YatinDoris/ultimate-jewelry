@@ -5,12 +5,12 @@ import { helperFunctions } from "@/_helper";
 const DiamondDetailDrawer = ({
   cartItem,
   isCheckoutPage = false,
+  isOrderPage = false,
   openDiamondDetailDrawer,
   dispatch,
   setOpenDiamondDetailDrawer,
 }) => {
   if (!cartItem?.diamondDetail) return null;
-
   const isOpen = openDiamondDetailDrawer === cartItem.id;
 
   return (
@@ -62,7 +62,7 @@ const DiamondDetailDrawer = ({
 
           <div className="px-4 md:py-2 py-1 font-medium text-sm md:text-lg">
             Diamond Price:{" "}
-            {isCheckoutPage ? (
+            {isCheckoutPage && (
               <span className="font-bold">
                 $
                 {helperFunctions
@@ -74,9 +74,19 @@ const DiamondDetailDrawer = ({
                   .toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                   })}
-                {` × ${cartItem.quantity}`}
+                {` × ${cartItem?.quantity}`}
               </span>
-            ) : (
+            )}
+            {isOrderPage && (
+              <span className="font-bold">
+                $
+                {cartItem?.diamondDetail?.price.toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                })}
+                {` × ${cartItem?.quantity || cartItem?.returnQuantity} `}
+              </span>
+            )}
+            {!isCheckoutPage && !isOrderPage && (
               <span className="font-bold">
                 $
                 {(
@@ -84,7 +94,7 @@ const DiamondDetailDrawer = ({
                     caratWeight: Number(cartItem?.diamondDetail?.caratWeight),
                     clarity: cartItem?.diamondDetail?.clarity,
                     color: cartItem?.diamondDetail?.color,
-                  }) * (cartItem?.quantity || 1)
+                  }) * (cartItem?.quantity || cartItem?.returnQuantity || 1)
                 ).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                 })}

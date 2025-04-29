@@ -1,13 +1,14 @@
+import { ReturnHistoryPage } from "@/components/dynamiComponents";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import React from "react";
 
-export default function ReturnHistoryPage() {
+const ReturnHistory = () => {
   return (
-    <div className="mt-[90px] lg:mt-4">
+    <div className="mt-12 lg:mt-10">
       <CommonBgHeading title="Return History" />
-      <div className="h-screen flex items-center justify-center">
-        ReturnHistory
-      </div>
+      <ReturnHistoryPage />
     </div>
   );
-}
+};
+
+export default ReturnHistory;

@@ -1,67 +1,88 @@
 import {
   setReturnsList,
   setReturnDetail,
-  setOrderDetail,
   setDeleteReturnRequestLoader,
   setReturnMessage,
+  setReturnRequestLoader,
+  setReturnLoader,
 } from "@/store/slices/returnSlice";
 
 import { returnService, orderService } from "@/_services";
 import { messageType } from "@/_helper/constants";
+import { setOrderDetail, setOrderLoading } from "@/store/slices/orderSlice";
 
 export const fetchReturnsHistory = () => async (dispatch) => {
+  dispatch(setReturnLoader(true));
   try {
     const returnsData = await returnService.getUserReturnsList();
     dispatch(setReturnsList(returnsData || []));
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch returns history:", error);
     dispatch(setReturnsList([]));
+  } finally {
+    dispatch(setReturnLoader(false));
   }
 };
 
 export const fetchReturnDetail = (returnId) => async (dispatch) => {
   try {
+    dispatch(setReturnLoader(true)); // Start loading
+
     const returnDetail = await returnService.getReturnDetailByReturnId(
       returnId
     );
+
     dispatch(setReturnDetail(returnDetail || {}));
+
     return returnDetail || false;
-  } catch {
-    dispatch(setReturnDetail({}));
+  } catch (error) {
+    console.error("Failed to fetch return detail:", error);
+    dispatch(setReturnDetail({})); // Always reset on error
     return false;
+  } finally {
+    dispatch(setReturnLoader(false)); // Stop loading regardless of success or error
   }
 };
 
-export const fetchOrderDetailByOrderNumber =
-  (orderNumber) => async (dispatch) => {
-    try {
-      const orderDetail = await orderService.getOrderDetailByOrderNumber(
-        orderNumber
-      );
-      if (orderDetail) {
-        orderDetail.products = orderDetail.products.map((item) => ({
-          ...item,
-          returnQuantity: item.cartQuantity,
-          isChecked: false,
-        }));
-        dispatch(setOrderDetail(orderDetail));
-        return orderDetail;
-      }
-      return false;
-    } catch {
-      dispatch(setOrderDetail({}));
-      return false;
+export const fetchOrderDetailByOrderId = (orderId) => async (dispatch) => {
+  try {
+    dispatch(setOrderLoading(true));
+    const orderDetail = await orderService.getOrderDetailByOrderId(orderId);
+    console.log("orderDetail", orderDetail);
+    if (orderDetail) {
+      orderDetail.products = orderDetail.products.map((item) => ({
+        ...item,
+        returnQuantity: item.cartQuantity,
+        isChecked: false,
+      }));
+      dispatch(setOrderDetail(orderDetail));
+      return orderDetail;
     }
-  };
+    return false;
+  } catch (err) {
+    console.log("err", err);
+    console.log("in catch");
+    dispatch(setOrderDetail({}));
+    return false;
+  } finally {
+    dispatch(setOrderLoading(false)); // End loading
+  }
+};
 
 export const createReturnRequest = (payload) => async (dispatch) => {
   dispatch(setReturnMessage({ message: "", type: "" }));
-  dispatch(setDeleteReturnRequestLoader(true));
+  dispatch(setReturnRequestLoader(true));
   try {
     const response = await returnService.insertReturnRequest(payload);
     if (response) {
       // toasterService.success(
       //   "Your return request has been successfully submitted. Please await confirmation"
       // );
+      const message =
+        "Your return request has been successfully submitted. Please await confirmation";
+
+      dispatch(setReturnMessage({ message, type: messageType.SUCCESS }));
+
       return true;
     }
     return false;
@@ -70,7 +91,7 @@ export const createReturnRequest = (payload) => async (dispatch) => {
     dispatch(setReturnMessage({ message, type: messageType.ERROR }));
     return false;
   } finally {
-    dispatch(setDeleteReturnRequestLoader(false));
+    dispatch(setReturnRequestLoader(false));
   }
 };
 
@@ -96,6 +117,9 @@ export const deleteReturnRequest = (payload) => async (dispatch) => {
   try {
     const response = await returnService.deleteReturnRequest(payload);
     if (response) {
+      const message = "Your return request has been deleted";
+
+      dispatch(setReturnMessage({ message, type: messageType.SUCCESS }));
       // toasterService.success("Your return request has been deleted");
       return true;
     }

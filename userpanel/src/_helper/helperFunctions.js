@@ -88,6 +88,19 @@ const areArraysEqual = (arr1, arr2) => {
   );
 };
 
+const areDiamondDetailsEqual = (d1, d2) => {
+  if (!d1 || !d2) return false;
+
+  return (
+    d1.caratWeight === d2.caratWeight &&
+    d1.clarity === d2.clarity &&
+    d1.color === d2.color &&
+    d1.price === d2.price &&
+    d1.shapeId === d2.shapeId &&
+    d1.shapeName === d2.shapeName
+  );
+};
+
 const getVariComboPriceQty = (arrayOfCombinations, selectedVariations) => {
   if (!Array.isArray(selectedVariations) || !arrayOfCombinations) {
     return { price: 0, quantity: 0 };
@@ -422,4 +435,5 @@ export const helperFunctions = {
   calculateDiamondPrice,
   calculateCustomProductPrice,
   getCustomProduct,
+  areDiamondDetailsEqual,
 };
