@@ -2,7 +2,6 @@ import { CATEGORIES, RING } from "@/_helper/constants";
 import { productService } from "@/_services";
 import { setCustomizeProductList, setCustomizeProductLoading, setUniqueFilterOptions } from "@/store/slices/productSlice";
 import { getUniqueFilterOptions } from "./product.actions";
-import { setUniqueDiamondShapes } from "@/store/slices/selectDiamondSlice";
 
 export const fetchCustomizeProducts = () => {
     return async (dispatch) => {

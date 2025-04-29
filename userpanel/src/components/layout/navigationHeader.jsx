@@ -246,8 +246,7 @@ export default function NavigationHeader() {
                         </p>
                         <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
                         <div className="grid grid-cols-3 gap-4 mt-3 text-center">
-                          {uniqueFilterOptions?.uniqueDiamondShapes.length >
-                            0 &&
+                          {uniqueFilterOptions?.uniqueDiamondShapes?.length &&
                             uniqueFilterOptions?.uniqueDiamondShapes.map(
                               (item, index) => {
                                 return (
@@ -278,7 +277,7 @@ export default function NavigationHeader() {
                         </p>
                         <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
                         <div className="mt-3 flex flex-col gap-1">
-                          {uniqueFilterOptions?.uniqueSettingStyles.length &&
+                          {uniqueFilterOptions?.uniqueSettingStyles?.length &&
                             uniqueFilterOptions?.uniqueSettingStyles.map(
                               (item, index) => {
                                 return (
