@@ -17,6 +17,7 @@ import { customizationTypeService } from './customizationType.service';
 import { productService } from './product.service';
 import fileSettings from '../_utils/fileSettings';
 import { refundStatuses } from 'src/store/slices/refundSlice';
+import { diamondShapeService } from './diamondShape.service';
 
 const getAllReturnsList = () => {
   return new Promise(async (resolve, reject) => {
@@ -59,6 +60,7 @@ const getReturnDetailByReturnId = (returnId) => {
           const customizationType = await customizationTypeService.getAllCustomizationTypes();
           const customizationSubType =
             await customizationSubTypeService.getAllCustomizationSubTypes();
+          const allDiamondShapeList = await diamondShapeService.getAllDiamondShape();
 
           const customizations = {
             customizationType,
@@ -73,12 +75,12 @@ const getReturnDetailByReturnId = (returnId) => {
               returnDetail.createdBy = findedUserData.name;
             }
           }
-          returnDetail.products = returnDetail.products.map((orderProductItem) => {
+          returnDetail.products = returnDetail.products.map((returnProductItem) => {
             const findedProduct = allActiveProductsData.find(
-              (product) => product.id === orderProductItem.productId
+              (product) => product.id === returnProductItem.productId
             );
             if (findedProduct) {
-              const variationArray = orderProductItem.variations.map((variItem) => {
+              const variationArray = returnProductItem.variations.map((variItem) => {
                 const findedCustomizationType = customizations.customizationSubType.find(
                   (x) => x.id === variItem.variationTypeId
                 );
@@ -90,11 +92,21 @@ const getReturnDetailByReturnId = (returnId) => {
                   variationTypeName: findedCustomizationType.title,
                 };
               });
+              const foundedShape = allDiamondShapeList?.find(
+                (shape) => shape.id === returnProductItem?.diamondDetail?.shapeId
+              );
+
               return {
-                ...orderProductItem,
+                ...returnProductItem,
                 productName: findedProduct.productName,
                 productImage: findedProduct.images[0].image,
                 variations: variationArray,
+                diamondDetail: returnProductItem?.diamondDetail
+                  ? {
+                      ...returnProductItem?.diamondDetail,
+                      shapeName: foundedShape?.title,
+                    }
+                  : undefined,
               };
             }
             return orderProductItem;

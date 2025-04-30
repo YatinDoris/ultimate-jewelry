@@ -601,7 +601,7 @@ const ReturnList = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell>Id</TableCell>
-                    <TableCell>Return Number</TableCell>
+                    <TableCell>Order Number</TableCell>
                     <TableCell>Date & Time</TableCell>
                     <TableCell>Return Payment Status</TableCell>
                     <TableCell>Return Status</TableCell>

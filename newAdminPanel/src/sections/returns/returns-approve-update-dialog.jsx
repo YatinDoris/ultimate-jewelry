@@ -13,6 +13,7 @@ import { FileDrop } from 'src/components/file-drop';
 import { approveReturn } from 'src/actions/returnActions';
 import { Button, LoadingButton } from 'src/components/button';
 import { setSelectedApproveReturn, initApproveReturn } from 'src/store/slices/returnSlice';
+import { Alert, Typography } from '@mui/material';
 // ----------------------------------------------------------------------
 
 const validationSchema = Yup.object().shape({
@@ -88,6 +89,9 @@ const ApproveOrUpdateReturnDialog = ({
           {item?.shippingLabel ? 'Update Shipping Label' : 'Approve Return Request'}
         </StyledDialogTitle>
         <StyledDialogContent>
+          <Typography variant="body2" sx={{ mb: 2, fontWeight: 'medium' }}>
+            Shipping Label
+          </Typography>
           <FileDrop
             mediaLimit={1}
             fileKey={'imageFile'}
@@ -96,6 +100,10 @@ const ApproveOrUpdateReturnDialog = ({
             previewKey={'previewImage'}
             loading={crudReturnLoading}
           />
+          <Alert severity="info" sx={{ my: 1 }}>
+            <p>Before Approving a Request</p>
+            <p variant="body2">Ensure you have shipping label document or image.</p>
+          </Alert>
         </StyledDialogContent>
         <StyledDialogActions>
           <Button onClick={closeReturnPopup} disabled={crudReturnLoading} variant="outlined">
