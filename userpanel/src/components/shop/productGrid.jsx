@@ -36,12 +36,12 @@ const ProductGrid = memo(
       uniqueFilterOptions,
       selectedSettingStyles,
       selectedDiamondShape,
+      selectedPrices,
     } = useSelector(({ product }) => product);
 
     const handlePageClick = ({ selected }) => {
       dispatch(setCurrentPage(selected));
     };
-
     let filteredItemsList = productList;
     if (Object.keys(selectedVariations)?.length) {
       filteredItemsList = productList.filter((product) => {
@@ -85,10 +85,16 @@ const ProductGrid = memo(
     }
     if (selectedDiamondShape) {
       filteredItemsList = filteredItemsList.filter((product) => {
-        console.log(" product?.diamondFilter", product);
         return product?.diamondFilters?.diamondShapes?.some(
           (item) => item.id === selectedDiamondShape
         );
+      });
+    }
+    if (selectedPrices?.length === 2) {
+      const [minPrice, maxPrice] = selectedPrices;
+      filteredItemsList = filteredItemsList.filter((product) => {
+        const price = parseFloat(product.baseSellingPrice);
+        return price >= minPrice && price <= maxPrice;
       });
     }
     const pageCount = Math.ceil(filteredItemsList.length / ITEMS_PER_PAGE);

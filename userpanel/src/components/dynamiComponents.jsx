@@ -242,13 +242,6 @@ export const StartWithSettingPage = dynamic(
   }
 );
 
-export const CaratWeightSlider = dynamic(
-  () => import("./ui/CaratWeightSlider.jsx"),
-  {
-    ssr: false,
-  }
-);
-
 export const OrderSummary = dynamic(
   () => import("./ui/order-history/OrderSummary.jsx"),
   {
@@ -289,3 +282,7 @@ export const ReturnDetails = dynamic(
     ssr: false,
   }
 );
+
+export const RangeSlider = dynamic(() => import("./ui/RangeSlider.jsx"), {
+  ssr: false,
+});

@@ -3,26 +3,24 @@ import Link from "next/link";
 import { ProgressiveImg } from "../dynamiComponents";
 
 export default function ProductCard({
-  img,
-  video,
+  goldColorVariations,
+  goldTypeVariations,
+  // key,
   title,
   discount,
-  onClick,
+  basePrice,
+  img,
   price,
-  goldColorVariations,
   productLink = "",
+  video,
   isDiamondSettingPage = false,
 }) {
   productLink =
     productLink ||
     `/products/${helperFunctions.stringReplacedWithUnderScore(title)}`;
 
-  const originalPrice = discount
-    ? parseFloat((price / (1 - discount / 100)).toFixed(2))
-    : null;
-
   return (
-    <Link onClick={onClick} href={productLink} aria-label={title}>
+    <Link href={productLink} aria-label={title}>
       <div className="relative group w-full h-[200px] md:h-[300px] 2xl:h-[400px] ">
         {" "}
         <ProgressiveImg
@@ -52,9 +50,10 @@ export default function ProductCard({
 
         <div className="flex items-center gap-2 font-castoro">
           <p className="my-1 tracking-wider text-lg md:text-xl">${price}</p>
+
           {!isDiamondSettingPage && discount ? (
             <p className="text-sm md:text-base text-gray-500 line-through">
-              ${originalPrice}
+              ${basePrice}
             </p>
           ) : null}
         </div>

@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { set } from "firebase/database";
 
 const initialState = {
   menuList: [],
@@ -18,6 +17,8 @@ const initialState = {
   customizeLoader: false,
   openDiamondDetailDrawer: "",
   openDiamondDetailProductId: "",
+  uniqueFilterOptionsForHeader: {},
+  customizeOptionLoading: false,
 };
 
 const commonSlice = createSlice({
@@ -77,6 +78,12 @@ const commonSlice = createSlice({
     setOpenDiamondDetailProductId(state, action) {
       state.openDiamondDetailProductId = action.payload;
     },
+    setUniqueFilterOptionsForHeader: (state, action) => {
+      state.uniqueFilterOptionsForHeader = action.payload;
+    },
+    setCustomizeOptionLoading: (state, action) => {
+      state.customizeOptionLoading = action.payload;
+    }
   },
 });
 
@@ -97,6 +104,8 @@ export const {
   setCustomProductDetails,
   setOpenDiamondDetailDrawer,
   setOpenDiamondDetailProductId,
+  setUniqueFilterOptionsForHeader,
+  setCustomizeOptionLoading
 } = commonSlice.actions;
 
 export default commonSlice.reducer;
