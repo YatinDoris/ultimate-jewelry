@@ -45,8 +45,10 @@ import { setLoginMessage } from "@/store/slices/userSlice";
 import { useAlertTimeout } from "@/hooks/use-alert-timeout";
 import HeroBanner from "../HeroBanner";
 import CategoryGallery from "./categoryGallery";
-import { helperFunctions } from "@/_helper";
+import { helperFunctions, messageType } from "@/_helper";
 import KeyFeatures from "../KeyFeatures";
+import { setAppointmentMessage } from "@/store/slices/appointmentSlice";
+import { setCustomJewelryMessage } from "@/store/slices/customjewelrySlice";
 
 const diamondShapes = [
   { image: diamondRound, titleAttr: "", altAttr: "", title: "Round" },
@@ -157,6 +159,8 @@ const Home = () => {
   const dispatch = useDispatch();
   const [currentIndex, setCurrentIndex] = useState(0);
   const { loginMessage } = useSelector(({ user }) => user);
+  const { appointmentMessage } = useSelector(({ appointment }) => appointment);
+  const { customJewelryMessage } = useSelector(({ customJewelry }) => customJewelry);
 
   useAlertTimeout(loginMessage, () =>
     dispatch(setLoginMessage({ message: "", type: "" }))
@@ -169,6 +173,13 @@ const Home = () => {
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
+
+  useAlertTimeout(appointmentMessage, () =>
+    dispatch(setAppointmentMessage({ message: "", type: "" }))
+  );
+  useAlertTimeout(customJewelryMessage, () =>
+    dispatch(setCustomJewelryMessage({ message: "", type: "" }))
+  );
 
   return (
     <>
@@ -238,9 +249,8 @@ const Home = () => {
                 key={index}
                 srcAttr={img}
                 altAttr=""
-                className={`absolute top-0 left-0 w-full h-full object-contain transition-opacity duration-1000 ease-in-out ${
-                  index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
-                }`}
+                className={`absolute top-0 left-0 w-full h-full object-contain transition-opacity duration-1000 ease-in-out ${index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+                  }`}
               />
             ))}
           </div>
@@ -325,6 +335,18 @@ const Home = () => {
         <AccordionDropdown items={faqData} />
       </section>
       <Alert message={loginMessage?.message} type={loginMessage?.type} />
+      {appointmentMessage?.type === messageType?.SUCCESS && (
+        <Alert
+          message={appointmentMessage?.message}
+          type={appointmentMessage?.type}
+        />
+      )}
+      {customJewelryMessage?.type === messageType?.SUCCESS && (
+        <Alert
+          message={customJewelryMessage?.message}
+          type={customJewelryMessage?.type}
+        />
+      )}
     </>
   );
 };

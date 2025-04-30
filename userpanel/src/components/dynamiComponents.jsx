@@ -286,3 +286,40 @@ export const ReturnDetails = dynamic(
 export const RangeSlider = dynamic(() => import("./ui/RangeSlider.jsx"), {
   ssr: false,
 });
+
+export const AppointmentCustomJewelryPage = dynamic(
+  () => import("./ui/AppointmentCustomJewelryPage.jsx"),
+  {
+    ssr: false,
+  }
+);
+export const CustomJewelryForm = dynamic(
+  () => import("./ui/CustomJewelryForm.jsx"),
+  {
+    ssr: false,
+  }
+);
+export const AppointmentForm = dynamic(
+  () => import("./ui/AppointmentForm.jsx"),
+  {
+    ssr: false,
+  }
+);
+export const CustomTabs = dynamic(
+  () => import("./ui/CustomTabs.jsx"),
+  {
+    ssr: false,
+  }
+);
+export const CustomJewelryPage = dynamic(
+  () => import("./ui/CustomJewelry.jsx"),
+  {
+    ssr: false,
+  }
+);
+export const FileUpload = dynamic(
+  () => import("./ui/FileUpload.jsx"),
+  {
+    ssr: false,
+  }
+);

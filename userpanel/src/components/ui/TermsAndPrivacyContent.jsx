@@ -8,7 +8,12 @@ const TermsAndPrivacyContent = ({ sections = [] }) => {
               {`${idx + 1}. ${section.title}`}
             </h2>
             <p className="text-sm md:text-lg xl:text-xl font-medium text-baseblack">
-              {section.description}
+              {section.description.split('\n').map((line, lineIdx) => (
+                <span key={lineIdx}>
+                  {line}
+                  <br />
+                </span>
+              ))}
             </p>
           </div>
         ))}

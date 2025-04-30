@@ -105,7 +105,7 @@ const SearchProductPage = () => {
             <input
               type="text"
               placeholder="Search Products By Name, Category, SKU, or Variations"
-              className="custom-input pl-10 md:pl-12 pr-10 text-sm md:text-base"
+              className="custom-input !pl-10 md:pl-12 pr-10 text-sm md:text-base"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
 

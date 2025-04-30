@@ -76,7 +76,7 @@ export default function footer() {
         },
         {
           title: "Book an Appointment",
-          href: "/contact-us/book-appointment",
+          href: "appointment-and-custom-jewelry",
         },
       ],
     },

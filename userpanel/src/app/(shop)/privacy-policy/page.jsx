@@ -1,3 +1,4 @@
+import { companyEmail, companyPhoneNo } from "@/_helper";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import TermsAndPrivacyContent from "@/components/ui/TermsAndPrivacyContent";
 const privacySections = [
@@ -64,7 +65,7 @@ const privacySections = [
   {
     title: "Contact Information",
     description:
-      "For questions or concerns regarding this Privacy Policy, please contact us at:\nKatanoff\nEmail: contact@katanoff.com",
+      `For questions or concerns regarding this Privacy Policy, please contact us:${companyPhoneNo}\n Email: ${companyEmail}`,
   },
 ];
 
