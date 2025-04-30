@@ -12,3 +12,5 @@ export * from "./subscriber.service";
 export * from "./order.service";
 export * from "./return.service";
 export * from "./authentication.service";
+export * from "./appointment.service";
+export * from "./customJewelry.service";

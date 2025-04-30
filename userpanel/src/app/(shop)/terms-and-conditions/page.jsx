@@ -1,3 +1,4 @@
+import { companyPhoneNo } from "@/_helper";
 import CommonBgHeading from "@/components/ui/CommonBgHeading";
 import TermsAndPrivacyContent from "@/components/ui/TermsAndPrivacyContent";
 const sections = [
@@ -99,7 +100,7 @@ const sections = [
   {
     title: "Contact Information",
     description:
-      "For any questions or concerns regarding these Terms & Conditions, please contact us at: Katanoff",
+      `For any questions or concerns regarding these Terms & Conditions, please contact us at: ${companyPhoneNo}`,
   },
 ];
 
