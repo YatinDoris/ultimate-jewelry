@@ -89,8 +89,8 @@ const areArraysEqual = (arr1, arr2) => {
 };
 
 const areDiamondDetailsEqual = (d1, d2) => {
-  if (!d1 || !d2) return false;
-
+  if (!d1 && !d2) return true; // both undefined/null
+  if (!d1 || !d2) return false; // one is missing
   return (
     d1.caratWeight === d2.caratWeight &&
     d1.clarity === d2.clarity &&
@@ -99,6 +99,14 @@ const areDiamondDetailsEqual = (d1, d2) => {
     d1.shapeId === d2.shapeId &&
     d1.shapeName === d2.shapeName
   );
+};
+
+const getUniqueDrawerKey = (product) => {
+  return JSON.stringify({
+    productId: product.productId,
+    variations: product.variations,
+    diamondDetail: product.diamondDetail,
+  });
 };
 
 const getVariComboPriceQty = (arrayOfCombinations, selectedVariations) => {
@@ -436,4 +444,5 @@ export const helperFunctions = {
   calculateCustomProductPrice,
   getCustomProduct,
   areDiamondDetailsEqual,
+  getUniqueDrawerKey,
 };

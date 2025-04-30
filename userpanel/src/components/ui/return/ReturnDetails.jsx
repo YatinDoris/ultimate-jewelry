@@ -24,9 +24,7 @@ const ReturnDetails = () => {
 
   const { openDiamondDetailDrawer } = useSelector(({ common }) => common);
   const { invoiceLoading } = useSelector(({ order }) => order);
-  const { returnDetail, returnLoader, returnOrder } = useSelector(
-    ({ returns }) => returns
-  );
+  const { returnDetail, returnLoader } = useSelector(({ returns }) => returns);
   useEffect(() => {
     dispatch(setShowModal(false));
     dispatch(fetchReturnDetail(returnId));
@@ -34,7 +32,7 @@ const ReturnDetails = () => {
   const dispatch = useDispatch();
   const orderMetaFields = [
     {
-      label: "Order Date",
+      label: "Return Request Date",
       value: moment(returnDetail?.createdDate).format("DD-MM-YYYY"),
     },
     {
@@ -63,9 +61,32 @@ const ReturnDetails = () => {
     {
       label: "Return Request Reason",
       value: returnDetail?.returnRequestReason,
+      isOptional: true,
+    },
+    {
+      label: "Cancel Reason",
+      value: returnDetail?.cancelReason,
+      isOptional: true,
+    },
+    {
+      label: "Admin Note",
+      value: returnDetail?.adminNote,
+      isOptional: true,
+    },
+    {
+      label: "Shipping Label",
+
+      value: returnDetail?.shippingLabel ? (
+        <div
+          className="text-primary underline cursor-pointer"
+          onClick={() => window.open(returnDetail.shippingLabel, "_blank")}
+        >
+          Show Shipping Label
+        </div>
+      ) : null,
+      isOptional: true,
     },
   ];
-
   return (
     <>
       {returnLoader ? (
@@ -94,8 +115,7 @@ const ReturnDetails = () => {
                   </>
                 ) : null}
 
-                {returnDetail?.returnPaymentStatus === "Success" &&
-                returnDetail.id === returnOrder ? (
+                {returnDetail?.returnPaymentStatus == "refunded" ? (
                   <>
                     {invoiceLoading ? (
                       <Spinner className="h-6" />
@@ -254,7 +274,7 @@ const ReturnDetails = () => {
                 {/* Order Info Section */}
                 <div className="bg-white p-4 lg:p-6">
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 text-sm md:text-base">
-                    {orderMetaFields.map(
+                    {/* {orderMetaFields.map(
                       ({ label, value, render, isOptional }) =>
                         (!isOptional || value) && (
                           <div key={`meta-${label}`}>
@@ -264,6 +284,33 @@ const ReturnDetails = () => {
                             </span>
                           </div>
                         )
+                    )} */}
+
+                    {orderMetaFields.map(
+                      ({ label, value, render, isOptional }) => {
+                        const isEmpty =
+                          value === undefined ||
+                          value === null ||
+                          value === "" ||
+                          (typeof value === "string" && value.trim() === "");
+
+                        if (isOptional && isEmpty) return null;
+
+                        return (
+                          <div key={`meta-${label}`} className="mb-4">
+                            <p className="text-basegray">{label}</p>
+
+                            {typeof value === "string" ||
+                            typeof value === "number" ? (
+                              <span className="font-medium break-words mt-1 inline-block">
+                                {render ? render(value) : value}
+                              </span>
+                            ) : (
+                              <div className="mt-1">{value}</div>
+                            )}
+                          </div>
+                        );
+                      }
                     )}
                   </div>
                 </div>

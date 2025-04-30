@@ -8,6 +8,7 @@ const initialState = {
   currentPage: 0,
   returnReqLoader: false,
   deleteReturnReqLoader: false,
+  cancelReturnReqLoader: false,
   returnMessage: { message: "", type: "" },
   selectedProducts: [],
   returnOrder: "",
@@ -31,6 +32,9 @@ const returnSlice = createSlice({
     },
     setDeleteReturnRequestLoader: (state, action) => {
       state.deleteReturnReqLoader = action.payload;
+    },
+    setCancelReturnRequestLoader: (state, action) => {
+      state.cancelReturnReqLoader = action.payload;
     },
     setReturnMessage: (state, action) => {
       state.returnMessage = action.payload;
@@ -56,6 +60,7 @@ export const {
   setReturnLoader,
   setReturnRequestLoader,
   setDeleteReturnRequestLoader,
+  setCancelReturnRequestLoader,
   setReturnMessage,
   clearReturnMessage,
   setCurrentPage,

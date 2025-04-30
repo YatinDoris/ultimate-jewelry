@@ -10,15 +10,16 @@ const DiamondDetailDrawer = ({
   dispatch,
   setOpenDiamondDetailDrawer,
 }) => {
+  const drawerKey = helperFunctions?.getUniqueDrawerKey(cartItem);
+  const isOpen = openDiamondDetailDrawer === drawerKey;
   if (!cartItem?.diamondDetail) return null;
-  const isOpen = openDiamondDetailDrawer === cartItem.id;
 
   return (
     <div className="mt-2 xs:mt-4 border max-w-sm">
       <div
         className="flex w-full items-center justify-between px-4 py-1 md:py-1 border-b bg-alabaster  cursor-pointer"
         onClick={() =>
-          dispatch(setOpenDiamondDetailDrawer(isOpen ? null : cartItem.id))
+          dispatch(setOpenDiamondDetailDrawer(isOpen ? null : drawerKey))
         }
       >
         <h4 className="font-semibold text-sm md:text-base">Diamond Detail</h4>
