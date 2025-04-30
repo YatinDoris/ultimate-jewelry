@@ -57,6 +57,36 @@ const OrderDetails = ({
       value: orderDetail?.orderStatus,
       render: (val) => <CustomBadge status={val}>{val}</CustomBadge>,
     },
+    {
+      label: "Admin Note",
+      value: orderDetail?.adminNote,
+      isOptional: true,
+    },
+    {
+      label: "Cancelled By",
+      value: orderDetail?.cancelledByName,
+      isOptional: true,
+    },
+    {
+      label: "Cancel Reason",
+      value: orderDetail?.cancelReason,
+      isOptional: true,
+    },
+
+    {
+      label: "Refund Failure Reason",
+      value: orderDetail?.stripeRefundFailureReason,
+      isOptional: true,
+    },
+    {
+      label: "Delivery Date",
+      value: orderDetail?.deliveryDate ? (
+        <span className="fw-semibold">
+          {moment(orderDetail.deliveryDate).format("DD-MM-YYYY")}
+        </span>
+      ) : null,
+      isOptional: true,
+    },
   ];
 
   return orderLoading ? (

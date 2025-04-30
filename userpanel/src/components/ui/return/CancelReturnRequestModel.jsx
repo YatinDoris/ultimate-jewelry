@@ -14,19 +14,16 @@ import ErrorMessage from "../ErrorMessage";
 import { GrayButton, LoadingPrimaryButton } from "../button";
 
 import { setIsHovered, setShowModal } from "@/store/slices/commonSlice";
-import { fetchOrderHistory, orderCancel } from "@/_actions/order.action";
 import { messageType } from "@/_helper/constants";
 import {
-  deleteReturnRequest,
+  cancelReturnRequest,
   fetchReturnsHistory,
 } from "@/_actions/return.action";
 import { setReturnMessage } from "@/store/slices/returnSlice";
 
 export default function CancelReturnRequestModel() {
   const dispatch = useDispatch();
-  const { cancelOrderLoading, selectedOrder, orderMessage } = useSelector(
-    ({ order }) => order
-  );
+  const { cancelOrderLoading } = useSelector(({ order }) => order);
   const { returnMessage, returnOrder } = useSelector(({ returns }) => returns);
   const { isHovered } = useSelector(({ common }) => common);
 
@@ -60,8 +57,7 @@ export default function CancelReturnRequestModel() {
         returnId: returnOrder,
         cancelReason: values.reason,
       };
-      const response = await dispatch(deleteReturnRequest(payload));
-
+      const response = await dispatch(cancelReturnRequest(payload));
       if (response) {
         dispatch(setShowModal(false));
         dispatch(fetchReturnsHistory());

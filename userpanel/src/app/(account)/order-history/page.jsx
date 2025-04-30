@@ -20,7 +20,8 @@ import { setShowModal } from "@/store/slices/commonSlice";
 import Alert from "@/components/ui/Alert";
 import { useAlertTimeout } from "@/hooks/use-alert-timeout";
 import { TbTruckReturn } from "react-icons/tb";
-
+import returnRequestSvg from "@/assets/icons/returnRequest.svg";
+import { CustomImg } from "@/components/dynamiComponents";
 export default function OrderHistoryPage() {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -169,12 +170,14 @@ export default function OrderHistoryPage() {
                       {["delivered"].includes(order.orderStatus) &&
                       helperFunctions.isReturnValid(order.deliveryDate) &&
                       order.hasActiveReturns ? (
-                        <TbTruckReturn
-                          title="Return Request"
-                          className={`cursor-pointer text-xl !text-[#DC3545]`}
+                        <CustomImg
+                          srcAttr={returnRequestSvg}
+                          altAttr="Return Request"
+                          titleAttr="Return Request"
                           onClick={() =>
                             router.push(`/return-request/${order.id}`)
                           }
+                          className="cursor-pointer w-6 h-6"
                         />
                       ) : null}
 

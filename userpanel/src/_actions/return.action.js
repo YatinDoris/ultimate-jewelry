@@ -5,6 +5,7 @@ import {
   setReturnMessage,
   setReturnRequestLoader,
   setReturnLoader,
+  setCancelReturnRequestLoader,
 } from "@/store/slices/returnSlice";
 
 import { returnService, orderService } from "@/_services";
@@ -48,7 +49,6 @@ export const fetchOrderDetailByOrderId = (orderId) => async (dispatch) => {
   try {
     dispatch(setOrderLoading(true));
     const orderDetail = await orderService.getOrderDetailByOrderId(orderId);
-    console.log("orderDetail", orderDetail);
     if (orderDetail) {
       orderDetail.products = orderDetail.products.map((item) => ({
         ...item,
@@ -60,8 +60,6 @@ export const fetchOrderDetailByOrderId = (orderId) => async (dispatch) => {
     }
     return false;
   } catch (err) {
-    console.log("err", err);
-    console.log("in catch");
     dispatch(setOrderDetail({}));
     return false;
   } finally {
@@ -97,10 +95,15 @@ export const createReturnRequest = (payload) => async (dispatch) => {
 
 export const cancelReturnRequest = (payload) => async (dispatch) => {
   dispatch(setReturnMessage({ message: "", type: "" }));
+  dispatch(setCancelReturnRequestLoader(true));
+
   try {
     const response = await returnService.cancelReturnRequest(payload);
     if (response) {
       // toasterService.success("Your return request has been cancelled");
+      const message = "Your return request has been Cancelled";
+
+      dispatch(setReturnMessage({ message, type: messageType.SUCCESS }));
       return true;
     }
     return false;
@@ -108,6 +111,8 @@ export const cancelReturnRequest = (payload) => async (dispatch) => {
     const message = err?.message || "Something went wrong";
     dispatch(setReturnMessage({ message, type: messageType.ERROR }));
     return false;
+  } finally {
+    dispatch(setCancelReturnRequestLoader(false));
   }
 };
 

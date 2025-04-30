@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ProgressiveImg } from "@/components/dynamiComponents";
-import Link from "next/link";
 import { helperFunctions, messageType } from "@/_helper";
 import DiamondDetailDrawer from "../customize/DiamondDetailDrawer";
 import {
@@ -29,9 +28,13 @@ import { LinkButton, LoadingPrimaryButton } from "../button";
 import CommonBgHeading from "../CommonBgHeading";
 import Alert from "../Alert";
 import SkeletonLoader from "../skeletonLoader";
+import CommonNotFound from "../CommonNotFound";
 
 const validationSchema = Yup.object().shape({
   returnRequestReason: Yup.string().required("Reason is required"),
+  selectedProducts: Yup.array()
+    .min(1, "Please select at least one product")
+    .required("Please select at least one product"),
 });
 
 const ReturnRequestPage = () => {
@@ -42,8 +45,9 @@ const ReturnRequestPage = () => {
   const { returnReqLoader, returnMessage, selectedProducts } = useSelector(
     ({ returns }) => returns
   );
-  const { isChecked, isSubmitted, openDiamondDetailDrawer, isHovered } =
-    useSelector(({ common }) => common);
+  const { openDiamondDetailDrawer, isHovered } = useSelector(
+    ({ common }) => common
+  );
   const { orderDetail, orderLoading } = useSelector(({ order }) => order);
 
   useEffect(() => {
@@ -52,13 +56,17 @@ const ReturnRequestPage = () => {
     dispatch(setReturnMessage({ message: "", type: "" }));
   }, [orderId]);
   const updateDetail = useCallback(
-    (detail, productId, variations, key, value) => {
+    (detail, productId, variations, diamondDetail, key, value) => {
       const updatedDetail = {
         ...detail,
         products: detail.products.map((product) => {
           if (
             product.productId === productId &&
-            helperFunctions.areArraysEqual(product.variations, variations)
+            helperFunctions.areArraysEqual(product.variations, variations) &&
+            helperFunctions.areDiamondDetailsEqual(
+              product.diamondDetail,
+              diamondDetail
+            )
           ) {
             return {
               ...product,
@@ -78,16 +86,78 @@ const ReturnRequestPage = () => {
     [dispatch]
   );
 
-  const handleCheckboxChange = useCallback(
-    (event, { productId, variations }) => {
-      const isChecked = event.target.checked;
-      updateDetail(orderDetail, productId, variations, "isChecked", isChecked);
+  const returnReqSubmit = useCallback(
+    async (values, { resetForm }) => {
+      try {
+        dispatch(setReturnMessage({ message: "", type: "" }));
+
+        const payload = {
+          orderId: orderDetail?.id,
+          products: getProductsArray(selectedProducts),
+          returnRequestReason: values.returnRequestReason,
+        };
+        const response = await dispatch(createReturnRequest(payload));
+        if (response) {
+          router.push("/return-history");
+          resetForm();
+        }
+      } catch (error) {
+        console.error("Error occurred while returning request:", error);
+      }
     },
-    [orderDetail, updateDetail]
+    [dispatch, router, orderDetail?.id, selectedProducts]
+  );
+  const {
+    handleBlur,
+    handleChange,
+    errors,
+    values,
+    touched,
+    handleSubmit,
+    setFieldValue,
+  } = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      returnRequestReason: "",
+      selectedProducts: [],
+    },
+    validationSchema: validationSchema,
+    onSubmit: returnReqSubmit,
+  });
+
+  const handleCheckboxChange = useCallback(
+    (event, cartItem) => {
+      const isChecked = event.target.checked;
+      const prevSelected = values.selectedProducts || [];
+
+      let updatedSelected = [];
+
+      if (isChecked) {
+        updatedSelected = [...prevSelected, cartItem.productId];
+      } else {
+        updatedSelected = prevSelected.filter(
+          (id) => id !== cartItem.productId
+        );
+      }
+
+      setFieldValue("selectedProducts", updatedSelected);
+      updateDetail(
+        orderDetail,
+        cartItem.productId,
+        cartItem.variations,
+        cartItem.diamondDetail,
+        "isChecked",
+        isChecked
+      );
+    },
+    [orderDetail, setFieldValue, updateDetail, values.selectedProducts]
   );
 
   const handleProductQtyChange = useCallback(
-    (type, { returnQuantity, cartQuantity, productId, variations }) => {
+    (
+      type,
+      { returnQuantity, cartQuantity, productId, variations, diamondDetail }
+    ) => {
       if (
         type === "increase" &&
         (returnQuantity < minQuantity || returnQuantity >= cartQuantity)
@@ -106,58 +176,14 @@ const ReturnRequestPage = () => {
         orderDetail,
         productId,
         variations,
+        diamondDetail,
         "returnQuantity",
         quantity
       );
     },
-    [orderDetail]
+    [orderDetail, updateDetail]
   );
 
-  const returnReqSubmit = useCallback(
-    async (values, { resetForm }) => {
-      try {
-        if (!selectedProducts.length) {
-          dispatch(
-            setReturnMessage({
-              message: "Please select atleast one product",
-              type: messageType.ERROR,
-            })
-          );
-          return;
-        }
-        const payload = {
-          orderId: orderDetail?.id,
-          products: getProductsArray(selectedProducts),
-          returnRequestReason: values.returnRequestReason,
-        };
-        const response = await dispatch(createReturnRequest(payload));
-        if (response) {
-          router.push("/return-history");
-          resetForm();
-        }
-      } catch (error) {
-        console.error("Error occurred while returning request:", error);
-      }
-    },
-    [dispatch, router, orderDetail?.id, selectedProducts]
-  );
-
-  const {
-    handleBlur,
-    handleChange,
-    errors,
-    values,
-    touched,
-    handleSubmit,
-    resetForm,
-  } = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      returnRequestReason: "",
-    },
-    validationSchema: validationSchema,
-    onSubmit: returnReqSubmit,
-  });
   const bgHeadingText = `${selectedProducts?.length}  Selected Products`;
   return (
     <>
@@ -247,10 +273,7 @@ const ReturnRequestPage = () => {
                         >
                           −
                         </button>
-                        {/* {selectedCartItem.id === cartItem.id &&
-                    updateCartQtyErrorMessage ? (
-                      <ErrorMessage message={updateCartQtyErrorMessage} />
-                    ) : null} */}
+
                         <span className="px-2 md:px-4 text-[12px] md:text-lg lg:text-xl font-medium text-black">
                           {cartItem.returnQuantity}
                         </span>
@@ -299,24 +322,34 @@ const ReturnRequestPage = () => {
                 </div>
               </div>
             ))}
-            <form className="flex flex-col items-center gap-6 pt-6 w-full">
-              <textarea
-                name="returnRequestReason"
-                placeholder="Enter Reason"
-                className="w-full h-32 p-4 focus:outline-none resize-none text-base"
-                value={values.returnRequestReason}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
+            {touched.selectedProducts && errors.selectedProducts && (
+              <ErrorMessage message={errors.selectedProducts} />
+            )}
+            <form className="flex flex-col  gap-6 pt-6 w-full">
+              <div>
+                <textarea
+                  name="returnRequestReason"
+                  placeholder="Enter Reason"
+                  className="w-full h-32 p-4 focus:outline-none resize-none text-base"
+                  value={values.returnRequestReason}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
 
-              {(returnMessage && returnMessage.type !== messageType.SUCCESS) ||
-              (touched.returnRequestReason && errors.returnRequestReason) ? (
+                {touched.returnRequestReason && errors.returnRequestReason ? (
+                  <ErrorMessage
+                    className="!text-start"
+                    message={errors.returnRequestReason}
+                  />
+                ) : null}
+              </div>
+              {returnMessage && returnMessage.type !== messageType.SUCCESS ? (
                 <ErrorMessage
-                  message={returnMessage?.message || errors.returnRequestReason}
+                  className="!text-start"
+                  message={returnMessage?.message}
                 />
               ) : null}
-
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-center justify-center">
                 <LinkButton
                   href="/order-history"
                   className="!text-baseblack !h-12 xl:!h-16 !font-medium  w-fit xl:!py-6 !bg-[#E5E5E5] !text-base hover:!border-[#202A4E] hover:!bg-transparent hover:!text-[#202A4E] !border-black_opacity_10 !uppercase !border !rounded-none"
@@ -350,7 +383,10 @@ const ReturnRequestPage = () => {
           </div>
         </>
       ) : (
-        ""
+        <CommonNotFound
+          message="Sorry, no order found."
+          subMessage="You can Try with Different order..."
+        />
       )}
     </>
   );

@@ -145,14 +145,12 @@ const insertReturnRequest = (params) => {
             (returnOrder) => returnOrder.status === "rejected"
           ).length;
 
-          // const hasActiveReturns =
-          //   isPendingOrApprovedOrReceivedReturnsCount ||
-          //   (rejectedCount > 0 && rejectedCount > 2)
-          //     ? false
-          //     : true;
-          const hasActiveReturns = isPendingOrApprovedOrReceivedReturnsCount
-            ? false
-            : true;
+          const hasActiveReturns =
+            isPendingOrApprovedOrReceivedReturnsCount ||
+            (rejectedCount > 0 && rejectedCount > 2)
+              ? false
+              : true;
+
           if (!hasActiveReturns) {
             reject(
               new Error(
