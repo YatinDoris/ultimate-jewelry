@@ -616,7 +616,7 @@ export default function NavigationHeader() {
                     </div>
                   </div>
 
-                  {true ? (
+                  {customizeOptionLoading ? (
                     <div className="block lg:hidden animate-pulse">
                       <div className="grid grid-cols-1 gap-4 max-h-[600px] overflow-hidden transition-all duration-300 ease-in-out">
                         {[1, 2, 3].map((i) => (

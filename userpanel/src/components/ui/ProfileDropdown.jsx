@@ -1,6 +1,9 @@
 import Cookies from "js-cookie";
 import { helperFunctions } from "@/_helper";
-import { setOpenProfileDropdown } from "@/store/slices/commonSlice";
+import {
+  setIsMenuOpen,
+  setOpenProfileDropdown,
+} from "@/store/slices/commonSlice";
 import { useRouter } from "next/navigation";
 import { HiOutlineUser } from "react-icons/hi2";
 import { IoIosArrowDown } from "react-icons/io";
