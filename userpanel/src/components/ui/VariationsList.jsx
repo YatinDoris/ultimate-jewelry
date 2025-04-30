@@ -4,6 +4,7 @@ import { CustomImg } from "../dynamiComponents";
 const VariationsList = ({ variations, selectedVariations, handleSelect }) => {
   // Helper to check if a specific variationId + variationTypeId is selected
   const isSelected = (variationId, variationTypeId) =>
+    selectedVariations?.length &&
     selectedVariations?.some(
       (v) =>
         v.variationId === variationId && v.variationTypeId === variationTypeId

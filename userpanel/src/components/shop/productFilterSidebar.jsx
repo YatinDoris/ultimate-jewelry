@@ -3,6 +3,7 @@ import {
   resetFilters,
   setOpenKeys,
   setSelectedDiamondShape,
+  setSelectedPrices,
   setSelectedSettingStyle,
   setSelectedVariations,
   setShowFilterSidebar,
@@ -15,7 +16,9 @@ import { FiMinus, FiPlus } from "react-icons/fi";
 import { useEffect } from "react";
 import { useWindowSize } from "@/_helper/hooks";
 import { sortByList } from "@/_helper/constants";
-import { ProgressiveImg } from "../dynamiComponents";
+import * as Yup from "yup";
+import { ProgressiveImg, RangeSlider } from "../dynamiComponents";
+import { useFormik } from "formik";
 
 export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   const dispatch = useDispatch();
@@ -39,6 +42,54 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
       })
     );
   };
+  const onPriceChange = (value) => {
+    dispatch(setSelectedPrices(value));
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      priceRange: uniqueFilterOptions.availablePriceRange,
+    },
+    validationSchema: Yup.object({
+      priceRange: Yup.array()
+        .of(Yup.number().required("Required"))
+        .length(2, "Both min and max are required")
+        .test(
+          "min-max",
+          "Min must be less than or equal to max",
+          (value) => value && value[0] <= value[1]
+        ),
+    }),
+    validateOnChange: true,
+    validateOnBlur: true,
+    onSubmit: () => {}, // Not needed for onChange usage
+  });
+
+  const { values, setFieldValue, errors, touched } = formik;
+
+  const handleInputChange = (e, index) => {
+    const val = parseFloat(e.target.value) || 0;
+    const newRange = [...values.priceRange];
+    newRange[index] = val;
+    if (newRange[0] > newRange[1]) newRange.sort((a, b) => a - b);
+    setFieldValue("priceRange", newRange);
+  };
+
+  const handleKeyDown = (e) => {
+    const allowedKeys = [
+      "Backspace",
+      "Delete",
+      "Tab",
+      "Enter",
+      "Escape",
+      "ArrowLeft",
+      "ArrowRight",
+      ".",
+    ];
+    if (/^\d$/.test(e.key)) return;
+    if (!allowedKeys.includes(e.key)) e.preventDefault();
+    if (e.key === "." && e.target.value.includes(".")) e.preventDefault();
+  };
 
   useEffect(() => {
     const isSmallScreen = screen.isMobile || screen.isTablet;
@@ -59,6 +110,24 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
       document.body.style.width = "";
     };
   }, [showFilterSidebar]);
+
+  // Call onPriceChange whenever priceRange changes and is valid
+  useEffect(() => {
+    if (!formik.errors.priceRange && typeof onPriceChange === "function") {
+      onPriceChange(values.priceRange);
+    }
+  }, [values.priceRange, formik.errors.priceRange, onPriceChange]);
+
+  const multipleTrack = (props, state) => (
+    <div
+      {...props}
+      key={state.index}
+      className={`absolute top-0 bottom-0 rounded-md ${
+        [0, 2].includes(state.index) ? "bg-gray-200" : "bg-primary"
+      }`}
+    />
+  );
+
   return (
     <div
       className={`w-full lg:w-[300px] 2xl:w-[400px] flex-shrink-0 bg-white lg:bg-transparent transition-transform duration-300 ease-in-out lg:sticky lg:top-20 lg:h-screen lg:overflow-y-auto lg:translate-x-0 lg:z-0 z-[60] ${
@@ -343,6 +412,64 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               </div>
             </div>
           ))}
+
+          <div>
+            <button
+              className={`w-full flex items-center justify-between ${
+                isOpenKey("price") ? "pt-4 pb-2" : "py-4"
+              }`}
+              onClick={() => dispatch(toggleOpenKey("price"))}
+            >
+              <p className="font-semibold mb-1">Setting Price</p>
+              <span className="text-xl">
+                {isOpenKey("price") ? <FiMinus /> : <FiPlus />}
+              </span>
+            </button>
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                isOpenKey("price")
+                  ? "max-h-screen opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="space-y-4 mt-5">
+                <RangeSlider
+                  defaultValue={uniqueFilterOptions.availablePriceRange}
+                  min={uniqueFilterOptions.availablePriceRange[0]}
+                  max={uniqueFilterOptions.availablePriceRange[1]}
+                  rangeValue={values.priceRange}
+                  setRangeValue={(value) => setFieldValue("priceRange", value)}
+                  setInputValues={(value) => setFieldValue("priceRange", value)}
+                  step={1}
+                  renderTrack={multipleTrack}
+                />
+                <div className="flex justify-between gap-4">
+                  <input
+                    type="text"
+                    value={values.priceRange[0]}
+                    onChange={(e) => handleInputChange(e, 0)}
+                    onBlur={formik.handleBlur}
+                    onKeyDown={handleKeyDown}
+                    className="border px-2 py-1 w-20 text-center"
+                  />
+                  <input
+                    type="text"
+                    value={values.priceRange[1]}
+                    onChange={(e) => handleInputChange(e, 1)}
+                    onBlur={formik.handleBlur}
+                    onKeyDown={handleKeyDown}
+                    className="border px-2 py-1 w-20 text-center"
+                  />
+                  {touched.priceRange &&
+                    typeof errors.priceRange === "string" && (
+                      <div className="text-red-500 text-sm">
+                        {errors.priceRange}
+                      </div>
+                    )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import {
   setUniqueFilterOptions,
   setProductMessage,
   setSearchedProductList,
+  setSelectedPrices,
 } from "@/store/slices/productSlice";
 import { productService, recentlyViewedService } from "@/_services";
 import { messageType } from "@/_helper/constants";
@@ -48,6 +49,7 @@ export const fetchCollectionsTypeWiseProduct = (
         );
         const uniqueFilterOptions = { ...tempUniqueFilterOptions };
         dispatch(setUniqueFilterOptions(uniqueFilterOptions));
+        dispatch(setSelectedPrices(uniqueFilterOptions?.availablePriceRange));
         dispatch(setCollectionTypeProductList(collectionsTypeWiseProductList));
         dispatch(setProductLoading(false));
       }
@@ -128,6 +130,7 @@ export const getUniqueFilterOptions = (productList) => {
   const tempSettingStyles = [];
   const uniqueShapeIds = new Set(); // For unique diamond shapes
   const uniqueDiamondShapes = []; // To store unique diamond shapes
+  const tempPriceRange = [];
 
   // Process each product
   productList.forEach((product) => {
@@ -181,6 +184,7 @@ export const getUniqueFilterOptions = (productList) => {
         }
       });
     }
+    tempPriceRange.push(product?.baseSellingPrice || 0)
   });
 
   // Convert uniqueVariations Map to array
@@ -200,10 +204,16 @@ export const getUniqueFilterOptions = (productList) => {
     return { title, value: id, image };
   });
 
+  // Get the minimum and maximum price for the availablePriceRange
+
+  const minPrice = tempPriceRange?.length ? Math.min(...tempPriceRange) : 0;
+  const maxPrice = tempPriceRange?.length ? Math.max(...tempPriceRange) : 0;
+
   return {
     uniqueVariations: variationsArray,
     uniqueSettingStyles,
     uniqueDiamondShapes, // Include unique diamond shapes
+    availablePriceRange: [minPrice, maxPrice],
   };
 };
 

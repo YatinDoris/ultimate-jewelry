@@ -12,6 +12,7 @@ import { setCustomProductDetails } from "@/store/slices/commonSlice";
 import SettingStyleCategorySwiper from "../../settingStyleSwiper";
 import { useSearchParams } from "next/navigation";
 import {
+  resetFilters,
   setSelectedDiamondShape,
   setSelectedSettingStyle,
   setSelectedVariations,
@@ -64,7 +65,9 @@ export default function StartWithSettingPage() {
     loadData();
   }, []);
 
-  useEffect(() => {
+  const applySearchParamsFilters = useCallback(() => {
+    dispatch(resetFilters());
+
     const settingStyle = searchParams.get("settingStyle");
     const diamondShape = searchParams.get("diamondShape");
     const variationName = searchParams.get("variationName");
@@ -84,6 +87,10 @@ export default function StartWithSettingPage() {
       );
     }
   }, [dispatch, searchParams]);
+
+  useEffect(() => {
+    applySearchParamsFilters();
+  }, [applySearchParamsFilters]);
 
   return (
     <>

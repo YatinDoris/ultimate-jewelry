@@ -16,6 +16,7 @@ const initialState = {
   uniqueFilterOptions: {},
   selectedSettingStyles: "",
   selectedDiamondShape: "",
+  selectedPrices: [],
   customizeProductList: [],
   customizeProductLoading: false,
   productMessage: { message: "", type: "" },
@@ -86,6 +87,10 @@ const productSlice = createSlice({
       state.openKeys = defaultOpenKeys;
       state.selectedSettingStyles = "";
       state.selectedDiamondShape = "";
+      state.selectedPrices = [];
+    },
+    setSelectedPrices: (state, action) => {
+      state.selectedPrices = action.payload;
     },
     setUniqueFilterOptions: (state, action) => {
       state.uniqueFilterOptions = action.payload;
@@ -137,6 +142,7 @@ export const {
   setShowFilterSidebar,
   resetFilters,
   setOpenKeys,
+  setSelectedPrices,
   toggleOpenKey,
   setUniqueFilterOptions,
   setSelectedSettingStyle,

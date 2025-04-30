@@ -400,21 +400,23 @@ const ProductDetailPage = ({ customizePage }) => {
   }, [isInValidSelectedVariation, productDetail?.id, selectedVariations]);
 
   //Enricehd Variations all Variations details with name and id passed in it
-  const enrichedVariations = selectedVariations?.map((selectedVar) => {
-    const matchedVariation = productDetail?.variations?.find(
-      (v) => v.variationId === selectedVar?.variationId
-    );
+  const enrichedVariations =
+    selectedVariations?.length &&
+    selectedVariations?.map((selectedVar) => {
+      const matchedVariation = productDetail?.variations?.find(
+        (v) => v.variationId === selectedVar?.variationId
+      );
 
-    const matchedType = matchedVariation?.variationTypes?.find(
-      (vt) => vt.variationTypeId === selectedVar?.variationTypeId
-    );
+      const matchedType = matchedVariation?.variationTypes?.find(
+        (vt) => vt.variationTypeId === selectedVar?.variationTypeId
+      );
 
-    return {
-      ...selectedVar,
-      variationName: matchedVariation?.variationName,
-      variationTypeName: matchedType?.variationTypeName,
-    };
-  });
+      return {
+        ...selectedVar,
+        variationName: matchedVariation?.variationName,
+        variationTypeName: matchedType?.variationTypeName,
+      };
+    });
 
   let customProductPrice = 0;
   if (productDetail?.netWeight && selectedVariations?.length) {
