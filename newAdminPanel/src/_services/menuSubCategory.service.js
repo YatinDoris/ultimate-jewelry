@@ -35,9 +35,12 @@ const insertMenuSubCategory = (params) => {
       title = title ? title.trim() : null;
       categoryId = categoryId ? categoryId.trim() : null;
       if (title && categoryId && uuid) {
-        const menuSubCategoryData = await fetchWrapperService.findOne(menuSubCategoriesUrl, {
-          title: title,
-        });
+        const respData = await fetchWrapperService.getAll(menuSubCategoriesUrl);
+        const allSubCategoryData = respData ? Object.values(respData) : [];
+        const menuSubCategoryData = allSubCategoryData?.find(
+          (x) => x?.categoryId === categoryId && x?.title?.toLowerCase() === title?.toLowerCase()
+        );
+
         if (!menuSubCategoryData) {
           const insertPattern = {
             id: uuid,
@@ -79,20 +82,21 @@ const updateMenuSubCategory = (params) => {
           id: subCategoryId,
         });
         if (menuSubCategoryData) {
-          const findPattern = {
-            id: subCategoryId,
-            key: 'title',
-            value: title,
-          };
+          categoryId = categoryId ? categoryId.trim() : menuSubCategoryData.categoryId;
 
-          const duplicateData = await fetchWrapperService.findOneWithNotEqual(
-            menuSubCategoriesUrl,
-            findPattern
+          const respData = await fetchWrapperService.getAll(menuSubCategoriesUrl);
+          const allSubCategoryData = respData ? Object.values(respData) : [];
+          const duplicateData = allSubCategoryData?.filter(
+            (x) =>
+              x?.categoryId === categoryId &&
+              x?.title?.toLowerCase() === title?.toLowerCase() &&
+              x?.id !== subCategoryId
           );
+
           if (!duplicateData.length) {
             const payload = {
-              title: title,
-              categoryId: categoryId ? categoryId.trim() : menuSubCategoryData.categoryId,
+              title,
+              categoryId,
             };
             const updatePattern = {
               url: `${menuSubCategoriesUrl}/${subCategoryId}`,

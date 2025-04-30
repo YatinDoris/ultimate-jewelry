@@ -39,8 +39,16 @@ const insertProductType = (params) => {
       title = title ? title.trim() : null;
       categoryId = categoryId ? categoryId.trim() : null;
       subCategoryId = subCategoryId ? subCategoryId.trim() : null;
-      if (title && categoryId && uuid) {
-        const productTypeData = await fetchWrapperService.findOne(productTypeUrl, { title: title });
+      if (title && categoryId && subCategoryId && uuid) {
+        const respData = await fetchWrapperService.getAll(productTypeUrl);
+        const allProductType = respData ? Object.values(respData) : [];
+        const productTypeData = allProductType?.find(
+          (x) =>
+            x?.categoryId === categoryId &&
+            x?.subCategoryId === subCategoryId &&
+            x?.title?.toLowerCase() === title?.toLowerCase()
+        );
+
         if (!productTypeData) {
           const insertPattern = {
             id: uuid,
@@ -83,20 +91,23 @@ const updateProductType = (params) => {
           id: productTypeId,
         });
         if (productTypeData) {
-          const findPattern = {
-            id: productTypeId,
-            key: 'title',
-            value: title,
-          };
+          categoryId = categoryId ? categoryId.trim() : productTypeData.categoryId;
+          subCategoryId = subCategoryId ? subCategoryId.trim() : productTypeData.subCategoryId;
 
-          const duplicateData = await fetchWrapperService.findOneWithNotEqual(
-            productTypeUrl,
-            findPattern
+          const respData = await fetchWrapperService.getAll(productTypeUrl);
+          const allProductType = respData ? Object.values(respData) : [];
+          const duplicateData = allProductType?.filter(
+            (x) =>
+              x?.categoryId === categoryId &&
+              x?.subCategoryId === subCategoryId &&
+              x?.title?.toLowerCase() === title?.toLowerCase() &&
+              x?.id !== productTypeId
           );
+
           if (!duplicateData.length) {
             const payload = {
-              title: title,
-              categoryId: categoryId ? categoryId.trim() : productTypeData.categoryId,
+              title,
+              categoryId,
               subCategoryId: subCategoryId ? subCategoryId.trim() : productTypeData.subCategoryId,
             };
             const updatePattern = {
