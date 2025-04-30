@@ -105,7 +105,7 @@ const AppointmentForm = () => {
             name="firstName"
             id="firstName"
             placeholder="First name"
-            className={`custom-input w-full ${
+            className={`custom-input w-full  2xl:py-4 ${
               touched.firstName && errors.firstName
                 ? "border-red-500 border"
                 : ""
@@ -131,7 +131,7 @@ const AppointmentForm = () => {
             name="lastName"
             id="lastName"
             placeholder="Last name"
-            className={`custom-input w-full ${
+            className={`custom-input w-full  2xl:py-4 ${
               touched.lastName && errors.lastName ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
@@ -155,7 +155,7 @@ const AppointmentForm = () => {
             name="email"
             id="email"
             placeholder="Your Email"
-            className={`custom-input w-full ${
+            className={`custom-input w-full  2xl:py-4 ${
               touched.email && errors.email ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
@@ -178,7 +178,7 @@ const AppointmentForm = () => {
             type="date"
             name="date"
             id="date"
-            className={`custom-input w-full ${
+            className={`custom-input w-full  2xl:py-4${
               touched.date && errors.date ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
@@ -202,7 +202,7 @@ const AppointmentForm = () => {
             name="mobile"
             id="mobile"
             placeholder="Phone number"
-            className={`custom-input w-full ${
+            className={`custom-input w-full  2xl:py-4 ${
               touched.mobile && errors.mobile ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
@@ -224,7 +224,7 @@ const AppointmentForm = () => {
           <select
             type="time"
             name="time"
-            className={`custom-input w-full ${
+            className={`custom-input w-full  2xl:py-4${
               errors?.time && touched?.time ? "border-red-500 border" : ""
             }`}
             id="time"
@@ -260,7 +260,7 @@ const AppointmentForm = () => {
           id="message"
           placeholder="Type your Message"
           rows={4}
-          className={`custom-input w-full ${
+          className={`custom-input w-full  2xl:py-4 ${
             touched.message && errors.message ? "border-red-500 border" : ""
           }`}
           onChange={handleChange}
