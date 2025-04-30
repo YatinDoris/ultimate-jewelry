@@ -1235,15 +1235,13 @@ const updateProductQtyForReturn = async (products) => {
           (product) => product.id === productItem.productId
         );
         if (findedProduct) {
-          const tempCombiArray = findedProduct.variComboWithQuantity;
-          const index = findedProduct.variComboWithQuantity.findIndex((combination) => {
-            const array1 = combination.combination;
-            const array2 = productItem.variations;
-            return helperFunctions.areArraysEqual(array1, array2);
-          });
+          const tempCombiArray = [...findedProduct.variComboWithQuantity];
+          const index = tempCombiArray.findIndex((combination) =>
+            helperFunctions.areArraysEqual(combination.combination, productItem.variations)
+          );
+
           if (index !== -1) {
-            tempCombiArray[index].quantity =
-              tempCombiArray[index].quantity + productItem.returnQuantity;
+            tempCombiArray[index].quantity += productItem.returnQuantity;
           }
           //execute update query
           const payload = {

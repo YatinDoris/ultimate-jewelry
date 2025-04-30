@@ -38,21 +38,47 @@ export const returnRequestModel = {
           ref: "variation",
         },
         productPrice: {
-          // its represent variation price with single quantity
           type: Number,
+          // Base price of the product variation:
+          // - For non-customized products: this is the standard variation price.
+          // - For customized products: this is the custom product price excluding any diamond-related pricing.
         },
+
         unitAmount: {
-          // its represent variation price with multiply quantity
           type: Number,
+          // Final total price after multiplying with quantity:
+          // - For non-customized products: productPrice * quantity.
+          // - For customized products: (productPrice + diamond price) * quantity.
         },
         returnQuantity: {
           // Quantity specifically for this return request
           type: Number,
-          required: true,
+        },
+        diamondDetail: {
+          // New field for customized products
+          type: {
+            shapeId: {
+              type: String,
+            },
+            caratWeight: {
+              type: Number,
+            },
+            clarity: {
+              type: String,
+            },
+            color: {
+              type: String,
+            },
+            price: {
+              type: Number, // Diamond price
+            },
+          },
+          required: false, // Optional for non-customized products
         },
       },
     ],
     required: true,
+    ref: "products",
   },
   returnRequestReason: {
     type: String,

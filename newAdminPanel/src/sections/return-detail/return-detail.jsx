@@ -266,9 +266,43 @@ const ReturnDetail = () => {
                                     </Stack>
                                   ))}
                                 </Stack>
-                                <Box sx={{ fontSize: '12px' }} mt={1}>
-                                  {fCurrency(x?.productPrice)} per item
-                                </Box>
+                                {!x?.diamondDetail ? (
+                                  <Box sx={{ fontSize: '12px' }} mt={1}>
+                                    {fCurrency(x?.productPrice)}
+                                    per item
+                                  </Box>
+                                ) : (
+                                  <>
+                                    <Box sx={{ fontSize: '12px' }} mt={1}>
+                                      {fCurrency(x?.productPrice)} {''}
+                                      Product Price per item
+                                    </Box>
+                                    <Box sx={{ fontSize: '12px' }}>
+                                      {fCurrency(x?.diamondDetail.price)} {''}
+                                      Diamond Price per item
+                                    </Box>
+                                    <Typography variant="subtitle2" mt={2}>
+                                      Diamond Detail
+                                    </Typography>
+                                    <Stack direction={'row'} gap={1} flexWrap={'wrap'}>
+                                      {helperFunctions
+                                        .getDiamondDetailArray(x?.diamondDetail)
+                                        .map(({ label, value }, index) => {
+                                          return (
+                                            <Stack key={`dia-${index}`}>
+                                              <Typography variant="caption">{label}</Typography>
+                                              <Label
+                                                color={'default'}
+                                                sx={{ width: 'fit-content', fontSize: '11px' }}
+                                              >
+                                                {value}
+                                              </Label>
+                                            </Stack>
+                                          );
+                                        })}
+                                    </Stack>
+                                  </>
+                                )}
                               </Box>
                               <Stack direction={'row'} alignItems={'center'} sx={font14}>
                                 <Box width={'60px'}>x{x?.returnQuantity}</Box>
@@ -289,8 +323,8 @@ const ReturnDetail = () => {
                           </React.Fragment>
                         ))}
                         <Stack alignItems={'end'} my={2} sx={{ minWidth: '550px' }}>
-                          <Stack width={'200px'} direction={'row'} justifyContent={'space-between'}>
-                            <Typography variant="body2">Service Fee</Typography>
+                          <Stack width={'250px'} direction={'row'} justifyContent={'space-between'}>
+                            <Typography variant="body2">Stripe Service Fee (3.5%)</Typography>
                             <Typography variant="body2" color={'error.main'}>
                               -
                               {fCurrency(
