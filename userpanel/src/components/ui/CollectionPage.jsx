@@ -1,12 +1,8 @@
 "use client";
 import { fetchCollectionsTypeWiseProduct } from "@/_actions/product.actions";
 import { helperFunctions } from "@/_helper";
-import {
-  HeroSwiper,
-  ProductGrid,
-  SwipperHomePageBig,
-} from "@/components/dynamiComponents";
-import { useParams } from "next/navigation";
+import { ProductGrid, SwipperHomePageBig } from "@/components/dynamiComponents";
+import { useParams, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import slide1 from "@/assets/images/collections/slide-1.webp";
@@ -15,7 +11,8 @@ import slide3 from "@/assets/images/collections/slide-3.webp";
 import KeyFeatures from "@/components/ui/KeyFeatures";
 import SettingStyleCategorySwiper from "@/components/ui/settingStyleSwiper";
 import { collections } from "./home/HomePage";
-
+import HeroBanner from "./HeroBanner";
+import { bannerList } from "@/_utils/bannerList";
 export const collectionSwiper = [
   {
     image: slide1,
@@ -36,25 +33,69 @@ export const collectionSwiper = [
       "A ring is just a piece of jewelry until it’s given with love. This one? It’s a symbol of forever, a promise of a lifetime, and a story waiting to be told.",
   },
 ];
-
 export default function CollectionPage() {
   const params = useParams();
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
   const { collectionTypeProductList, productLoading, uniqueFilterOptions } =
     useSelector(({ product }) => product);
-
   let { collectionType, collectionTitle } = params;
+  const parentCategory = searchParams.get("parentCategory");
   collectionTitle = helperFunctions.stringReplacedWithSpace(
     decodeURIComponent(collectionTitle)
   );
-
   const loadData = useCallback(async () => {
     if (collectionType && collectionTitle) {
       await dispatch(
-        fetchCollectionsTypeWiseProduct(collectionType, collectionTitle)
+        fetchCollectionsTypeWiseProduct(
+          collectionType,
+          collectionTitle,
+          parentCategory
+        )
       );
     }
-  }, [dispatch, collectionType, collectionTitle]);
+  }, [dispatch, collectionType, collectionTitle, parentCategory]);
+
+  const getBannerImage = (collectionType, collectionTitle) => {
+    // Match banner from bannerList
+    for (const item of bannerList) {
+      // 1. Match by category
+      if (item?.type === collectionType && item.title === collectionTitle) {
+        return item.banner;
+      }
+
+      // 2. Match by subcategory
+      if (item?.type === "categories" && item.subCategories) {
+        const sub = item.subCategories.find(
+          (sub) => sub.title === collectionTitle
+        );
+        if (sub) return sub.banner;
+      }
+
+      // 3. Match by collection (e.g. Flash Deals)
+      if (
+        collectionType === "collection" &&
+        item.collection?.title === collectionTitle
+      ) {
+        return item.collection.banner;
+      }
+
+      // 4. Match productTypes via parent subcategory banner
+      if (
+        collectionType === "productTypes" &&
+        parentCategory &&
+        item.subCategories
+      ) {
+        const sub = item.subCategories.find(
+          (sub) => sub.title === parentCategory
+        );
+        if (sub && sub.banner) return sub.banner;
+      }
+    }
+
+    // Final fallback
+    return slide3;
+  };
 
   useEffect(() => {
     if (collectionType && collectionTitle) {
@@ -64,7 +105,11 @@ export default function CollectionPage() {
   return (
     <>
       {/* Swiper Section */}
-      <HeroSwiper slides={collectionSwiper} />
+      <HeroBanner
+        imageSrc={getBannerImage(collectionType, collectionTitle)}
+        altAttr=""
+        titleAttr=""
+      />
 
       {/* Setting Style Swiper */}
       <section className="container pt-10 md:pt-14 lg:pt-20 2xl:pt-20">

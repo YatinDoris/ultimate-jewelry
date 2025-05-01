@@ -14,9 +14,7 @@ const HeroBanner = ({
   return (
     <section
       className={`relative overflow-hidden ${
-        isHomePage
-          ? "h-screen"
-          : "mt-20 lg:mt-0 h-[40vh] md:h-[50vh] lg:h-[60vh]"
+        isHomePage ? "h-screen" : "mt-20 lg:mt-0 h-auto"
       }`}
     >
       {imageSrc ? (
@@ -25,7 +23,9 @@ const HeroBanner = ({
           altAttr={altAttr}
           titleAttr={titleAttr}
           priority
-          className="w-full h-full object-cover"
+          className={`w-full h-full ${
+            isHomePage ? "object-cover" : "object-contain"
+          }`}
         />
       ) : (
         <video
@@ -81,15 +81,21 @@ const HeroBanner = ({
               className={`flex flex-col justify-center items-${textAlignment} w-full 
     max-w-[90%] sm:max-w-[70%] lg:max-w-[60%] text-${textAlignment}  md:gap-3`}
             >
-              <h1 className="text-3xl md:text-5xl  2xl:text-6xl text-white font-castoro capitalize">
-                {title}
-              </h1>
+              {title && description ? (
+                <>
+                  <h1 className="text-3xl md:text-5xl  2xl:text-6xl text-white font-castoro capitalize">
+                    {title}
+                  </h1>
 
-              {description && (
-                <p className="text-base md:text-lg text-white">{description}</p>
-              )}
+                  {description && (
+                    <p className="text-base md:text-lg text-white">
+                      {description}
+                    </p>
+                  )}
 
-              <div className="w-14 h-[2px] bg-white mt-5"></div>
+                  <div className="w-14 h-[2px] bg-white mt-5"></div>
+                </>
+              ) : null}
             </div>
           </div>
         </>

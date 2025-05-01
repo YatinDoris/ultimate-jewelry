@@ -39,7 +39,7 @@ const adminRoutes = require("./routes/admin");
 const addressRoutes = require("./routes/address");
 const appointmentsRoutes = require("./routes/appointments");
 const returnsRoutes = require("./routes/returns");
-
+const contactRoutes = require("./routes/contact");
 /*   Routes   */
 app.use("/stripe", stripeRoutes);
 app.use("/order", orderRoutes);
@@ -48,6 +48,7 @@ app.use("/admin", adminRoutes);
 app.use("/address", addressRoutes);
 app.use("/appointments", appointmentsRoutes);
 app.use("/returns", returnsRoutes);
+app.use("/contact", contactRoutes);
 
 exports.cloudFunctionsApi = functions.https.onRequest(app);
 

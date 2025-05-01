@@ -9,6 +9,7 @@ import { setIsMenuOpen, setLastScrollY } from "@/store/slices/commonSlice";
 import { IoMenu } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import logo from "@/assets/images/logo-2.webp";
+import diamondIcon from "@/assets/icons/diamond.svg";
 import CartPopup from "../ui/CartPopup";
 import { fetchCart } from "@/_actions/cart.action";
 import { IoIosSearch } from "react-icons/io";
@@ -109,9 +110,17 @@ export default function Header() {
       } fixed lg:static w-full bg-white z-50 shadow transition-all duration-300`}
     >
       <div className="flex justify-between items-center py-4 lg:pt-4 lg:pb-0 px-6 lg:px-20">
-        <Link href={"/contact-us"} className="hidden lg:flex gap-2">
-          <SlDiamond className="text-lg text-baseblack" />
-          <h3 className="uppercase text-base">Contact us</h3>
+        <Link
+          href={"/appointment-and-custom-jewelry"}
+          className="hidden lg:flex gap-1"
+        >
+          <CustomImg
+            srcAttr={diamondIcon}
+            className="w-6"
+            altAttr=""
+            titleAttr=""
+          />
+          <h3 className="text-base">Appointment & Custom Jewelry</h3>
         </Link>
         <button
           className="lg:hidden p-1.5 xxs:p-2 hover:bg-black/10 rounded-full text-black transition-colors"

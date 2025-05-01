@@ -436,10 +436,10 @@ const ProductDetailPage = ({ customizePage }) => {
         <DetailPageSkeleton />
       ) : productDetail && Object.keys(productDetail).length > 0 ? (
         <>
-          <div className="container grid grid-cols-1 lg:grid-cols-[55%_auto] gap-6 xs:gap-12">
+          <div className="container grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-[55%_auto] gap-6 xs:gap-12">
             <div className="hidden lg:block">
               {" "}
-              <div className="grid grid-cols-2 gap-4 auto-rows-min ">
+              {/* <div className="grid grid-cols-2 gap-4 auto-rows-min ">
                 {productDetail?.video && (
                   <ProgressiveVed
                     src={productDetail.video}
@@ -460,6 +460,38 @@ const ProductDetailPage = ({ customizePage }) => {
                     className="cursor-pointer transition-all duration-300 w-full"
                   />
                 ))}
+              </div> */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 auto-rows-min">
+                {productDetail?.video && (
+                  <div className="relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md">
+                    <ProgressiveVed
+                      src={productDetail.video}
+                      type={helperFunctions?.getVideoType(productDetail?.video)}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+
+                {productDetail?.thumbnailImage && (
+                  <div className="relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md">
+                    <ProgressiveImg
+                      src={productDetail?.thumbnailImage}
+                      className="cursor-pointer transition-all duration-300 w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+
+                {productDetail?.images?.map((media, index) => (
+                  <div
+                    key={index}
+                    className="relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md"
+                  >
+                    <ProgressiveImg
+                      src={media?.image}
+                      className="cursor-pointer transition-all duration-300 w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
             <div className="lg:hidden">
@@ -477,25 +509,25 @@ const ProductDetailPage = ({ customizePage }) => {
             </div>
 
             <div className="flex flex-col lg:p-6">
-              <h2 className="text-xl xs:text-2xl md:text-3xl font-medium">
+              <h2 className="text-xl  md:text-xl 3xl:text-3xl font-medium">
                 {productDetail?.productName}
               </h2>
               {!isCustomizePage && (
-                <h2 className="text-base md:text-base text-basegray mt-2 font-castoro">
+                <h2 className="text-sm md:text-sm 3xl:text-base text-basegray mt-2 font-castoro">
                   sku: {productDetail?.sku}
                 </h2>
               )}
 
               {isCustomizePage ? (
-                <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-6 lg:mb-10">
-                  <span className="text-2xl md:text-3xl xl:text-4xl font-normal font-castoro">
+                <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-4 lg:mb-4">
+                  <span className="text-xl md:text-xl 3xl:text-4xl font-normal font-castoro">
                     ${customProductPrice}
                   </span>
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-6 lg:mb-10">
-                    <span className="text-2xl md:text-3xl xl:text-4xl font-normal font-castoro">
+                  <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-6 lg:mb-6">
+                    <span className="text-xl md:text-xl 3xl:text-4xl font-normal font-castoro">
                       {selectedPrice
                         ? `$${(
                             selectedPrice *
@@ -522,12 +554,12 @@ const ProductDetailPage = ({ customizePage }) => {
 
               {!isCustomizePage && (
                 <div className="mt-6 lg:mt-10 flex items-center gap-3">
-                  <p className="font-medium text-base  md:text-lg w-[100px] xs:w-[120px]">
+                  <p className="font-medium text-sm  3xl:text-base w-[80px] xs:w-[125px]">
                     Qty:
                   </p>
                   <div className="flex items-center py-2 bg-white">
                     <button
-                      className={`px-2 text-base  md:text-xl font-medium text-baseblack ${
+                      className={` px-1 3xl:px-2 text-sm  md:text-sm 3xl:text-xl font-medium text-baseblack ${
                         productQuantity <= minProductQuantity || !availableQty
                           ? "opacity-50 cursor-not-allowed"
                           : ""
@@ -544,11 +576,11 @@ const ProductDetailPage = ({ customizePage }) => {
                       −
                     </button>
 
-                    <span className="px-4 text-base  md:text-xl font-medium text-primary">
+                    <span className="px-2 3xl:px-4 text-sm  md:text-sm 3xl:text-xl font-medium text-primary">
                       {productQuantity}
                     </span>
                     <button
-                      className={`px-2 text-base  md:text-xl font-medium text-baseblack ${
+                      className={`px-1 3xl:px-2  text-sm  md:text-sm 3xl:text-xl font-medium text-baseblack ${
                         productQuantity >= maxProductQuantity ||
                         productQuantity >= availableQty
                           ? "opacity-50 cursor-not-allowed"
@@ -719,8 +751,8 @@ const ProductDetailPage = ({ customizePage }) => {
               ) ? (
                 <ErrorMessage message={cartMessage?.message} />
               ) : null}
-              <div className="mt-4 lg:mt-6 flex items-center gap-3">
-                <p className="font-medium text-base md:text-xl text-gray-500">
+              <div className="mt-4 3xl:mt-6 flex items-center gap-3">
+                <p className="font-medium text-base 3xl:text-xl text-gray-500">
                   Pay With:
                 </p>
                 <div className="flex flex-wrap gap-3 md:gap-6">
@@ -730,13 +762,13 @@ const ProductDetailPage = ({ customizePage }) => {
                       srcAttr={option?.img}
                       titleAttr={option?.titleAttr}
                       altAttr={option?.altAttr}
-                      className="object-contain md:h-auto md:w-auto h-12 w-10"
+                      className="object-contain 3xl:h-auto 3xl:w-auto h-12 w-10"
                     />
                   ))}
                 </div>
               </div>
 
-              <div className="mt-6 lg:mt-8 p-4 bg-white">
+              <div className="mt-6 3xl:mt-8 p-4 bg-white">
                 {/* <p className="font-medium text-base md:text-lg">
                   Estimate Ship Date Monday, April 7
                 </p> */}
@@ -744,7 +776,7 @@ const ProductDetailPage = ({ customizePage }) => {
                   {shippingInfo.map((info, index) => (
                     <li
                       key={index}
-                      className="flex gap-4 items-center text-base md:text-lg mt-2"
+                      className="flex gap-4 items-center text-base md:text-sm 3xl:text-lg mt-2"
                     >
                       <CustomImg
                         srcAttr={info?.icon}
@@ -801,31 +833,31 @@ const ProductDetailTabs = () => {
       content: (
         <div className="flex flex-wrap gap-6 md:gap-16 xl:gap-32 mt-4">
           <div>
-            <p className="inline-block font-semibold text-xl text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px]">
+            <p className="inline-block font-semibold 3xl:text-xl text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px]">
               Information
             </p>
 
             {productDetail?.sku && (
-              <p className="pt-4 text-lg md:text-xl text-baseblack">
+              <p className="pt-4 text-sm md:text-sm 3xl:text-xl text-baseblack">
                 SKU: {productDetail?.sku}
               </p>
             )}
             {productDetail?.shortDescription && (
-              <p className="pt-4 text-lg md:text-xl font-medium text-baseblack">
+              <p className="pt-4 text-sm md:text-sm 3xl:text-xl font-medium text-baseblack">
                 {productDetail?.shortDescription}
               </p>
             )}
-            <p className="pt-4 text-lg md:text-xl font-medium text-baseblack">
+            <p className="pt-4 text-sm md:text-sm 3xl:text-xl font-medium text-baseblack">
               Diamond Type: Lab Grown Diamond
             </p>
             {productDetail?.settingStyleNamesWithImg?.length > 0 && (
               <div className="flex flex-wrap font-medium gap-2 pt-4">
-                <p className=" text-lg md:text-xl text-baseblack">
+                <p className=" text-sm md:text-sm 3xl:text-xl text-baseblack">
                   Setting Style:
                 </p>
                 {productDetail?.settingStyleNamesWithImg.map((style, index) => (
                   <div className="flex flex-wrap gap-2" key={index}>
-                    <p className=" text-lg md:text-xl text-baseblack">
+                    <p className=" text-sm md:text-sm 3xl:text-xl text-baseblack">
                       {style?.title}
                     </p>
                   </div>
@@ -835,14 +867,14 @@ const ProductDetailTabs = () => {
 
             {productDetail?.specifications?.length > 0 && (
               <div className="pt-8">
-                <p className="inline-block font-semibold text-xl text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px]">
+                <p className="inline-block font-semibold 3xl:text-xl text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px]">
                   Specifications
                 </p>
 
                 <div className="mt-4 flex flex-col gap-4">
                   {productDetail.specifications.map((spec, index) => (
                     <div key={index}>
-                      <p className="text-lg md:text-xl font-semibold text-baseblack">
+                      <p className="text-sm md:text-sm 3xl:text-xl font-semibold text-baseblack">
                         {spec.title}
                       </p>
                       <p className="text-base md:text-lg text-baseblack mt-1">
@@ -861,11 +893,11 @@ const ProductDetailTabs = () => {
       label: "Description",
       content: productDetail?.description ? (
         <div
-          className="mt-4 text-lg md:text-xl font-medium text-baseblack"
+          className="mt-4 text-sm md:text-sm 3xl:text-xl font-medium text-baseblack"
           dangerouslySetInnerHTML={{ __html: productDetail.description }}
         />
       ) : (
-        <p className="mt-4 text-lg md:text-xl font-medium text-baseblack">
+        <p className="mt-4 text-sm md:text-sm 3xl:text-xl font-medium text-baseblack">
           No Description Available
         </p>
       ),
@@ -876,7 +908,7 @@ const ProductDetailTabs = () => {
         <>
           {shippingReturnContent?.map((item) => (
             <div key={item?.label} className="flex flex-wrap gap-6 mt-4">
-              <p className="text-lg md:text-xl text-baseblack">
+              <p className="text-sm md:text-sm 3xl:text-xl text-baseblack">
                 <span className="font-semibold">{item?.label} </span>
                 {item?.content}
               </p>
@@ -923,7 +955,7 @@ const ProductDetailTabs = () => {
         {tabData.map(({ label }) => (
           <button
             key={label}
-            className={`py-2 text-2xl font-medium ${
+            className={`py-2 3xl:text-2xl font-medium ${
               activeTab === label
                 ? "text-primary border-b-2 border-primary"
                 : "text-gray-500"

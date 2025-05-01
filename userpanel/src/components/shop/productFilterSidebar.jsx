@@ -34,6 +34,10 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   } = useSelector(({ product }) => product);
   const isOpenKey = (key) => openKeys.includes(key);
 
+  const priceRangeAvailable =
+    Array.isArray(uniqueFilterOptions?.availablePriceRange) &&
+    uniqueFilterOptions.availablePriceRange.length === 2;
+
   const onSelectVariant = (variationName, variationTypeName) => {
     dispatch(
       setSelectedVariations({
@@ -45,10 +49,9 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   const onPriceChange = (value) => {
     dispatch(setSelectedPrices(value));
   };
-
   const formik = useFormik({
     initialValues: {
-      priceRange: uniqueFilterOptions.availablePriceRange,
+      priceRange: uniqueFilterOptions?.availablePriceRange || [0, 2],
     },
     validationSchema: Yup.object({
       priceRange: Yup.array()
@@ -191,7 +194,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="flex flex-wrap gap-2 pb-4">
-                {sortByList.length &&
+                {sortByList?.length &&
                   sortByList.map((item) => (
                     <button
                       key={item.value}
@@ -228,37 +231,38 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-2 pb-4">
-                {uniqueFilterOptions?.uniqueSettingStyles &&
-                  uniqueFilterOptions?.uniqueSettingStyles.map(
-                    (settingStyle) => {
-                      const isSelected =
-                        selectedSettingStyles === settingStyle.value;
+                {uniqueFilterOptions?.uniqueSettingStyles?.length
+                  ? uniqueFilterOptions?.uniqueSettingStyles.map(
+                      (settingStyle) => {
+                        const isSelected =
+                          selectedSettingStyles === settingStyle.value;
 
-                      return (
-                        <div
-                          className={`text-center cursor-pointer`}
-                          onClick={() => {
-                            dispatch(
-                              setSelectedSettingStyle(settingStyle.value)
-                            );
-                          }}
-                          key={`setting-style-${settingStyle.value}`}
-                        >
-                          <ProgressiveImg
-                            className={`w-full  aspect-square object-cover !transition-none  border-2 border-transparent ${
-                              isSelected ? "border-2 !border-primary" : ""
-                            }`}
-                            src={settingStyle.image}
-                            alt={settingStyle.title}
-                            title={settingStyle.title}
-                          />
-                          <h2 className="text-base lg:text-sm font-semibold mt-2">
-                            {settingStyle.title}
-                          </h2>
-                        </div>
-                      );
-                    }
-                  )}
+                        return (
+                          <div
+                            className={`text-center cursor-pointer`}
+                            onClick={() => {
+                              dispatch(
+                                setSelectedSettingStyle(settingStyle.value)
+                              );
+                            }}
+                            key={`setting-style-${settingStyle.value}`}
+                          >
+                            <ProgressiveImg
+                              className={`w-full  aspect-square object-cover !transition-none  border-2 border-transparent ${
+                                isSelected ? "border-2 !border-primary" : ""
+                              }`}
+                              src={settingStyle.image}
+                              alt={settingStyle.title}
+                              title={settingStyle.title}
+                            />
+                            <h2 className="text-base lg:text-sm font-semibold mt-2">
+                              {settingStyle.title}
+                            </h2>
+                          </div>
+                        );
+                      }
+                    )
+                  : null}
               </div>
             </div>
           </div>
@@ -283,135 +287,112 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-4 pb-4 justify-center">
-                {uniqueFilterOptions?.uniqueDiamondShapes &&
-                  uniqueFilterOptions?.uniqueDiamondShapes.map(
-                    (diamondShape) => {
-                      const isSelected =
-                        selectedDiamondShape === diamondShape.id;
-                      return (
-                        <div
-                          key={`setting-diamond-shape-${diamondShape.id}`}
-                          className={`text-center cursor-pointer`}
-                          onClick={() => {
-                            dispatch(setSelectedDiamondShape(diamondShape.id));
-                          }}
-                        >
+                {uniqueFilterOptions?.uniqueDiamondShapes?.length
+                  ? uniqueFilterOptions?.uniqueDiamondShapes.map(
+                      (diamondShape) => {
+                        const isSelected =
+                          selectedDiamondShape === diamondShape.id;
+                        return (
                           <div
-                            className={`p-1.5 border-2 ${
-                              isSelected
-                                ? "border-primary"
-                                : "border-transparent"
-                            }`}
+                            key={`setting-diamond-shape-${diamondShape.id}`}
+                            className={`text-center cursor-pointer`}
+                            onClick={() => {
+                              dispatch(
+                                setSelectedDiamondShape(diamondShape.id)
+                              );
+                            }}
                           >
-                            <ProgressiveImg
-                              className={`w-full aspect-square object-cover !transition-none`}
-                              src={diamondShape.image}
-                              alt={diamondShape.title}
-                              title={diamondShape.title}
-                            />
+                            <div
+                              className={`p-1.5 border-2 ${
+                                isSelected
+                                  ? "border-primary"
+                                  : "border-transparent"
+                              }`}
+                            >
+                              <ProgressiveImg
+                                className={`w-full aspect-square object-cover !transition-none`}
+                                src={diamondShape.image}
+                                alt={diamondShape.title}
+                                title={diamondShape.title}
+                              />
+                            </div>
+                            <h2 className="text-base lg:text-sm font-semibold mt-2">
+                              {diamondShape.title}
+                            </h2>
                           </div>
-                          <h2 className="text-base lg:text-sm font-semibold mt-2">
-                            {diamondShape.title}
-                          </h2>
-                        </div>
-                      );
-                    }
-                  )}
+                        );
+                      }
+                    )
+                  : null}
               </div>
             </div>
           </div>
 
-          {uniqueVariations.map((variation) => (
-            <div
-              key={variation.variationId}
-              className="border-b border-gray-c8"
-            >
-              <button
-                className={`w-full flex items-center justify-between ${
-                  isOpenKey(variation.variationName) ? "pt-4 pb-2" : "py-4"
-                }`}
-                onClick={() => dispatch(toggleOpenKey(variation.variationName))}
-              >
-                <p className="font-semibold mb-1">{variation.variationName}</p>
-                <span className="text-xl">
-                  {isOpenKey(variation.variationName) ? (
-                    <FiMinus />
-                  ) : (
-                    <FiPlus />
-                  )}
-                </span>
-              </button>
-              <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  isOpenKey(variation.variationName)
-                    ? "max-h-screen opacity-100"
-                    : "max-h-0 opacity-0"
-                }`}
-              >
-                <div className="flex flex-wrap pb-4">
-                  {/* {variation.variationTypes.map((type) => (
-                    <button
-                      key={type.variationTypeId}
-                      onClick={() =>
-                        onSelectVariant(
-                          variation.variationName,
-                          type.variationTypeName
-                        )
-                      }
-                      className={`px-3  py-1 m-1 border  text-sm ${
-                        selectedVariations[variation.variationName] ===
-                        type.variationTypeName
-                          ? type.variationTypeHexCode
-                            ? "border-primary border-2"
-                            : "bg-primary text-white"
-                          : type.variationTypeHexCode
-                          ? "border-gray-300"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                      style={
-                        type.variationTypeHexCode
-                          ? {
-                              backgroundColor: type.variationTypeHexCode,
-                              width: "32px",
-                              height: "32px",
-                            }
-                          : {}
-                      }
-                    >
-                      {!type.variationTypeHexCode && type.variationTypeName}
-                    </button>
-                  ))} */}
-                  {variation.variationTypes.map((type) => (
-                    <button
-                      key={type.variationTypeId}
-                      onClick={() =>
-                        onSelectVariant(
-                          variation.variationName,
-                          type.variationTypeName
-                        )
-                      }
-                      className={`px-3 flex items-center gap-2 py-1.5 m-1 border  text-sm ${
-                        selectedVariations[variation.variationName] ===
-                        type.variationTypeName
-                          ? "bg-primary text-white"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                    >
-                      {type.variationTypeHexCode ? (
-                        <div
-                          className="w-6 h-6 "
-                          style={{
-                            backgroundColor: type.variationTypeHexCode,
-                          }}
-                        ></div>
-                      ) : null}{" "}
-                      {type.variationTypeName}
-                    </button>
-                  ))}
+          {uniqueVariations?.length
+            ? uniqueVariations.map((variation) => (
+                <div
+                  key={variation.variationId}
+                  className="border-b border-gray-c8"
+                >
+                  <button
+                    className={`w-full flex items-center justify-between ${
+                      isOpenKey(variation.variationName) ? "pt-4 pb-2" : "py-4"
+                    }`}
+                    onClick={() =>
+                      dispatch(toggleOpenKey(variation.variationName))
+                    }
+                  >
+                    <p className="font-semibold mb-1">
+                      {variation.variationName}
+                    </p>
+                    <span className="text-xl">
+                      {isOpenKey(variation.variationName) ? (
+                        <FiMinus />
+                      ) : (
+                        <FiPlus />
+                      )}
+                    </span>
+                  </button>
+                  <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                      isOpenKey(variation.variationName)
+                        ? "max-h-screen opacity-100"
+                        : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="flex flex-wrap pb-4">
+                      {variation.variationTypes.map((type) => (
+                        <button
+                          key={type.variationTypeId}
+                          onClick={() =>
+                            onSelectVariant(
+                              variation.variationName,
+                              type.variationTypeName
+                            )
+                          }
+                          className={`px-3 flex items-center gap-2 py-1.5 m-1 border  text-sm ${
+                            selectedVariations[variation.variationName] ===
+                            type.variationTypeName
+                              ? "bg-primary text-white"
+                              : "bg-gray-100 hover:bg-gray-200"
+                          }`}
+                        >
+                          {type.variationTypeHexCode ? (
+                            <div
+                              className="w-6 h-6 "
+                              style={{
+                                backgroundColor: type.variationTypeHexCode,
+                              }}
+                            ></div>
+                          ) : null}{" "}
+                          {type.variationTypeName}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              ))
+            : null}
 
           <div>
             <button
@@ -433,20 +414,27 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="space-y-4 mt-5">
-                <RangeSlider
-                  defaultValue={uniqueFilterOptions.availablePriceRange}
-                  min={uniqueFilterOptions.availablePriceRange[0]}
-                  max={uniqueFilterOptions.availablePriceRange[1]}
-                  rangeValue={values.priceRange}
-                  setRangeValue={(value) => setFieldValue("priceRange", value)}
-                  setInputValues={(value) => setFieldValue("priceRange", value)}
-                  step={1}
-                  renderTrack={multipleTrack}
-                />
+                {priceRangeAvailable ? (
+                  <RangeSlider
+                    defaultValue={uniqueFilterOptions?.availablePriceRange}
+                    min={uniqueFilterOptions?.availablePriceRange[0]}
+                    max={uniqueFilterOptions?.availablePriceRange[1]}
+                    rangeValue={values.priceRange}
+                    setRangeValue={(value) =>
+                      setFieldValue("priceRange", value)
+                    }
+                    setInputValues={(value) =>
+                      setFieldValue("priceRange", value)
+                    }
+                    step={1}
+                    renderTrack={multipleTrack}
+                  />
+                ) : null}
+
                 <div className="flex justify-between gap-4">
                   <input
                     type="text"
-                    value={values.priceRange[0]}
+                    value={values?.priceRange[0]}
                     onChange={(e) => handleInputChange(e, 0)}
                     onBlur={formik.handleBlur}
                     onKeyDown={handleKeyDown}
@@ -454,16 +442,16 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                   />
                   <input
                     type="text"
-                    value={values.priceRange[1]}
+                    value={values?.priceRange[1]}
                     onChange={(e) => handleInputChange(e, 1)}
                     onBlur={formik.handleBlur}
                     onKeyDown={handleKeyDown}
                     className="border px-2 py-1 w-20 text-center"
                   />
-                  {touched.priceRange &&
-                    typeof errors.priceRange === "string" && (
+                  {touched?.priceRange &&
+                    typeof errors?.priceRange === "string" && (
                       <div className="text-red-500 text-sm">
-                        {errors.priceRange}
+                        {errors?.priceRange}
                       </div>
                     )}
                 </div>
