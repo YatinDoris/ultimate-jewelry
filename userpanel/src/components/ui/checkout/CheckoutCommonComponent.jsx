@@ -134,7 +134,7 @@ const CheckoutCommonComponent = () => {
                   <div className="flex-1 w-full">
                     <div className="flex flex-col xs:flex-row xs:justify-between  items-center">
                       <p className="text-lg 2xl:text-xl font-semibold">
-                        {cartItem.productName}
+                        {cartItem?.productName}
                       </p>
 
                       <p className="text-xl 2xl:text-2xl font-medium font-castoro pt-1">

@@ -1,5 +1,5 @@
 import HeroBanner from "@/components/ui/HeroBanner";
-import contactus  from "@/assets/images/contact-us/contact.webp";
+import contactus from "@/assets/images/contact-us/contact.webp";
 import ContactForm from "@/components/ui/ContactForm";
 
 export default function ContactPage() {
@@ -12,9 +12,8 @@ export default function ContactPage() {
         altAttr=""
         titleAttr=""
       />
-      <div className="container mx-auto px-4 py-8">
-          <ContactForm />
-        </div>
+
+      <ContactForm />
     </>
   );
 }

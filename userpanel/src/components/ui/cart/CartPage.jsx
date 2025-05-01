@@ -212,16 +212,16 @@ const CartPage = () => {
                           href={
                             cartItem?.diamondDetail
                               ? "/customize/complete-ring"
-                              : `/products/${cartItem.productName
-                                  .split(" ")
-                                  .join("_")}`
+                              : `/products/${cartItem?.productName
+                                  ?.split(" ")
+                                  ?.join("_")}`
                           }
                           onClick={() =>
                             setCustomProductInLocalStorage(cartItem)
                           }
                           className="text-sm md:text-base lg:text-lg font-medium flex-wrap"
                         >
-                          {cartItem.productName}
+                          {cartItem?.productName}
                         </Link>
                         <p className="text-base md:text-xl lg:text-2xl font-medium font-castoro text-end">
                           {cartItem?.productDiscount &&
@@ -241,15 +241,15 @@ const CartPage = () => {
                       </div>
 
                       <div className="text-baseblack flex flex-wrap gap-1 md:gap-x-4 md:gap-y-2 pt-1 md:pt-2">
-                        {cartItem.variations.map((variItem) => (
+                        {cartItem?.variations?.map((variItem) => (
                           <div
                             className="border md:border-2 border-black_opacity_10  text-xs lg:text-base p-1 md:px-2 font-medium"
-                            key={variItem.variationId}
+                            key={variItem?.variationId}
                           >
                             <span className="font-bold">
-                              {variItem.variationName}:{" "}
+                              {variItem?.variationName}:{" "}
                             </span>{" "}
-                            {variItem.variationTypeName}
+                            {variItem?.variationTypeName}
                           </div>
                         ))}
                       </div>
@@ -284,17 +284,17 @@ const CartPage = () => {
                           >
                             −
                           </button>
-                          {selectedCartItem.id === cartItem.id &&
+                          {selectedCartItem?.id === cartItem?.id &&
                           updateCartQtyErrorMessage ? (
                             <ErrorMessage message={updateCartQtyErrorMessage} />
                           ) : null}
                           <span className="px-2 md:px-4 text-[12px] md:text-lg lg:text-xl font-medium text-black">
-                            {cartItem.quantity}
+                            {cartItem?.quantity}
                           </span>
                           <button
                             className={`md:px-1 py-1 text-[12px] md:text-lg lg:text-xl font-medium text-black ${
                               cartItem?.quantity >= maxQuantity ||
-                              cartItem.quantity >= cartItem.productQuantity
+                              cartItem?.quantity >= cartItem?.productQuantity
                                 ? "opacity-50 cursor-not-allowed"
                                 : ""
                             }`}
@@ -303,7 +303,7 @@ const CartPage = () => {
                             }
                             disabled={
                               cartItem?.quantity >= maxQuantity ||
-                              cartItem.quantity >= cartItem.productQuantity
+                              cartItem?.quantity >= cartItem?.productQuantity
                             }
                           >
                             +

@@ -6,6 +6,7 @@ const admin = require("./admin");
 const appointment = require("./appointment");
 const stripe = require("./stripe");
 const returns = require("./returns");
+const contact = require("./contact");
 
 module.exports = {
   orderService: order,
@@ -16,4 +17,5 @@ module.exports = {
   adminService: admin,
   appointmentService: appointment,
   stripeService: stripe,
+  contactService: contact,
 };
