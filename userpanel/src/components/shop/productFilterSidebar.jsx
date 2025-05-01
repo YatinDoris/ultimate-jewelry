@@ -191,7 +191,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="flex flex-wrap gap-2 pb-4">
-                {sortByList.length &&
+                {sortByList?.length &&
                   sortByList.map((item) => (
                     <button
                       key={item.value}
@@ -228,37 +228,38 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-2 pb-4">
-                {uniqueFilterOptions?.uniqueSettingStyles &&
-                  uniqueFilterOptions?.uniqueSettingStyles.map(
-                    (settingStyle) => {
-                      const isSelected =
-                        selectedSettingStyles === settingStyle.value;
+                {uniqueFilterOptions?.uniqueSettingStyles?.length
+                  ? uniqueFilterOptions?.uniqueSettingStyles.map(
+                      (settingStyle) => {
+                        const isSelected =
+                          selectedSettingStyles === settingStyle.value;
 
-                      return (
-                        <div
-                          className={`text-center cursor-pointer`}
-                          onClick={() => {
-                            dispatch(
-                              setSelectedSettingStyle(settingStyle.value)
-                            );
-                          }}
-                          key={`setting-style-${settingStyle.value}`}
-                        >
-                          <ProgressiveImg
-                            className={`w-full  aspect-square object-cover !transition-none  border-2 border-transparent ${
-                              isSelected ? "border-2 !border-primary" : ""
-                            }`}
-                            src={settingStyle.image}
-                            alt={settingStyle.title}
-                            title={settingStyle.title}
-                          />
-                          <h2 className="text-base lg:text-sm font-semibold mt-2">
-                            {settingStyle.title}
-                          </h2>
-                        </div>
-                      );
-                    }
-                  )}
+                        return (
+                          <div
+                            className={`text-center cursor-pointer`}
+                            onClick={() => {
+                              dispatch(
+                                setSelectedSettingStyle(settingStyle.value)
+                              );
+                            }}
+                            key={`setting-style-${settingStyle.value}`}
+                          >
+                            <ProgressiveImg
+                              className={`w-full  aspect-square object-cover !transition-none  border-2 border-transparent ${
+                                isSelected ? "border-2 !border-primary" : ""
+                              }`}
+                              src={settingStyle.image}
+                              alt={settingStyle.title}
+                              title={settingStyle.title}
+                            />
+                            <h2 className="text-base lg:text-sm font-semibold mt-2">
+                              {settingStyle.title}
+                            </h2>
+                          </div>
+                        );
+                      }
+                    )
+                  : null}
               </div>
             </div>
           </div>
@@ -283,40 +284,43 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-4 pb-4 justify-center">
-                {uniqueFilterOptions?.uniqueDiamondShapes &&
-                  uniqueFilterOptions?.uniqueDiamondShapes.map(
-                    (diamondShape) => {
-                      const isSelected =
-                        selectedDiamondShape === diamondShape.id;
-                      return (
-                        <div
-                          key={`setting-diamond-shape-${diamondShape.id}`}
-                          className={`text-center cursor-pointer`}
-                          onClick={() => {
-                            dispatch(setSelectedDiamondShape(diamondShape.id));
-                          }}
-                        >
+                {uniqueFilterOptions?.uniqueDiamondShapes?.length
+                  ? uniqueFilterOptions?.uniqueDiamondShapes.map(
+                      (diamondShape) => {
+                        const isSelected =
+                          selectedDiamondShape === diamondShape.id;
+                        return (
                           <div
-                            className={`p-1.5 border-2 ${
-                              isSelected
-                                ? "border-primary"
-                                : "border-transparent"
-                            }`}
+                            key={`setting-diamond-shape-${diamondShape.id}`}
+                            className={`text-center cursor-pointer`}
+                            onClick={() => {
+                              dispatch(
+                                setSelectedDiamondShape(diamondShape.id)
+                              );
+                            }}
                           >
-                            <ProgressiveImg
-                              className={`w-full aspect-square object-cover !transition-none`}
-                              src={diamondShape.image}
-                              alt={diamondShape.title}
-                              title={diamondShape.title}
-                            />
+                            <div
+                              className={`p-1.5 border-2 ${
+                                isSelected
+                                  ? "border-primary"
+                                  : "border-transparent"
+                              }`}
+                            >
+                              <ProgressiveImg
+                                className={`w-full aspect-square object-cover !transition-none`}
+                                src={diamondShape.image}
+                                alt={diamondShape.title}
+                                title={diamondShape.title}
+                              />
+                            </div>
+                            <h2 className="text-base lg:text-sm font-semibold mt-2">
+                              {diamondShape.title}
+                            </h2>
                           </div>
-                          <h2 className="text-base lg:text-sm font-semibold mt-2">
-                            {diamondShape.title}
-                          </h2>
-                        </div>
-                      );
-                    }
-                  )}
+                        );
+                      }
+                    )
+                  : null}
               </div>
             </div>
           </div>
