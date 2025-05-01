@@ -410,16 +410,22 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="space-y-4 mt-5">
-                <RangeSlider
-                  defaultValue={uniqueFilterOptions?.availablePriceRange}
-                  min={uniqueFilterOptions?.availablePriceRange[0]}
-                  max={uniqueFilterOptions?.availablePriceRange[1]}
-                  rangeValue={values.priceRange}
-                  setRangeValue={(value) => setFieldValue("priceRange", value)}
-                  setInputValues={(value) => setFieldValue("priceRange", value)}
-                  step={1}
-                  renderTrack={multipleTrack}
-                />
+                {uniqueFilterOptions ? (
+                  <RangeSlider
+                    defaultValue={uniqueFilterOptions?.availablePriceRange}
+                    min={uniqueFilterOptions?.availablePriceRange[0]}
+                    max={uniqueFilterOptions?.availablePriceRange[1]}
+                    rangeValue={values.priceRange}
+                    setRangeValue={(value) =>
+                      setFieldValue("priceRange", value)
+                    }
+                    setInputValues={(value) =>
+                      setFieldValue("priceRange", value)
+                    }
+                    step={1}
+                    renderTrack={multipleTrack}
+                  />
+                ) : null}
 
                 <div className="flex justify-between gap-4">
                   <input
