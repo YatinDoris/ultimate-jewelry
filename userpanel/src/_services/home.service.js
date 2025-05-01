@@ -20,27 +20,93 @@ export const getAllMenuData = () => {
   });
 };
 
+// export const getAllMenuList = () => {
+//   return new Promise(async (resolve, reject) => {
+//     try {
+//       const menuData = await getAllMenuData();
+
+//       const subCategoryWiseProductType = (subCategoryId) => {
+//         return menuData.productTypes
+//           .filter((productType) => productType.subCategoryId === subCategoryId)
+//           .map((productType) => {
+//             const type = "productTypes";
+
+//             return {
+//               id: productType.id,
+//               type,
+//               title: productType.title,
+//               href: `/collections/${type}/${helperFunctions.stringReplacedWithUnderScore(
+//                 productType?.title
+//               )}`,
+//             };
+//           });
+//       };
+//       const categoryWiseSubCategory = (categoryId) => {
+//         return menuData.subCategories
+//           .filter((subCategory) => subCategory.categoryId === categoryId)
+//           .map((subCategory) => {
+//             const type = "subCategories";
+//             return {
+//               id: subCategory.id,
+//               type,
+//               title: subCategory.title,
+//               href: `/collections/${type}/${helperFunctions.stringReplacedWithUnderScore(
+//                 subCategory?.title
+//               )}`,
+//               productTypes: subCategoryWiseProductType(subCategory.id),
+//             };
+//           });
+//       };
+//       const sortedCategories = menuData.categories.sort(
+//         (a, b) => a.position - b.position
+//       );
+//       const menuList = sortedCategories.map((category) => {
+//         const type = "categories";
+//         return {
+//           id: category.id,
+//           type,
+//           title: category.title,
+//           href: `/collections/${type}/${helperFunctions.stringReplacedWithUnderScore(
+//             category?.title
+//           )}`,
+//           subCategories: categoryWiseSubCategory(category.id),
+//         };
+//       });
+//       resolve(menuList);
+//     } catch (e) {
+//       reject(e);
+//     }
+//   });
+// };
+
 export const getAllMenuList = () => {
   return new Promise(async (resolve, reject) => {
     try {
       const menuData = await getAllMenuData();
 
-      const subCategoryWiseProductType = (subCategoryId) => {
+      // Modified to include parent subcategory information in product type links
+      const subCategoryWiseProductType = (subCategoryId, subCategoryTitle) => {
         return menuData.productTypes
           .filter((productType) => productType.subCategoryId === subCategoryId)
           .map((productType) => {
             const type = "productTypes";
 
+            // Generate link with parentCategory query parameter
+            const encodedProductType = helperFunctions.stringReplacedWithUnderScore(
+              productType?.title
+            );
+            const encodedSubCategory = encodeURIComponent(subCategoryTitle);
+
             return {
               id: productType.id,
               type,
               title: productType.title,
-              href: `/collections/${type}/${helperFunctions.stringReplacedWithUnderScore(
-                productType?.title
-              )}`,
+              href: `/collections/${type}/${encodedProductType}?parentCategory=${encodedSubCategory}`,
+              parentCategory: subCategoryTitle // Store parent category for reference
             };
           });
       };
+
       const categoryWiseSubCategory = (categoryId) => {
         return menuData.subCategories
           .filter((subCategory) => subCategory.categoryId === categoryId)
@@ -53,13 +119,16 @@ export const getAllMenuList = () => {
               href: `/collections/${type}/${helperFunctions.stringReplacedWithUnderScore(
                 subCategory?.title
               )}`,
-              productTypes: subCategoryWiseProductType(subCategory.id),
+              // Pass the subcategory title to the product types generation function
+              productTypes: subCategoryWiseProductType(subCategory.id, subCategory.title),
             };
           });
       };
+
       const sortedCategories = menuData.categories.sort(
         (a, b) => a.position - b.position
       );
+
       const menuList = sortedCategories.map((category) => {
         const type = "categories";
         return {
@@ -72,12 +141,14 @@ export const getAllMenuList = () => {
           subCategories: categoryWiseSubCategory(category.id),
         };
       });
+
       resolve(menuList);
     } catch (e) {
       reject(e);
     }
   });
 };
+
 
 // export const getAllSearchListingByValue = (params) => {
 //   return new Promise(async (resolve, reject) => {
