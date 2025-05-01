@@ -453,7 +453,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                 <div className="flex justify-between gap-4">
                   <input
                     type="text"
-                    value={values.priceRange[0]}
+                    value={values?.priceRange[0]}
                     onChange={(e) => handleInputChange(e, 0)}
                     onBlur={formik.handleBlur}
                     onKeyDown={handleKeyDown}

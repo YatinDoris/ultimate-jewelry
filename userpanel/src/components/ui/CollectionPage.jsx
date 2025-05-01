@@ -2,7 +2,7 @@
 import { fetchCollectionsTypeWiseProduct } from "@/_actions/product.actions";
 import { helperFunctions } from "@/_helper";
 import { ProductGrid, SwipperHomePageBig } from "@/components/dynamiComponents";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import slide1 from "@/assets/images/collections/slide-1.webp";
@@ -13,7 +13,6 @@ import SettingStyleCategorySwiper from "@/components/ui/settingStyleSwiper";
 import { collections } from "./home/HomePage";
 import HeroBanner from "./HeroBanner";
 import { bannerList } from "@/_utils/bannerList";
-import { getMenuList } from "@/_actions/home.action";
 export const collectionSwiper = [
   {
     image: slide1,
@@ -37,38 +36,43 @@ export const collectionSwiper = [
 export default function CollectionPage() {
   const params = useParams();
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
   const { collectionTypeProductList, productLoading, uniqueFilterOptions } =
     useSelector(({ product }) => product);
-  const { menuList } = useSelector(({ common }) => common);
   let { collectionType, collectionTitle } = params;
+  const parentCategory = searchParams.get("parentCategory");
   collectionTitle = helperFunctions.stringReplacedWithSpace(
     decodeURIComponent(collectionTitle)
   );
   const loadData = useCallback(async () => {
     if (collectionType && collectionTitle) {
       await dispatch(
-        fetchCollectionsTypeWiseProduct(collectionType, collectionTitle)
+        fetchCollectionsTypeWiseProduct(
+          collectionType,
+          collectionTitle,
+          parentCategory
+        )
       );
-      await dispatch(getMenuList());
     }
-  }, [dispatch, collectionType, collectionTitle]);
+  }, [dispatch, collectionType, collectionTitle, parentCategory]);
 
   const getBannerImage = (collectionType, collectionTitle) => {
+    // Match banner from bannerList
     for (const item of bannerList) {
-      // 1. Match category
+      // 1. Match by category
       if (item.type === collectionType && item.title === collectionTitle) {
         return item.banner;
       }
 
-      // 2. Match subcategory
-      if (collectionType === "subCategories" && item.subCategories) {
+      // 2. Match by subcategory
+      if (item.type === "categories" && item.subCategories) {
         const sub = item.subCategories.find(
           (sub) => sub.title === collectionTitle
         );
         if (sub) return sub.banner;
       }
 
-      // 3. Match collection (e.g. Flash Deals)
+      // 3. Match by collection (e.g. Flash Deals)
       if (
         collectionType === "collection" &&
         item.collection?.title === collectionTitle
@@ -76,25 +80,21 @@ export default function CollectionPage() {
         return item.collection.banner;
       }
 
-      // 4. Match productTypes
-      if (collectionType === "productTypes" && item.subCategories) {
-        for (const sub of item.subCategories) {
-          const isMatchingSub = menuList.some((menu) =>
-            menu.subCategories?.some(
-              (subCat) =>
-                subCat.title === sub.title &&
-                subCat.productTypes?.some((p) => p.title === collectionTitle)
-            )
-          );
-
-          if (isMatchingSub) {
-            return sub.banner;
-          }
-        }
+      // 4. Match productTypes via parent subcategory banner
+      if (
+        collectionType === "productTypes" &&
+        parentCategory &&
+        item.subCategories
+      ) {
+        const sub = item.subCategories.find(
+          (sub) => sub.title === parentCategory
+        );
+        if (sub && sub.banner) return sub.banner;
       }
     }
 
-    return slide3; // fallback banner
+    // Final fallback
+    return slide3;
   };
 
   useEffect(() => {
