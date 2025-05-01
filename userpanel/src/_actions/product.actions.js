@@ -32,7 +32,7 @@ export const fetchLatestProductList = (length) => {
 
 export const fetchCollectionsTypeWiseProduct = (
   collectionType,
-  collectionTitle, parentCategory
+  collectionTitle, parentCategory, parentMainCategory
 ) => {
   return async (dispatch) => {
     try {
@@ -41,7 +41,8 @@ export const fetchCollectionsTypeWiseProduct = (
       const collectionsTypeWiseProductList =
         await productService.getCollectionsTypeWiseProduct(
           collectionType,
-          collectionTitle, parentCategory
+          collectionTitle, parentCategory,
+          parentMainCategory
         );
       if (collectionsTypeWiseProductList) {
         const tempUniqueFilterOptions = getUniqueFilterOptions(
