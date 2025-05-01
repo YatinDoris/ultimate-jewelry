@@ -34,6 +34,10 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   } = useSelector(({ product }) => product);
   const isOpenKey = (key) => openKeys.includes(key);
 
+  const priceRangeAvailable =
+    Array.isArray(uniqueFilterOptions?.availablePriceRange) &&
+    uniqueFilterOptions.availablePriceRange.length === 2;
+
   const onSelectVariant = (variationName, variationTypeName) => {
     dispatch(
       setSelectedVariations({
@@ -410,7 +414,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="space-y-4 mt-5">
-                {uniqueFilterOptions ? (
+                {priceRangeAvailable ? (
                   <RangeSlider
                     defaultValue={uniqueFilterOptions?.availablePriceRange}
                     min={uniqueFilterOptions?.availablePriceRange[0]}
