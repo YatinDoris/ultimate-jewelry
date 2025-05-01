@@ -428,8 +428,9 @@ const ProductDetailPage = ({ customizePage }) => {
 
   return (
     <div
-      className={`${isCustomizePage ? "pt-12 lg:pt-6 2xl:pt-8" : "pt-28 lg:pt-12 2xl:pt-16"
-        }`}
+      className={`${
+        isCustomizePage ? "pt-12 lg:pt-6 2xl:pt-8" : "pt-28 lg:pt-12 2xl:pt-16"
+      }`}
     >
       {productLoading ? (
         <DetailPageSkeleton />
@@ -481,7 +482,10 @@ const ProductDetailPage = ({ customizePage }) => {
                 )}
 
                 {productDetail?.images?.map((media, index) => (
-                  <div key={index} className="relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md">
+                  <div
+                    key={index}
+                    className="relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md"
+                  >
                     <ProgressiveImg
                       src={media?.image}
                       className="cursor-pointer transition-all duration-300 w-full h-full object-cover"
@@ -489,16 +493,15 @@ const ProductDetailPage = ({ customizePage }) => {
                   </div>
                 ))}
               </div>
-
             </div>
             <div className="lg:hidden">
               <ProductDetailSwipperSm
                 images={
                   productDetail?.thumbnailImage
                     ? [
-                      { image: productDetail.thumbnailImage },
-                      ...productDetail?.images,
-                    ]
+                        { image: productDetail.thumbnailImage },
+                        ...productDetail?.images,
+                      ]
                     : productDetail?.images ?? []
                 }
                 video={productDetail?.video}
@@ -527,10 +530,10 @@ const ProductDetailPage = ({ customizePage }) => {
                     <span className="text-xl md:text-xl 3xl:text-4xl font-normal font-castoro">
                       {selectedPrice
                         ? `$${(
-                          selectedPrice *
-                          productQuantity *
-                          (1 - productDetail.discount / 100)
-                        ).toFixed(2)}`
+                            selectedPrice *
+                            productQuantity *
+                            (1 - productDetail.discount / 100)
+                          ).toFixed(2)}`
                         : "N/A"}
                     </span>
                     {productDetail?.discount ? (
@@ -551,15 +554,16 @@ const ProductDetailPage = ({ customizePage }) => {
 
               {!isCustomizePage && (
                 <div className="mt-6 lg:mt-10 flex items-center gap-3">
-                  <p className="font-medium text-sm  3xl:text-lg w-[80px] xs:w-[90px]">
+                  <p className="font-medium text-sm  3xl:text-base w-[80px] xs:w-[125px]">
                     Qty:
                   </p>
                   <div className="flex items-center py-2 bg-white">
                     <button
-                      className={` px-1 3xl:px-2 text-sm  md:text-sm 3xl:text-xl font-medium text-baseblack ${productQuantity <= minProductQuantity || !availableQty
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                        }`}
+                      className={` px-1 3xl:px-2 text-sm  md:text-sm 3xl:text-xl font-medium text-baseblack ${
+                        productQuantity <= minProductQuantity || !availableQty
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
                       onClick={() =>
                         dispatch(
                           setProductQuantity(Math.max(1, productQuantity - 1))
@@ -576,11 +580,12 @@ const ProductDetailPage = ({ customizePage }) => {
                       {productQuantity}
                     </span>
                     <button
-                      className={`px-1 3xl:px-2  text-sm  md:text-sm 3xl:text-xl font-medium text-baseblack ${productQuantity >= maxProductQuantity ||
+                      className={`px-1 3xl:px-2  text-sm  md:text-sm 3xl:text-xl font-medium text-baseblack ${
+                        productQuantity >= maxProductQuantity ||
                         productQuantity >= availableQty
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                        }`}
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
                       onClick={() =>
                         dispatch(
                           setProductQuantity(
@@ -739,11 +744,11 @@ const ProductDetailPage = ({ customizePage }) => {
                 <ErrorMessage message={"Please select variants"} />
               ) : null}
               {isSubmitted &&
-                cartMessage?.message &&
-                !(
-                  customizePage === "completeRing" &&
-                  cartMessage?.message === "Product already exists in cart"
-                ) ? (
+              cartMessage?.message &&
+              !(
+                customizePage === "completeRing" &&
+                cartMessage?.message === "Product already exists in cart"
+              ) ? (
                 <ErrorMessage message={cartMessage?.message} />
               ) : null}
               <div className="mt-4 3xl:mt-6 flex items-center gap-3">
@@ -933,10 +938,11 @@ const ProductDetailTabs = () => {
                   setActiveTab(label);
                   setOpen(false);
                 }}
-                className={`px-4 py-2 text-sm cursor-pointer transition ${activeTab === label
-                  ? "bg-primary text-white"
-                  : "text-gray-700 hover:bg-primary hover:text-white"
-                  }`}
+                className={`px-4 py-2 text-sm cursor-pointer transition ${
+                  activeTab === label
+                    ? "bg-primary text-white"
+                    : "text-gray-700 hover:bg-primary hover:text-white"
+                }`}
               >
                 {label}
               </li>
@@ -949,10 +955,11 @@ const ProductDetailTabs = () => {
         {tabData.map(({ label }) => (
           <button
             key={label}
-            className={`py-2 3xl:text-2xl font-medium ${activeTab === label
-              ? "text-primary border-b-2 border-primary"
-              : "text-gray-500"
-              }`}
+            className={`py-2 3xl:text-2xl font-medium ${
+              activeTab === label
+                ? "text-primary border-b-2 border-primary"
+                : "text-gray-500"
+            }`}
             onClick={() => setActiveTab(label)}
           >
             {label}
