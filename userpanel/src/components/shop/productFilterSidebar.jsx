@@ -321,97 +321,71 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
             </div>
           </div>
 
-          {uniqueVariations.map((variation) => (
-            <div
-              key={variation.variationId}
-              className="border-b border-gray-c8"
-            >
-              <button
-                className={`w-full flex items-center justify-between ${
-                  isOpenKey(variation.variationName) ? "pt-4 pb-2" : "py-4"
-                }`}
-                onClick={() => dispatch(toggleOpenKey(variation.variationName))}
-              >
-                <p className="font-semibold mb-1">{variation.variationName}</p>
-                <span className="text-xl">
-                  {isOpenKey(variation.variationName) ? (
-                    <FiMinus />
-                  ) : (
-                    <FiPlus />
-                  )}
-                </span>
-              </button>
-              <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  isOpenKey(variation.variationName)
-                    ? "max-h-screen opacity-100"
-                    : "max-h-0 opacity-0"
-                }`}
-              >
-                <div className="flex flex-wrap pb-4">
-                  {/* {variation.variationTypes.map((type) => (
-                    <button
-                      key={type.variationTypeId}
-                      onClick={() =>
-                        onSelectVariant(
-                          variation.variationName,
-                          type.variationTypeName
-                        )
-                      }
-                      className={`px-3  py-1 m-1 border  text-sm ${
-                        selectedVariations[variation.variationName] ===
-                        type.variationTypeName
-                          ? type.variationTypeHexCode
-                            ? "border-primary border-2"
-                            : "bg-primary text-white"
-                          : type.variationTypeHexCode
-                          ? "border-gray-300"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                      style={
-                        type.variationTypeHexCode
-                          ? {
-                              backgroundColor: type.variationTypeHexCode,
-                              width: "32px",
-                              height: "32px",
-                            }
-                          : {}
-                      }
-                    >
-                      {!type.variationTypeHexCode && type.variationTypeName}
-                    </button>
-                  ))} */}
-                  {variation.variationTypes.map((type) => (
-                    <button
-                      key={type.variationTypeId}
-                      onClick={() =>
-                        onSelectVariant(
-                          variation.variationName,
-                          type.variationTypeName
-                        )
-                      }
-                      className={`px-3 flex items-center gap-2 py-1.5 m-1 border  text-sm ${
-                        selectedVariations[variation.variationName] ===
-                        type.variationTypeName
-                          ? "bg-primary text-white"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                    >
-                      {type.variationTypeHexCode ? (
-                        <div
-                          className="w-6 h-6 "
-                          style={{
-                            backgroundColor: type.variationTypeHexCode,
-                          }}
-                        ></div>
-                      ) : null}{" "}
-                      {type.variationTypeName}
-                    </button>
-                  ))}
+          {uniqueVariations?.length
+            ? uniqueVariations.map((variation) => (
+                <div
+                  key={variation.variationId}
+                  className="border-b border-gray-c8"
+                >
+                  <button
+                    className={`w-full flex items-center justify-between ${
+                      isOpenKey(variation.variationName) ? "pt-4 pb-2" : "py-4"
+                    }`}
+                    onClick={() =>
+                      dispatch(toggleOpenKey(variation.variationName))
+                    }
+                  >
+                    <p className="font-semibold mb-1">
+                      {variation.variationName}
+                    </p>
+                    <span className="text-xl">
+                      {isOpenKey(variation.variationName) ? (
+                        <FiMinus />
+                      ) : (
+                        <FiPlus />
+                      )}
+                    </span>
+                  </button>
+                  <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                      isOpenKey(variation.variationName)
+                        ? "max-h-screen opacity-100"
+                        : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="flex flex-wrap pb-4">
+                      {variation.variationTypes.map((type) => (
+                        <button
+                          key={type.variationTypeId}
+                          onClick={() =>
+                            onSelectVariant(
+                              variation.variationName,
+                              type.variationTypeName
+                            )
+                          }
+                          className={`px-3 flex items-center gap-2 py-1.5 m-1 border  text-sm ${
+                            selectedVariations[variation.variationName] ===
+                            type.variationTypeName
+                              ? "bg-primary text-white"
+                              : "bg-gray-100 hover:bg-gray-200"
+                          }`}
+                        >
+                          {type.variationTypeHexCode ? (
+                            <div
+                              className="w-6 h-6 "
+                              style={{
+                                backgroundColor: type.variationTypeHexCode,
+                              }}
+                            ></div>
+                          ) : null}{" "}
+                          {type.variationTypeName}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              ))
+            : null}
 
           <div>
             <button
@@ -461,16 +435,16 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                   />
                   <input
                     type="text"
-                    value={values.priceRange[1]}
+                    value={values?.priceRange[1]}
                     onChange={(e) => handleInputChange(e, 1)}
                     onBlur={formik.handleBlur}
                     onKeyDown={handleKeyDown}
                     className="border px-2 py-1 w-20 text-center"
                   />
-                  {touched.priceRange &&
-                    typeof errors.priceRange === "string" && (
+                  {touched?.priceRange &&
+                    typeof errors?.priceRange === "string" && (
                       <div className="text-red-500 text-sm">
-                        {errors.priceRange}
+                        {errors?.priceRange}
                       </div>
                     )}
                 </div>
