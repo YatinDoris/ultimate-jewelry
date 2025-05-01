@@ -48,7 +48,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
 
   const formik = useFormik({
     initialValues: {
-      priceRange: uniqueFilterOptions.availablePriceRange,
+      priceRange: uniqueFilterOptions?.availablePriceRange || [0, 0],
     },
     validationSchema: Yup.object({
       priceRange: Yup.array()

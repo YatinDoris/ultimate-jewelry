@@ -1,4 +1,4 @@
-    import {
+import {
   setCollectionTypeProductList,
   setLatestProductList,
   setProductDetail,
@@ -150,7 +150,7 @@ export const getUniqueFilterOptions = (productList) => {
           variationName,
           variationId,
           variationTypes: new Map(
-            variationTypes.map((type) => [
+            variationTypes?.map((type) => [
               type.variationTypeId,
               {
                 variationTypeName: type.variationTypeName,
