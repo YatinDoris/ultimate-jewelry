@@ -60,12 +60,12 @@ export default function CollectionPage() {
     // Match banner from bannerList
     for (const item of bannerList) {
       // 1. Match by category
-      if (item.type === collectionType && item.title === collectionTitle) {
+      if (item?.type === collectionType && item.title === collectionTitle) {
         return item.banner;
       }
 
       // 2. Match by subcategory
-      if (item.type === "categories" && item.subCategories) {
+      if (item?.type === "categories" && item.subCategories) {
         const sub = item.subCategories.find(
           (sub) => sub.title === collectionTitle
         );
