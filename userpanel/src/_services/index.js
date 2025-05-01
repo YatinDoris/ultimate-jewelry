@@ -14,3 +14,4 @@ export * from "./return.service";
 export * from "./authentication.service";
 export * from "./appointment.service";
 export * from "./customJewelry.service";
+export * from "./contact.service";

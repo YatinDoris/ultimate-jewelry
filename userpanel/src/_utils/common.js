@@ -6,6 +6,9 @@ export const capitalizeWords = (str) =>
 
 export const emailPattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
+export const phoneRegex =
+  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+
 export const generateCurrentTimeAndDate = () => {
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().slice(0, 19) + "+00:00";
