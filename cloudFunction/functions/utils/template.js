@@ -598,6 +598,38 @@ Order ${boldOrderNumber}.</p>`;
   return { subject, description: html(description) };
 };
 
+const contactUsEmail = ({ fullName }) => {
+  const subject = `Thank You for Reaching Out!`;
+
+  const body = `
+    	<div style="color: white; font-size: 1vw; padding:0px 2vw; font-family: IBM Plex Mono, monospace; padding: 25px 0 15px 0; font-style: normal; ">
+			 <p class="name" style="color: white; font-size: 30px; font-weight: 600; ">
+        Hello ${fullName} 👋,
+      </p>
+			<p>
+			   Thank you for contacting <strong>${COMPANY_NAME}</strong>! We have received your message and appreciate you reaching out to us.
+			</p>
+      <p>
+        Our team is reviewing your inquiry and will get back to you as soon as possible. In the meantime, if you have any additional questions or details to share, feel free to reply to this email.
+      </p>
+        <p>
+           For immediate assistance, you can also call us at 
+        <a href="tel:${COMPANY_MOBILE_NO}" style="color: #58a4bd;">${COMPANY_MOBILE_NO}</a> 
+        or email us directly at 
+        <a href="mailto:${COMPANY_EMAIL}" style="color: #58a4bd;">${COMPANY_EMAIL}</a>.
+      </p>  
+      <p>
+       We truly value your interest and look forward to assisting you!
+      </p>
+		  <p style="margin-top: 20px;">
+        Best regards,<br />
+        <strong>${COMPANY_NAME}</strong>
+      </p>
+      	</div>
+  `;
+
+  return { subject, description: html(body) };
+};
 module.exports = {
   welcomeTemplate,
   emailOtpVerification,
@@ -606,4 +638,5 @@ module.exports = {
   getMailTemplateForAppointmentStatus,
   getMailTemplateForReturnStatus,
   getMailTemplateForRefundStatus,
+  contactUsEmail,
 };

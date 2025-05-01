@@ -219,7 +219,7 @@ const ReturnRequestPage = () => {
                   <div className="flex-1 w-full">
                     <div className="grid grid-cols-2 xs:flex-row xs:justify-between">
                       <h2 className="text-sm md:text-base lg:text-lg font-medium flex-wrap">
-                        {cartItem.productName}
+                        {cartItem?.productName}
                       </h2>
 
                       <p className="text-base md:text-xl lg:text-2xl font-medium font-castoro text-end">

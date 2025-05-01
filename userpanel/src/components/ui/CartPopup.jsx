@@ -185,7 +185,7 @@ const CartPopup = () => {
                 {cartList?.map((cartItem) => (
                   <div
                     className="border-b-2 border-alabaster last:border-b-0 pb-6 xl:pb-10 mb-10 last:mb-0"
-                    key={cartItem.id}
+                    key={cartItem?.id}
                   >
                     <div className="flex justify-between gap-4">
                       <div className="flex-shrink-0 border-2 border-alabaster w-32 h-32 md:w-36 md:h-36 ">
@@ -200,18 +200,18 @@ const CartPopup = () => {
                       <div className="flex-1 w-full">
                         <div>
                           <Link
-                            href={`/products/${cartItem.productName
-                              .split(" ")
-                              .join("_")}`}
+                            href={`/products/${cartItem?.productName
+                              ?.split(" ")
+                              ?.join("_")}`}
                             className="text-lg font-medium"
                           >
-                            {cartItem.productName}
+                            {cartItem?.productName}
                           </Link>
                           {cartItem?.diamondDetail ? (
                             <p className="font-castoro text-base md:text-xl lg:text-2xl font-medium text-baseblack">
                               $
                               {(
-                                helperFunctions.calculateCustomProductPrice({
+                                helperFunctions?.calculateCustomProductPrice({
                                   netWeight: cartItem?.netWeight,
                                   variations: cartItem?.variations,
                                 }) * (cartItem?.quantity || 1)
@@ -222,13 +222,13 @@ const CartPopup = () => {
                               {cartItem?.productDiscount ? (
                                 <span className="text-lg text-gray-500 line-through mr-2">
                                   $
-                                  {helperFunctions.toFixedNumber(
+                                  {helperFunctions?.toFixedNumber(
                                     cartItem?.quantityWisePrice
                                   )}
                                 </span>
                               ) : null}
                               $
-                              {helperFunctions.toFixedNumber(
+                              {helperFunctions?.toFixedNumber(
                                 cartItem?.quantityWiseSellingPrice
                               )}
                             </p>
