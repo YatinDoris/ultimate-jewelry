@@ -138,11 +138,11 @@ const getAllCustomizations = () => {
       const customizationData = await fetchWrapperService.getAll(
         customizationUrl
       );
-      const customizationType = customizationData.customizationType
-        ? Object.values(customizationData.customizationType)
+      const customizationType = customizationData?.customizationType
+        ? Object.values(customizationData?.customizationType)
         : [];
-      const customizationSubType = customizationData.customizationSubType
-        ? Object.values(customizationData.customizationSubType)
+      const customizationSubType = customizationData?.customizationSubType
+        ? Object.values(customizationData?.customizationSubType)
         : [];
       resolve({ customizationType, customizationSubType });
     } catch (e) {
