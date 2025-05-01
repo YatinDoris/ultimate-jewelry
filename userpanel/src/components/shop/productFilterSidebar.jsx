@@ -51,7 +51,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   };
   const formik = useFormik({
     initialValues: {
-      priceRange: uniqueFilterOptions?.availablePriceRange || [0, 2],
+      priceRange: uniqueFilterOptions?.availablePriceRange || [0, 0],
     },
     validationSchema: Yup.object({
       priceRange: Yup.array()
@@ -194,20 +194,21 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="flex flex-wrap gap-2 pb-4">
-                {sortByList?.length &&
-                  sortByList.map((item) => (
-                    <button
-                      key={item.value}
-                      onClick={() => dispatch(setSortByValue(item.value))}
-                      className={`px-3 py-1 border text-sm ${
-                        selectedSortByValue === item.value
-                          ? "bg-primary text-white"
-                          : "bg-gray-100 hover:bg-gray-200"
-                      }`}
-                    >
-                      {item.title}
-                    </button>
-                  ))}
+                {sortByList?.length
+                  ? sortByList.map((item) => (
+                      <button
+                        key={item.value}
+                        onClick={() => dispatch(setSortByValue(item.value))}
+                        className={`px-3 py-1 border text-sm ${
+                          selectedSortByValue === item.value
+                            ? "bg-primary text-white"
+                            : "bg-gray-100 hover:bg-gray-200"
+                        }`}
+                      >
+                        {item.title}
+                      </button>
+                    ))
+                  : null}
               </div>
             </div>
           </div>

@@ -86,9 +86,9 @@ export const SIZE_TYPE_SUB_TYPES_LIST = [
 // ];
 
 export const GOLD_COLOR_SUB_TYPES_LIST = [
-  { title: 'Yellow Gold', type: 'color', hexCode: '#eeae3f' },
-  { title: 'White Gold', type: 'color', hexCode: '#b3b2af' },
-  { title: 'Rose Gold', type: 'color', hexCode: '#e5785d' },
+  { title: 'Yellow Gold', type: 'color', hexCode: '#E5CE83' },
+  { title: 'White Gold', type: 'color', hexCode: '#E5E4E2' },
+  { title: 'Rose Gold', type: 'color', hexCode: '#E7BA9A' },
 ];
 
 export const ALLOWED_DIA_TYPES = [

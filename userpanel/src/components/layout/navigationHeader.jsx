@@ -33,12 +33,13 @@ const staticLinks = [
   },
   {
     title: "Contact",
-    href: "/contact",
+    href: "/contact-us",
   },
 ];
 
 export default function NavigationHeader() {
   const dispatch = useDispatch();
+  const pathname = usePathname();
   const {
     menuList,
     openDropdown,
@@ -46,13 +47,14 @@ export default function NavigationHeader() {
     openDropdownMobile,
     menuLoading,
   } = useSelector(({ common }) => common);
-  const { uniqueFilterOptionsForHeader, customizeOptionLoading } = useSelector(
-    ({ common }) => common
-  );
+  const {
+    uniqueFilterOptionsForHeader,
+    customizeOptionLoading,
+    transparenHeadertBg,
+  } = useSelector(({ common }) => common);
 
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const pathname = usePathname();
   const hideCartPopup =
     pathname === "/checkout" ||
     pathname === "/shipping" ||
@@ -87,7 +89,11 @@ export default function NavigationHeader() {
 
   return (
     <header
-      className={`w-full bg-white  z-40 transition-all duration-500 ease-in-out ${
+      className={`w-full ${
+        transparenHeadertBg && !isHeaderVisible ? "bg-offwhite" : "bg-white"
+      } ${
+        lastScrollY > 100 ? "bg-white" : ""
+      } z-40 transition-all duration-500 ease-in-out ${
         isHeaderVisible
           ? "fixed top-0 left-0 "
           : "relative lg:translate-y-[40%]"
@@ -173,7 +179,7 @@ export default function NavigationHeader() {
                 <div
                   className={`fixed left-0 right-0 ${
                     isHeaderVisible ? "top-[65px] 2xl:top-[70px]" : "top-[36px]"
-                  } bg-white shadow-lg z-50 border-t-[0.5px] border-basegray`}
+                  } bg-white shadow-lg z-50 border-t-[0.5px]`}
                 >
                   <div className="container flex justify-between p-6">
                     {customizeOptionLoading ? (
@@ -448,7 +454,7 @@ export default function NavigationHeader() {
                             isHeaderVisible
                               ? "top-[65px] 2xl:top-[70px]"
                               : "top-[36px]"
-                          } bg-white shadow-lg z-50 border-t-[0.5px] border-basegray`}
+                          } bg-white shadow-lg z-50 border-t-[0.5px]`}
                         >
                           <div className="container flex justify-between p-6">
                             <div className="grid grid-cols-12 gap-5 2xl:gap-x-20 divide-x 2xl:gap-y-10 h-fit">

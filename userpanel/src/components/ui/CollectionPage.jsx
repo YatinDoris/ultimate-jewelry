@@ -41,20 +41,29 @@ export default function CollectionPage() {
     useSelector(({ product }) => product);
   let { collectionType, collectionTitle } = params;
   const parentCategory = searchParams.get("parentCategory");
+  const parentMainCategory = searchParams.get("parentMainCategory");
   collectionTitle = helperFunctions.stringReplacedWithSpace(
     decodeURIComponent(collectionTitle)
   );
+
   const loadData = useCallback(async () => {
     if (collectionType && collectionTitle) {
       await dispatch(
         fetchCollectionsTypeWiseProduct(
           collectionType,
           collectionTitle,
-          parentCategory
+          parentCategory,
+          parentMainCategory
         )
       );
     }
-  }, [dispatch, collectionType, collectionTitle, parentCategory]);
+  }, [
+    dispatch,
+    collectionType,
+    collectionTitle,
+    parentCategory,
+    parentMainCategory,
+  ]);
 
   const getBannerImage = (collectionType, collectionTitle) => {
     // Match banner from bannerList

@@ -135,7 +135,7 @@ export const generatePDF = async (orderData, sizePage = "1") => {
     },
     bodyStyles: {
       minCellHeight: 35,
-      textColor: '#2b2b2b'
+      textColor: '#111111'
     },
     didDrawCell: (data) => {
       if (data?.column?.index === 0 && data?.row?.index >= 0) {

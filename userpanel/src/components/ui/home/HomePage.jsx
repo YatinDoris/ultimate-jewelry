@@ -33,11 +33,12 @@ import {
   AccordionDropdown,
   CustomImg,
   LatestProduct,
+  ProgressiveImg,
   SwipperHomePageBig,
   TestimonialSlider,
 } from "@/components/dynamiComponents";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TextAboveImage from "@/components/ui/TextAboveImage";
 import { useDispatch, useSelector } from "react-redux";
 import Alert from "@/components/ui/Alert";
@@ -49,25 +50,8 @@ import { helperFunctions, messageType } from "@/_helper";
 import KeyFeatures from "../KeyFeatures";
 import { setAppointmentMessage } from "@/store/slices/appointmentSlice";
 import { setCustomJewelryMessage } from "@/store/slices/customjewelrySlice";
+import { fetchCustomizeProductsVariation } from "@/_actions/customize.action";
 
-const diamondShapes = [
-  { image: diamondRound, titleAttr: "", altAttr: "", title: "Round" },
-  { image: diamondOval, titleAttr: "", altAttr: "", title: "Oval" },
-  { image: diamondCushion, titleAttr: "", altAttr: "", title: "Cushion" },
-  { image: diamondPear, titleAttr: "", altAttr: "", title: "Pear" },
-  { image: diamondEmerald, titleAttr: "", altAttr: "", title: "Emerald" },
-  { image: diamondRadiant, titleAttr: "", altAttr: "", title: "Radiant" },
-  { image: diamondPrincess, titleAttr: "", altAttr: "", title: "Princess" },
-  { image: diamondmarquise, titleAttr: "", altAttr: "", title: "Marquise" },
-  { image: diamondAsscher, titleAttr: "", altAttr: "", title: "Asscher" },
-  { image: diamondHeart, titleAttr: "", altAttr: "", title: "Heart" },
-  {
-    image: elongatedCushion,
-    titleAttr: "",
-    altAttr: "",
-    title: "Elongated Cushion",
-  },
-];
 
 const categoryData = [
   {
@@ -159,8 +143,11 @@ const Home = () => {
   const dispatch = useDispatch();
   const [currentIndex, setCurrentIndex] = useState(0);
   const { loginMessage } = useSelector(({ user }) => user);
+  const { uniqueFilterOptionsForHeader } = useSelector(({ common }) => common);
   const { appointmentMessage } = useSelector(({ appointment }) => appointment);
-  const { customJewelryMessage } = useSelector(({ customJewelry }) => customJewelry);
+  const { customJewelryMessage } = useSelector(
+    ({ customJewelry }) => customJewelry
+  );
 
   useAlertTimeout(loginMessage, () =>
     dispatch(setLoginMessage({ message: "", type: "" }))
@@ -181,49 +168,60 @@ const Home = () => {
     dispatch(setCustomJewelryMessage({ message: "", type: "" }))
   );
 
+  const loadData = useCallback(async () => {
+    await fetchCustomizeProductsVariation();
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
   return (
     <>
       {/* Hero Banner */}
       <HeroBanner isHomePage={true} imageSrc={banner} titleAttr="" altAttr="" />
 
       {/* SHOP FOR LAB GROWN DIAMOND PRODUCTS */}
-      <section className="pt-16 lg:pt-20 2xl:pt-40 grid grid-cols-1 lg:grid-cols-[0.7fr_1fr] items-center justify-center gap-10 container">
-        <div className="flex flex-col items-center text-center bg-transparent">
-          <CustomImg
-            srcAttr={home20}
-            altAttr=""
-            className="w-40 md:w-48 2xl:w-64"
-          />
-          <h2 className="text-xl 2xl:text-2xl font-semibold mt-4 text-center">
-            SHOP FOR LAB GROWN
-            <span className="lg:hidden"> </span>
-            <br className="hidden lg:block" />
-            DIAMOND PRODUCTS
-          </h2>
+      {uniqueFilterOptionsForHeader?.uniqueDiamondShapes?.length ? (
+        <section className="pt-16 lg:pt-20 2xl:pt-40 grid grid-cols-1 lg:grid-cols-[0.7fr_1fr] items-center justify-center gap-10 container">
+          <div className="flex flex-col items-center text-center bg-transparent">
+            <CustomImg
+              srcAttr={home20}
+              altAttr=""
+              className="w-40 md:w-48 2xl:w-64"
+            />
+            <h2 className="text-xl 2xl:text-2xl font-semibold mt-4 text-center">
+              SHOP FOR LAB GROWN
+              <span className="lg:hidden"> </span>
+              <br className="hidden lg:block" />
+              DIAMOND PRODUCTS
+            </h2>
 
-          <div className="w-12 h-[2px] bg-black mt-4"></div>
-        </div>
+            <div className="w-12 h-[2px] bg-black mt-4"></div>
+          </div>
 
-        <div className="grid grid-cols-2 xss:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-12 text-center">
-          {diamondShapes.map((shape, idx) => (
-            <Link
-              href={"#"}
-              key={shape.title || idx}
-              className="flex flex-col items-center justify-center h-32 rounded-md transition-colors duration-200"
-            >
-              <CustomImg
-                srcAttr={shape.image}
-                altAttr={shape.title}
-                titleAttr={shape.title}
-                className="w-16 h-16 object-contain"
-              />
-              <span className="text-base pt-4 transition-colors duration-200 text-baseblack">
-                {shape.title}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
+          <div className="grid grid-cols-2 xss:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-12 text-center">
+            {uniqueFilterOptionsForHeader?.uniqueDiamondShapes?.map(
+              (shape, idx) => (
+                <Link
+                  href={`/customize/start-with-setting?diamondShape=${shape?.id}`}
+                  key={shape?.title || idx}
+                  className="flex flex-col items-center justify-center h-32 rounded-md transition-colors duration-200"
+                >
+                  <ProgressiveImg
+                    src={shape?.image}
+                    alt={shape?.title}
+                    title={shape?.title}
+                    className="w-16 h-16 object-contain"
+                  />
+                  <span className="text-base pt-4 transition-colors duration-200 text-baseblack">
+                    {shape?.title}
+                  </span>
+                </Link>
+              )
+            )}
+          </div>
+        </section>
+      ) : null}
 
       {/* Free Gift With Purchase */}
       <section className="pt-16 lg:pt-20 2xl:pt-40">
@@ -249,8 +247,9 @@ const Home = () => {
                 key={index}
                 srcAttr={img}
                 altAttr=""
-                className={`absolute top-0 left-0 w-full h-full object-contain transition-opacity duration-1000 ease-in-out ${index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
-                  }`}
+                className={`absolute top-0 left-0 w-full h-full object-contain transition-opacity duration-1000 ease-in-out ${
+                  index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+                }`}
               />
             ))}
           </div>

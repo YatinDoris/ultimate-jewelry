@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { SlDiamond } from "react-icons/sl";
 import { useDispatch, useSelector } from "react-redux";
 import { getMenuList } from "@/_actions/home.action";
 import { useEffect, useState } from "react";
@@ -19,9 +18,8 @@ import { usePathname } from "next/navigation";
 
 export default function Header() {
   const dispatch = useDispatch();
-  const { isMenuOpen, lastScrollY, isCartOpen } = useSelector(
-    ({ common }) => common
-  );
+  const { isMenuOpen, lastScrollY, isCartOpen, transparenHeadertBg } =
+    useSelector(({ common }) => common);
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const toggleMenu = () => dispatch(setIsMenuOpen(!isMenuOpen));
 
@@ -107,7 +105,9 @@ export default function Header() {
         isHeaderVisible
           ? "fixed top-0 left-0 shadow-lg lg:static lg:top-0 lg:left-0"
           : ""
-      } fixed lg:static w-full bg-white z-50 shadow transition-all duration-300`}
+      } fixed lg:static w-full ${
+        transparenHeadertBg ? "lg:bg-offwhite" : "lg:bg-white"
+      } bg-white z-50 shadow transition-all duration-300`}
     >
       <div className="flex justify-between items-center py-4 lg:pt-4 lg:pb-0 px-6 lg:px-20">
         <Link

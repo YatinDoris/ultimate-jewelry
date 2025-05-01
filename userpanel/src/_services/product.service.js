@@ -151,88 +151,7 @@ const getAllCustomizations = () => {
   });
 };
 
-// const getCollectionsTypeWiseProduct = (collectionType, collectionTitle) => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       collectionType = sanitizeValue(collectionType)
-//         ? collectionType.trim()
-//         : null;
-//       collectionTitle = sanitizeValue(collectionTitle)
-//         ? collectionTitle.trim()
-//         : null;
-//       if (!collectionType || !collectionTitle) {
-//         reject(new Error("Invalid Data"));
-//         return;
-//       }
-//       const allActiveProductsData = await getAllActiveProducts();
-//       let filteredData = [];
-//       if (collectionType === "categories") {
-//         filteredData = allActiveProductsData.filter(
-//           (item) =>
-//             item.categoryName.toLowerCase() === collectionTitle.toLowerCase()
-//         );
-//       } else if (collectionType === "subCategories") {
-//         filteredData = allActiveProductsData.filter(
-//           (item) =>
-//             item.subCategoryName.toLowerCase() === collectionTitle.toLowerCase()
-//         );
-//       } else if (collectionType === "productTypes") {
-//         filteredData = allActiveProductsData.filter(
-//           (item) =>
-//             item.productTypeNames?.length &&
-//             item.productTypeNames.some(
-//               (name) => name.toLowerCase() === collectionTitle.toLowerCase()
-//             )
-//         );
-//       } else if (collectionType === "collection") {
-//         filteredData = allActiveProductsData.filter(
-//           (item) =>
-//             item.collectionNames?.length &&
-//             item.collectionNames.some(
-//               (name) => name.toLowerCase() === collectionTitle.toLowerCase()
-//             )
-//         );
-//       }
-
-//       const collectionTypeWiseProductsList = helperFunctions
-//         .sortByField(filteredData)
-//         .map((product) => {
-//           const { price = 0 } = helperFunctions.getMinPriceVariCombo(
-//             product.variComboWithQuantity
-//           );
-
-//           return {
-//             productName: product.productName,
-//             isDiamondFilter: product?.isDiamondFilter || false,
-//             images: product.images.slice(0, 2),
-//             video: product.video,
-//             id: product.id,
-//             basePrice: price,
-//             baseSellingPrice: helperFunctions.getSellingPrice({
-//               price,
-//               discount: product.discount,
-//             }),
-//             discount: product.discount,
-//             variations: product.variations,
-//             createdDate: product.createdDate,
-//             goldTypeVariations: product?.variations?.find(
-//               (x) => x?.variationName.toLowerCase() === GOLD_TYPES.toLowerCase()
-//             )?.variationTypes,
-//             goldColorVariations: product?.variations?.find(
-//               (x) => x?.variationName.toLowerCase() === GOLD_COLOR.toLowerCase()
-//             )?.variationTypes,
-//             settingStyleNamesWithImg: product?.settingStyleNamesWithImg,
-//           };
-//         });
-//       resolve(collectionTypeWiseProductsList);
-//     } catch (e) {
-//       reject(e);
-//     }
-//   });
-// };
-
-
-const getCollectionsTypeWiseProduct = (collectionType, collectionTitle, parentCategory = null) => {
+const getCollectionsTypeWiseProduct = (collectionType, collectionTitle, parentCategory = null, parentMainCategory = null) => {
   return new Promise(async (resolve, reject) => {
     try {
       collectionType = sanitizeValue(collectionType)
@@ -247,33 +166,54 @@ const getCollectionsTypeWiseProduct = (collectionType, collectionTitle, parentCa
       }
       const allActiveProductsData = await getAllActiveProducts();
       let filteredData = [];
+
       if (collectionType === "categories") {
         filteredData = allActiveProductsData.filter(
           (item) =>
             item.categoryName.toLowerCase() === collectionTitle.toLowerCase()
         );
       } else if (collectionType === "subCategories") {
-        filteredData = allActiveProductsData.filter(
+        // Filter by subcategory name
+        let subCategoryFilter = allActiveProductsData.filter(
           (item) =>
             item.subCategoryName.toLowerCase() === collectionTitle.toLowerCase()
         );
+
+        // If parentMainCategory is provided, further filter by category
+        if (parentMainCategory) {
+          subCategoryFilter = subCategoryFilter.filter(
+            (item) =>
+              item.categoryName.toLowerCase() === parentMainCategory.toLowerCase()
+          );
+        }
+
+        filteredData = subCategoryFilter;
       } else if (collectionType === "productTypes") {
-        filteredData = allActiveProductsData.filter((item) => {
-          // First, check if the product has the requested product type
-          const hasProductType = item.productTypeNames?.length &&
-            item.productTypeNames.some(
-              (name) => name.toLowerCase() === collectionTitle.toLowerCase()
-            );
+        // First filter by product type
+        let productTypeFilter = allActiveProductsData.filter((item) =>
+          item.productTypeNames?.length &&
+          item.productTypeNames.some(
+            (name) => name.toLowerCase() === collectionTitle.toLowerCase()
+          )
+        );
 
-          // If a parent category (subcategory) is specified, also check that
-          if (parentCategory) {
-            return hasProductType &&
-              item.subCategoryName.toLowerCase() === parentCategory.toLowerCase();
-          }
+        // If parentCategory (subcategory) is provided, further filter by subcategory
+        if (parentCategory) {
+          productTypeFilter = productTypeFilter.filter(
+            (item) =>
+              item.subCategoryName.toLowerCase() === parentCategory.toLowerCase()
+          );
+        }
 
-          // Otherwise just filter by product type
-          return hasProductType;
-        });
+        // If parentMainCategory (main category) is provided, further filter by category
+        if (parentMainCategory) {
+          productTypeFilter = productTypeFilter.filter(
+            (item) =>
+              item.categoryName.toLowerCase() === parentMainCategory.toLowerCase()
+          );
+        }
+
+        filteredData = productTypeFilter;
       } else if (collectionType === "collection") {
         filteredData = allActiveProductsData.filter(
           (item) =>
@@ -312,6 +252,10 @@ const getCollectionsTypeWiseProduct = (collectionType, collectionTitle, parentCa
               (x) => x?.variationName.toLowerCase() === GOLD_COLOR.toLowerCase()
             )?.variationTypes,
             settingStyleNamesWithImg: product?.settingStyleNamesWithImg,
+            // Add category and subcategory info for debugging/reference
+            categoryName: product.categoryName,
+            subCategoryName: product.subCategoryName,
+            productTypeNames: product.productTypeNames
           };
         });
       resolve(collectionTypeWiseProductsList);
