@@ -45,10 +45,9 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   const onPriceChange = (value) => {
     dispatch(setSelectedPrices(value));
   };
-
   const formik = useFormik({
     initialValues: {
-      priceRange: uniqueFilterOptions?.availablePriceRange || [0, 0],
+      priceRange: uniqueFilterOptions?.availablePriceRange || [0, 2],
     },
     validationSchema: Yup.object({
       priceRange: Yup.array()
@@ -411,22 +410,16 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
             >
               <div className="space-y-4 mt-5">
-                {uniqueFilterOptions?.length ? (
-                  <RangeSlider
-                    defaultValue={uniqueFilterOptions?.availablePriceRange}
-                    min={uniqueFilterOptions?.availablePriceRange[0]}
-                    max={uniqueFilterOptions?.availablePriceRange[1]}
-                    rangeValue={values.priceRange}
-                    setRangeValue={(value) =>
-                      setFieldValue("priceRange", value)
-                    }
-                    setInputValues={(value) =>
-                      setFieldValue("priceRange", value)
-                    }
-                    step={1}
-                    renderTrack={multipleTrack}
-                  />
-                ) : null}
+                <RangeSlider
+                  defaultValue={uniqueFilterOptions?.availablePriceRange}
+                  min={uniqueFilterOptions?.availablePriceRange[0]}
+                  max={uniqueFilterOptions?.availablePriceRange[1]}
+                  rangeValue={values.priceRange}
+                  setRangeValue={(value) => setFieldValue("priceRange", value)}
+                  setInputValues={(value) => setFieldValue("priceRange", value)}
+                  step={1}
+                  renderTrack={multipleTrack}
+                />
 
                 <div className="flex justify-between gap-4">
                   <input
