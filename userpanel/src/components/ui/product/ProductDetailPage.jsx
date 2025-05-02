@@ -147,9 +147,10 @@ const ProductDetailPage = ({ customizePage }) => {
     recentlyViewProductList,
   } = useSelector(({ product }) => product);
   const { cartMessage, cartLoading } = useSelector(({ cart }) => cart);
-  const { isHovered, isSubmitted, customProductDetails, customizeLoader } =
-    useSelector(({ common }) => common);
-  productName = helperFunctions.stringReplacedWithSpace(productName);
+  const { isHovered, isSubmitted, customProductDetails } = useSelector(
+    ({ common }) => common
+  );
+  productName = helperFunctions?.stringReplacedWithSpace(productName);
   let customProductIdFromLocalStorage = customProductDetails?.productId;
   const loadData = useCallback(async () => {
     dispatch(setProductMessage({ message: "", type: "" }));
@@ -161,8 +162,10 @@ const ProductDetailPage = ({ customizePage }) => {
       if (response) {
         dispatch(addUpdateRecentlyViewedProducts({ productName }));
         const initialSelections = response?.variations?.map((variation) => ({
-          variationId: variation.variationId,
-          variationTypeId: variation.variationTypes[0]?.variationTypeId,
+          variationId: variation?.variationId,
+          variationTypeId: variation?.variationTypes[0]?.variationTypeId,
+          variationName: variation?.variationName,
+          variationTypeName: variation?.variationTypes[0]?.variationTypeName,
         }));
         dispatch(setSelectedVariations(initialSelections));
       }
@@ -182,12 +185,16 @@ const ProductDetailPage = ({ customizePage }) => {
             (variation) => ({
               variationId: variation?.variationId,
               variationTypeId: variation?.variationTypeId,
+              variationName: variation?.variationName,
+              variationTypeName: variation?.variationTypeName,
             })
           );
         } else {
           initialSelections = response?.variations?.map((variation) => ({
-            variationId: variation.variationId,
-            variationTypeId: variation.variationTypes[0]?.variationTypeId,
+            variationId: variation?.variationId,
+            variationTypeId: variation?.variationTypes[0]?.variationTypeId,
+            variationName: variation?.variationName,
+            variationTypeName: variation?.variationTypes[0]?.variationTypeName,
           }));
         }
 
@@ -197,7 +204,7 @@ const ProductDetailPage = ({ customizePage }) => {
       dispatch(
         setProductMessage({
           message: "Product information is missing.",
-          type: messageType.ERROR,
+          type: messageType?.ERROR,
         })
       );
       dispatch(setProductDetail({}));
@@ -225,7 +232,7 @@ const ProductDetailPage = ({ customizePage }) => {
   }, [productName]);
 
   useEffect(() => {
-    const customProduct = helperFunctions.getCustomProduct();
+    const customProduct = helperFunctions?.getCustomProduct();
     if (customProduct) {
       dispatch(setCustomProductDetails(customProduct));
     }
@@ -233,7 +240,7 @@ const ProductDetailPage = ({ customizePage }) => {
 
   useEffect(() => {
     if (isCustomizePage) {
-      const customProduct = helperFunctions.getCustomProduct();
+      const customProduct = helperFunctions?.getCustomProduct();
       if (customProduct) {
         dispatch(setCustomProductDetails(customProduct));
       }
@@ -253,21 +260,27 @@ const ProductDetailPage = ({ customizePage }) => {
     Array.isArray(selectedVariations) &&
     selectedVariations?.length
   ) {
-    const { price, quantity } = helperFunctions.getVariComboPriceQty(
-      productDetail.variComboWithQuantity,
+    const { price, quantity } = helperFunctions?.getVariComboPriceQty(
+      productDetail?.variComboWithQuantity,
       selectedVariations
     );
     availableQty = quantity;
   }
   const handleSelect = useCallback(
-    (variationId, variationTypeId) => {
+    (variationId, variationTypeId, variationName, variationTypeName) => {
       dispatch(setCartMessage({ message: "", type: "" }));
       const updated = [
-        ...selectedVariations.filter(
+        ...selectedVariations?.filter(
           (item) => item.variationId !== variationId
         ),
-        { variationId, variationTypeId },
+        { variationId, variationTypeId, variationName, variationTypeName },
       ];
+      dispatch(
+        setSelectedVariations({
+          ...updated,
+          [variationName]: variationTypeName,
+        })
+      );
       dispatch(setSelectedVariations(updated));
     },
     [selectedVariations]
@@ -276,7 +289,7 @@ const ProductDetailPage = ({ customizePage }) => {
   const selectedPrice = useMemo(() => {
     if (
       !productDetail?.variComboWithQuantity?.length ||
-      !selectedVariations.length
+      !selectedVariations?.length
     )
       return null;
 
@@ -310,7 +323,7 @@ const ProductDetailPage = ({ customizePage }) => {
       caratWeight,
       clarity,
       color,
-      price: helperFunctions.calculateDiamondPrice({
+      price: helperFunctions?.calculateDiamondPrice({
         caratWeight: Number(caratWeight),
         clarity,
         color,
@@ -420,7 +433,7 @@ const ProductDetailPage = ({ customizePage }) => {
 
   let customProductPrice = 0;
   if (productDetail?.netWeight && selectedVariations?.length) {
-    customProductPrice = helperFunctions.calculateCustomProductPrice({
+    customProductPrice = helperFunctions?.calculateCustomProductPrice({
       netWeight: Number(productDetail?.netWeight),
       variations: enrichedVariations,
     });
@@ -428,7 +441,7 @@ const ProductDetailPage = ({ customizePage }) => {
 
   return (
     <div
-      className={`${
+      className={` ${
         isCustomizePage ? "pt-12 lg:pt-6 2xl:pt-8" : "pt-28 lg:pt-12 2xl:pt-16"
       }`}
     >
@@ -442,7 +455,7 @@ const ProductDetailPage = ({ customizePage }) => {
               {/* <div className="grid grid-cols-2 gap-4 auto-rows-min ">
                 {productDetail?.video && (
                   <ProgressiveVed
-                    src={productDetail.video}
+                    src={productDetail?.video}
                     type={helperFunctions?.getVideoType(productDetail?.video)}
                     className="w-full h-full object-cover"
                   />
@@ -465,7 +478,7 @@ const ProductDetailPage = ({ customizePage }) => {
                 {productDetail?.video && (
                   <div className="relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md">
                     <ProgressiveVed
-                      src={productDetail.video}
+                      src={productDetail?.video}
                       type={helperFunctions?.getVideoType(productDetail?.video)}
                       className="w-full h-full object-cover"
                     />
@@ -499,7 +512,7 @@ const ProductDetailPage = ({ customizePage }) => {
                 images={
                   productDetail?.thumbnailImage
                     ? [
-                        { image: productDetail.thumbnailImage },
+                        { image: productDetail?.thumbnailImage },
                         ...productDetail?.images,
                       ]
                     : productDetail?.images ?? []
@@ -513,31 +526,31 @@ const ProductDetailPage = ({ customizePage }) => {
                 {productDetail?.productName}
               </h2>
               {!isCustomizePage && (
-                <h2 className="text-sm md:text-sm 3xl:text-base text-basegray mt-2 font-castoro">
+                <h2 className="text-sm md:text-sm 3xl:text-base text-basegray mt-2 font-chong-modern">
                   sku: {productDetail?.sku}
                 </h2>
               )}
 
               {isCustomizePage ? (
                 <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-4 lg:mb-4">
-                  <span className="text-xl md:text-xl 3xl:text-4xl font-normal font-castoro">
+                  <span className="text-xl md:text-xl 3xl:text-4xl font-normal font-chong-modern">
                     ${customProductPrice}
                   </span>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center gap-2 mt-2 xl:mt-4  mb-6 lg:mb-6">
-                    <span className="text-xl md:text-xl 3xl:text-4xl font-normal font-castoro">
+                    <span className="text-xl md:text-xl 3xl:text-4xl font-normal font-chong-modern">
                       {selectedPrice
                         ? `$${(
                             selectedPrice *
                             productQuantity *
-                            (1 - productDetail.discount / 100)
+                            (1 - productDetail?.discount / 100)
                           ).toFixed(2)}`
                         : "N/A"}
                     </span>
                     {productDetail?.discount ? (
-                      <span className="text-gray-500 line-through text-xl font-castoro">
+                      <span className="text-gray-500 line-through text-xl font-chong-modern">
                         ${(selectedPrice * productQuantity).toFixed(2)}
                       </span>
                     ) : null}
@@ -553,8 +566,8 @@ const ProductDetailPage = ({ customizePage }) => {
               <div className="border-t  border-black_opacity_10" />
 
               {!isCustomizePage && (
-                <div className="mt-6 lg:mt-10 flex items-center gap-3">
-                  <p className="font-medium text-sm  3xl:text-base w-[80px] xs:w-[125px]">
+                <div className="mt-6 lg:mt-10 flex items-center gap-6">
+                  <p className="font-medium text-sm  3xl:text-base w-[80px] xs:w-[135px]">
                     Qty:
                   </p>
                   <div className="flex items-center py-2 bg-white">
@@ -684,7 +697,7 @@ const ProductDetailPage = ({ customizePage }) => {
                       <p className="font-medium text-2xl">
                         Final Price: $
                         {(customProductPrice + diamondDetail?.price).toFixed(2)}
-                        <span className="font-semibold font-castoro"></span>
+                        <span className="font-semibold font-chong-modern"></span>
                       </p>
                     </div>
                   </>
@@ -793,11 +806,11 @@ const ProductDetailPage = ({ customizePage }) => {
           </div>
 
           <div className="container pt-10 lg:pt-20 2xl:pt-28 md:p-6">
-            <ProductDetailTabs />
+            <ProductDetailTabs selectedVariations={selectedVariations} />
           </div>
           {!isCustomizePage &&
             recentlyViewProductList &&
-            recentlyViewProductList.length > 0 && (
+            recentlyViewProductList?.length > 0 && (
               <>
                 <section className="pt-16 lg:pt-20 2xl:pt-40 container">
                   <ProductSwiper
@@ -821,71 +834,104 @@ const ProductDetailPage = ({ customizePage }) => {
 
 export default ProductDetailPage;
 
-const ProductDetailTabs = () => {
+const ProductDetailTabs = ({ selectedVariations }) => {
   const { productDetail } = useSelector(({ product }) => product);
 
   const [activeTab, setActiveTab] = useState("Product Detail");
   const [open, setOpen] = useState(false);
+  const getVariationValue = (key) => {
+    const variation = selectedVariations?.find(
+      (v) => v.variationName?.trim().toLowerCase() === key.trim().toLowerCase()
+    );
+    return variation ? variation?.variationTypeName : null;
+  };
+  useEffect(() => {
+    setActiveTab("Product Detail");
+  }, [selectedVariations]);
+
+  const labelClass =
+    "inline-block min-w-[140px] xl:min-w-[170px] 2xl:min-w-[220px] pt-[2px]";
+  const valueClass = "text-baseblack";
+  const valueLineClass = "text-baseblack";
+
+  const renderInfoRow = (label, value) =>
+    value ? (
+      <div className="pt-[25px] 2xl:pt-[30px] 3xl:pt-[40px] flex items-start gap-2">
+        <p className={`${labelClass} ${valueClass}`}>{label}:</p>
+        <div className={`${valueClass} `}>
+          <p className={`${valueLineClass}`}>{value}</p>
+        </div>
+      </div>
+    ) : null;
 
   const tabData = [
     {
       label: "Product Detail",
       content: (
-        <div className="flex flex-wrap gap-6 md:gap-16 xl:gap-32 mt-4">
-          <div>
-            <p className="inline-block font-semibold 3xl:text-xl text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px]">
-              Information
+        <div className="grid xs:grid-cols-2 lg:grid-cols-3 gap-16 mt-4 2xl:mt-8 3xl:mt-12">
+          {/* Product Information */}
+          <div className="text-sm md:text-sm 2xl:text-base 3xl:text-lg font-medium">
+            <p className="inline-block font-semibold text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px] 3xl:pb-4">
+              Product Information
             </p>
 
-            {productDetail?.sku && (
-              <p className="pt-4 text-sm md:text-sm 3xl:text-xl text-baseblack">
-                SKU: {productDetail?.sku}
-              </p>
-            )}
-            {productDetail?.shortDescription && (
-              <p className="pt-4 text-sm md:text-sm 3xl:text-xl font-medium text-baseblack">
-                {productDetail?.shortDescription}
-              </p>
-            )}
-            <p className="pt-4 text-sm md:text-sm 3xl:text-xl font-medium text-baseblack">
-              Diamond Type: Lab Grown Diamond
-            </p>
-            {productDetail?.settingStyleNamesWithImg?.length > 0 && (
-              <div className="flex flex-wrap font-medium gap-2 pt-4">
-                <p className=" text-sm md:text-sm 3xl:text-xl text-baseblack">
-                  Setting Style:
-                </p>
-                {productDetail?.settingStyleNamesWithImg.map((style, index) => (
-                  <div className="flex flex-wrap gap-2" key={index}>
-                    <p className=" text-sm md:text-sm 3xl:text-xl text-baseblack">
-                      {style?.title}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {productDetail?.specifications?.length > 0 && (
-              <div className="pt-8">
-                <p className="inline-block font-semibold 3xl:text-xl text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px]">
-                  Specifications
-                </p>
-
-                <div className="mt-4 flex flex-col gap-4">
-                  {productDetail.specifications.map((spec, index) => (
-                    <div key={index}>
-                      <p className="text-sm md:text-sm 3xl:text-xl font-semibold text-baseblack">
-                        {spec.title}
-                      </p>
-                      <p className="text-base md:text-lg text-baseblack mt-1">
-                        {spec.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {renderInfoRow("SKU", productDetail?.sku)}
+            {selectedVariations?.length > 0 ? (
+              <>
+                {renderInfoRow("Gold Type", getVariationValue("Gold Type"))}
+                {renderInfoRow("Gold Color", getVariationValue("Gold Color"))}
+                {renderInfoRow("Size", getVariationValue("Size"))}
+                {renderInfoRow(
+                  "Approx Net Wt",
+                  `${productDetail?.netWeight} g`
+                )}
+              </>
+            ) : null}
           </div>
+
+          {/* Diamond Information */}
+          <div className="text-sm md:text-sm 2xl:text-base 3xl:text-lg font-medium">
+            <p className="inline-block font-semibold text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px] 3xl:pb-4">
+              Diamond Information
+            </p>
+            {renderInfoRow("Diamond Type", "Lab Grown Diamond")}
+            {renderInfoRow("Diamond Shape", getVariationValue("Diamond Shape"))}
+            {renderInfoRow("Average Color", getVariationValue("Diamond Color"))}
+            {renderInfoRow(
+              "Diamond Clarity",
+              getVariationValue("Average Clarity")
+            )}
+
+            {productDetail?.settingStyleNamesWithImg?.length > 0 &&
+              renderInfoRow(
+                "Setting Style",
+                productDetail?.settingStyleNamesWithImg?.length > 0
+                  ? productDetail?.settingStyleNamesWithImg
+                      .map((s) => s.title)
+                      .join(", ")
+                  : ""
+              )}
+          </div>
+
+          {/* Other Information */}
+          {productDetail?.specifications?.length > 0 && (
+            <div className="text-sm md:text-sm 2xl:text-base 3xl:text-lg font-medium">
+              <p className="inline-block font-semibold text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px] 3xl:pb-4">
+                Other Information
+              </p>
+              {productDetail?.specifications.map((item, index) =>
+                item?.title?.trim() && item?.description?.trim() ? (
+                  <p
+                    key={index}
+                    className={`pt-[25px] 2xl:pt-[30px] 3xl:pt-[40px] ${valueClass}`}
+                  >
+                    <span className={labelClass}>{item.title.trim()}:</span>{" "}
+                    {item?.description?.trim()}
+                  </p>
+                ) : null
+              )}
+            </div>
+          )}
         </div>
       ),
     },
@@ -893,11 +939,11 @@ const ProductDetailTabs = () => {
       label: "Description",
       content: productDetail?.description ? (
         <div
-          className="mt-4 text-sm md:text-sm 3xl:text-xl font-medium text-baseblack"
-          dangerouslySetInnerHTML={{ __html: productDetail.description }}
+          className="mt-4 2xl:mt-6 3xl:mt-8 text-sm md:text-sm 2xl:text-base 3xl:text-lg font-medium text-baseblack"
+          dangerouslySetInnerHTML={{ __html: productDetail?.description }}
         />
       ) : (
-        <p className="mt-4 text-sm md:text-sm 3xl:text-xl font-medium text-baseblack">
+        <p className="mt-4 2xl:mt-6 3xl:mt-8 text-sm md:text-sm 2xl:text-base 3xl:text-lg font-medium text-baseblack">
           No Description Available
         </p>
       ),
@@ -905,16 +951,19 @@ const ProductDetailTabs = () => {
     {
       label: "Shipping & Returns",
       content: (
-        <>
+        <div className="mt-4 2xl:mt-8 3xl:mt-12">
           {shippingReturnContent?.map((item) => (
-            <div key={item?.label} className="flex flex-wrap gap-6 mt-4">
-              <p className="text-sm md:text-sm 3xl:text-xl text-baseblack">
+            <div
+              key={item?.label}
+              className="flex flex-wrap gap-6 mt-4 lg:mt-8"
+            >
+              <p className="text-sm md:text-sm 2xl:text-base 3xl:text-lg text-baseblack">
                 <span className="font-semibold">{item?.label} </span>
                 {item?.content}
               </p>
             </div>
           ))}
-        </>
+        </div>
       ),
     },
   ];
@@ -955,7 +1004,7 @@ const ProductDetailTabs = () => {
         {tabData.map(({ label }) => (
           <button
             key={label}
-            className={`py-2 3xl:text-2xl font-medium ${
+            className={`py-2 3xl:text-[22px] font-medium ${
               activeTab === label
                 ? "text-primary border-b-2 border-primary"
                 : "text-gray-500"
@@ -969,7 +1018,7 @@ const ProductDetailTabs = () => {
 
       {/* Tab Content */}
       <div className="w-full">
-        {tabData.find((tab) => tab.label === activeTab)?.content || (
+        {tabData?.find((tab) => tab?.label === activeTab)?.content || (
           <p>No Data</p>
         )}
       </div>
