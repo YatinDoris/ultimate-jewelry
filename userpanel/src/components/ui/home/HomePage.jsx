@@ -13,9 +13,6 @@ import home20 from "@/assets/images/home/home-20.webp";
 import home21 from "@/assets/images/home/home-21.webp";
 import home22 from "@/assets/images/home/home-22.webp";
 
-import home26 from "@/assets/images/home/home-26.webp";
-import home27 from "@/assets/images/home/home-27.webp";
-
 import {
   AccordionDropdown,
   CustomImg,
@@ -42,19 +39,17 @@ import GiftCollections from "../GiftCollections";
 
 const categoryData = [
   {
-    title: "STACK YOUR WAY",
+    title: "New Aura",
     image: home18,
     titleAttr: "",
     altAttr: "",
-    link: "",
     btnText: "SHOP NOW",
   },
   {
-    title: "DON’T JUMP THROUGH HOOPS—WEAR THEM",
+    title: "The Real Illusion",
     image: home19,
     titleAttr: "",
     altAttr: "",
-    link: "",
     btnText: "SHOP HOOPS",
   },
 ];
@@ -73,24 +68,6 @@ const discoverOurWorld = [
     thumbnailImage: home22,
     titleAttr: "",
     altAttr: "",
-  },
-];
-export const collections = [
-  {
-    title: "New Arrival",
-    image: home26,
-    btnText: "Shop Now",
-    btnLink: "/",
-    altAttr: "",
-    titleAttr: "",
-  },
-  {
-    title: "Trending Collection",
-    image: home27,
-    btnText: "Shop Now",
-    btnLink: "/",
-    altAttr: "",
-    titleAttr: "",
   },
 ];
 
@@ -242,14 +219,14 @@ const Home = () => {
               Our intuitive ring design feature lets you craft the perfect
               engagement ring effortlessly.
             </p>
-            <a
-              href="#"
+            <Link
+              href="/customize/start-with-setting"
               className="pt-2 text-base 2xl:text-lg font-semibold tracking-wide border-b transition-all duration-300 
               border-baseblack text-baseblack 
               hover:text-primary hover:border-primary"
             >
               START WITH A SETTING
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -263,7 +240,7 @@ const Home = () => {
       <GiftCollections />
 
       <section className="mx-auto pt-16 lg:pt-20 2xl:pt-40">
-        <SwipperHomePageBig collections={collections} />
+        <SwipperHomePageBig />
       </section>
       <section className="pt-16 lg:pt-20 2xl:pt-40 container">
         <LatestProduct />

@@ -389,6 +389,7 @@ export default function NavigationHeader() {
                                           srcAttr={defaultSettingStyle}
                                           altAttr=""
                                           titleAttr=""
+                                          className="w-10 h-10 rounded-full"
                                         />
                                       )}
                                       {item.title}
@@ -471,12 +472,16 @@ export default function NavigationHeader() {
                           } bg-white shadow-lg z-50 border-t-[0.5px]`}
                         >
                           <div className="container flex justify-between p-6">
-                            <div className="grid grid-cols-12 gap-5 2xl:gap-x-20 divide-x 2xl:gap-y-10 h-fit">
+                            <div className="grid grid-cols-12 gap-5 2xl:gap-x-20 2xl:gap-y-10 h-fit">
                               {item?.subCategories?.length > 0 &&
                                 item.subCategories.map((subItem, index) => (
                                   <div
                                     key={`${subItem.title}-${index}`}
-                                    className="relative px-8 col-span-2"
+                                    className={`col-span-3 relative px-8 ${
+                                      index % 4 !== 0
+                                        ? "border-l border-gray-200"
+                                        : ""
+                                    }`}
                                   >
                                     <HeaderLinkButton
                                       href={subItem.href}
@@ -512,22 +517,22 @@ export default function NavigationHeader() {
                                     </div>
                                   </div>
                                 ))}
-                              <div className="col-span-4 col-start-9 2xl:col-start-10 ps-10">
-                                <CustomImg
-                                  srcAttr={jewelry}
-                                  className="w-80 2xl:w-96"
-                                />
-                                <div className="text-sm mt-3">
-                                  <Link
-                                    href={item.href}
-                                    onClick={() =>
-                                      dispatch(setOpenDropdown(null))
-                                    }
-                                    className="underline hover:text-primary transition-all duration-300"
-                                  >
-                                    Shop Now
-                                  </Link>
-                                </div>
+                            </div>
+                            <div className="border-s ps-10">
+                              <CustomImg
+                                srcAttr={jewelry}
+                                className="w-80 2xl:w-96"
+                              />
+                              <div className="text-sm mt-3">
+                                <Link
+                                  href={item.href}
+                                  onClick={() =>
+                                    dispatch(setOpenDropdown(null))
+                                  }
+                                  className="underline hover:text-primary transition-all duration-300"
+                                >
+                                  Shop Now
+                                </Link>
                               </div>
                             </div>
                           </div>
@@ -854,6 +859,7 @@ export default function NavigationHeader() {
                                         srcAttr={defaultSettingStyle}
                                         altAttr=""
                                         titleAttr=""
+                                        className="w-10 h-10 rounded-full"
                                       />
                                     )}
 

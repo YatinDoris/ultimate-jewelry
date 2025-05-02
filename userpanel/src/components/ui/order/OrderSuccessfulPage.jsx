@@ -3,10 +3,12 @@ import orderSuccess from "@/assets/images/order-complete/order-submitted.svg";
 import { CustomImg } from "@/components/dynamiComponents";
 import { PrimaryLinkButton } from "../button";
 import { useParams } from "next/navigation";
+import { helperFunctions } from "../../../_helper/helperFunctions";
 
 const OrderSuccessfulPage = () => {
   const params = useParams();
   let { orderNumber } = params;
+  const currentUser = helperFunctions.getCurrentUser();
   return (
     <div className="min-h-[70vh] lg:min-h-[60vh] flex items-center justify-center bg-offwhite px-4">
       <div className="bg-white border border-gray-e2 p-8 max-w-xl xl:max-w-3xl w-full text-center py-8 xl:py-16">
@@ -35,7 +37,7 @@ const OrderSuccessfulPage = () => {
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <PrimaryLinkButton
             className="uppercase w-full"
-            href="/order/track-order"
+            href={`${currentUser ? "/order-history" : "/track-your-order"} `}
           >
             TRACK YOUR ORDER
           </PrimaryLinkButton>
