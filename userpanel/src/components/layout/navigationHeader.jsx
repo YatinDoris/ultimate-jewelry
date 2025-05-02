@@ -21,6 +21,7 @@ import ProfileDropdown from "../ui/ProfileDropdown";
 import SkeletonLoader from "../ui/skeletonLoader";
 import { usePathname } from "next/navigation";
 import { fetchCustomizeProductsVariation } from "@/_actions/customize.action";
+import defaultSettingStyle from "@/assets/images/default-setting-style.webp";
 
 const staticLinks = [
   {
@@ -372,11 +373,24 @@ export default function NavigationHeader() {
                                         closeAllDropdown();
                                       }}
                                     >
-                                      <ProgressiveImg
-                                        src={item.image}
+                                      {/* <ProgressiveImg
+                                        src={item.image || defaultSettingStyle}
                                         alt={item.title}
                                         className="w-10 h-10 rounded-full"
-                                      />
+                                      /> */}
+                                      {item?.image ? (
+                                        <ProgressiveImg
+                                          src={item?.image}
+                                          alt={item?.title}
+                                          className="w-10 h-10 rounded-full"
+                                        />
+                                      ) : (
+                                        <CustomImg
+                                          srcAttr={defaultSettingStyle}
+                                          altAttr=""
+                                          titleAttr=""
+                                        />
+                                      )}
                                       {item.title}
                                     </HeaderLinkButton>
                                   );
@@ -829,11 +843,20 @@ export default function NavigationHeader() {
                                       dispatch(setIsMenuOpen(false));
                                     }}
                                   >
-                                    <ProgressiveImg
-                                      src={item.image}
-                                      alt={item.title}
-                                      className="w-10 h-10 rounded-full"
-                                    />
+                                    {item?.image ? (
+                                      <ProgressiveImg
+                                        src={item?.image}
+                                        alt={item?.title}
+                                        className="w-10 h-10 rounded-full"
+                                      />
+                                    ) : (
+                                      <CustomImg
+                                        srcAttr={defaultSettingStyle}
+                                        altAttr=""
+                                        titleAttr=""
+                                      />
+                                    )}
+
                                     {item.title}
                                   </HeaderLinkButton>
                                 );

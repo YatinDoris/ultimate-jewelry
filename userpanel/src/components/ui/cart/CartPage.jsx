@@ -223,7 +223,7 @@ const CartPage = () => {
                         >
                           {cartItem?.productName}
                         </Link>
-                        <p className="text-base md:text-xl lg:text-2xl font-medium font-castoro text-end">
+                        <p className="text-base md:text-xl lg:text-2xl font-medium font-chong-modern text-end">
                           {cartItem?.productDiscount &&
                           !cartItem?.diamondDetail ? (
                             <span className="text-lg text-gray-500 line-through mr-2">
@@ -255,7 +255,7 @@ const CartPage = () => {
                       </div>
 
                       {cartItem?.diamondDetail && (
-                        <p className="font-castoro text-base md:text-xl lg:text-2xl font-medium text-baseblack  md:pt-4 pt-2">
+                        <p className="font-chong-modern text-base md:text-xl lg:text-2xl font-medium text-baseblack  md:pt-4 pt-2">
                           $
                           {(
                             helperFunctions.calculateCustomProductPrice({

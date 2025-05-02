@@ -52,11 +52,11 @@ const ContactForm = () => {
 
   const onSubmit = useCallback(async (fields, { resetForm }) => {
     const payload = {
-      firstName: fields.firstName,
-      lastName: fields.lastName,
-      email: fields.email,
-      mobile: fields.mobile,
-      requirement: fields.requirement,
+      firstName: fields?.firstName,
+      lastName: fields?.lastName,
+      email: fields?.email,
+      mobile: fields?.mobile,
+      requirement: fields?.requirement,
     };
     const response = await dispatch(sendContact(payload));
     if (response) {
@@ -75,7 +75,7 @@ const ContactForm = () => {
     <>
       <div className="max-w-3xl mx-auto container">
         <form onSubmit={handleSubmit}>
-          <h3 className="font-castoro font-normal text-[40px] xxs:mt-12 leading-[46px] tracking-[0.8px] text-left text-baseblack mb-4">
+          <h3 className="font-chong-modern font-normal text-[40px] xxs:mt-12 leading-[46px] tracking-[0.8px] text-left text-baseblack mb-4">
             Send a message
           </h3>
           <div className="border-[1.5px] rounded border-gray-e2 p-6 md:p-8 lg:p-10 xl:p-12 2xl:p-20 shadow-sm">
@@ -93,16 +93,16 @@ const ContactForm = () => {
                   id="firstName"
                   placeholder="First name"
                   className={`custom-input w-full 2xl:py-4 ${
-                    touched.firstName && errors.firstName
+                    touched?.firstName && errors?.firstName
                       ? "border-red-500 border"
                       : ""
                   }`}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values.firstName}
+                  value={values?.firstName}
                 />
-                {touched.firstName && errors.firstName && (
-                  <ErrorMessage message={errors.firstName} />
+                {touched?.firstName && errors?.firstName && (
+                  <ErrorMessage message={errors?.firstName} />
                 )}
               </div>
 
@@ -119,7 +119,7 @@ const ContactForm = () => {
                   id="lastName"
                   placeholder="Last name"
                   className={`custom-input w-full 2xl:py-4 ${
-                    touched.lastName && errors.lastName
+                    touched?.lastName && errors?.lastName
                       ? "border-red-500 border"
                       : ""
                   }`}
@@ -127,8 +127,8 @@ const ContactForm = () => {
                   onBlur={handleBlur}
                   value={values.lastName}
                 />
-                {touched.lastName && errors.lastName && (
-                  <ErrorMessage message={errors.lastName} />
+                {touched?.lastName && errors?.lastName && (
+                  <ErrorMessage message={errors?.lastName} />
                 )}
               </div>
             </div>
@@ -146,14 +146,16 @@ const ContactForm = () => {
                   id="email"
                   placeholder="Your Email"
                   className={`custom-input w-full 2xl:py-4 ${
-                    touched.email && errors.email ? "border-red-500 border" : ""
+                    touched?.email && errors?.email
+                      ? "border-red-500 border"
+                      : ""
                   }`}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.email}
                 />
-                {touched.email && errors.email && (
-                  <ErrorMessage message={errors.email} />
+                {touched?.email && errors?.email && (
+                  <ErrorMessage message={errors?.email} />
                 )}
               </div>
 
@@ -170,7 +172,7 @@ const ContactForm = () => {
                   id="mobile"
                   placeholder="Phone number"
                   className={`custom-input w-full 2xl:py-4 ${
-                    touched.mobile && errors.mobile
+                    touched?.mobile && errors?.mobile
                       ? "border-red-500 border"
                       : ""
                   }`}
@@ -178,8 +180,8 @@ const ContactForm = () => {
                   onBlur={handleBlur}
                   value={values.mobile}
                 />
-                {touched.mobile && errors.mobile && (
-                  <ErrorMessage message={errors.mobile} />
+                {touched?.mobile && errors?.mobile && (
+                  <ErrorMessage message={errors?.mobile} />
                 )}
               </div>
             </div>
@@ -205,8 +207,8 @@ const ContactForm = () => {
                 onBlur={handleBlur}
                 value={values.requirement}
               />
-              {touched.requirement && errors.requirement && (
-                <ErrorMessage message={errors.requirement} />
+              {touched?.requirement && errors?.requirement && (
+                <ErrorMessage message={errors?.requirement} />
               )}
             </div>
 
@@ -224,31 +226,31 @@ const ContactForm = () => {
                 Submit
               </LoadingPrimaryButton>
             </div>
-            {contactMessage.message &&
-            contactMessage.type != messageType.SUCCESS ? (
-              <ErrorMessage message={contactMessage.message} />
+            {contactMessage?.message &&
+            contactMessage?.type != messageType.SUCCESS ? (
+              <ErrorMessage message={contactMessage?.message} />
             ) : null}
-            {contactMessage.type == messageType.SUCCESS ? (
+            {contactMessage?.type == messageType?.SUCCESS ? (
               <Alert
-                message={contactMessage.message}
-                type={contactMessage.type}
+                message={contactMessage?.message}
+                type={contactMessage?.type}
               />
             ) : null}
           </div>
         </form>
         <div className="flex flex-col md:flex-row justify-center xl:gap-10 gap-6 text-baseblack font-normal mt-16 xl:mt-24 ">
           <div className="border-gray-e2 border-[0.5px] p-6 flex-1 bg-white">
-            <h3 className="text-lg font-Castoro">Call:</h3>
+            <h3 className="text-lg font-chong-modern">Call:</h3>
             <p>{companyPhoneNo}</p>
           </div>
 
           <div className="border-gray-e2 border-[0.5px] p-6 flex-1 bg-white">
-            <h3 className="text-lg font-Castoro">Email:</h3>
+            <h3 className="text-lg font-chong-modern">Email:</h3>
             <p>{companyEmail}</p>
           </div>
 
           <div className="border-gray-e2 border-[0.5px] p-6 flex-1 bg-white">
-            <h3 className="text-lg font-Castoro">Address:</h3>
+            <h3 className="text-lg font-chong-modern">Address:</h3>
             <p>{companyAddress}</p>
           </div>
         </div>

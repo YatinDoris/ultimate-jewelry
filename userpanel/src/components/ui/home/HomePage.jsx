@@ -12,23 +12,10 @@ import home19 from "@/assets/images/home/home-19.webp";
 import home20 from "@/assets/images/home/home-20.webp";
 import home21 from "@/assets/images/home/home-21.webp";
 import home22 from "@/assets/images/home/home-22.webp";
-import home23 from "@/assets/images/home/home-23.webp";
-import home24 from "@/assets/images/home/home-24.webp";
-import home25 from "@/assets/images/home/home-25.webp";
+
 import home26 from "@/assets/images/home/home-26.webp";
 import home27 from "@/assets/images/home/home-27.webp";
 
-import diamondAsscher from "@/assets/images/home/diamond-asscher.webp";
-import diamondCushion from "@/assets/images/home/diamond-cushion.webp";
-import diamondEmerald from "@/assets/images/home/diamond-emerald.webp";
-import diamondHeart from "@/assets/images/home/diamond-heart.webp";
-import diamondmarquise from "@/assets/images/home/diamond-marquise.webp";
-import diamondOval from "@/assets/images/home/diamond-oval.webp";
-import diamondPear from "@/assets/images/home/diamond-pear.webp";
-import diamondPrincess from "@/assets/images/home/diamond-princess.webp";
-import diamondRadiant from "@/assets/images/home/diamond-radiant.webp";
-import diamondRound from "@/assets/images/home/diamond-round.webp";
-import elongatedCushion from "@/assets/images/home/elongated-cushion.webp";
 import {
   AccordionDropdown,
   CustomImg,
@@ -51,7 +38,7 @@ import KeyFeatures from "../KeyFeatures";
 import { setAppointmentMessage } from "@/store/slices/appointmentSlice";
 import { setCustomJewelryMessage } from "@/store/slices/customjewelrySlice";
 import { fetchCustomizeProductsVariation } from "@/_actions/customize.action";
-
+import GiftCollections from "../GiftCollections";
 
 const categoryData = [
   {
@@ -88,13 +75,6 @@ const discoverOurWorld = [
     altAttr: "",
   },
 ];
-
-const giftCategories = [
-  { id: 1, title: "Gifts Under $500", image: home23, altAttr: "" },
-  { id: 2, title: "Gifts FOR HER", image: home24, altAttr: "" },
-  { id: 3, title: "Gifts for Him", image: home25, altAttr: "" },
-];
-
 export const collections = [
   {
     title: "New Arrival",
@@ -189,7 +169,7 @@ const Home = () => {
               altAttr=""
               className="w-40 md:w-48 2xl:w-64"
             />
-            <h2 className="text-xl 2xl:text-2xl font-semibold mt-4 text-center">
+            <h2 className="text-2xl 2xl:text-3xl font-chong-modern mt-4 text-center">
               SHOP FOR LAB GROWN
               <span className="lg:hidden"> </span>
               <br className="hidden lg:block" />
@@ -241,7 +221,7 @@ const Home = () => {
       {/* Complimentary Matching Wedding Band */}
       <section className="bg-alabaster mt-16 lg:mt-20 2xl:mt-40">
         <div className="container grid grid-cols-1 lg:grid-cols-2 py-10 md:py-16 lg:py-0 relative h-[80vh] md:h-[60vh] place-items-center">
-          <div className="relative w-full h-44 2xl:h-52">
+          <div className="relative w-full h-44">
             {images.map((img, index) => (
               <CustomImg
                 key={index}
@@ -255,7 +235,7 @@ const Home = () => {
           </div>
 
           <div className="flex flex-col items-center justify-center text-center px-4">
-            <p className="pt-2 text-base md:text-lg lg:text-xl 2xl:text-2xl font-castoro">
+            <p className="pt-2 text-base md:text-lg lg:text-xl 2xl:text-2xl font-chong-modern">
               Get a Complimentary Matching Wedding Band
             </p>
             <p className="pt-6 text-base 2xl:text-lg mb-6">
@@ -277,31 +257,10 @@ const Home = () => {
       <section className="pt-16 lg:pt-20 2xl:pt-40">
         <TextAboveImage
           categoryData={categoryData}
-          textClassName={"font-castoro"}
+          textClassName={"chong-modern"}
         />
       </section>
-      <section className="container mx-auto pt-16 lg:pt-20 2xl:pt-28">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center ">
-          {giftCategories.map((category) => (
-            <Link
-              href={`/collections/collection/${helperFunctions.stringReplacedWithUnderScore(
-                category?.title
-              )}`}
-              key={category.id}
-            >
-              <CustomImg
-                srcAttr={category.image}
-                altAttr={category.altAttr}
-                titleAttr={category.title}
-                className="object-cover w-full "
-              />
-              <p className="pt-4 md:pt-6 text-lg md:text-xl 2xl:text-2xl font-normal">
-                {category.title}
-              </p>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <GiftCollections />
 
       <section className="mx-auto pt-16 lg:pt-20 2xl:pt-40">
         <SwipperHomePageBig collections={collections} />
@@ -314,7 +273,7 @@ const Home = () => {
           <h3 className="text-sm lg:text-base font-medium">
             DISCOVER OUR WORLD
           </h3>
-          <h2 className="text-2xl lg:text-4xl font-normal font-castoro mt-2">
+          <h2 className="text-2xl lg:text-4xl font-normal font-chong-modern mt-2">
             Diamonds as Exceptional as You
           </h2>
         </div>

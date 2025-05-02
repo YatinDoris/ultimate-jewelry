@@ -12,6 +12,7 @@ import himImage from "@/assets/images/about-us/himImage.webp";
 import giftImage from "@/assets/images/about-us/gifImage.webp";
 
 import { AnimatedSection, CustomImg } from "@/components/dynamiComponents";
+import GiftCollections from "@/components/ui/GiftCollections";
 
 const aboutUsContent = [
   {
@@ -128,7 +129,7 @@ export default function AboutPage() {
 
       <section className="bg-alabaster py-0.3 px-2 sm:px-8 lg:px-5 mb-20 lg:mt-36 text-baseblack xxs:mt-14 leading-relaxed 2xl:pt-10">
         <div className="text-center max-w-4xl px-2 mx-auto py-2">
-          <h2 className="text-3xl lg:text-4xl 2xl:text-5xl mb-4 mt-10 lg:mt-12 font-castoro">
+          <h2 className="text-3xl lg:text-4xl 2xl:text-5xl mb-4 mt-10 lg:mt-12 font-chong-modern">
             Our Mission Pillars
           </h2>
           <p className="font-medium sm:mb-0 xxs:mb-4 lg:mb-0">
@@ -146,7 +147,7 @@ export default function AboutPage() {
                 altAttr={pillar.altAttr}
                 titleAttr={pillar.titleAttr}
               />
-              <h3 className="text-2xl 2xl:text-3xl font-castoro py-3">
+              <h3 className="text-2xl 2xl:text-3xl font-chong-modern py-3">
                 {pillar.title}
               </h3>
               <p className="font-medium text-base 2xl:text-base">
@@ -158,60 +159,7 @@ export default function AboutPage() {
       </section>
 
       {/* Jewelry Collection Section */}
-      <section className="container lg:px-6 lg:pt-20 2xl:pt-28">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
-          <a href="/collections/collection/Gifts_Under_$500">
-            <img
-              alt="Katan Off | Diamond Jewelry, Coin, Gold, Silver, Platinum"
-              title="Gifts Under $500"
-              loading="lazy"
-              width="544"
-              height="510"
-              decoding="async"
-              data-nimg="1"
-              className="object-cover w-full"
-              src={himImage.src}
-            />
-            <p className="pt-4 md:pt-6 text-lg md:text-xl 2xl:text-2xl font-semibold">
-              GIFTS UNDER $500
-            </p>
-          </a>
-          <a href="/collections/collection/Gifts_FOR_HER">
-            <img
-              alt="Katan Off | Diamond Jewelry, Coin, Gold, Silver, Platinum"
-              title="Gifts FOR HER"
-              loading="lazy"
-              width="543"
-              height="510"
-              decoding="async"
-              data-nimg="1"
-              className="object-cover w-full"
-              src={giftImage.src}
-            />
-            <p className="pt-4 md:pt-6 text-lg md:text-xl 2xl:text-2xl font-semibold">
-              {" "}
-              GIFTS FOR HER
-            </p>
-          </a>
-          <a href="/collections/collection/Gifts_for_Him">
-            <img
-              alt="Katan Off | Diamond Jewelry, Coin, Gold, Silver, Platinum"
-              title="Gifts for Him"
-              loading="lazy"
-              width="543"
-              height="510"
-              decoding="async"
-              data-nimg="1"
-              className="object-cover w-full"
-              src={herImage.src}
-            />
-            <p className="pt-4 md:pt-6 text-lg md:text-xl 2xl:text-2xl font-semibold">
-              {" "}
-              GIFTS FOR HIM
-            </p>
-          </a>
-        </div>
-      </section>
+      <GiftCollections />
     </>
   );
 }

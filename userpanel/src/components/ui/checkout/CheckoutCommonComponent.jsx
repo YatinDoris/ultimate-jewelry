@@ -137,7 +137,7 @@ const CheckoutCommonComponent = () => {
                         {cartItem?.productName}
                       </p>
 
-                      <p className="text-xl 2xl:text-2xl font-medium font-castoro pt-1">
+                      <p className="text-xl 2xl:text-2xl font-medium font-chong-modern pt-1">
                         $
                         {helperFunctions.toFixedNumber(
                           cartItem?.quantityWiseSellingPrice
@@ -146,7 +146,7 @@ const CheckoutCommonComponent = () => {
                     </div>
 
                     {cartItem?.diamondDetail && (
-                      <p className="font-castoro text-xl 2xl:text-2xl font-medium text-baseblack">
+                      <p className="font-chong-modern text-xl 2xl:text-2xl font-medium text-baseblack">
                         $
                         {helperFunctions
                           .calculateCustomProductPrice({
@@ -334,7 +334,7 @@ const CheckoutCommonComponent = () => {
                             {cartItem.productName}
                           </p>
 
-                          <p className="text-2xl font-medium font-castoro pt-1">
+                          <p className="text-2xl font-medium font-chong-modern pt-1">
                             $
                             {helperFunctions.toFixedNumber(
                               cartItem?.quantityWiseSellingPrice
@@ -356,7 +356,7 @@ const CheckoutCommonComponent = () => {
                           ))}
                         </div>
                         {cartItem?.diamondDetail && (
-                          <p className="font-castoro text-lg md:text-xl lg:text-2xl font-medium text-baseblack pt-2">
+                          <p className="font-chong-modern text-lg md:text-xl lg:text-2xl font-medium text-baseblack pt-2">
                             $
                             {helperFunctions
                               .calculateCustomProductPrice({

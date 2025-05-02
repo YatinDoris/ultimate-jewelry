@@ -18,8 +18,8 @@ export default function AccordionDropdown({ items }) {
             className="w-full flex justify-between items-center py-4 px-6 text-left hover:bg-gray-100 transition-all duration-200"
             onClick={() => toggleDropdown(index)}
           >
-            <span className="text-base md:text-xl xl:text-2xl font-castoro font-medium">
-              {item.title}
+            <span className="text-base md:text-xl xl:text-2xl font-chong-modern font-medium">
+              {item?.title}
             </span>
             {openIndex === index ? <Minus size={18} /> : <Plus size={18} />}
           </button>
@@ -29,7 +29,7 @@ export default function AccordionDropdown({ items }) {
               openIndex === index ? "max-h-40 py-2 px-6" : "max-h-0"
             }`}
           >
-            <p className="text-base md:text-base">{item.content}</p>
+            <p className="text-base md:text-base">{item?.content}</p>
           </div>
         </div>
       ))}

@@ -163,7 +163,7 @@ const CartPopup = () => {
       >
         <div className="flex flex-col h-full">
           <div className="shrink-0 p-4 border-b-2 border-black_opacity_10 flex justify-between items-center pt-8 xl:pt-8 2xl:pt-10 mb-6">
-            <h2 className="text-xl md:text-2xl xl:text-3xl font-medium font-castoro text-baseblack">
+            <h2 className="text-xl md:text-2xl xl:text-3xl font-medium font-chong-modern text-baseblack">
               My Bag <span className="pl-2">({cartList?.length}) </span>
             </h2>
             <button
@@ -208,7 +208,7 @@ const CartPopup = () => {
                             {cartItem?.productName}
                           </Link>
                           {cartItem?.diamondDetail ? (
-                            <p className="font-castoro text-base md:text-xl lg:text-2xl font-medium text-baseblack">
+                            <p className="font-chong-modern text-base md:text-xl lg:text-2xl font-medium text-baseblack">
                               $
                               {(
                                 helperFunctions?.calculateCustomProductPrice({
@@ -218,7 +218,7 @@ const CartPopup = () => {
                               ).toFixed(2)}
                             </p>
                           ) : (
-                            <p className="text-base md:text-xl lg:text-2xl font-medium font-castoro">
+                            <p className="text-base md:text-xl lg:text-2xl font-medium font-chong-modern">
                               {cartItem?.productDiscount ? (
                                 <span className="text-lg text-gray-500 line-through mr-2">
                                   $
