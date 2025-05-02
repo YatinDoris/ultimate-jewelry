@@ -389,20 +389,21 @@ const calculateCustomProductPrice = ({ netWeight, variations }) => {
   }
 
   // Identify valid metal type variation
-  const metalVariation = variations.find((variation) => {
+  const metalVariation = variations?.find((variation) => {
     const variationType = variation?.variationTypeName?.toUpperCase();
-    return variationType && METAL_PRICES.hasOwnProperty(variationType);
+    return variationType && METAL_PRICES?.hasOwnProperty(variationType);
   });
 
   if (!metalVariation) {
-    const allowedMetals = Object.keys(METAL_PRICES).join(", ");
-    throw new Error(
-      `No valid metal type found in variations. Supported types: ${allowedMetals}`
-    );
+    const allowedMetals = Object?.keys(METAL_PRICES)?.join(", ");
+    return;
+    // throw new Error(
+    //   `No valid metal type found in variations. Supported types: ${allowedMetals}`
+    // );
   }
 
   // Get metal price
-  const metalType = metalVariation.variationTypeName.toUpperCase();
+  const metalType = metalVariation?.variationTypeName?.toUpperCase();
   const metalPricePerGram = METAL_PRICES[metalType];
 
   // Calculate and return final price
