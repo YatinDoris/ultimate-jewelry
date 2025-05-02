@@ -126,7 +126,7 @@ export default function footer() {
                   return (
                     <div key={`footer-link-${index}`}>
                       <h4 className="text-lg 2xl:text-2xl font-semibold">
-                        {link.title}
+                        {link?.title}
                       </h4>
 
                       <ul className="mt-4">
@@ -139,7 +139,7 @@ export default function footer() {
                                 key={`nav-${index}`}
                               >
                                 <li className="py-1 2xl:text-lg">
-                                  {nav.title}
+                                  {nav?.title}
                                 </li>
                               </Link>
                             );
@@ -160,10 +160,10 @@ export default function footer() {
                                   <Link
                                     className="text-2xl"
                                     key={`social-media-${index}`}
-                                    href={media.href}
+                                    href={media?.href}
                                     target="_blank"
                                   >
-                                    {media.icon}
+                                    {media?.icon}
                                   </Link>
                                 );
                               })}

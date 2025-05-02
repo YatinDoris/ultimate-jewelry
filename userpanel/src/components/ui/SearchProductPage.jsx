@@ -64,7 +64,7 @@ const SearchProductPage = () => {
   const { searchedProductList, productLoading } = useSelector(
     ({ product }) => product
   );
-  const resultCount = searchedProductList.length;
+  const resultCount = searchedProductList?.length || 0;
 
   const [searchQuery, setSearchQuery] = useState("");
 
