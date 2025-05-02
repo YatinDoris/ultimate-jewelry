@@ -50,7 +50,7 @@ const HeroBanner = ({
         <>
           <div className=" absolute inset-0 flex items-center justify-center w-full">
             <div className="md:w-[80%] lg:w-[50%] 2x:w-[50%] text-white text-center">
-              <h1 className="text-3xl md:text-4xl 2xl:text-5xl  leading-tight font-castoro">
+              <h1 className="text-3xl md:text-4xl 2xl:text-5xl  leading-tight font-chong-modern">
                 Diamonds that <br />
                 Deserve You.
               </h1>
@@ -83,7 +83,7 @@ const HeroBanner = ({
             >
               {title && description ? (
                 <>
-                  <h1 className="text-3xl md:text-5xl  2xl:text-6xl text-white font-castoro capitalize">
+                  <h1 className="text-3xl md:text-5xl  2xl:text-6xl text-white font-chong-modern capitalize">
                     {title}
                   </h1>
 

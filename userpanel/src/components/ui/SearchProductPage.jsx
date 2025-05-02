@@ -13,7 +13,10 @@ import { IoIosSearch } from "react-icons/io";
 import home26 from "@/assets/images/home/home-26.webp";
 import home27 from "@/assets/images/home/home-27.webp";
 import searchVector from "@/assets/images/search-vector.webp";
-import { setCurrentPage, setSearchedProductList } from "@/store/slices/productSlice";
+import {
+  setCurrentPage,
+  setSearchedProductList,
+} from "@/store/slices/productSlice";
 import CommonNotFound from "./CommonNotFound";
 
 export const searchSwiper = [
@@ -65,7 +68,6 @@ const SearchProductPage = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-
   const handleSearch = useCallback(
     (val) => {
       setSearchQuery(val);
@@ -88,13 +90,12 @@ const SearchProductPage = () => {
     return () => clearTimeout(getData);
   }, [searchQuery, dispatch]);
 
-
   return (
     <>
       <HeroSwiper slides={searchSwiper} />
 
       <section className="container py-10">
-        <h1 className="text-2xl font-castoro text-center m-8 relative after:absolute after:content-[''] after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:w-10 after:h-[2px] after:bg-primary">
+        <h1 className="text-2xl font-chong-modern text-center m-8 relative after:absolute after:content-[''] after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:w-10 after:h-[2px] after:bg-primary">
           Search Product
         </h1>
 
@@ -108,7 +109,6 @@ const SearchProductPage = () => {
               className="custom-input !pl-10 md:pl-12 pr-10 text-sm md:text-base"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-
             />
 
             {searchQuery && (
@@ -140,12 +140,14 @@ const SearchProductPage = () => {
             isLoading={productLoading}
             showFilter={false}
           />
-        ) : <CommonNotFound
-          message="Searching for sparkle?"
-          notFoundImg={searchVector}
-          subMessage="Uncovering your dream jewelry now"
-          showButton={false}
-        />}
+        ) : (
+          <CommonNotFound
+            message="Searching for sparkle?"
+            notFoundImg={searchVector}
+            subMessage="Uncovering your dream jewelry now"
+            showButton={false}
+          />
+        )}
       </section>
 
       <section className="pt-16 lg:pt-20 2xl:pt-20">
@@ -157,6 +159,6 @@ const SearchProductPage = () => {
       </section>
     </>
   );
-}
+};
 
 export default SearchProductPage;

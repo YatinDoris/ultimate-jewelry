@@ -69,39 +69,41 @@ const AnimatedSection = ({
       >
         <div className="lg:w-[75%]">
           <h2
-            className={`text-2xl md:text-4xl mb-4 2xl:text-5xl lg:leading-[50px] font-castoro 2xl:leading-[60px] ${titleClassName}`}
+            className={`text-2xl md:text-4xl mb-4 2xl:text-5xl lg:leading-[50px] font-chong-modern 2xl:leading-[60px] ${titleClassName}`}
           >
             {title}
           </h2>
           <div className="flex flex-col gap-4">
-            {description &&
-              description.map((desc, i) => {
-                return (
-                  <p
-                    key={`description-${i}`}
-                    className="text-[14px] font-medium md:text-sm 2xl:text-lg leading-relaxed"
-                  >
-                    {desc}
-                  </p>
-                );
-              })}
+            {description
+              ? description?.map((desc, i) => {
+                  return (
+                    <p
+                      key={`description-${i}`}
+                      className="text-[14px] font-medium md:text-sm 2xl:text-lg leading-relaxed"
+                    >
+                      {desc}
+                    </p>
+                  );
+                })
+              : null}
           </div>
           <div className="flex flex-col gap-4 text-start">
             <p className="text-[14px] font-medium md:text-sm 2xl:text-lg">
               {pointsDescription}
             </p>
-            {points &&
-              points.map((point, i) => {
-                return (
-                  <p
-                    key={`point-${i}`}
-                    className="text-[14px] font-medium md:text-sm 2xl:text-lg leading-relaxed"
-                  >
-                    <span className="font-bold">{point.title}</span> :{" "}
-                    {point.description}
-                  </p>
-                );
-              })}
+            {points
+              ? points.map((point, i) => {
+                  return (
+                    <p
+                      key={`point-${i}`}
+                      className="text-[14px] font-medium md:text-sm 2xl:text-lg leading-relaxed"
+                    >
+                      <span className="font-bold">{point?.title}</span> :{" "}
+                      {point?.description}
+                    </p>
+                  );
+                })
+              : null}
           </div>
         </div>
         {children}

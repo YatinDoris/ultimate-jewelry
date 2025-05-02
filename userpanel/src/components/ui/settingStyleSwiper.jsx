@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { ProgressiveImg } from "../dynamiComponents";
+import { CustomImg, ProgressiveImg } from "../dynamiComponents";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import SkeletonLoader from "./skeletonLoader";
@@ -11,6 +11,7 @@ import { useWindowSize } from "@/_helper/hooks";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedSettingStyle } from "@/store/slices/productSlice";
+import defaultSettingStyle from "@/assets/images/default-setting-style.webp";
 
 export default function SettingStyleCategorySwiper({
   settingStyleCategories = [],
@@ -143,15 +144,23 @@ export default function SettingStyleCategorySwiper({
                       className={`text-center cursor-pointer `}
                       onClick={() => handleStyleSelect(settingStyle?.value)}
                     >
-                      <ProgressiveImg
-                        className={`h-32 lg:h-36 2xl:h-48 aspect-square object-cover !transition-none  border-2 border-transparent ${
-                          isSelected ? "border-2 !border-primary" : ""
-                        }`}
-                        src={settingStyle?.image}
-                        alt={settingStyle?.title}
-                        title={settingStyle?.title}
-                      />
-                      <h2 className="text-base lg:text-lg font-semibold mt-2">
+                      {settingStyle?.image?.trim() ? (
+                        <ProgressiveImg
+                          className={`h-32 lg:h-36 2xl:h-48 aspect-square object-cover !transition-none  border-2 border-transparent ${
+                            isSelected ? "border-2 !border-primary" : ""
+                          }`}
+                          src={settingStyle?.image}
+                          alt={settingStyle?.title}
+                          title={settingStyle?.title}
+                        />
+                      ) : (
+                        <CustomImg
+                          srcAttr={defaultSettingStyle}
+                          altAttr=""
+                          titleAttr=""
+                        />
+                      )}
+                      <h2 className="text-base lg:text-lg font-normal mt-2">
                         {settingStyle?.title}
                       </h2>
                     </div>

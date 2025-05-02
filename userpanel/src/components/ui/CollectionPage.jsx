@@ -122,9 +122,10 @@ export default function CollectionPage() {
 
       {/* Setting Style Swiper */}
       <section className="container pt-10 md:pt-14 lg:pt-20 2xl:pt-20">
-        <h2 className="text-center text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-castoro capitalize">
+        <h2 className="text-center text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl font-chong-modern capitalize">
           {collectionTitle}
         </h2>
+
         <SettingStyleCategorySwiper
           settingStyleCategories={uniqueFilterOptions.uniqueSettingStyles}
           loading={productLoading}
