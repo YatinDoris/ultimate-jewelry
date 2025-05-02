@@ -19,6 +19,8 @@ const initialState = {
   openDiamondDetailProductId: "",
   uniqueFilterOptionsForHeader: {},
   customizeOptionLoading: false,
+  diamondShapeList: [],
+  transparenHeadertBg: false,
 };
 
 const commonSlice = createSlice({
@@ -43,6 +45,9 @@ const commonSlice = createSlice({
     },
     setOpenDropdownMobile: (state, action) => {
       state.openDropdownMobile = action.payload;
+    },
+    setTransparentHeaderBg: (state, action) => {
+      state.transparenHeadertBg = action.payload
     },
 
     // Others
@@ -83,12 +88,16 @@ const commonSlice = createSlice({
     },
     setCustomizeOptionLoading: (state, action) => {
       state.customizeOptionLoading = action.payload;
+    },
+    setDiamonShapeList: (state, action) => {
+      state.diamondShapeList = action.payload;
     }
   },
 });
 
 export const {
   setMenuList,
+  setDiamonShapeList,
   setMenuLoading,
   setIsMenuOpen,
   setOpenDropdown,
@@ -96,6 +105,7 @@ export const {
   setLastScrollY,
   setIsHovered,
   setIsCartOpen,
+  setTransparentHeaderBg,
   setOpenProfileDropdown,
   setShowModal,
   setIsChecked,
