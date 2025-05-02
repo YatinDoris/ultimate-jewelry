@@ -5,7 +5,9 @@ import ProductCard from "./productCard";
 import { useWindowSize } from "@/_helper/hooks";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  resetFilters,
   setCurrentPage,
+  setSelectedVariations,
   setShowFilterSidebar,
   setSortByValue,
 } from "@/store/slices/productSlice";
@@ -42,6 +44,7 @@ const ProductGrid = memo(
     const handlePageClick = ({ selected }) => {
       dispatch(setCurrentPage(selected));
     };
+
     let filteredItemsList = productList;
     if (Object.keys(selectedVariations)?.length) {
       filteredItemsList = productList.filter((product) => {
@@ -117,6 +120,9 @@ const ProductGrid = memo(
       dispatch(setSortByValue(selectedSortByValue));
     }, [selectedSortByValue]);
 
+    useEffect(() => {
+      dispatch(setSelectedVariations([]));
+    }, []);
     return (
       <>
         {isLoading ? (
@@ -187,7 +193,7 @@ const ProductGrid = memo(
           </div>
         )}
 
-        {!isLoading && !productList?.length && <ProductNotFound />}
+        {!isLoading && !filteredItemsList.length && <ProductNotFound />}
 
         {pagination && !isLoading && productList.length > ITEMS_PER_PAGE && (
           <Pagination handlePageClick={handlePageClick} pageCount={pageCount} />
