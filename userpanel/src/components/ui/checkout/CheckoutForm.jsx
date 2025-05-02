@@ -93,9 +93,9 @@ const CheckoutForm = () => {
 
   const currentUser = helperFunctions.getCurrentUser();
   if (currentUser) {
-    initialValues?.email = currentUser?.email;
-    initialValues?.firstName = currentUser?.firstName;
-    initialValues?.lastName = currentUser?.lastName;
+    initialValues.email = currentUser?.email;
+    initialValues.firstName = currentUser?.firstName;
+    initialValues.lastName = currentUser?.lastName;
   }
 
   const clearAbortController = useCallback(() => {
@@ -430,10 +430,11 @@ const CheckoutForm = () => {
                     value={values.stateCode || ""}
                     onChange={(e) => handleStateChange(e.target.value)}
                     onBlur={handleBlur}
-                    className={`custom-input ${inputClassName} ${touched?.stateCode && errors?.stateCode
-                      ? "border-rose-500"
-                      : "border-gray-300"
-                      }`}
+                    className={`custom-input ${inputClassName} ${
+                      touched?.stateCode && errors?.stateCode
+                        ? "border-rose-500"
+                        : "border-gray-300"
+                    }`}
                   >
                     <option value="" hidden>
                       Select State
