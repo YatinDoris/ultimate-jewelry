@@ -76,16 +76,16 @@ const CheckoutCommonComponent = () => {
         contentElement?.scrollHeight - contentElement?.clientHeight;
       const currentScroll = contentElement?.scrollTop + scrollAmount;
 
-      contentElement?.scrollTop = Math.max(
+      contentElement.scrollTop = Math.max(
         0,
         Math.min(currentScroll, maxScroll)
       );
     };
 
-    contentElement?.addEventListener("wheel", handleWheel, { passive: false });
+    contentElement.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
-      contentElement?.removeEventListener("wheel", handleWheel);
+      contentElement.removeEventListener("wheel", handleWheel);
     };
   }, []);
 
@@ -176,7 +176,8 @@ const CheckoutCommonComponent = () => {
                       <div className=" text-sm font-semibold xs:text-base px-2  w-fit mt-2">
                         $
                         {helperFunctions.toFixedNumber(
-                          cartItem?.quantityWiseSellingPrice / cartItem?.quantity
+                          cartItem?.quantityWiseSellingPrice /
+                            cartItem?.quantity
                         )}{" "}
                         | Per Item
                       </div>
@@ -375,7 +376,7 @@ const CheckoutCommonComponent = () => {
                             $
                             {helperFunctions.toFixedNumber(
                               cartItem?.quantityWiseSellingPrice /
-                              cartItem?.quantity
+                                cartItem?.quantity
                             )}{" "}
                             | Per Item
                           </div>
