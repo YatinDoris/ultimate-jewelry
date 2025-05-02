@@ -1,71 +1,63 @@
-import anniversaryRings from "@/assets/images/home/anniversary-rings.webp";
-import bracelets from "@/assets/images/home/bracelets.webp";
-import diamondRings from "@/assets/images/home/diamond-rings.webp";
-import earrings from "@/assets/images/home/earrings.webp";
-import engagementRings from "@/assets/images/home/engagement-rings.webp";
-import mensJewelry from "@/assets/images/home/mens-jewelry.webp";
-import necklaces from "@/assets/images/home/necklaces.webp";
-import weddingRings from "@/assets/images/home/wedding-rings.webp";
+import gemora from "@/assets/images/home/gemora.webp";
+import auralis from "@/assets/images/home/auralis.webp";
+import lustera from "@/assets/images/home/lustera.webp";
+import brightborn from "@/assets/images/home/brightborn.webp";
+import diamora from "@/assets/images/home/diamora.webp";
+import glowState from "@/assets/images/home/glow-state.webp";
+import nuvana from "@/assets/images/home/nuvana.webp";
+import veloura from "@/assets/images/home/veloura.webp";
 import CustomImg from "../custom-img";
 import Link from "next/link";
 import { helperFunctions } from "@/_helper";
-import { useCallback } from "react";
-const genrateCategoryUrl = (categoryName) => {
-  return `/collections/categories/${helperFunctions.stringReplacedWithUnderScore(
-    categoryName
-  )}`;
-};
+
 const categories = [
   {
-    img: diamondRings,
-    title: "Diamond Rings",
+    img: lustera,
+    title: "Lustera",
     altAttr: "",
     titleAttr: "",
   },
   {
-    img: engagementRings,
-    title: "Engagement Rings",
-    altAttr: "",
-
-    titleAttr: "",
-  },
-  {
-    img: weddingRings,
-    title: "Wedding Rings",
+    img: diamora,
+    title: "Diamora",
     altAttr: "",
 
     titleAttr: "",
   },
   {
-    img: mensJewelry,
-    title: "Men’s Jewelry",
+    img: veloura,
+    title: "Veloura",
+    altAttr: "",
+
+    titleAttr: "",
+  },
+  {
+    img: glowState,
+    title: "Glow State",
     altAttr: "",
     titleAttr: "",
   },
   {
-    img: earrings,
-    title: "Earrings",
+    img: brightborn,
+    title: "Brightborn",
     altAttr: "",
     titleAttr: "",
-    href: genrateCategoryUrl("Earrings"),
   },
   {
-    img: bracelets,
-    title: "Bracelets",
+    img: auralis,
+    title: "Auralis",
     altAttr: "",
     titleAttr: "",
-    href: genrateCategoryUrl("Bracelets"),
   },
   {
-    img: necklaces,
-    title: "Necklaces",
+    img: nuvana,
+    title: "Nuvana",
     altAttr: "",
     titleAttr: "",
-    href: genrateCategoryUrl("Necklaces"),
   },
   {
-    img: anniversaryRings,
-    title: "Anniversary Rings",
+    img: gemora,
+    title: "Gemora",
     altAttr: "",
     titleAttr: "",
   },
@@ -77,12 +69,9 @@ export default function CategoryGallery() {
       {categories?.map((category, index) => {
         return (
           <Link
-            href={
-              category?.href ||
-              `/collections/collection/${helperFunctions.stringReplacedWithUnderScore(
-                category?.title
-              )}`
-            }
+            href={`/collections/collection/${helperFunctions.stringReplacedWithUnderScore(
+              category?.title
+            )}`}
             key={`category-${index}`}
           >
             <CustomImg

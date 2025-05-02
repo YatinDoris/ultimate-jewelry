@@ -1,6 +1,8 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
+import home26 from "@/assets/images/home/home-26.webp";
+import home27 from "@/assets/images/home/home-27.webp";
 import "swiper/css";
 import "swiper/css/pagination";
 import { CustomImg } from "../dynamiComponents";
@@ -8,8 +10,27 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { Navigation } from "swiper/modules";
 import { BsArrowRightShort, BsArrowLeftShort } from "react-icons/bs";
-
-const SwipperHomePageBig = ({ collections, navigation }) => {
+import { helperFunctions } from "@/_helper";
+export const collections = [
+  {
+    title: "New Arrival",
+    image: home26,
+    btnText: "Shop Now",
+    altAttr: "",
+    titleAttr: "",
+  },
+  {
+    title: "Trending Collection",
+    image: home27,
+    btnText: "Shop Now",
+    btnLink: `/collections/collection/${helperFunctions.stringReplacedWithUnderScore(
+      "Trending"
+    )}`,
+    altAttr: "",
+    titleAttr: "",
+  },
+];
+const SwipperHomePageBig = ({ navigation }) => {
   const swiperRef = useRef(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
@@ -55,19 +76,17 @@ const SwipperHomePageBig = ({ collections, navigation }) => {
                   {collection.title}
                 </h2>
                 <Link
-                  href={collection?.btnLink}
+                  href={
+                    collection.btnLink ||
+                    `/collections/collection/${helperFunctions.stringReplacedWithUnderScore(
+                      collection.title
+                    )}`
+                  }
                   className="text-sm 2xl:text-lg font-semibold tracking-wide border-b-[1px] uppercase border-white"
                 >
                   {collection?.btnText}
                 </Link>
               </div>
-              <div
-                className="absolute inset-0 top-[45%] left-0 h-full"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(0, 0, 0, 0) 0.02%, #2B2B2B 52.64%)",
-                }}
-              ></div>
             </div>
           </SwiperSlide>
         ))}

@@ -1,3 +1,4 @@
+import { helperFunctions } from "@/_helper";
 import { CustomImg, CustomVideo } from "../dynamiComponents";
 import Link from "next/link";
 
@@ -16,7 +17,7 @@ const TextAboveImage = ({ categoryData, className, textClassName }) => {
               srcAttr={item?.image}
               altAttr={item?.altAttr}
               titleAttr={item?.titleAttr}
-              className="object-contain"
+              className="h-[85vh] object-cover"
             />
           )}
           <div className="px-4 md:px-0 absolute bottom-10 left-1/2 -translate-x-1/2 inline-block lg:bottom-12 text-center  text-white gap-4 z-40">
@@ -27,7 +28,9 @@ const TextAboveImage = ({ categoryData, className, textClassName }) => {
             </h3>
             {item?.btnText ? (
               <Link
-                href="#"
+                href={`/collections/collection/${helperFunctions.stringReplacedWithUnderScore(
+                  item?.title
+                )}`}
                 className="font-bold text-base lg:text-lg 2xl:text-2xl"
               >
                 {item?.btnText}

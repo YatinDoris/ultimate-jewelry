@@ -18,6 +18,7 @@ import {
   setSearchedProductList,
 } from "@/store/slices/productSlice";
 import CommonNotFound from "./CommonNotFound";
+import { helperFunctions } from "@/_helper";
 
 export const searchSwiper = [
   {
@@ -37,25 +38,6 @@ export const searchSwiper = [
     title: "Engagement Rings",
     description:
       "A ring is just a piece of jewelry until it’s given with love. This one? It’s a symbol of forever, a promise of a lifetime, and a story waiting to be told.",
-  },
-];
-
-const collections = [
-  {
-    title: "New Arrival",
-    image: home26,
-    btnText: "Shop Now",
-    btnLink: "/",
-    altAttr: "",
-    titleAttr: "",
-  },
-  {
-    title: "Trending Collection",
-    image: home27,
-    btnText: "Shop Now",
-    btnLink: "/",
-    altAttr: "",
-    titleAttr: "",
   },
 ];
 
@@ -151,7 +133,7 @@ const SearchProductPage = () => {
       </section>
 
       <section className="pt-16 lg:pt-20 2xl:pt-20">
-        <SwipperHomePageBig collections={collections} navigation={true} />
+        <SwipperHomePageBig navigation={true} />
       </section>
 
       <section className="container pt-16 lg:pt-20 2xl:pt-20">

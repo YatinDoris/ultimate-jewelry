@@ -158,6 +158,9 @@ export default function SettingStyleCategorySwiper({
                           srcAttr={defaultSettingStyle}
                           altAttr=""
                           titleAttr=""
+                          className={`h-32 lg:h-36 2xl:h-48 aspect-square object-cover !transition-none  border-2 border-transparent ${
+                            isSelected ? "border-2 !border-primary" : ""
+                          }`}
                         />
                       )}
                       <h2 className="text-base lg:text-lg font-normal mt-2">

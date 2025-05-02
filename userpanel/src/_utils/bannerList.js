@@ -16,19 +16,19 @@ export const bannerList = [
     },
     {
         collection: {
-            title: "Shimmer Edit",
+            title: "Lustera",
             banner: flashDeals, // need to replace
         }
     },
     {
         collection: {
-            title: "Lustra",
+            title: "Diamora",
             banner: flashDeals, // need to replace
         }
     },
     {
         collection: {
-            title: "Prism Pulse",
+            title: "Veloura",
             banner: flashDeals, // need to replace
         }
     },
@@ -40,25 +40,25 @@ export const bannerList = [
     },
     {
         collection: {
-            title: "Everpure",
+            title: "Brightborn",
             banner: flashDeals, // need to replace
         }
     },
     {
         collection: {
-            title: "Lucid Flame",
+            title: "Auralis",
             banner: flashDeals, // need to replace
         }
     },
     {
         collection: {
-            title: "Orovia",
+            title: "Nuvana",
             banner: flashDeals, // need to replace
         }
     },
     {
         collection: {
-            title: "Clara",
+            title: "Gemora",
             banner: flashDeals, // need to replace
         }
     },
@@ -71,6 +71,36 @@ export const bannerList = [
     {
         collection: {
             title: "The Real Illusion",
+            banner: flashDeals, // need to replace
+        }
+    },
+    {
+        collection: {
+            title: "Gifts Under $500",
+            banner: flashDeals, // need to replace
+        }
+    },
+    {
+        collection: {
+            title: "Gifts For Her",
+            banner: flashDeals, // need to replace
+        }
+    },
+    {
+        collection: {
+            title: "Gifts For Him",
+            banner: flashDeals, // need to replace
+        }
+    },
+    {
+        collection: {
+            title: "New Arrival",
+            banner: flashDeals, // need to replace
+        }
+    },
+    {
+        collection: {
+            title: "Trending",
             banner: flashDeals, // need to replace
         }
     },

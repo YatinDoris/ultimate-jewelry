@@ -10,7 +10,6 @@ import slide2 from "@/assets/images/collections/slide-2.webp";
 import slide3 from "@/assets/images/collections/slide-3.webp";
 import KeyFeatures from "@/components/ui/KeyFeatures";
 import SettingStyleCategorySwiper from "@/components/ui/settingStyleSwiper";
-import { collections } from "./home/HomePage";
 import HeroBanner from "./HeroBanner";
 import { bannerList } from "@/_utils/bannerList";
 export const collectionSwiper = [
@@ -140,7 +139,7 @@ export default function CollectionPage() {
         />
       </section>
       <section className="pt-16 lg:pt-20 2xl:pt-20">
-        <SwipperHomePageBig collections={collections} navigation={true} />
+        <SwipperHomePageBig navigation={true} />
       </section>
       <section className="container pt-16 lg:pt-20 2xl:pt-20">
         <KeyFeatures />
