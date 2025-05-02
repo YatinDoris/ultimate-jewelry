@@ -27,11 +27,11 @@ export default function ProductSwiper({
   const getProductLink = ({ queryParams, isDiamondSettingPage, product }) => {
     if (!isDiamondSettingPage) return null;
     const { dId, format } = queryParams || {};
-    const basePath = `/engagement-rings/product-detail/${product?.id}`;
-    const queryString = dId
-      ? `?dId=${dId}&format=${format}`
-      : `?format=${format}`;
-    return `${basePath}${queryString}`;
+    const basePath = `/customize/start-with-setting/${product?.id}`;
+    // const queryString = dId
+    //   ? `?dId=${dId}&format=${format}`
+    //   : `?format=${format}`;
+    return `${basePath}`;
   };
 
   return (
@@ -106,7 +106,7 @@ export default function ProductSwiper({
                   title={product?.productName}
                   discount={product?.discount}
                   basePrice={product?.basePrice}
-                  img={product.images[0]?.image}
+                  img={product?.thumbnailImage || product?.images[0]?.image}
                   price={product?.baseSellingPrice}
                   video={product?.video}
                   productLink={getProductLink({

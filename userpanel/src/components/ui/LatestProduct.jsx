@@ -12,6 +12,7 @@ export default function LatestProduct() {
   useEffect(() => {
     dispatch(fetchLatestProductList(8));
   }, []);
+
   return latestProductList && latestProductList.length > 0 ? (
     <ProductSwiper
       productList={latestProductList}
