@@ -68,9 +68,9 @@ const AppointmentForm = () => {
     const payload = {
       name: fields?.firstName + " " + fields?.lastName,
       dateTime: `${convertedDate} ${fields?.time}`,
-      email: fields.email,
-      mobile: fields.mobile,
-      message: fields.message,
+      email: fields?.email,
+      mobile: fields?.mobile,
+      message: fields?.message,
     };
     const response = await dispatch(bookNewAppointment(payload));
     if (response) {
@@ -106,16 +106,16 @@ const AppointmentForm = () => {
             id="firstName"
             placeholder="First name"
             className={`custom-input w-full  2xl:py-4 ${
-              touched.firstName && errors.firstName
+              touched?.firstName && errors?.firstName
                 ? "border-red-500 border"
                 : ""
             }`}
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.firstName}
+            value={values?.firstName}
           />
-          {touched.firstName && errors.firstName && (
-            <ErrorMessage message={errors.firstName} />
+          {touched?.firstName && errors?.firstName && (
+            <ErrorMessage message={errors?.firstName} />
           )}
         </div>
 
@@ -132,14 +132,14 @@ const AppointmentForm = () => {
             id="lastName"
             placeholder="Last name"
             className={`custom-input w-full  2xl:py-4 ${
-              touched.lastName && errors.lastName ? "border-red-500 border" : ""
+              touched?.lastName && errors?.lastName ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.lastName}
+            value={values?.lastName}
           />
-          {touched.lastName && errors.lastName && (
-            <ErrorMessage message={errors.lastName} />
+          {touched?.lastName && errors?.lastName && (
+            <ErrorMessage message={errors?.lastName} />
           )}
         </div>
 
@@ -156,14 +156,14 @@ const AppointmentForm = () => {
             id="email"
             placeholder="Your Email"
             className={`custom-input w-full  2xl:py-4 ${
-              touched.email && errors.email ? "border-red-500 border" : ""
+              touched?.email && errors?.email ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.email}
+            value={values?.email}
           />
-          {touched.email && errors.email && (
-            <ErrorMessage message={errors.email} />
+          {touched?.email && errors?.email && (
+            <ErrorMessage message={errors?.email} />
           )}
         </div>
 
@@ -179,14 +179,14 @@ const AppointmentForm = () => {
             name="date"
             id="date"
             className={`custom-input w-full  2xl:py-4${
-              touched.date && errors.date ? "border-red-500 border" : ""
+              touched?.date && errors?.date ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.date}
+            value={values?.date}
           />
-          {touched.date && errors.date && (
-            <ErrorMessage message={errors.date} />
+          {touched?.date && errors?.date && (
+            <ErrorMessage message={errors?.date} />
           )}
         </div>
 
@@ -203,14 +203,14 @@ const AppointmentForm = () => {
             id="mobile"
             placeholder="Phone number"
             className={`custom-input w-full  2xl:py-4 ${
-              touched.mobile && errors.mobile ? "border-red-500 border" : ""
+              touched?.mobile && errors?.mobile ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.mobile}
+            value={values?.mobile}
           />
-          {touched.mobile && errors.mobile && (
-            <ErrorMessage message={errors.mobile} />
+          {touched?.mobile && errors?.mobile && (
+            <ErrorMessage message={errors?.mobile} />
           )}
         </div>
 
@@ -243,8 +243,8 @@ const AppointmentForm = () => {
               </option>
             ))}
           </select>
-          {touched.time && errors.time && (
-            <ErrorMessage message={errors.time} />
+          {touched?.time && errors?.time && (
+            <ErrorMessage message={errors?.time} />
           )}
         </div>
       </div>
@@ -261,14 +261,14 @@ const AppointmentForm = () => {
           placeholder="Type your Message"
           rows={4}
           className={`custom-input w-full  2xl:py-4 ${
-            touched.message && errors.message ? "border-red-500 border" : ""
+            touched?.message && errors?.message ? "border-red-500 border" : ""
           }`}
           onChange={handleChange}
           onBlur={handleBlur}
-          value={values.message}
+          value={values?.message}
         />
-        {touched.message && errors.message && (
-          <ErrorMessage message={errors.message} />
+        {touched?.message && errors?.message && (
+          <ErrorMessage message={errors?.message} />
         )}
       </div>
       <div

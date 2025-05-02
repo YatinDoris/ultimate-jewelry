@@ -5,7 +5,7 @@ const LabGrownDiamondCare = () => {
   return (
     <div className="container py-8 lg:py-12 2xl:py-20 ">
       <div className="text-center mb-10">
-        <h2 className="text-2xl xss:text-3xl md:text-4xl font-medium mb-3 font-castoro text-baseblack">
+        <h2 className="text-2xl xss:text-3xl md:text-4xl font-medium mb-3 font-chong-modern text-baseblack">
           How to Care for Lab-Grown Diamonds
         </h2>
         <p className="text-sm sm:text-base md:text-lg text-baseblack font-medium max-w-3xl mx-auto">
@@ -17,7 +17,7 @@ const LabGrownDiamondCare = () => {
       <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-12 lg:gap-20">
         <div className="md:w-1/2 flex flex-col items-center md:items-start md:text-left">
           <Image
-            src={img.src}
+            src={img?.src}
             alt="Diamond cleaning"
             width={800}
             height={600}
@@ -37,7 +37,7 @@ const LabGrownDiamondCare = () => {
 
         <div className="md:w-1/2 flex justify-center mt-8 md:mt-20">
           <Image
-            src={img1.src}
+            src={img1?.src}
             alt="Diamond on fabric"
             width={600}
             height={800}

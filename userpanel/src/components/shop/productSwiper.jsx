@@ -38,7 +38,7 @@ export default function ProductSwiper({
     <div>
       <div className="flex justify-between items-center mb-5 2xl:mb-8">
         {title ? (
-          <h3 className="font-castoro text-2xl md:text-3xl 2xl:text-4xl capitalize">
+          <h3 className="font-chong-modern text-2xl md:text-3xl 2xl:text-4xl capitalize">
             {title}
           </h3>
         ) : null}

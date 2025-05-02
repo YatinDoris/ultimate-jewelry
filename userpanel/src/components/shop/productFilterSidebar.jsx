@@ -153,7 +153,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
 
       <div className="relative z-3 bg-transparent p-4 h-full">
         <div className="flex justify-between items-center border-b border-gray-c8 pb-4">
-          <h2 className="text-lg font-semibold">All Filters</h2>
+          <h2 className="text-lg font-medium">All Filters</h2>
           <button
             onClick={() => {
               dispatch(setShowFilterSidebar(false));
@@ -181,7 +181,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               }`}
               onClick={() => dispatch(toggleOpenKey("sortBy"))}
             >
-              <p className="font-semibold mb-1">Sort By</p>
+              <p className="font-medium mb-1">Sort By</p>
               <span className="text-xl">
                 {isOpenKey("sortBy") ? <FiMinus /> : <FiPlus />}
               </span>
@@ -212,122 +212,120 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               </div>
             </div>
           </div>
-          <div className="border-b border-gray-c8">
-            <button
-              className={`w-full flex items-center justify-between ${
-                isOpenKey("settingStyle") ? "pt-4 pb-2" : "py-4"
-              }`}
-              onClick={() => dispatch(toggleOpenKey("settingStyle"))}
-            >
-              <p className="font-semibold mb-1">Setting Style</p>
-              <span className="text-xl">
-                {isOpenKey("settingStyle") ? <FiMinus /> : <FiPlus />}
-              </span>
-            </button>
-            <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                isOpenKey("settingStyle")
-                  ? "max-h-screen opacity-100"
-                  : "max-h-0 opacity-0"
-              }`}
-            >
-              <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-2 pb-4">
-                {uniqueFilterOptions?.uniqueSettingStyles?.length
-                  ? uniqueFilterOptions?.uniqueSettingStyles.map(
-                      (settingStyle) => {
-                        const isSelected =
-                          selectedSettingStyles === settingStyle.value;
+          {uniqueFilterOptions?.uniqueSettingStyles?.length ? (
+            <div className="border-b border-gray-c8">
+              <button
+                className={`w-full flex items-center justify-between ${
+                  isOpenKey("settingStyle") ? "pt-4 pb-2" : "py-4"
+                }`}
+                onClick={() => dispatch(toggleOpenKey("settingStyle"))}
+              >
+                <p className="font-medium mb-1">Setting Style</p>
+                <span className="text-xl">
+                  {isOpenKey("settingStyle") ? <FiMinus /> : <FiPlus />}
+                </span>
+              </button>
+              <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  isOpenKey("settingStyle")
+                    ? "max-h-screen opacity-100"
+                    : "max-h-0 opacity-0"
+                }`}
+              >
+                <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-2 pb-4">
+                  {uniqueFilterOptions?.uniqueSettingStyles.map(
+                    (settingStyle) => {
+                      const isSelected =
+                        selectedSettingStyles === settingStyle.value;
 
-                        return (
+                      return (
+                        <div
+                          className={`text-center cursor-pointer`}
+                          onClick={() => {
+                            dispatch(
+                              setSelectedSettingStyle(settingStyle.value)
+                            );
+                          }}
+                          key={`setting-style-${settingStyle.value}`}
+                        >
+                          <ProgressiveImg
+                            className={`w-full  aspect-square object-cover !transition-none  border-2 border-transparent ${
+                              isSelected ? "border-2 !border-primary" : ""
+                            }`}
+                            src={settingStyle.image}
+                            alt={settingStyle.title}
+                            title={settingStyle.title}
+                          />
+                          <h2 className="text-base lg:text-sm font-medium mt-2">
+                            {settingStyle.title}
+                          </h2>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {uniqueFilterOptions?.uniqueDiamondShapes?.length ? (
+            <div className="border-b border-gray-c8">
+              <button
+                className={`w-full flex items-center justify-between ${
+                  isOpenKey("diamondShape") ? "pt-4 pb-2" : "py-4"
+                }`}
+                onClick={() => dispatch(toggleOpenKey("diamondShape"))}
+              >
+                <p className="font-medium mb-1">Diamond Shapes</p>
+                <span className="text-xl">
+                  {isOpenKey("diamondShape") ? <FiMinus /> : <FiPlus />}
+                </span>
+              </button>
+              <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  isOpenKey("diamondShape")
+                    ? "max-h-screen opacity-100"
+                    : "max-h-0 opacity-0"
+                }`}
+              >
+                <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-4 pb-4 justify-center">
+                  {uniqueFilterOptions?.uniqueDiamondShapes.map(
+                    (diamondShape) => {
+                      const isSelected =
+                        selectedDiamondShape === diamondShape.id;
+                      return (
+                        <div
+                          key={`setting-diamond-shape-${diamondShape.id}`}
+                          className={`text-center cursor-pointer`}
+                          onClick={() => {
+                            dispatch(setSelectedDiamondShape(diamondShape.id));
+                          }}
+                        >
                           <div
-                            className={`text-center cursor-pointer`}
-                            onClick={() => {
-                              dispatch(
-                                setSelectedSettingStyle(settingStyle.value)
-                              );
-                            }}
-                            key={`setting-style-${settingStyle.value}`}
+                            className={`p-1.5 border-2 ${
+                              isSelected
+                                ? "border-primary"
+                                : "border-transparent"
+                            }`}
                           >
                             <ProgressiveImg
-                              className={`w-full  aspect-square object-cover !transition-none  border-2 border-transparent ${
-                                isSelected ? "border-2 !border-primary" : ""
-                              }`}
-                              src={settingStyle.image}
-                              alt={settingStyle.title}
-                              title={settingStyle.title}
+                              className={`w-full aspect-square object-cover !transition-none`}
+                              src={diamondShape.image}
+                              alt={diamondShape.title}
+                              title={diamondShape.title}
                             />
-                            <h2 className="text-base lg:text-sm font-semibold mt-2">
-                              {settingStyle.title}
-                            </h2>
                           </div>
-                        );
-                      }
-                    )
-                  : null}
+                          <h2 className="text-base lg:text-sm font-medium mt-2">
+                            {diamondShape.title}
+                          </h2>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="border-b border-gray-c8">
-            <button
-              className={`w-full flex items-center justify-between ${
-                isOpenKey("diamondShape") ? "pt-4 pb-2" : "py-4"
-              }`}
-              onClick={() => dispatch(toggleOpenKey("diamondShape"))}
-            >
-              <p className="font-semibold mb-1">Diamond Shapes</p>
-              <span className="text-xl">
-                {isOpenKey("diamondShape") ? <FiMinus /> : <FiPlus />}
-              </span>
-            </button>
-            <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                isOpenKey("diamondShape")
-                  ? "max-h-screen opacity-100"
-                  : "max-h-0 opacity-0"
-              }`}
-            >
-              <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-4 pb-4 justify-center">
-                {uniqueFilterOptions?.uniqueDiamondShapes?.length
-                  ? uniqueFilterOptions?.uniqueDiamondShapes.map(
-                      (diamondShape) => {
-                        const isSelected =
-                          selectedDiamondShape === diamondShape.id;
-                        return (
-                          <div
-                            key={`setting-diamond-shape-${diamondShape.id}`}
-                            className={`text-center cursor-pointer`}
-                            onClick={() => {
-                              dispatch(
-                                setSelectedDiamondShape(diamondShape.id)
-                              );
-                            }}
-                          >
-                            <div
-                              className={`p-1.5 border-2 ${
-                                isSelected
-                                  ? "border-primary"
-                                  : "border-transparent"
-                              }`}
-                            >
-                              <ProgressiveImg
-                                className={`w-full aspect-square object-cover !transition-none`}
-                                src={diamondShape.image}
-                                alt={diamondShape.title}
-                                title={diamondShape.title}
-                              />
-                            </div>
-                            <h2 className="text-base lg:text-sm font-semibold mt-2">
-                              {diamondShape.title}
-                            </h2>
-                          </div>
-                        );
-                      }
-                    )
-                  : null}
-              </div>
-            </div>
-          </div>
+          ) : null}
 
           {uniqueVariations?.length
             ? uniqueVariations.map((variation) => (
@@ -343,7 +341,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                       dispatch(toggleOpenKey(variation.variationName))
                     }
                   >
-                    <p className="font-semibold mb-1">
+                    <p className="font-medium mb-1">
                       {variation.variationName}
                     </p>
                     <span className="text-xl">
@@ -395,27 +393,27 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
               ))
             : null}
 
-          <div>
-            <button
-              className={`w-full flex items-center justify-between ${
-                isOpenKey("price") ? "pt-4 pb-2" : "py-4"
-              }`}
-              onClick={() => dispatch(toggleOpenKey("price"))}
-            >
-              <p className="font-semibold mb-1">Setting Price</p>
-              <span className="text-xl">
-                {isOpenKey("price") ? <FiMinus /> : <FiPlus />}
-              </span>
-            </button>
-            <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                isOpenKey("price")
-                  ? "max-h-screen opacity-100"
-                  : "max-h-0 opacity-0"
-              }`}
-            >
-              <div className="space-y-4 mt-5">
-                {priceRangeAvailable ? (
+          {priceRangeAvailable ? (
+            <div>
+              <button
+                className={`w-full flex items-center justify-between ${
+                  isOpenKey("price") ? "pt-4 pb-2" : "py-4"
+                }`}
+                onClick={() => dispatch(toggleOpenKey("price"))}
+              >
+                <p className="font-medium mb-1">Setting Price</p>
+                <span className="text-xl">
+                  {isOpenKey("price") ? <FiMinus /> : <FiPlus />}
+                </span>
+              </button>
+              <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  isOpenKey("price")
+                    ? "max-h-screen opacity-100"
+                    : "max-h-0 opacity-0"
+                }`}
+              >
+                <div className="space-y-4 mt-5">
                   <RangeSlider
                     defaultValue={uniqueFilterOptions?.availablePriceRange}
                     min={uniqueFilterOptions?.availablePriceRange[0]}
@@ -430,35 +428,35 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                     step={1}
                     renderTrack={multipleTrack}
                   />
-                ) : null}
 
-                <div className="flex justify-between gap-4">
-                  <input
-                    type="text"
-                    value={values?.priceRange[0]}
-                    onChange={(e) => handleInputChange(e, 0)}
-                    onBlur={formik.handleBlur}
-                    onKeyDown={handleKeyDown}
-                    className="border px-2 py-1 w-20 text-center"
-                  />
-                  <input
-                    type="text"
-                    value={values?.priceRange[1]}
-                    onChange={(e) => handleInputChange(e, 1)}
-                    onBlur={formik.handleBlur}
-                    onKeyDown={handleKeyDown}
-                    className="border px-2 py-1 w-20 text-center"
-                  />
-                  {touched?.priceRange &&
-                    typeof errors?.priceRange === "string" && (
-                      <div className="text-red-500 text-sm">
-                        {errors?.priceRange}
-                      </div>
-                    )}
+                  <div className="flex justify-between gap-4">
+                    <input
+                      type="text"
+                      value={values?.priceRange[0]}
+                      onChange={(e) => handleInputChange(e, 0)}
+                      onBlur={formik.handleBlur}
+                      onKeyDown={handleKeyDown}
+                      className="border px-2 py-1 w-20 text-center"
+                    />
+                    <input
+                      type="text"
+                      value={values?.priceRange[1]}
+                      onChange={(e) => handleInputChange(e, 1)}
+                      onBlur={formik.handleBlur}
+                      onKeyDown={handleKeyDown}
+                      className="border px-2 py-1 w-20 text-center"
+                    />
+                    {touched?.priceRange &&
+                      typeof errors?.priceRange === "string" && (
+                        <div className="text-red-500 text-sm">
+                          {errors?.priceRange}
+                        </div>
+                      )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </div>

@@ -38,10 +38,10 @@ export default function KeyFeatures() {
             altAttr={feature.title}
             className="w-12 h-12 mb-4"
           />
-          <h3 className="text-xl xl:text-2xl 2xl:text-3xl text-baseblack font-castoro">
+          <h3 className="text-xl xl:text-2xl 2xl:text-3xl text-baseblack font-chong-modern">
             {feature.title}
           </h3>
-          <p className="text-baseblack text-base font-semibold 2xl:text-lg mt-4 w-[90%] md:w-full">
+          <p className="text-baseblack text-base font-normal 2xl:text-lg mt-4 w-[90%] md:w-full">
             {feature.description}
           </p>
         </div>

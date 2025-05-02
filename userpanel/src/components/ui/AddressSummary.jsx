@@ -57,17 +57,17 @@ const AddressSummary = () => {
               Ship To
             </p>
             <div>
-              {selectedShippingAddress &&
-                Object.keys(selectedShippingAddress).length > 0 && (
-                  <span className="text-basegray text-base md:text-lg">
-                    {selectedShippingAddress.address}{" "}
-                    {selectedShippingAddress.apartment},{" "}
-                    {selectedShippingAddress.city},{" "}
-                    {selectedShippingAddress.state},{" "}
-                    {selectedShippingAddress.countryName} -{" "}
-                    {selectedShippingAddress.pinCode}
-                  </span>
-                )}
+              {(selectedShippingAddress &&
+                Object.keys(selectedShippingAddress)?.length > 0) ? (
+                <span className="text-basegray text-base md:text-lg">
+                  {selectedShippingAddress?.address}{" "}
+                  {selectedShippingAddress?.apartment},{" "}
+                  {selectedShippingAddress?.city},{" "}
+                  {selectedShippingAddress?.state},{" "}
+                  {selectedShippingAddress?.countryName} -{" "}
+                  {selectedShippingAddress?.pinCode}
+                </span>
+              ) : null}
             </div>
           </div>
           <Link href="/checkout">

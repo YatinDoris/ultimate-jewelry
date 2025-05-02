@@ -18,7 +18,7 @@ module.exports = {
     },
 
     fontFamily: {
-      castoro: ["Castoro", "sans-serif"],
+      "chong-modern": ["Chong Modern W01", "sans-serif"],
     },
     animation: {
       "fade-in": "fadeIn 2s linear infinite",

@@ -1,6 +1,6 @@
 import HeroBanner from "@/components/ui/HeroBanner";
 import contactus from "@/assets/images/contact-us/contact.webp";
-import ContactForm from "@/components/ui/ContactForm";
+import {ContactForm} from "@/components/dynamiComponents";
 
 export default function ContactPage() {
   return (
