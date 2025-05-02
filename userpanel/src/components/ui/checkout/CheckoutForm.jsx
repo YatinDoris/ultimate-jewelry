@@ -93,9 +93,9 @@ const CheckoutForm = () => {
 
   const currentUser = helperFunctions.getCurrentUser();
   if (currentUser) {
-    initialValues.email = currentUser.email;
-    initialValues.firstName = currentUser.firstName;
-    initialValues.lastName = currentUser.lastName;
+    initialValues?.email = currentUser?.email;
+    initialValues?.firstName = currentUser?.firstName;
+    initialValues?.lastName = currentUser?.lastName;
   }
 
   const clearAbortController = useCallback(() => {
@@ -118,11 +118,11 @@ const CheckoutForm = () => {
         if (!abortControllerRef.current) {
           abortControllerRef.current = new AbortController();
         }
-        if (!cartList.length) {
+        if (!cartList?.length) {
           dispatch(
             handleAddressMessage({
               message: "cart data not found",
-              type: messageType.ERROR,
+              type: messageType?.ERROR,
             })
           );
 
@@ -142,29 +142,29 @@ const CheckoutForm = () => {
           addressLine: addressLine?.trim(),
         };
         const response = await dispatch(
-          validateAddress(payload, abortControllerRef.current)
+          validateAddress(payload, abortControllerRef?.current)
         );
-        if (response.status === 200) {
+        if (response?.status === 200) {
           dispatch(setIsChecked(false));
           dispatch(setShowModal(true));
           dispatch(setSelectedShippingAddress(fieldValues));
 
-          dispatch(setStandardizedAddress(response.standardizedAddress));
-        } else if (response.status === 422) {
+          dispatch(setStandardizedAddress(response?.standardizedAddress));
+        } else if (response?.status === 422) {
           dispatch(
             handleAddressMessage({
-              message: response.message || "Invalid address provided",
-              type: messageType.ERROR,
+              message: response?.message || "Invalid address provided",
+              type: messageType?.ERROR,
             })
           );
           dispatch(
             handleInvalidAddressDetail({
               setInvalidAddressDetail: {
                 unconfirmedComponentTypes:
-                  response.unconfirmedComponentTypes?.map((x) =>
+                  response?.unconfirmedComponentTypes?.map((x) =>
                     x?.replace("_", " ")
                   ),
-                missingComponentTypes: response.missingComponentTypes?.map(
+                missingComponentTypes: response?.missingComponentTypes?.map(
                   (x) => x?.replace("_", " ")
                 ),
               },
@@ -173,8 +173,8 @@ const CheckoutForm = () => {
         } else if (response?.message) {
           dispatch(
             handleAddressMessage({
-              message: response.message,
-              type: messageType.ERROR,
+              message: response?.message,
+              type: messageType?.ERROR,
             })
           );
         }
@@ -207,28 +207,28 @@ const CheckoutForm = () => {
       address = JSON.parse(address);
       const updatedValues = {
         ...initialValues,
-        email: address.email,
-        firstName: address.firstName,
-        lastName: address.lastName,
+        email: address?.email,
+        firstName: address?.firstName,
+        lastName: address?.lastName,
         country: defaultCountry,
-        state: address.state,
-        stateCode: address.stateCode,
-        city: address.city,
-        pinCode: address.pinCode,
-        company: address.companyName,
-        address: address.address,
-        apartment: address.apartment,
-        mobile: address.mobile,
+        state: address?.state,
+        stateCode: address?.stateCode,
+        city: address?.city,
+        pinCode: address?.pinCode,
+        company: address?.companyName,
+        address: address?.address,
+        apartment: address?.apartment,
+        mobile: address?.mobile,
       };
       setValues(updatedValues);
       dispatch(setSelectedShippingAddress(updatedValues));
-      setCountryWiseStateList(address.countryName);
+      setCountryWiseStateList(address?.countryName);
     }
   }, []);
 
   const setCountryWiseStateList = (selectedCountry) => {
     const matchedCountry = countries.find(
-      (item) => item.isoCode === selectedCountry
+      (item) => item?.isoCode === selectedCountry
     );
     if (matchedCountry) {
       const countryWiseStatesList = State.getStatesOfCountry(
@@ -249,13 +249,13 @@ const CheckoutForm = () => {
 
   const handleStateChange = (stateCode) => {
     const selectedState = stateList.find(
-      (state) => state.isoCode === stateCode
+      (state) => state && state?.isoCode === stateCode
     );
     if (selectedState) {
       setValues((values) => ({
         ...values,
-        stateCode: selectedState.isoCode,
-        state: selectedState.name,
+        stateCode: selectedState?.isoCode,
+        state: selectedState?.name,
       }));
     } else {
       setValues((values) => ({
@@ -309,7 +309,7 @@ const CheckoutForm = () => {
                 )}
               </div>
               <div className="md:col-span-2 ">
-                <label className="block upercase text-sm font-semibold text-gray-66 mb-1">
+                <label className="block uppercase text-sm font-semibold text-gray-66 mb-1">
                   Phone Number
                 </label>
                 <input
@@ -351,7 +351,7 @@ const CheckoutForm = () => {
             </h2>
             <div className="flex flex-col gap-6 pt-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-66 mb-1">
+                <label className="block uppercase  text-sm font-semibold text-gray-66 mb-1">
                   House No, Street Name
                 </label>
                 <input
@@ -430,19 +430,18 @@ const CheckoutForm = () => {
                     value={values.stateCode || ""}
                     onChange={(e) => handleStateChange(e.target.value)}
                     onBlur={handleBlur}
-                    className={`custom-input ${inputClassName} ${
-                      touched.stateCode && errors.stateCode
-                        ? "border-rose-500"
-                        : "border-gray-300"
-                    }`}
+                    className={`custom-input ${inputClassName} ${touched?.stateCode && errors?.stateCode
+                      ? "border-rose-500"
+                      : "border-gray-300"
+                      }`}
                   >
                     <option value="" hidden>
                       Select State
                     </option>
                     {stateList.length > 0 ? (
                       stateList.map((state) => (
-                        <option key={state.isoCode} value={state.isoCode}>
-                          {state.name}
+                        <option key={state?.isoCode} value={state?.isoCode}>
+                          {state?.name}
                         </option>
                       ))
                     ) : (
@@ -450,7 +449,7 @@ const CheckoutForm = () => {
                     )}
                   </select>
 
-                  {touched.stateCode && errors.stateCode && (
+                  {touched?.stateCode && errors?.stateCode && (
                     <ErrorMessage message={errors?.stateCode}></ErrorMessage>
                   )}
                 </div>
@@ -497,9 +496,9 @@ const CheckoutForm = () => {
                     Unconfirmed:
                   </h4>
                   <ul className="list-inside text-red-500 text-sm">
-                    {invalidAddressDetail.unconfirmedComponentTypes.map(
+                    {invalidAddressDetail?.unconfirmedComponentTypes?.map(
                       (componentType, index) => (
-                        <li key={index}>{componentType.replace(/_/g, " ")}</li>
+                        <li key={index}>{componentType?.replace(/_/g, " ")}</li>
                       )
                     )}
                   </ul>
@@ -510,7 +509,7 @@ const CheckoutForm = () => {
                 <div className="flex-1">
                   <h4 className="font-semibold text-red-600 mb-2">Missing:</h4>
                   <ul className="list-inside text-red-500 text-sm">
-                    {invalidAddressDetail.missingComponentTypes.map(
+                    {invalidAddressDetail?.missingComponentTypes?.map(
                       (componentType, index) => (
                         <li key={index}>{componentType}</li>
                       )

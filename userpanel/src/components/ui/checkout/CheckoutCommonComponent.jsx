@@ -42,7 +42,7 @@ const CheckoutCommonComponent = () => {
 
   const getSubTotal = useCallback(() => {
     const total = cartList.reduce(
-      (acc, item) => acc + item.quantityWiseSellingPrice,
+      (acc, item) => acc + item?.quantityWiseSellingPrice,
       0
     );
     return helperFunctions.toFixedNumber(total);
@@ -73,19 +73,19 @@ const CheckoutCommonComponent = () => {
 
       const scrollAmount = event.deltaY;
       const maxScroll =
-        contentElement.scrollHeight - contentElement.clientHeight;
-      const currentScroll = contentElement.scrollTop + scrollAmount;
+        contentElement?.scrollHeight - contentElement?.clientHeight;
+      const currentScroll = contentElement?.scrollTop + scrollAmount;
 
-      contentElement.scrollTop = Math.max(
+      contentElement?.scrollTop = Math.max(
         0,
         Math.min(currentScroll, maxScroll)
       );
     };
 
-    contentElement.addEventListener("wheel", handleWheel, { passive: false });
+    contentElement?.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
-      contentElement.removeEventListener("wheel", handleWheel);
+      contentElement?.removeEventListener("wheel", handleWheel);
     };
   }, []);
 
@@ -116,7 +116,7 @@ const CheckoutCommonComponent = () => {
             {cartList?.map((cartItem) => (
               <div
                 className="bg-white py-6  border-b-2 border-alabaster last:border-b-0"
-                key={cartItem.id}
+                key={cartItem?.id}
               >
                 <div className="flex flex-col md:flex-row justify-between gap-4">
                   <div className="relative flex border border-alabaster w-36 h-36 md:w-36 md:h-36 mx-auto">
@@ -156,19 +156,19 @@ const CheckoutCommonComponent = () => {
                           .toLocaleString("en-US", {
                             minimumFractionDigits: 2,
                           })}
-                        {` × ${cartItem.quantity}`}
+                        {` × ${cartItem?.quantity}`}
                       </p>
                     )}
                     <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
-                      {cartItem.variations.map((variItem) => (
+                      {cartItem?.variations?.map((variItem) => (
                         <div
                           className="border-2  text-sm xs:text-base px-2 font-medium"
-                          key={variItem.variationId}
+                          key={variItem?.variationId}
                         >
                           <span className="font-bold">
-                            {variItem.variationName}:{" "}
+                            {variItem?.variationName}:{" "}
                           </span>{" "}
-                          {variItem.variationTypeName}
+                          {variItem?.variationTypeName}
                         </div>
                       ))}
                     </div>
@@ -176,7 +176,7 @@ const CheckoutCommonComponent = () => {
                       <div className=" text-sm font-semibold xs:text-base px-2  w-fit mt-2">
                         $
                         {helperFunctions.toFixedNumber(
-                          cartItem?.quantityWiseSellingPrice / cartItem.quantity
+                          cartItem?.quantityWiseSellingPrice / cartItem?.quantity
                         )}{" "}
                         | Per Item
                       </div>
@@ -276,9 +276,9 @@ const CheckoutCommonComponent = () => {
                   {paymentOptions.map((option, index) => (
                     <CustomImg
                       key={index}
-                      srcAttr={option.img}
-                      titleAttr={option.titleAttr}
-                      altAttr={option.altAttr}
+                      srcAttr={option?.img}
+                      titleAttr={option?.titleAttr}
+                      altAttr={option?.altAttr}
                       alt={option}
                       className="object-contain w-8 h-10 xs:w-10 xs:h-10 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
                     />
@@ -313,7 +313,7 @@ const CheckoutCommonComponent = () => {
                 <>
                   <div
                     className="bg-white py-6  border-b-2 border-alabaster last:border-b-0"
-                    key={`cartItem-${cartItem.productName}`}
+                    key={`cartItem-${cartItem?.productName}`}
                   >
                     <div className="flex flex-row  gap-4">
                       <div className="relative flex-shrink-0 h-fit border border-alabaster">
@@ -331,7 +331,7 @@ const CheckoutCommonComponent = () => {
                       <div className="flex-1 w-full">
                         <div className="flex flex-col xs:flex-row xs:justify-between ">
                           <p className="text-lg md:text-xl font-semibold">
-                            {cartItem.productName}
+                            {cartItem?.productName}
                           </p>
 
                           <p className="text-2xl font-medium font-chong-modern pt-1">
@@ -343,15 +343,15 @@ const CheckoutCommonComponent = () => {
                         </div>
 
                         <div className="text-baseblack flex flex-wrap gap-2 md:gap-x-4 md:gap-y-2 pt-2">
-                          {cartItem.variations.map((variItem) => (
+                          {cartItem?.variations?.map((variItem) => (
                             <div
                               className="border-2  text-sm xs:text-base px-2 font-medium"
-                              key={variItem.variationId}
+                              key={variItem?.variationId}
                             >
                               <span className="font-bold">
-                                {variItem.variationName}:{" "}
+                                {variItem?.variationName}:{" "}
                               </span>{" "}
-                              {variItem.variationTypeName}
+                              {variItem?.variationTypeName}
                             </div>
                           ))}
                         </div>
@@ -375,7 +375,7 @@ const CheckoutCommonComponent = () => {
                             $
                             {helperFunctions.toFixedNumber(
                               cartItem?.quantityWiseSellingPrice /
-                                cartItem.quantity
+                              cartItem?.quantity
                             )}{" "}
                             | Per Item
                           </div>
@@ -473,9 +473,9 @@ const CheckoutCommonComponent = () => {
                     {paymentOptions.map((option, index) => (
                       <CustomImg
                         key={index}
-                        srcAttr={option.img}
-                        titleAttr={option.titleAttr}
-                        altAttr={option.altAttr}
+                        srcAttr={option?.img}
+                        titleAttr={option?.titleAttr}
+                        altAttr={option?.altAttr}
                         alt={option}
                         className="object-contain w-8 h-10 xs:w-10 xs:h-10 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
                       />

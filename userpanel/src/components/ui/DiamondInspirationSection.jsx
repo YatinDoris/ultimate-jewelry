@@ -52,8 +52,8 @@ export default function DiamondInspirationSection() {
           <div key={index}>
             <div className="overflow-hidden shadow hover:shadow-lg transition-shadow">
               <CustomImg
-                srcAttr={item.img}
-                altAttr={item.alt}
+                srcAttr={item?.img}
+                altAttr={item?.alt}
                 className="w-full object-cover"
                 layout="responsive"
               />

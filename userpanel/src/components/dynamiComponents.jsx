@@ -323,3 +323,10 @@ export const FileUpload = dynamic(
     ssr: false,
   }
 );
+
+export const ContactForm = dynamic(
+  () => import("./ui/ContactForm.jsx"),
+  {
+    ssr: false,
+  }
+);

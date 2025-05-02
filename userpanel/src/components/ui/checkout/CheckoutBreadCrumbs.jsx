@@ -25,7 +25,7 @@ const CheckoutBreadCrumbs = ({ currentStep }) => {
             </span>
           </div>
 
-          {index < steps.length - 1 && (
+          {index < steps?.length - 1 && (
             <div className="h-full">
               <CustomImg srcAttr={breadCrumbArrow} altAttr="" titleAttr="" />
             </div>

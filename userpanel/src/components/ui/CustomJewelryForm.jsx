@@ -44,10 +44,10 @@ const CustomJewelryForm = () => {
   const onSubmit = useCallback(async (fields, { resetForm }) => {
     const payload = {
       name: fields?.firstName + " " + fields?.lastName,
-      email: fields.email,
-      mobile: fields.phone,
-      imageFile: fields.attachment,
-      description: fields.message,
+      email: fields?.email,
+      mobile: fields?.phone,
+      imageFile: fields?.attachment,
+      description: fields?.message,
     };
     const response = await dispatch(getCustomJewelry(payload));
     if (response) {
@@ -89,16 +89,16 @@ const CustomJewelryForm = () => {
             name="firstName"
             placeholder="First name"
             className={`custom-input w-full 2xl:py-4${
-              touched.firstName && errors.firstName
+              touched?.firstName && errors?.firstName
                 ? "border-red-500 border"
                 : ""
             }`}
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.firstName}
+            value={values?.firstName}
           />
-          {touched.firstName && errors.firstName && (
-            <ErrorMessage message={errors.firstName} />
+          {touched?.firstName && errors?.firstName && (
+            <ErrorMessage message={errors?.firstName} />
           )}
         </div>
 
@@ -114,14 +114,14 @@ const CustomJewelryForm = () => {
             name="lastName"
             placeholder="Last name"
             className={`custom-input w-full 2xl:py-4${
-              touched.lastName && errors.lastName ? "border-red-500 border" : ""
+              touched?.lastName && errors?.lastName ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.lastName}
+            value={values?.lastName}
           />
-          {touched.lastName && errors.lastName && (
-            <ErrorMessage message={errors.lastName} />
+          {touched?.lastName && errors?.lastName && (
+            <ErrorMessage message={errors?.lastName} />
           )}
         </div>
 
@@ -137,14 +137,14 @@ const CustomJewelryForm = () => {
             name="email"
             placeholder="Your Email"
             className={`custom-input w-full 2xl:py-4 ${
-              touched.email && errors.email ? "border-red-500 border" : ""
+              touched?.email && errors?.email ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.email}
+            value={values?.email}
           />
-          {touched.email && errors.email && (
-            <ErrorMessage message={errors.email} />
+          {touched?.email && errors?.email && (
+            <ErrorMessage message={errors?.email} />
           )}
         </div>
 
@@ -161,14 +161,14 @@ const CustomJewelryForm = () => {
             id="mobile"
             placeholder="Mobile number"
             className={`custom-input w-full 2xl:py-4${
-              touched.phone && errors.phone ? "border-red-500 border" : ""
+              touched?.phone && errors?.phone ? "border-red-500 border" : ""
             }`}
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.phone}
+            value={values?.phone}
           />
-          {touched.phone && errors.phone && (
-            <ErrorMessage message={errors.phone} />
+          {touched?.phone && errors?.phone && (
+            <ErrorMessage message={errors?.phone} />
           )}
         </div>
       </div>
@@ -189,8 +189,8 @@ const CustomJewelryForm = () => {
               setSelectedFile={setSelectedFile}
             />
           </div>
-          {touched.attachment && errors.attachment && (
-            <ErrorMessage message={errors.attachment} />
+          {touched?.attachment && errors?.attachment && (
+            <ErrorMessage message={errors?.attachment} />
           )}
         </div>
         <label
@@ -204,14 +204,14 @@ const CustomJewelryForm = () => {
           id="description"
           rows={4}
           className={`custom-input w-full 2xl:py-4 ${
-            touched.message && errors.message ? "border-red-500 border" : ""
+            touched?.message && errors?.message ? "border-red-500 border" : ""
           }`}
           onChange={handleChange}
           onBlur={handleBlur}
-          value={values.message}
+          value={values?.message}
         />
-        {touched.message && errors.message && (
-          <ErrorMessage message={errors.message} />
+        {touched?.message && errors?.message && (
+          <ErrorMessage message={errors?.message} />
         )}
       </div>
 

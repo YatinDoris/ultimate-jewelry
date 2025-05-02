@@ -17,7 +17,7 @@ const LabGrownDiamondCare = () => {
       <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-12 lg:gap-20">
         <div className="md:w-1/2 flex flex-col items-center md:items-start md:text-left">
           <Image
-            src={img.src}
+            src={img?.src}
             alt="Diamond cleaning"
             width={800}
             height={600}
@@ -37,7 +37,7 @@ const LabGrownDiamondCare = () => {
 
         <div className="md:w-1/2 flex justify-center mt-8 md:mt-20">
           <Image
-            src={img1.src}
+            src={img1?.src}
             alt="Diamond on fabric"
             width={600}
             height={800}
