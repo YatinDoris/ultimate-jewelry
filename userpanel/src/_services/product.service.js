@@ -109,6 +109,7 @@ const getLatestProducts = (length = 8) => {
           return {
             productName: product.productName,
             images: product.images.slice(0, 2),
+            thumbnailImage: product?.thumbnailImage,
             video: product.video,
             id: product.id,
             basePrice: price,
@@ -244,6 +245,7 @@ const getCollectionsTypeWiseProduct = (
             productName: product.productName,
             isDiamondFilter: product?.isDiamondFilter || false,
             images: product.images.slice(0, 2),
+            thumbnailImage: product?.thumbnailImage,
             video: product.video,
             id: product.id,
             basePrice: price,
@@ -424,6 +426,7 @@ const getReletedProducts = (productName) => {
               return {
                 productName: product.productName,
                 images: product.images.slice(0, 2),
+                thumbnailImage: product?.thumbnailImage,
                 id: product.id,
                 basePrice: price,
                 baseSellingPrice: helperFunctions.getSellingPrice({
@@ -643,6 +646,7 @@ const getFilteredDiamondProducts = (params) => {
           return {
             productName: product.productName,
             images: product.images.slice(0, 2),
+            thumbnailImage: product?.thumbnailImage,
             id: product.id,
             basePrice: price,
             baseSellingPrice: helperFunctions.getSellingPrice({
@@ -774,6 +778,7 @@ const getCustomizeProduct = () => {
             productName: product?.productName,
             isDiamondFilter: product?.isDiamondFilter || false,
             images: product?.images?.slice(0, 2),
+            thumbnailImage: product?.thumbnailImage,
             video: product?.video,
             diamondFilters: product?.diamondFilters,
             id: product.id,
