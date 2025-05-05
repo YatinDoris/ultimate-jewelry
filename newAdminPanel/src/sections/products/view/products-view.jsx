@@ -118,12 +118,12 @@ export default function ProductsView() {
       const searchValue = typeof searchQuery !== 'boolean' && searchQuery?.toLowerCase()?.trim();
       const matchesSearch =
         !searchValue ||
-        item.productName.toLowerCase().includes(searchValue) ||
-        item.sku.toLowerCase().includes(searchValue) ||
-        item.saltSKU.toLowerCase().includes(searchValue) ||
-        item.shortDescription.toLowerCase().includes(searchValue) ||
-        item.basePrice.toString().includes(searchValue) ||
-        item.baseSellingPrice.toString().includes(searchValue);
+        item?.productName?.toLowerCase()?.includes(searchValue) ||
+        item?.sku?.toLowerCase()?.includes(searchValue) ||
+        item?.saltSKU?.toLowerCase()?.includes(searchValue) ||
+        item?.shortDescription?.toLowerCase()?.includes(searchValue) ||
+        item?.basePrice?.toString()?.includes(searchValue) ||
+        item?.baseSellingPrice?.toString()?.includes(searchValue);
 
       const matchesCategory =
         filterByCategory === 'all' || String(item.categoryId) === String(filterByCategory);
