@@ -5,33 +5,12 @@ import { ProductGrid, SwipperHomePageBig } from "@/components/dynamiComponents";
 import { useParams, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import slide1 from "@/assets/images/collections/slide-1.webp";
-import slide2 from "@/assets/images/collections/slide-2.webp";
-import slide3 from "@/assets/images/collections/slide-3.webp";
+import defaultBanner from "@/assets/images/banners/default-banner.webp";
 import KeyFeatures from "@/components/ui/KeyFeatures";
 import SettingStyleCategorySwiper from "@/components/ui/settingStyleSwiper";
 import HeroBanner from "./HeroBanner";
 import { bannerList } from "@/_utils/bannerList";
-export const collectionSwiper = [
-  {
-    image: slide1,
-    title: "Engagement Rings",
-    description:
-      "A ring is just a piece of jewelry until it’s given with love. This one? It’s a symbol of forever, a promise of a lifetime, and a story waiting to be told.",
-  },
-  {
-    image: slide2,
-    title: "Engagement Rings",
-    description:
-      "A ring is just a piece of jewelry until it’s given with love. This one? It’s a symbol of forever, a promise of a lifetime, and a story waiting to be told.",
-  },
-  {
-    image: slide3,
-    title: "Engagement Rings",
-    description:
-      "A ring is just a piece of jewelry until it’s given with love. This one? It’s a symbol of forever, a promise of a lifetime, and a story waiting to be told.",
-  },
-];
+
 export default function CollectionPage() {
   const params = useParams();
   const dispatch = useDispatch();
@@ -102,7 +81,7 @@ export default function CollectionPage() {
     }
 
     // Final fallback
-    return slide3;
+    return defaultBanner;
   };
 
   useEffect(() => {

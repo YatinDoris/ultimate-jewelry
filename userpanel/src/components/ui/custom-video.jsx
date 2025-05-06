@@ -59,6 +59,7 @@ export default function CustomVideo({ videoSrc, thumbnail }) {
         <video
           ref={videoRef}
           muted
+          loop
           preload="none"
           aria-label="Video player"
           className="h-full w-full object-contain overflow-hidden"
