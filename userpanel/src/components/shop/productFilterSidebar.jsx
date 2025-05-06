@@ -37,7 +37,6 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
   const priceRangeAvailable =
     Array.isArray(uniqueFilterOptions?.availablePriceRange) &&
     uniqueFilterOptions.availablePriceRange.length === 2;
-
   const onSelectVariant = (variationName, variationTypeName) => {
     dispatch(
       setSelectedVariations({
@@ -45,6 +44,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
         [variationName]: variationTypeName,
       })
     );
+    closeSidebarIfMobile();
   };
   const onPriceChange = (value) => {
     dispatch(setSelectedPrices(value));
@@ -131,6 +131,12 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
     />
   );
 
+  const closeSidebarIfMobile = () => {
+    const isSmallScreen = screen.isMobile || screen.isTablet;
+    if (isSmallScreen) {
+      dispatch(setShowFilterSidebar(false));
+    }
+  };
   return (
     <div
       className={`w-full lg:w-[300px] 2xl:w-[400px] flex-shrink-0 bg-white lg:bg-transparent transition-transform duration-300 ease-in-out lg:sticky lg:top-20 lg:h-screen lg:overflow-y-auto lg:translate-x-0 lg:z-0 z-[60] ${
@@ -198,7 +204,10 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                   ? sortByList.map((item) => (
                       <button
                         key={item.value}
-                        onClick={() => dispatch(setSortByValue(item.value))}
+                        onClick={() => {
+                          dispatch(setSortByValue(item.value));
+                          closeSidebarIfMobile();
+                        }}
                         className={`px-3 py-1 border text-sm ${
                           selectedSortByValue === item.value
                             ? "bg-primary text-white"
@@ -245,6 +254,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                             dispatch(
                               setSelectedSettingStyle(settingStyle.value)
                             );
+                            closeSidebarIfMobile();
                           }}
                           key={`setting-style-${settingStyle.value}`}
                         >
@@ -299,6 +309,7 @@ export default function ProductFilterSidebar({ uniqueVariations = [] }) {
                           className={`text-center cursor-pointer`}
                           onClick={() => {
                             dispatch(setSelectedDiamondShape(diamondShape.id));
+                            closeSidebarIfMobile();
                           }}
                         >
                           <div

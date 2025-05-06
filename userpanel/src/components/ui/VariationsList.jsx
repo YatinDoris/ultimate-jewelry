@@ -16,11 +16,11 @@ const VariationsList = ({ variations, selectedVariations, handleSelect }) => {
           key={variation?.variationId}
           className="flex items-center md:gap-x-6"
         >
-          <p className="font-medium text-baseblack text-sm  3xl:text-base w-[80px] xs:w-[135px]">
+          <p className="font-medium text-baseblack text-sm  3xl:text-base w-[130px] xs:w-[135px]">
             {variation?.variationName}:
           </p>
 
-          <div className="flex flex-wrap gap-2 md:gap-3 items-center">
+          <div className="flex flex-wrap gap-2 md:gap-3 items-start lg:items-center">
             {variation?.variationTypes?.map((type) => {
               const selected = isSelected(
                 variation?.variationId,
@@ -62,7 +62,7 @@ const VariationsList = ({ variations, selectedVariations, handleSelect }) => {
                     </div>
                   ) : type?.type === "image" ? (
                     <>
-                      <div className="relative flex flex-col items-center mb-4">
+                      <div className="relative flex flex-col items-start lg:items-center mb-4">
                         <button
                           className={`relative w-12 xs:w-16 3xl:w-20 h-10 xs:h-8 3xl:h-10 p-1 transition-all flex items-center justify-center ${
                             selected

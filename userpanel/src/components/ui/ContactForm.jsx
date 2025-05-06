@@ -73,7 +73,7 @@ const ContactForm = () => {
 
   return (
     <>
-      <div className="max-w-3xl mx-auto container">
+      <div className="container">
         <form onSubmit={handleSubmit}>
           <h3 className="font-chong-modern font-normal text-[40px] xxs:mt-12 leading-[46px] tracking-[0.8px] text-left text-baseblack mb-4">
             Send a message

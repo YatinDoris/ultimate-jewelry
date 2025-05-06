@@ -112,7 +112,7 @@ export default function Header() {
       <div className="flex justify-between items-center py-4 lg:pt-4 lg:pb-0 px-6 lg:px-20">
         <Link
           href={"/appointment-and-custom-jewelry"}
-          className="hidden lg:flex gap-1 w-64"
+          className="hidden lg:flex gap-1 lg:w-64"
         >
           <CustomImg
             srcAttr={diamondIcon}
@@ -137,8 +137,8 @@ export default function Header() {
           <CustomImg srcAttr={logo} className="w-28 lg:w-40" />
         </Link>
 
-        <div className="text-xl flex items-center gap-5 w-64 justify-end">
-          <Link href={"/search"}>
+        <div className="text-xl flex items-center gap-5 lg:w-64 justify-end">
+          <Link href={"/search"} onClick={() => dispatch(setIsMenuOpen(false))}>
             <IoIosSearch />
           </Link>
           {/* <GoHeart /> */}

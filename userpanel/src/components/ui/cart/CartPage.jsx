@@ -203,11 +203,74 @@ const CartPage = () => {
                       <ProgressiveImg
                         src={cartItem?.productImage}
                         alt={cartItem?.productName}
-                        className="w-32 md:w-40 border border-alabaster"
+                        className="w-28 md:w-40 border border-alabaster"
                       />
+                      <div className="flex lg:hidden items-center gap-x-1 pt-1 md:pt-2 w-fit">
+                        <h3 className="text-[12px] md:text-base lg:text-lg font-medium">
+                          Qty:
+                        </h3>
+                        <div className="flex items-center bg-alabaster px-2 lg:px-2">
+                          <button
+                            className={`lg:px-1 lg:py-1 text-base md:text-lg lg:text-xl font-medium text-black ${
+                              cartItem?.quantity <= minQuantity
+                                ? "opacity-50 cursor-not-allowed"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              handleCartQuantity("decrease", cartItem)
+                            }
+                            disabled={cartItem?.quantity <= minQuantity}
+                          >
+                            −
+                          </button>
+                          {selectedCartItem?.id === cartItem?.id &&
+                          updateCartQtyErrorMessage ? (
+                            <ErrorMessage message={updateCartQtyErrorMessage} />
+                          ) : null}
+                          <span className="px-2 md:px-4 text-base md:text-lg lg:text-xl font-medium text-black">
+                            {cartItem?.quantity}
+                          </span>
+                          <button
+                            className={`md:px-1 py-1 text-base md:text-lg lg:text-xl font-medium text-black ${
+                              cartItem?.quantity >= maxQuantity ||
+                              cartItem?.quantity >= cartItem?.productQuantity
+                                ? "opacity-50 cursor-not-allowed"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              handleCartQuantity("increase", cartItem)
+                            }
+                            disabled={
+                              cartItem?.quantity >= maxQuantity ||
+                              cartItem?.quantity >= cartItem?.productQuantity
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <button
+                          className="font-medium px-3  cursor-pointer flex items-center justify-center transition-all duration-200"
+                          onClick={() => removeFromCart(cartItem)}
+                          disabled={deleteLoader}
+                        >
+                          <CustomImg
+                            srcAttr={deleteIcon}
+                            altAttr=""
+                            titleAttr=""
+                            className="md:w-6 md:h-6 h-4 w-4 transition-transform duration-200 hover:scale-110"
+                          />
+                        </button>
+
+                        {selectedCartItem.id === cartItem.id &&
+                        removeCartErrorMessage ? (
+                          <ErrorMessage message={removeCartErrorMessage} />
+                        ) : null}
+                      </div>
                     </div>
                     <div className="flex-1 w-full">
-                      <div className="grid grid-cols-2 xs:flex-row xs:justify-between">
+                      {/* <div className="grid grid-cols-2 xs:flex-row xs:justify-between"> */}
+                      <div className="lg:flex lg:justify-between lg:items-center">
                         <Link
                           href={
                             cartItem?.diamondDetail
@@ -223,7 +286,7 @@ const CartPage = () => {
                         >
                           {cartItem?.productName}
                         </Link>
-                        <p className="text-base md:text-xl lg:text-2xl font-medium font-chong-modern text-end">
+                        <p className="text-base md:text-xl lg:text-2xl font-medium font-chong-modern">
                           {cartItem?.productDiscount &&
                           !cartItem?.diamondDetail ? (
                             <span className="text-lg text-gray-500 line-through mr-2">
@@ -266,7 +329,7 @@ const CartPage = () => {
                         </p>
                       )}
 
-                      <div className="flex items-center gap-x-1 pt-1 md:pt-2">
+                      <div className="hidden lg:flex items-center gap-x-1 pt-1 md:pt-2">
                         <h3 className="text-[12px] md:text-base lg:text-lg font-medium">
                           Qty:
                         </h3>
@@ -507,7 +570,7 @@ const CartSkeleton = () => {
           .flat()
           .map((skeleton, index) => (
             <SkeletonLoader
-              key={index}
+              key={`skeleton-${index}`}
               width={skeleton.width}
               height={skeleton.height}
               className={skeleton.margin}

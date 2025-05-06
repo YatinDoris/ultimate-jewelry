@@ -1,4 +1,3 @@
-
 import React from "react";
 import HeroBanner from "@/components/ui/HeroBanner";
 import banner from "@/assets/images/education/banner.webp";
@@ -18,6 +17,7 @@ const EducationPage = () => {
         imageSrc={banner}
         title={"Diamond Education"}
         description={"Celebrating Every Shade of You"}
+        isStaticBanner={true}
         altAttr=""
         titleAttr=""
       />
@@ -27,10 +27,7 @@ const EducationPage = () => {
       <CutSection />
       <DiamondColorChartSection />
       <ClaritySection />
-      <ImageWithTitle
-        imageSrc={img.src}
-      />
-
+      <ImageWithTitle imageSrc={img.src} />
     </>
   );
 };
