@@ -22,16 +22,6 @@ const Login = () => {
             <CustomImg srcAttr={logo} className="w-40 md:w-52" />
           </Link>
           <LoginForm />
-
-          {/* Privacy Policy */}
-          {/* <p className="flex justify-end">
-            <Link
-              href="/privacy-policy"
-              className="underline text-sm sm:text-base 2xl:text-lg text-basegray hover:text-primary transition-all duration-300"
-            >
-              Privacy Policy
-            </Link>
-          </p> */}
         </div>
       </div>
     </div>

@@ -6,6 +6,12 @@ import brightborn from "@/assets/images/banners/brightborn.webp"
 import auralis from "@/assets/images/banners/auralis.webp"
 import glowState from "@/assets/images/banners/glow-state.webp"
 import nuvana from "@/assets/images/banners/nuvana.webp"
+import trending from "@/assets/images/banners/trending.webp"
+import newAura from "@/assets/images/banners/new-aura.webp"
+import giftForHim from "@/assets/images/banners/gift-for-him.webp"
+import giftForHer from "@/assets/images/banners/gift-for-her.webp"
+import theRealIllusion from "@/assets/images/banners/the-real-illusion.webp"
+import jewelry from "@/assets/images/banners/jewelry.webp"
 import gemora from "@/assets/images/banners/gemora.webp"
 import newArrivals from "@/assets/images/banners/new-arrivals.webp"
 import under500 from "@/assets/images/banners/under-500.webp"
@@ -75,13 +81,13 @@ export const bannerList = [
     {
         collection: {
             title: "New Aura",
-            banner: flashDeals, // need to replace
+            banner: newAura,
         }
     },
     {
         collection: {
             title: "The Real Illusion",
-            banner: flashDeals, // need to replace
+            banner: theRealIllusion,
         }
     },
     {
@@ -93,13 +99,13 @@ export const bannerList = [
     {
         collection: {
             title: "Gifts For Her",
-            banner: flashDeals, // need to replace
+            banner: giftForHer,
         }
     },
     {
         collection: {
             title: "Gifts For Him",
-            banner: flashDeals, // need to replace
+            banner: giftForHim,
         }
     },
     {
@@ -111,7 +117,7 @@ export const bannerList = [
     {
         collection: {
             title: "Trending",
-            banner: flashDeals, // need to replace
+            banner: trending,
         }
     },
     {
@@ -134,7 +140,7 @@ export const bannerList = [
     {
         type: "categories",
         title: "Jewelry",
-        banner: earrings, // need to replace
+        banner: jewelry,
         subCategories: [
             {
                 title: "Earrings",
