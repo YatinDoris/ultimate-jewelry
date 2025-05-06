@@ -555,7 +555,7 @@ const ProductDetailPage = ({ customizePage }) => {
                       </span>
                     ) : null}
                     {productDetail?.discount ? (
-                      <span className="bg-primary text-white px-2 py-2 text-xs font-medium rounded">
+                      <span className="bg-primary text-white px-2 py-2 text-xs font-medium">
                         {`You Save ${productDetail?.discount}%`}
                       </span>
                     ) : null}
@@ -566,8 +566,8 @@ const ProductDetailPage = ({ customizePage }) => {
               <div className="border-t  border-black_opacity_10" />
 
               {!isCustomizePage && (
-                <div className="mt-6 lg:mt-10 flex items-center gap-6">
-                  <p className="font-medium text-sm  3xl:text-base w-[80px] xs:w-[135px]">
+                <div className="mt-6 lg:mt-10 flex items-center lg:gap-6">
+                  <p className="font-medium text-sm  3xl:text-base w-[130px] xs:w-[135px]">
                     Qty:
                   </p>
                   <div className="flex items-center py-2 bg-white">
@@ -856,7 +856,7 @@ const ProductDetailTabs = ({ selectedVariations }) => {
 
   const renderInfoRow = (label, value) =>
     value ? (
-      <div className="pt-[25px] 2xl:pt-[30px] 3xl:pt-[40px] flex items-start gap-2">
+      <div className="pt-[6px] 2xl:pt-[30px] 3xl:pt-[40px] flex items-start gap-2">
         <p className={`${labelClass} ${valueClass}`}>{label}:</p>
         <div className={`${valueClass} `}>
           <p className={`${valueLineClass}`}>{value}</p>
@@ -868,7 +868,7 @@ const ProductDetailTabs = ({ selectedVariations }) => {
     {
       label: "Product Detail",
       content: (
-        <div className="grid xs:grid-cols-2 lg:grid-cols-3 gap-16 mt-4 2xl:mt-8 3xl:mt-12">
+        <div className="grid xs:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-16 mt-4 2xl:mt-8 3xl:mt-12">
           {/* Product Information */}
           <div className="text-sm md:text-sm 2xl:text-base 3xl:text-lg font-medium">
             <p className="inline-block font-semibold text-baseblack border-b-[2.5px] border-black_opacity_10 pt-[6px] pb-[6px] 3xl:pb-4">

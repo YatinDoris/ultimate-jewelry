@@ -46,8 +46,9 @@ export default function ProductCard({
       </div>
 
       <div className="mt-3">
-        <p className="text-black text-base font-medium">{title}</p>
-
+        <p className="text-black text-base font-medium line-clamp-2 h-[48px]">
+          {title}
+        </p>
         <div className="flex items-center gap-2 font-chong-modern">
           <p className="my-1 tracking-wider text-lg md:text-xl">${price}</p>
 

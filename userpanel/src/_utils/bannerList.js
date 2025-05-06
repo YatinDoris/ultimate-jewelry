@@ -1,4 +1,14 @@
 import forHim from "@/assets/images/banners/for-him.webp"
+import lustera from "@/assets/images/banners/lustera.webp"
+import diamora from "@/assets/images/banners/diamora.webp"
+import veloura from "@/assets/images/banners/veloura.webp"
+import brightborn from "@/assets/images/banners/brightborn.webp"
+import auralis from "@/assets/images/banners/auralis.webp"
+import glowState from "@/assets/images/banners/glow-state.webp"
+import nuvana from "@/assets/images/banners/nuvana.webp"
+import gemora from "@/assets/images/banners/gemora.webp"
+import newArrivals from "@/assets/images/banners/new-arrivals.webp"
+import under500 from "@/assets/images/banners/under-500.webp"
 import forHer from "@/assets/images/banners/for-her.webp"
 import wedding from "@/assets/images/banners/wedding.webp"
 import bracelets from "@/assets/images/banners/bracelets.webp"
@@ -17,49 +27,49 @@ export const bannerList = [
     {
         collection: {
             title: "Lustera",
-            banner: flashDeals, // need to replace
+            banner: lustera,
         }
     },
     {
         collection: {
             title: "Diamora",
-            banner: flashDeals, // need to replace
+            banner: diamora,
         }
     },
     {
         collection: {
             title: "Veloura",
-            banner: flashDeals, // need to replace
+            banner: veloura,
         }
     },
     {
         collection: {
             title: "Glow State",
-            banner: flashDeals, // need to replace
+            banner: glowState,
         }
     },
     {
         collection: {
             title: "Brightborn",
-            banner: flashDeals, // need to replace
+            banner: brightborn,
         }
     },
     {
         collection: {
             title: "Auralis",
-            banner: flashDeals, // need to replace
+            banner: auralis,
         }
     },
     {
         collection: {
             title: "Nuvana",
-            banner: flashDeals, // need to replace
+            banner: nuvana,
         }
     },
     {
         collection: {
             title: "Gemora",
-            banner: flashDeals, // need to replace
+            banner: gemora,
         }
     },
     {
@@ -77,7 +87,7 @@ export const bannerList = [
     {
         collection: {
             title: "Gifts Under $500",
-            banner: flashDeals, // need to replace
+            banner: under500,
         }
     },
     {
@@ -95,7 +105,7 @@ export const bannerList = [
     {
         collection: {
             title: "New Arrival",
-            banner: flashDeals, // need to replace
+            banner: newArrivals,
         }
     },
     {

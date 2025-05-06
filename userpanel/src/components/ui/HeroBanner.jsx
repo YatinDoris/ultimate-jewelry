@@ -8,6 +8,7 @@ const HeroBanner = ({
   videoSrc,
   textAlignment = "center",
   isHomePage = false,
+  isStaticBanner = false,
   titleAttr = "",
   altAttr = "",
 }) => {
@@ -23,8 +24,12 @@ const HeroBanner = ({
           altAttr={altAttr}
           titleAttr={titleAttr}
           priority
-          className={`w-full h-full ${
-            isHomePage ? "object-cover" : "object-contain"
+          className={`w-full  ${
+            isStaticBanner
+              ? "object-cover h-[40vh] lg:h-auto"
+              : isHomePage
+              ? "object-cover h-full"
+              : "h-[18vh] lg:h-auto lg:mt-6"
           }`}
         />
       ) : (
@@ -59,13 +64,13 @@ const HeroBanner = ({
               </p>
               <div className="mt-4 md:mt-6 flex  items-center md:justify-center gap-2.5 md:gap-4">
                 <LinkButton
-                  href=""
+                  href="/customize/start-with-setting"
                   className="lg:!h-0 w-fit lg:py-[20px] 2xl:py-[22px] 2xl:!min-w-[240px] lg:!text-sm 2xl:!text-base rounded-none !bg-transparent hover:!border-white hover:!bg-white hover:!text-black"
                 >
                   SHOP ENGAGEMENT
                 </LinkButton>
                 <LinkButton
-                  href=""
+                  href="/collections/categories/Jewelry"
                   className="lg:!h-0 w-fit lg:py-[20px] 2xl:py-[22px] 2xl:!min-w-[240px] lg:!text-sm 2xl:!text-base rounded-none !bg-transparent hover:!border-white hover:!bg-white hover:!text-black"
                 >
                   SHOP ALL JEWELRY

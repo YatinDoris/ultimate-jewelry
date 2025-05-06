@@ -7,9 +7,6 @@ import tranperencyImg from "@/assets/images/about-us/transperency.webp";
 import SustainImg from "@/assets/images/about-us/sustainability.webp";
 import Compassion from "@/assets/images/about-us/compassion.webp";
 import Inclusion from "@/assets/images/about-us/inclusion.webp";
-import herImage from "@/assets/images/about-us/herImage.webp";
-import himImage from "@/assets/images/about-us/himImage.webp";
-import giftImage from "@/assets/images/about-us/gifImage.webp";
 
 import { AnimatedSection, CustomImg } from "@/components/dynamiComponents";
 import GiftCollections from "@/components/ui/GiftCollections";
@@ -107,6 +104,7 @@ export default function AboutPage() {
         imageSrc={banner}
         title={"About Us"}
         description={"Celebrating Every Shade of You"}
+        isStaticBanner={true}
         altAttr=""
         titleAttr=""
       />

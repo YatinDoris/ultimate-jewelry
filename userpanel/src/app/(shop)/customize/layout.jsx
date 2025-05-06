@@ -1,10 +1,10 @@
-import { HeroSwiper } from "@/components/dynamiComponents";
-import { collectionSwiper } from "@/components/ui/CollectionPage";
+import slide3 from "@/assets/images/collections/slide-3.webp";
+import HeroBanner from "@/components/ui/HeroBanner";
 
 export default function MainLayout({ children }) {
   return (
     <>
-      <HeroSwiper slides={collectionSwiper} />
+      <HeroBanner titleAttr={""} altAttr={""} imageSrc={slide3} />
       {children}
     </>
   );
