@@ -100,7 +100,8 @@ export default function ProfileDropdown({ className = "", uniqueId }) {
                     href={link.href || "#"}
                     onClick={() => {
                       if (link.onClick) link.onClick();
-                      dispatch(setOpenProfileDropdown(null)); // close after click
+                      dispatch(setOpenProfileDropdown(null));
+                      dispatch(setIsMenuOpen(false));
                     }}
                     className="py-1 hover:!text-primary"
                   >

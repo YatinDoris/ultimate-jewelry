@@ -57,7 +57,7 @@ const categoryData = [
 const discoverOurWorld = [
   {
     title: "Sustainability Journey",
-    videoSrc: "/videos/sustainability-journey.mp4",
+    videoSrc: "/videos/journey.mp4",
     thumbnailImage: home21,
     titleAttr: "",
     altAttr: "",
@@ -156,7 +156,7 @@ const Home = () => {
             <div className="w-12 h-[2px] bg-black mt-4"></div>
           </div>
 
-          <div className="grid grid-cols-2 xss:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-12 text-center">
+          <div className="grid grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-12 text-center">
             {uniqueFilterOptionsForHeader?.uniqueDiamondShapes?.map(
               (shape, idx) => (
                 <Link
