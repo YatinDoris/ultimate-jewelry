@@ -146,7 +146,7 @@ export default function SettingStyleCategorySwiper({
                     >
                       {settingStyle?.image?.trim() ? (
                         <ProgressiveImg
-                          className={`h-32 lg:h-36 2xl:h-48 aspect-square object-cover !transition-none  border-2 border-transparent ${
+                          className={`h-28 lg:h-36 2xl:h-48 aspect-square object-cover !transition-none  border-2 border-transparent ${
                             isSelected ? "border-2 !border-primary" : ""
                           }`}
                           src={settingStyle?.image}
@@ -158,7 +158,7 @@ export default function SettingStyleCategorySwiper({
                           srcAttr={defaultSettingStyle}
                           altAttr=""
                           titleAttr=""
-                          className={`h-32 lg:h-36 2xl:h-48 aspect-square object-cover !transition-none  border-2 border-transparent ${
+                          className={`h-28 lg:h-36 2xl:h-48 aspect-square object-cover !transition-none  border-2 border-transparent ${
                             isSelected ? "border-2 !border-primary" : ""
                           }`}
                         />

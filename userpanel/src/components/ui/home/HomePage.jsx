@@ -30,7 +30,7 @@ import { setLoginMessage } from "@/store/slices/userSlice";
 import { useAlertTimeout } from "@/hooks/use-alert-timeout";
 import HeroBanner from "../HeroBanner";
 import CategoryGallery from "./categoryGallery";
-import { helperFunctions, messageType } from "@/_helper";
+import { messageType } from "@/_helper";
 import KeyFeatures from "../KeyFeatures";
 import { setAppointmentMessage } from "@/store/slices/appointmentSlice";
 import { setCustomJewelryMessage } from "@/store/slices/customjewelrySlice";
@@ -63,8 +63,8 @@ const discoverOurWorld = [
     altAttr: "",
   },
   {
-    title: "Our Promise",
-    videoSrc: "/videos/our-promise.mp4",
+    title: "Our Process",
+    videoSrc: "/videos/our-process.mp4",
     thumbnailImage: home22,
     titleAttr: "",
     altAttr: "",

@@ -73,7 +73,7 @@ export default function ProductSwiper({
         </div>
       ) : (
         <Swiper
-          spaceBetween={20}
+          // spaceBetween={10}
           modules={[Autoplay, Navigation]}
           autoplay={{
             delay: 3000,
@@ -81,10 +81,10 @@ export default function ProductSwiper({
           }}
           slidesPerView={2}
           breakpoints={{
-            338: { slidesPerView: 2 },
-            1024: { slidesPerView: 2 },
-            1280: { slidesPerView: 4 },
-            2200: { slidesPerView: 6 },
+            338: { slidesPerView: 2, spaceBetween: 15 },
+            1024: { slidesPerView: 2, spaceBetween: 15 },
+            1280: { slidesPerView: 4, spaceBetween: 20 },
+            2200: { slidesPerView: 6, spaceBetween: 20 },
           }}
           onSwiper={(swiper) => {
             swiperRef.current = swiper;

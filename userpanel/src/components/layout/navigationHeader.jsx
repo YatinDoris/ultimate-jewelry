@@ -941,7 +941,7 @@ export default function NavigationHeader() {
                                 >
                                   {subItem.title}
                                 </HeaderLinkButton>
-                                <div className="absolute left-3 w-4 h-[2px] bg-primary "></div>
+                                <div className="absolute left-3 w-4 h-[2px] bg-primary ms-2"></div>
                               </div>
                               <div className="flex flex-col gap-1 ms-3 mt-0.5">
                                 {subItem.productTypes.length
@@ -978,7 +978,12 @@ export default function NavigationHeader() {
                       className="pt-3.5  border-t"
                       key={`static-link-${index}12`}
                     >
-                      <HeaderLinkButton href={link.href}>
+                      <HeaderLinkButton
+                        onClick={() => {
+                          dispatch(setIsMenuOpen(false));
+                        }}
+                        href={link.href}
+                      >
                         {link.title}
                       </HeaderLinkButton>
                     </div>
