@@ -20,6 +20,7 @@ export const Refund = lazy(() => import('src/sections/orders/refund'));
 export const Subscribers = lazy(() => import('src/pages/subscribers'));
 export const SliderViewAddPage = lazy(() => import('src/pages/brands'));
 export const OrdersDetail = lazy(() => import('src/pages/order-detail'));
+export const ReturnRequest = lazy(() => import('src/pages/return-request'));
 export const Unauthorized = lazy(() => import('src/pages/unauthorized'));
 export const Appointments = lazy(() => import('src/pages/appointments'));
 export const ReturnDetail = lazy(() => import('src/pages/return-detail'));
@@ -251,6 +252,14 @@ export default function Router() {
           element: (
             <ProtectedRoutes pageId={'orders'}>
               <OrdersDetail />
+            </ProtectedRoutes>
+          ),
+        },
+        {
+          path: '/orders/return-request/:orderId',
+          element: (
+            <ProtectedRoutes pageId={'orders'}>
+              <ReturnRequest />
             </ProtectedRoutes>
           ),
         },

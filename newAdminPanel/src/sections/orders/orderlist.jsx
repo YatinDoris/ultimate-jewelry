@@ -47,6 +47,7 @@ import { deleteOrder, getOrdersList } from 'src/actions/ordersActions';
 
 import CancelOrderDialog from './order-cancel-dialog';
 import UpdateStatusOrderDialog from './order-update-status-dialog';
+import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn';
 
 // ----------------------------------------------------------------------
 
@@ -183,6 +184,14 @@ const OrderList = () => {
     }
   }, [selectedOrderId, ordersList]);
 
+  const handleReturnRequest = useCallback(async () => {
+    const order = ordersList?.find((x) => x?.id === selectedOrderId);
+    if (order) {
+      dispatch(setSelectedOrder(order));
+      navigate(`/orders/return-request/${selectedOrderId}`);
+    }
+  }, [selectedOrderId, ordersList]);
+
   const handleDelete = useCallback(async () => {
     if (!abortControllerRef.current) {
       abortControllerRef.current = new AbortController();
@@ -204,7 +213,7 @@ const OrderList = () => {
         open={!!open}
         anchorEl={open}
         PaperProps={{
-          sx: { width: 140 },
+          sx: { width: 180 },
         }}
         disableEscapeKeyDown
         onClose={handlePopup}
@@ -300,6 +309,20 @@ const OrderList = () => {
                 Delete
               </>
             )}
+          </MenuItem>
+        ) : null}
+        {/* add condition for 15 return */}
+
+        {['delivered'].includes(item?.orderStatus) &&
+        item?.paymentStatus === 'success' &&
+        helperFunctions.isReturnValid(item?.deliveryDate) ? (
+          <MenuItem
+            sx={{ color: '#007BFF' }}
+            onClick={handleReturnRequest}
+            disabled={cancelOrderLoading || crudOrdersLoading}
+          >
+            <AssignmentReturnIcon fontSize="small" sx={{ mr: 2 }} />
+            Return Request
           </MenuItem>
         ) : null}
       </Popover>

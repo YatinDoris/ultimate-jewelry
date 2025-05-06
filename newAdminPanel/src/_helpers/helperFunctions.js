@@ -358,6 +358,23 @@ const getDiamondDetailArray = (diamondDetail) => {
   );
 };
 
+const isReturnValid = (timestamp) => {
+  // Validate timestamp format
+  if (isNaN(timestamp)) {
+    // "Invalid timestamp format. Please provide a valid timestamp."
+    return false;
+  }
+
+  const today = new Date(); // Get today's date and time
+  today.setHours(0, 0, 0, 0); // Set time to 00:00:00.000
+
+  const returnWindow = new Date(timestamp);
+  returnWindow.setDate(returnWindow.getDate() + 15); // Add 15 days
+  returnWindow.setHours(0, 0, 0, 0); // Set time to 00:00:00.000
+
+  return today <= returnWindow;
+};
+
 export const helperFunctions = {
   getCurrentUser,
   getVariationsArray,
@@ -391,4 +408,5 @@ export const helperFunctions = {
   formatDecimalNumber,
   capitalizeTitle,
   getDiamondDetailArray,
+  isReturnValid,
 };

@@ -34,6 +34,20 @@ export const getReturnList = () => async (dispatch) => {
   }
 };
 
+export const submitReturnRequest = (payload) => async (dispatch) => {
+  try {
+    dispatch(setCrudReturnLoading(true));
+    const res = await returnService.createApprovedReturnRequest(payload);
+
+    if (res) return true;
+  } catch (e) {
+    toastError(e);
+    return false;
+  } finally {
+    dispatch(setCrudReturnLoading(false));
+  }
+};
+
 export const rejectReturn = (payload, abortController) => async (dispatch) => {
   try {
     dispatch(setRejectReturnLoading(true));

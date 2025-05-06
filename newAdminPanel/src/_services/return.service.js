@@ -1,3 +1,4 @@
+import { uid } from 'uid';
 import axios from 'axios';
 import {
   deleteFile,
@@ -5,6 +6,7 @@ import {
   helperFunctions,
   isValidFileSize,
   isValidFileType,
+  ordersUrl,
   returnsUrl,
   sanitizeObject,
   sanitizeValue,
@@ -118,6 +120,248 @@ const getReturnDetailByReturnId = (returnId) => {
       } else {
         reject(new Error('Invalid data'));
       }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const validateKeys = (objects, keys) =>
+  keys.every((key) => helperFunctions.isValidKeyName(objects, key));
+
+const hasInvalidProductsKey = (products) => {
+  const requiredProductKeys = ['productId', 'unitAmount', 'returnQuantity', 'variations'];
+  const requiredVariationKeys = ['variationId', 'variationTypeId'];
+  const requiredDiamondKeys = ['shapeId', 'caratWeight', 'clarity', 'color', 'price'];
+
+  const isInvalidProduct = !validateKeys(products, requiredProductKeys);
+  const isInvalidVariation = !validateKeys(products[0]?.variations || [], requiredVariationKeys);
+
+  const diamondDetail = products[0]?.diamondDetail;
+  const isInvalidDiamond = diamondDetail && !validateKeys([diamondDetail], requiredDiamondKeys);
+
+  return isInvalidProduct || isInvalidVariation || isInvalidDiamond;
+};
+
+export const getProductsArray = (products) =>
+  products.map((product) => {
+    const { productPrice, returnQuantity, diamondDetail } = product;
+    const diamondPrice = diamondDetail?.price || 0;
+    const unitAmount = (productPrice + diamondPrice) * returnQuantity;
+
+    const mappedProduct = {
+      productId: product.productId,
+      returnQuantity,
+      productPrice,
+      unitAmount,
+      variations: product.variations.map(({ variationId, variationTypeId }) => ({
+        variationId,
+        variationTypeId,
+      })),
+    };
+
+    if (diamondDetail) {
+      mappedProduct.diamondDetail = {
+        shapeId: diamondDetail.shapeId,
+        caratWeight: diamondDetail.caratWeight,
+        clarity: diamondDetail.clarity,
+        color: diamondDetail.color,
+        price: diamondPrice,
+      };
+    }
+
+    return mappedProduct;
+  });
+
+const validateProducts = (products, orderProducts) =>
+  products.every((product) => {
+    const match = orderProducts.find((orderProduct) => {
+      // Check if productId and variations match
+      const isProductMatch =
+        orderProduct.productId === product.productId &&
+        helperFunctions.areArraysEqual(orderProduct.variations, product.variations);
+
+      // If diamondDetail exists in product, verify it matches
+      if (product.diamondDetail) {
+        return (
+          isProductMatch &&
+          orderProduct.diamondDetail &&
+          orderProduct.diamondDetail.shapeId === product.diamondDetail.shapeId &&
+          orderProduct.diamondDetail.caratWeight === product.diamondDetail.caratWeight &&
+          orderProduct.diamondDetail.clarity === product.diamondDetail.clarity &&
+          orderProduct.diamondDetail.color === product.diamondDetail.color &&
+          orderProduct.diamondDetail.price === product.diamondDetail.price
+        );
+      }
+
+      return isProductMatch;
+    });
+
+    return match && product.returnQuantity > 0 && product.returnQuantity <= match.cartQuantity;
+  });
+
+const createApprovedReturnRequest = (params) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let { orderId, products, imageFile, returnRequestReason } = sanitizeObject(params);
+      orderId = orderId ? orderId?.trim() : null;
+      returnRequestReason = returnRequestReason ? returnRequestReason?.trim() : null;
+      imageFile = typeof imageFile === 'object' ? [imageFile] : [];
+
+      const userData = helperFunctions.getCurrentUser();
+      if (!userData?.id) {
+        reject(new Error('unAuthorized'));
+        return;
+      }
+
+      if (!orderId || !returnRequestReason) {
+        reject(new Error('Invalid Data'));
+        return;
+      }
+
+      const orderDetail = await fetchWrapperService.findOne(ordersUrl, {
+        id: orderId,
+      });
+      if (!orderDetail) {
+        reject(new Error('Order does not exist'));
+        return;
+      }
+
+      const {
+        orderStatus,
+        deliveryDate,
+        returnRequestIds,
+        products: orderProducts,
+        orderNumber,
+      } = orderDetail;
+
+      if (orderStatus !== 'delivered' || !helperFunctions.isReturnValid(deliveryDate)) {
+        reject(
+          new Error(
+            "Since your order hasn't been delivered or has exceeded the 15-day limit, you're unable to initiate a return request"
+          )
+        );
+        return;
+      }
+
+      const returnFindPattern = {
+        url: returnsUrl,
+        key: 'orderId',
+        value: orderId,
+      };
+      const matchedReturns = await fetchWrapperService.find(returnFindPattern);
+
+      const isPendingOrApprovedOrReceivedReturnsCount = matchedReturns.filter((returnOrder) =>
+        ['pending', 'approved', 'received'].includes(returnOrder.status)
+      ).length;
+
+      const rejectedCount = matchedReturns.filter(
+        (returnOrder) => returnOrder.status === 'rejected'
+      ).length;
+
+      const hasActiveReturns =
+        isPendingOrApprovedOrReceivedReturnsCount || (rejectedCount > 0 && rejectedCount > 2)
+          ? false
+          : true;
+
+      if (!hasActiveReturns) {
+        reject(
+          new Error(
+            'Unable to initiate return: Either an active return request is pending, approved, or received, or the return request limit has been exceeded.'
+          )
+        );
+        return;
+      }
+
+      if (hasInvalidProductsKey(products)) {
+        reject(new Error('products data not valid'));
+        return;
+      }
+      const productsArray = getProductsArray(products);
+      if (!validateProducts(productsArray, orderProducts)) {
+        reject(new Error('At least one product is invalid'));
+        return;
+      }
+
+      let uploadedImage = '';
+
+      if (imageFile.length) {
+        if (imageFile.length > fileSettings.RETURN_IMAGE_FILE_LIMIT) {
+          reject(
+            new Error(
+              `You can only ${fileSettings.RETURN_IMAGE_FILE_LIMIT} image or pdf upload here`
+            )
+          );
+          return;
+        }
+
+        const imageValidFileType = isValidFileType(fileSettings.IMAGE_AND_PDF_FILE_NAME, imageFile);
+        if (!imageValidFileType) {
+          reject(new Error('Invalid file! (Only PNG, JPG, JPEG, WEBP, PDF files are allowed!)'));
+          return;
+        }
+
+        const imageValidFileSize = isValidFileSize(fileSettings.IMAGE_AND_PDF_FILE_NAME, imageFile);
+        if (!imageValidFileSize) {
+          reject(new Error('Invalid File Size! (Only 5 MB are allowed!)'));
+          return;
+        }
+
+        const filesPayload = [...imageFile];
+        await uploadFile(returnsUrl, filesPayload)
+          .then((fileNames) => {
+            uploadedImage = fileNames[0];
+          })
+          .catch((e) => {
+            reject(new Error('An error occurred during image uploading.'));
+          });
+      }
+
+      const uuid = uid();
+      let insertPattern = {
+        id: uuid,
+        orderId,
+        userId: userData.id,
+        orderNumber: orderNumber,
+        products: productsArray,
+        returnRequestReason,
+        status: 'approved',
+        returnPaymentStatus: 'pending',
+        shippingLabel: imageFile.length ? uploadedImage : '',
+        createdDate: Date.now(),
+        updatedDate: Date.now(),
+      };
+      const createPattern = {
+        url: `${returnsUrl}/${uuid}`,
+        insertPattern,
+      };
+
+      fetchWrapperService
+        .create(createPattern)
+        .then((response) => {
+          //update order for returnRequestIds
+          const prevReturnReqIds = returnRequestIds?.length ? returnRequestIds : [];
+          const orderUpdatePayload = {
+            returnRequestIds: [...prevReturnReqIds, insertPattern.id],
+          };
+          const orderUpdatePattern = {
+            url: `${ordersUrl}/${orderId}`,
+            payload: orderUpdatePayload,
+          };
+          fetchWrapperService._update(orderUpdatePattern);
+          axios.post(
+            '/returns/sendReturnStatusMail',
+            sanitizeObject({ returnId: insertPattern.id })
+          );
+          resolve(createPattern);
+        })
+        .catch((e) => {
+          reject(new Error('An error occurred during creating a new return request.'));
+          // whenever an error occurs for approved return request the uploaded file is deleted
+          if (uploadedImage) {
+            deleteFile(returnsUrl, uploadedImage);
+          }
+        });
     } catch (e) {
       reject(e);
     }
@@ -362,6 +606,7 @@ const refundPaymentForReturn = async (payload, abortController) => {
 export const returnService = {
   getAllReturnsList,
   getReturnDetailByReturnId,
+  createApprovedReturnRequest,
   rejectReturn,
   approveReturnRequest,
   receivedReturn,
