@@ -104,12 +104,28 @@ const PaymentForm = ({ orderId }) => {
   };
 
   const onExpressCheckoutReady = ({ element }) => {
+    if (!element) {
+      console.error("ExpressCheckoutElement is undefined in onReady event");
+      dispatch(
+        setPaymentMessage({
+          message: "Payment component failed to load. Please try again.",
+          type: messageType.ERROR,
+        })
+      );
+      return;
+    }
     console.log("ExpressCheckoutElement ready:", element);
   };
 
   const onExpressCheckoutConfirm = async () => {
     if (!stripe || !elements) {
       console.error("Stripe or Elements not initialized");
+      dispatch(
+        setPaymentMessage({
+          message: "Payment system not initialized. Please try again.",
+          type: messageType.ERROR,
+        })
+      );
       return;
     }
 
@@ -199,6 +215,12 @@ const PaymentForm = ({ orderId }) => {
         resetValue();
         if (!stripe || !elements) {
           console.error("Stripe or Elements not initialized");
+          dispatch(
+            setPaymentMessage({
+              message: "Payment system not initialized. Please try again.",
+              type: messageType.ERROR,
+            })
+          );
           return;
         }
 
@@ -371,6 +393,21 @@ const PaymentForm = ({ orderId }) => {
     },
   };
 
+  // Ensure Stripe and Elements are initialized before rendering ExpressCheckoutElement
+  if (!stripe || !elements) {
+    return (
+      <div className="bg-white p-5 mt-5">
+        <p className="text-baseblack text-lg md:text-xl font-semibold">
+          Payment
+        </p>
+        <h6 className="mb-2 text-basegray">
+          All transactions are secure and encrypted.
+        </h6>
+        <ErrorMessage message="Payment system is loading, please wait..." />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white p-5 mt-5">
       <p className="text-baseblack text-lg md:text-xl font-semibold">Payment</p>
@@ -378,12 +415,14 @@ const PaymentForm = ({ orderId }) => {
         All transactions are secure and encrypted.
       </h6>
       <form onKeyDown={handleKeyDown}>
-        <ExpressCheckoutElement
-          id="express-checkout"
-          options={expressCheckoutOptions}
-          onReady={onExpressCheckoutReady}
-          onConfirm={onExpressCheckoutConfirm}
-        />
+        <div id="express-checkout-element">
+          <ExpressCheckoutElement
+            id="express-checkout"
+            options={expressCheckoutOptions}
+            onReady={onExpressCheckoutReady}
+            onConfirm={onExpressCheckoutConfirm}
+          />
+        </div>
         <LinkAuthenticationElement id="email" onChange={handleEmailChange} />
         {touched?.email && errors?.email && (
           <ErrorMessage message={errors?.email} />
