@@ -8,8 +8,6 @@ import {
 } from "@/components/dynamiComponents";
 import stripe from "@/assets/images/cart/stripe.webp";
 import paypal from "@/assets/images/cart/paypal.webp";
-import snapFinance from "@/assets/images/cart/snapFinance.webp";
-import acima from "@/assets/images/cart/acima.webp";
 import SkeletonLoader from "@/components/ui/skeletonLoader";
 import KeyFeatures from "@/components/ui/KeyFeatures";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,8 +35,6 @@ const minQuantity = 1;
 const paymentOptions = [
   { img: stripe, name: "Stripe", altAttr: "", titleAttr: "" },
   { img: paypal, name: "PayPal", altAttr: "", titleAttr: "" },
-  { img: snapFinance, name: "Snap Finance", altAttr: "", titleAttr: "" },
-  { img: acima, name: "Acima", altAttr: "", titleAttr: "" },
 ];
 
 const CartPage = () => {
