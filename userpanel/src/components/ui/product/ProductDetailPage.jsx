@@ -49,6 +49,7 @@ import {
   MAX_ALLOW_QTY_FOR_CUSTOM_PRODUCT,
   messageType,
 } from "@/_helper/constants";
+import ZoomImage from "../ZoomImage";
 
 export const minProductQuantity = 1;
 export const maxProductQuantity = 5;
@@ -449,7 +450,7 @@ const ProductDetailPage = ({ customizePage }) => {
         <DetailPageSkeleton />
       ) : productDetail && Object.keys(productDetail).length > 0 ? (
         <>
-          <div className="container grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-[55%_auto] gap-6 xs:gap-12">
+          <div className="container grid grid-cols-1 lg:grid-cols-[55%_auto] 3xl:grid-cols-[55%_auto] gap-6 xs:gap-12">
             <div className="hidden lg:block">
               {" "}
               {/* <div className="grid grid-cols-2 gap-4 auto-rows-min ">
@@ -486,10 +487,10 @@ const ProductDetailPage = ({ customizePage }) => {
                 )}
 
                 {productDetail?.thumbnailImage && (
-                  <div className="relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md">
-                    <ProgressiveImg
+                  <div className="zoom-container relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md">
+                    <ZoomImage
                       src={productDetail?.thumbnailImage}
-                      className="cursor-pointer transition-all duration-300 w-full h-full object-cover"
+                      alt="Product Thumbnail"
                     />
                   </div>
                 )}
@@ -499,10 +500,15 @@ const ProductDetailPage = ({ customizePage }) => {
                     key={index}
                     className="relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md"
                   >
-                    <ProgressiveImg
+                    <ZoomImage
+                      src={media?.image}
+                      alt="Zoom with Lens"
+                      className="!w-full !h-full"
+                    />
+                    {/* <ProgressiveImg
                       src={media?.image}
                       className="cursor-pointer transition-all duration-300 w-full h-full object-cover"
-                    />
+                    /> */}
                   </div>
                 ))}
               </div>
