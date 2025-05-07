@@ -27,6 +27,7 @@ import { deleteContact } from 'src/actions/contactsActions';
 import ConfirmationDialog from 'src/components/confirmation-dialog';
 import { setContactsPage } from 'src/store/slices/contactSlice';
 import { getContactsList } from 'src/actions/contactsActions';
+import ViewDialog from 'src/components/view-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +37,7 @@ const Contacts = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchedValue, setSearchedValue] = useState('');
   const [deleteDialog, setDeleteDialog] = useState(false);
+  const [viewDialog, setViewDialog] = useState(false);
   const [selectedContactId, setSelectedContactId] = useState();
 
   const { contactsPage, contactsList, contactsLoading, crudContactsLoading } = useSelector(
@@ -59,15 +61,26 @@ const Contacts = () => {
     contactsPage * rowsPerPage + rowsPerPage
   );
 
+  // const loadData = useCallback(() => {
+  //   console.log('in the load data');
+  //   dispatch(getContactsList());
+  // }, [dispatch]);
+
   const loadData = useCallback(() => {
     dispatch(getContactsList());
-  }, [contactsList]);
+  }, [dispatch]);
+
+  // useEffect(() => {
+  //   loadData();
+  //   return () => dispatch(setContactsPage(0));
+  // }, [loadData]);
 
   useEffect(() => {
-    loadData();
+    if (!contactsList || contactsList.length === 0) {
+      loadData();
+    }
     return () => dispatch(setContactsPage(0));
-  }, [loadData]);
-
+  }, [loadData, contactsList]);
   const searchValueHandler = useCallback((event) => {
     const value = event.target.value;
     setSearchedValue(value);
@@ -105,9 +118,12 @@ const Contacts = () => {
       loadData();
       handlePopup();
       setDeleteDialog(false);
+      setViewDialog(false);
     }
   }, [selectedContactId, currentItems, contactsPage]);
+  const selectedContact = contactsList?.find((item) => item.id === selectedContactId);
 
+  console.log('contactsList', contactsList);
   const renderPopup = useMemo(() => {
     return !!open ? (
       <Popover
@@ -141,6 +157,25 @@ const Contacts = () => {
             <>
               <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
               Delete
+            </>
+          )}
+        </MenuItem>
+        <MenuItem disabled={crudContactsLoading} onClick={() => setViewDialog(true)}>
+          {crudContactsLoading ? (
+            <Box
+              sx={{
+                gap: '15px',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Spinner width={20} /> View
+            </Box>
+          ) : (
+            <>
+              <Iconify icon="carbon:view-filled" sx={{ mr: 2 }} />
+              View
             </>
           )}
         </MenuItem>
@@ -268,6 +303,14 @@ const Contacts = () => {
         >
           Do you want to delete this contact?
         </ConfirmationDialog>
+      ) : null}
+      {viewDialog && selectedContact ? (
+        <ViewDialog
+          open={viewDialog}
+          setOpen={setViewDialog}
+          contact={selectedContact}
+          loading={crudContactsLoading}
+        />
       ) : null}
     </>
   );
