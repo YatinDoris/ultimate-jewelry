@@ -337,8 +337,8 @@ const PaymentForm = ({ orderId }) => {
   const paymentElementOptions = {
     layout: "tabs",
     wallets: {
-      applePay: "auto",
-      googlePay: "auto",
+      applePay: "always",
+      googlePay: "always",
     },
     fields: {
       billingDetails: {
