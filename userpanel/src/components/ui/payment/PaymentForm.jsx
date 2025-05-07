@@ -100,16 +100,18 @@ const PaymentForm = ({ orderId }) => {
       state:
         shipping?.stateCode?.toLowerCase() === billing?.state?.toLowerCase(),
     };
-
     return Object.values(matches).every((value) => value === true);
   };
 
   const onExpressCheckoutReady = ({ element }) => {
-    // Customize ExpressCheckoutElement if needed
+    console.log("ExpressCheckoutElement ready:", element);
   };
 
   const onExpressCheckoutConfirm = async () => {
-    if (!stripe || !elements) return;
+    if (!stripe || !elements) {
+      console.error("Stripe or Elements not initialized");
+      return;
+    }
 
     dispatch(setPaymentLoader(true));
     resetValue();
@@ -124,6 +126,7 @@ const PaymentForm = ({ orderId }) => {
       });
 
       if (error) {
+        console.error("Express Checkout error:", error);
         dispatch(
           setPaymentMessage({
             message: error.message,
@@ -131,7 +134,7 @@ const PaymentForm = ({ orderId }) => {
           })
         );
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        // Fetch billing address from order or form
+        console.log("Payment succeeded:", paymentIntent);
         const orderData = await fetchWrapperService.findOne(ordersUrl, {
           id: orderId,
         });
@@ -148,6 +151,7 @@ const PaymentForm = ({ orderId }) => {
 
         await handleSuccessfulPayment(orderData.billingAddress || {});
       } else if (paymentIntent && paymentIntent.status === "failed") {
+        console.error("Payment failed:", paymentIntent);
         dispatch(
           setPaymentMessage({
             message: "Payment status: " + paymentIntent.status,
@@ -187,7 +191,10 @@ const PaymentForm = ({ orderId }) => {
       try {
         dispatch(setPaymentLoader(true));
         resetValue();
-        if (!stripe || !elements) return;
+        if (!stripe || !elements) {
+          console.error("Stripe or Elements not initialized");
+          return;
+        }
 
         if (!values?.address) {
           dispatch(
@@ -198,6 +205,7 @@ const PaymentForm = ({ orderId }) => {
           );
           return;
         }
+
         const orderData = await fetchWrapperService.findOne(ordersUrl, {
           id: orderId,
         });
@@ -233,6 +241,7 @@ const PaymentForm = ({ orderId }) => {
         });
 
         if (error) {
+          console.error("Payment error:", error);
           dispatch(
             setPaymentMessage({
               message: error.message,
@@ -240,8 +249,10 @@ const PaymentForm = ({ orderId }) => {
             })
           );
         } else if (paymentIntent && paymentIntent.status === "succeeded") {
+          console.log("Payment succeeded:", paymentIntent);
           await handleSuccessfulPayment(values.address);
         } else if (paymentIntent && paymentIntent.status === "failed") {
+          console.error("Payment failed:", paymentIntent);
           dispatch(
             setPaymentMessage({
               message: "Payment status: " + paymentIntent.status,
@@ -263,7 +274,7 @@ const PaymentForm = ({ orderId }) => {
         dispatch(setIsSubmitted(false));
       }
     },
-    [dispatch, stripe, elements, orderId, checkOutSuccessUrl]
+    [dispatch, stripe, elements, orderId]
   );
 
   const { setFieldValue, setFieldTouched, touched, errors, handleSubmit } =
@@ -277,37 +288,43 @@ const PaymentForm = ({ orderId }) => {
     async (billingAddressData) => {
       try {
         const currentUser = helperFunctions?.getCurrentUser();
-
         const paymentPayload = {
           orderId: orderId,
           paymentStatus: "success",
           ...(currentUser && { cartIds: cartList.map((item) => item.id) }),
         };
-
         const billingPayload = {
           orderId: orderId,
           billingAddress: billingAddressData,
         };
-
         await dispatch(updateBillingAddress(billingPayload));
-
         const paymentResponse = await dispatch(
           updatePaymentStatus(paymentPayload)
         );
-
+        // Fetch PaymentIntent details for card/wallet info
+        if (paymentResponse?.paymentIntentId) {
+          const paymentIntentResponse =
+            await fetchWrapperService.getPaymentIntent(
+              paymentResponse.paymentIntentId
+            );
+          const paymentMethod = paymentIntentResponse?.payment_method;
+          console.log("Payment Method Details:", {
+            type: paymentMethod?.type, // e.g., 'card', 'google_pay', 'apple_pay'
+            brand: paymentMethod?.card?.brand, // e.g., 'visa'
+            last4: paymentMethod?.card?.last4, // e.g., '4242'
+          });
+        }
         if (paymentResponse) {
           router.push(`/order/success/${paymentResponse?.orderNumber}`);
-
           if (!currentUser) {
             localStorage.removeItem("cart");
           }
-
           localStorage.removeItem("address");
           localStorage.removeItem("selectedShippingMethod");
           dispatch(setCartList([]));
         }
       } catch (error) {
-        console.error("Error occurred while updating payment status:", error);
+        console.error("Error updating payment status:", error);
         throw error;
       }
     },
@@ -337,8 +354,8 @@ const PaymentForm = ({ orderId }) => {
   const paymentElementOptions = {
     layout: "tabs",
     wallets: {
-      applePay: "auto",
-      googlePay: "auto",
+      applePay: "never", // Disable wallets in Payment Element
+      googlePay: "never",
     },
     fields: {
       billingDetails: {
@@ -365,7 +382,6 @@ const PaymentForm = ({ orderId }) => {
         {touched?.email && errors?.email && (
           <ErrorMessage message={errors?.email} />
         )}
-
         <AddressElement
           id="address"
           options={{ mode: "billing" }}
@@ -374,7 +390,6 @@ const PaymentForm = ({ orderId }) => {
         {touched?.address && errors?.address && (
           <ErrorMessage message={errors?.address} />
         )}
-
         <PaymentElement id="payment-element" options={paymentElementOptions} />
         <div
           className="w-full mt-5"

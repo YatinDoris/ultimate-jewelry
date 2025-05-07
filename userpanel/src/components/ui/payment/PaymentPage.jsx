@@ -21,25 +21,11 @@ import {
 } from "@/_actions/payment.action";
 import ErrorMessage from "../ErrorMessage";
 import { messageType } from "@/_helper/constants";
-// ---------- stripe -----------------------
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { stripePublishableKey } from "@/_helper";
+
 const stripePromise = loadStripe(stripePublishableKey);
-// const appearance = {
-//   theme: "night",
-//   variables: {
-//     colorPrimary: "#0570de",
-//     colorBackground: "black",
-//     colorText: "#ffffff", // label color
-//     colorDanger: "red", // error color
-//     fontFamily: "Ideal Sans, system-ui, sans-serif",
-//     spacingUnit: "4px",
-//     borderRadius: "4px",
-//     // See all possible variables below
-//   },
-// };
-// ---------- stripe -----------------------
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
@@ -47,11 +33,8 @@ const PaymentPage = () => {
   let { secretData } = params;
 
   const { cartLoading, cartList } = useSelector(({ cart }) => cart);
-
   const { checkPIStatusLoader, paymentIntentMessage, paymentIntentStatus } =
     useSelector(({ payment }) => payment);
-
-  // decode secret data
 
   const getDecodedData = useCallback((secretData) => {
     const decoded = atob(decodeURIComponent(secretData));
@@ -59,7 +42,6 @@ const PaymentPage = () => {
     return parsedDecoded;
   }, []);
 
-  // abortcontroller
   const abortControllerRef = useRef(null);
   const clearAbortController = useCallback(() => {
     if (abortControllerRef.current) {
@@ -67,15 +49,6 @@ const PaymentPage = () => {
     }
     abortControllerRef.current = null;
   }, []);
-
-  useEffect(() => {
-    verifyPaymentIntent();
-    return () => {
-      terminatePaymentIntent();
-      clearAbortController();
-    };
-  }, []);
-
   const verifyPaymentIntent = useCallback(async () => {
     try {
       const decoded = getDecodedData(secretData);
@@ -92,22 +65,29 @@ const PaymentPage = () => {
         dispatch(setPaymentIntentStatus(response.paymentIntentStatus));
       }
     } catch (error) {
-      console.error("Error occurred while check payment intent:", error);
+      console.error("Error checking payment intent:", error);
     } finally {
       clearAbortController();
     }
-  }, [clearAbortController, dispatch, secretData]);
+  }, [clearAbortController, dispatch, getDecodedData, secretData]);
+
+  useEffect(() => {
+    console.log("Client Secret:", getDecodedData(secretData)?.clientSecret);
+    verifyPaymentIntent();
+    return () => {
+      terminatePaymentIntent();
+      clearAbortController();
+    };
+  }, [clearAbortController, secretData, verifyPaymentIntent]);
 
   const terminatePaymentIntent = useCallback(async () => {
     const parsedDecoded = getDecodedData(secretData);
-
     const payload = {
       paymentIntentId: parsedDecoded?.paymentIntentId,
       orderId: parsedDecoded?.orderId,
     };
-
     dispatch(cancelPaymentIntent(payload));
-  }, [dispatch, secretData]);
+  }, [dispatch, getDecodedData, secretData]);
 
   return (
     <div className="mx-auto pt-10 lg:pt-10 2xl:pt-12">
@@ -131,7 +111,6 @@ const PaymentPage = () => {
                 </div>
               ) : null}
               <AddressSummary />
-
               {paymentIntentMessage?.message &&
               paymentIntentMessage?.type !== messageType?.SUCCESS ? (
                 <ErrorMessage message={paymentIntentMessage?.message} />
@@ -155,7 +134,6 @@ const PaymentPage = () => {
                 </div>
               )}
             </div>
-
             <div className="lg:block hidden">
               {cartList?.length ? (
                 <CheckoutCommonComponent />
@@ -176,8 +154,6 @@ const PaymentPage = () => {
   );
 };
 
-export default PaymentPage;
-
 const PaymentSkeleton = () => {
   const skeletons = [
     { width: "w-[60%]", height: "h-4", margin: "mt-2" },
@@ -186,9 +162,7 @@ const PaymentSkeleton = () => {
     { width: "w-full", height: "h-8", margin: "mt-2" },
   ];
   return (
-    <div
-      className={`container grid grid-cols-1 lg:grid-cols-[70%_auto] gap-12 pt-12`}
-    >
+    <div className="container grid grid-cols-1 lg:grid-cols-[70%_auto] gap-12 pt-12">
       <div>
         {Array(4)
           .fill(skeletons)
@@ -203,10 +177,9 @@ const PaymentSkeleton = () => {
           ))}
       </div>
       <div className="grid grid-cols-1 gap-4 auto-rows-min">
-        <SkeletonLoader height="w-full h-[70] md:h-[220px]  2xl:h-[150px]" />
-        <SkeletonLoader height="w-full h-[70] md:h-[220px]  2xl:h-[150px]" />
-        <SkeletonLoader height="w-full h-[70] md:h-[220px]  2xl:h-[150px]" />
-
+        <SkeletonLoader height="w-full h-[70px] md:h-[220px] 2xl:h-[150px]" />
+        <SkeletonLoader height="w-full h-[70px] md:h-[220px] 2xl:h-[150px]" />
+        <SkeletonLoader height="w-full h-[70px] md:h-[220px] 2xl:h-[150px]" />
         <SkeletonLoader height="w-[20%] h-[40px]" />
       </div>
     </div>
@@ -222,8 +195,9 @@ const PaymentFormSkeleton = () => {
           height="w-full h-[20px] md:h-[25px] 2xl:h-[30px]"
         />
       ))}
-
       <SkeletonLoader height="w-[20%] h-[40px]" />
     </div>
   );
 };
+
+export default PaymentPage;
