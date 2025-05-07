@@ -471,10 +471,10 @@ const PaymentForm = ({ orderId, clientSecret }) => {
   };
 
   const paymentElementOptions = {
-    layout: "tabs",
+    layout: "accordian",
     wallets: {
-      applePay: "never",
-      googlePay: "never",
+      applePay: "auto",
+      googlePay: "auto",
     },
     fields: {
       billingDetails: {
