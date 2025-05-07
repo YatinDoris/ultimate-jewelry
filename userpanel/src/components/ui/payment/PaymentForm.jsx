@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   useStripe,
@@ -48,11 +48,12 @@ const validationSchema = Yup.object({
     .required("Email is required"),
 });
 
-const PaymentForm = ({ orderId }) => {
+const PaymentForm = ({ orderId, clientSecret }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
+  const [expressCheckoutElement, setExpressCheckoutElement] = useState(null);
 
   const { cartList } = useSelector(({ cart }) => cart);
   const { isHovered } = useSelector(({ common }) => common);
@@ -63,7 +64,47 @@ const PaymentForm = ({ orderId }) => {
   useEffect(() => {
     dispatch(setIsSubmitted(false));
     dispatch(clearPaymentMessage());
-  }, [dispatch]);
+
+    if (stripe && elements && clientSecret && !expressCheckoutElement) {
+      try {
+        const expressElement = elements.create("expressCheckout", {
+          buttonType: {
+            applePay: "buy",
+            googlePay: "buy",
+            paypal: "buynow",
+            klarna: "pay",
+          },
+          buttonTheme: {
+            applePay: "black",
+            googlePay: "black",
+            paypal: "silver",
+          },
+          buttonHeight: 44,
+          layout: {
+            maxRows: 2,
+            maxColumns: 2,
+          },
+        });
+        setExpressCheckoutElement(expressElement);
+        console.log("ExpressCheckoutElement created successfully");
+      } catch (error) {
+        console.error("Failed to create ExpressCheckoutElement:", error);
+        dispatch(
+          setPaymentMessage({
+            message: "Failed to initialize payment component.",
+            type: messageType.ERROR,
+          })
+        );
+      }
+    }
+
+    return () => {
+      if (expressCheckoutElement) {
+        expressCheckoutElement.destroy();
+        console.log("ExpressCheckoutElement destroyed");
+      }
+    };
+  }, [dispatch, stripe, elements, clientSecret, expressCheckoutElement]);
 
   const resetValue = () => {
     dispatch(setIsSubmitted(false));
@@ -189,25 +230,6 @@ const PaymentForm = ({ orderId }) => {
     }
   };
 
-  const expressCheckoutOptions = {
-    buttonType: {
-      applePay: "buy",
-      googlePay: "buy",
-      paypal: "buynow",
-      klarna: "pay",
-    },
-    buttonTheme: {
-      applePay: "black",
-      googlePay: "black",
-      paypal: "silver",
-    },
-    buttonHeight: 44,
-    layout: {
-      maxRows: 2,
-      maxColumns: 2,
-    },
-  };
-
   const onSubmit = useCallback(
     async (values) => {
       try {
@@ -329,7 +351,6 @@ const PaymentForm = ({ orderId }) => {
         const paymentResponse = await dispatch(
           updatePaymentStatus(paymentPayload)
         );
-        // Fetch PaymentIntent details for card/wallet info
         if (paymentResponse?.paymentIntentId) {
           const paymentIntentResponse =
             await fetchWrapperService.getPaymentIntent(
@@ -337,9 +358,9 @@ const PaymentForm = ({ orderId }) => {
             );
           const paymentMethod = paymentIntentResponse?.payment_method;
           console.log("Payment Method Details:", {
-            type: paymentMethod?.type, // e.g., 'card', 'google_pay', 'apple_pay'
-            brand: paymentMethod?.card?.brand, // e.g., 'visa'
-            last4: paymentMethod?.card?.last4, // e.g., '4242'
+            type: paymentMethod?.type,
+            brand: paymentMethod?.card?.brand,
+            last4: paymentMethod?.card?.last4,
           });
         }
         if (paymentResponse) {
@@ -382,7 +403,7 @@ const PaymentForm = ({ orderId }) => {
   const paymentElementOptions = {
     layout: "tabs",
     wallets: {
-      applePay: "never", // Disable wallets in Payment Element
+      applePay: "never",
       googlePay: "never",
     },
     fields: {
@@ -393,8 +414,24 @@ const PaymentForm = ({ orderId }) => {
     },
   };
 
-  // Ensure Stripe and Elements are initialized before rendering ExpressCheckoutElement
-  if (!stripe || !elements) {
+  useEffect(() => {
+    if (expressCheckoutElement) {
+      try {
+        expressCheckoutElement.mount("#express-checkout-element");
+        console.log("ExpressCheckoutElement mounted successfully");
+      } catch (error) {
+        console.error("Failed to mount ExpressCheckoutElement:", error);
+        dispatch(
+          setPaymentMessage({
+            message: "Failed to initialize payment component.",
+            type: messageType.ERROR,
+          })
+        );
+      }
+    }
+  }, [expressCheckoutElement, dispatch]);
+
+  if (!stripe || !elements || !clientSecret) {
     return (
       <div className="bg-white p-5 mt-5">
         <p className="text-baseblack text-lg md:text-xl font-semibold">
@@ -415,14 +452,7 @@ const PaymentForm = ({ orderId }) => {
         All transactions are secure and encrypted.
       </h6>
       <form onKeyDown={handleKeyDown}>
-        <div id="express-checkout-element">
-          <ExpressCheckoutElement
-            id="express-checkout"
-            options={expressCheckoutOptions}
-            onReady={onExpressCheckoutReady}
-            onConfirm={onExpressCheckoutConfirm}
-          />
-        </div>
+        <div id="express-checkout-element" />
         <LinkAuthenticationElement id="email" onChange={handleEmailChange} />
         {touched?.email && errors?.email && (
           <ErrorMessage message={errors?.email} />

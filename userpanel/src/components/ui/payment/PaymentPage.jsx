@@ -128,6 +128,7 @@ const PaymentPage = () => {
                     >
                       <PaymentForm
                         orderId={getDecodedData(secretData)?.orderId}
+                        clientSecret={getDecodedData(secretData)?.clientSecret}
                       />
                     </Elements>
                   ) : null}
