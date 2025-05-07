@@ -174,6 +174,12 @@ const PaymentForm = ({ orderId }) => {
   };
 
   const expressCheckoutOptions = {
+    buttonType: {
+      applePay: "buy",
+      googlePay: "buy",
+      paypal: "buynow",
+      klarna: "pay",
+    },
     buttonTheme: {
       applePay: "black",
       googlePay: "black",
