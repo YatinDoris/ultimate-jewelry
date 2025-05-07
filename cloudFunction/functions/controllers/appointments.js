@@ -13,6 +13,7 @@ const { getCurrentDate } = require("../helpers/common");
 */
 const updateAppointmentStatus = async (req, res) => {
   try {
+    // console.log('first', first)
     let { appointmentId, appointmentStatus, rejectReason } = req.body;
     // required
     appointmentId = sanitizeValue(appointmentId) ? appointmentId.trim() : null;
@@ -84,7 +85,7 @@ const updateAppointmentStatus = async (req, res) => {
           appointmentData.name,
           appointmentStatus,
           formattedDateTime,
-          rejectReason ? rejectReason : null,
+          rejectReason ? rejectReason : null
         );
         sendMail(appointmentData.email, subject, description);
         return res.json({

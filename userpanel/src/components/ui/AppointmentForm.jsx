@@ -12,7 +12,8 @@ import { bookNewAppointment } from "@/_actions/appointment.action";
 import { messageType } from "@/_helper/constants";
 import { useRouter } from "next/navigation";
 import moment from "moment";
-
+import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required("First Name is Required"),
   lastName: Yup.string().required("Last Name is Required"),
@@ -90,6 +91,25 @@ const AppointmentForm = () => {
     dispatch(setAppointmentMessage({ message: "", type: "" }));
   }, []);
 
+  const handleDateChange = (selectedDates) => {
+    const date = selectedDates[0]; // First selected date or undefined
+    const dateValue =
+      date instanceof Date && !isNaN(date)
+        ? date.toISOString().split("T")[0]
+        : "";
+    handleChange({
+      target: {
+        name: "date",
+        value: dateValue,
+      },
+    });
+    console.log("Date Change:", {
+      selectedDates,
+      dateValue,
+      formikDate: values?.date,
+    });
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -132,7 +152,9 @@ const AppointmentForm = () => {
             id="lastName"
             placeholder="Last name"
             className={`custom-input w-full  2xl:py-4 ${
-              touched?.lastName && errors?.lastName ? "border-red-500 border" : ""
+              touched?.lastName && errors?.lastName
+                ? "border-red-500 border"
+                : ""
             }`}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -167,7 +189,7 @@ const AppointmentForm = () => {
           )}
         </div>
 
-        <div>
+        {/* <div>
           <label
             htmlFor="date"
             className="block text-md text-gray-66 uppercase mb-1"
@@ -185,6 +207,52 @@ const AppointmentForm = () => {
             onBlur={handleBlur}
             value={values?.date}
           />
+          {touched?.date && errors?.date && (
+            <ErrorMessage message={errors?.date} />
+          )}
+        </div> */}
+
+        <div>
+          <label
+            htmlFor="date"
+            className="block text-md text-gray-66 uppercase mb-1"
+          >
+            Date
+          </label>
+          <div className="relative">
+            <Flatpickr
+              onChange={handleDateChange}
+              onBlur={handleBlur}
+              name="date"
+              id="date"
+              placeholder="Select a date (dd/mm/yyyy)"
+              className={`custom-input w-full 2xl:py-4 pr-10 ${
+                touched?.date && errors?.date ? "border-red-500 border" : ""
+              }`}
+              options={{
+                dateFormat: "d/m/Y", // Formik-compatible format: DD/MM/YYYY
+                altInput: true,
+                altFormat: "d/m/Y", // Display format: DD/MM/YYYY
+                allowInput: true, // Allow manual typing
+                clickOpens: true, // Open calendar on input click
+                enableClear: true, // Show clear button
+                minDate: "today", // Restrict to today or future
+                inline: false, // Popup calendar (not inline)
+                parseDate: (datestr) => {
+                  // Parse manually entered dates in DD/MM/YYYY format
+                  const [day, month, year] = datestr.split("/");
+                  return new Date(year, month - 1, day);
+                },
+                formatDate: (date) => {
+                  // Format date to DD/MM/YYYY
+                  const day = String(date.getDate()).padStart(2, "0");
+                  const month = String(date.getMonth() + 1).padStart(2, "0");
+                  const year = date.getFullYear();
+                  return `${day}/${month}/${year}`;
+                },
+              }}
+            />
+          </div>
           {touched?.date && errors?.date && (
             <ErrorMessage message={errors?.date} />
           )}
