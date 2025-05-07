@@ -71,9 +71,9 @@ const PaymentForm = ({ orderId, clientSecret }) => {
       const paymentRequest = new PaymentRequest(
         [
           {
-            supportedMethods: "https://google.com/pay",
+            supportedMethods: "https://pay.google.com/gp/p/js/pay.js",
             data: {
-              environment: "TEST", // Use "PRODUCTION" in production
+              environment: "TEST",
               apiVersion: 2,
               apiVersionMinor: 0,
               allowedPaymentMethods: [
