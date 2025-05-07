@@ -471,7 +471,7 @@ const PaymentForm = ({ orderId, clientSecret }) => {
   };
 
   const paymentElementOptions = {
-    layout: "accordian",
+    layout: "accordion",
     wallets: {
       applePay: "auto",
       googlePay: "auto",
