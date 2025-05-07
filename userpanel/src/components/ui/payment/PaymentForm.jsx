@@ -8,8 +8,8 @@ import {
   PaymentElement,
   AddressElement,
   LinkAuthenticationElement,
+  ExpressCheckoutElement,
 } from "@stripe/react-stripe-js";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
@@ -63,14 +63,13 @@ const PaymentForm = ({ orderId }) => {
   useEffect(() => {
     dispatch(setIsSubmitted(false));
     dispatch(clearPaymentMessage());
-  }, []);
+  }, [dispatch]);
 
   const resetValue = () => {
     dispatch(setIsSubmitted(false));
     dispatch(clearPaymentMessage());
   };
 
-  // Formik setup
   const addressesMatch = (shipping, billing) => {
     const isValidShipping =
       shipping &&
@@ -105,6 +104,84 @@ const PaymentForm = ({ orderId }) => {
     return Object.values(matches).every((value) => value === true);
   };
 
+  const onExpressCheckoutReady = ({ element }) => {
+    // Customize ExpressCheckoutElement if needed
+  };
+
+  const onExpressCheckoutConfirm = async () => {
+    if (!stripe || !elements) return;
+
+    dispatch(setPaymentLoader(true));
+    resetValue();
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/${checkOutSuccessUrl}`,
+        },
+        redirect: "if_required",
+      });
+
+      if (error) {
+        dispatch(
+          setPaymentMessage({
+            message: error.message,
+            type: messageType.ERROR,
+          })
+        );
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        // Fetch billing address from order or form
+        const orderData = await fetchWrapperService.findOne(ordersUrl, {
+          id: orderId,
+        });
+
+        if (!orderData) {
+          dispatch(
+            setPaymentMessage({
+              message: "Order not found.",
+              type: messageType.ERROR,
+            })
+          );
+          return;
+        }
+
+        await handleSuccessfulPayment(orderData.billingAddress || {});
+      } else if (paymentIntent && paymentIntent.status === "failed") {
+        dispatch(
+          setPaymentMessage({
+            message: "Payment status: " + paymentIntent.status,
+            type: messageType.ERROR,
+          })
+        );
+        dispatch(deleteOrder(orderId));
+      }
+    } catch (error) {
+      console.error("Error in Express Checkout:", error);
+      dispatch(
+        setPaymentMessage({
+          message: "An error occurred. Please try again.",
+          type: messageType.ERROR,
+        })
+      );
+    } finally {
+      dispatch(setPaymentLoader(false));
+    }
+  };
+
+  const expressCheckoutOptions = {
+    buttonTheme: {
+      applePay: "black",
+      googlePay: "black",
+      paypal: "silver",
+    },
+    buttonHeight: 44,
+    layout: {
+      maxRows: 2,
+      maxColumns: 2,
+    },
+  };
+
   const onSubmit = useCallback(
     async (values) => {
       try {
@@ -119,7 +196,7 @@ const PaymentForm = ({ orderId }) => {
               type: messageType.ERROR,
             })
           );
-          returnl;
+          return;
         }
         const orderData = await fetchWrapperService.findOne(ordersUrl, {
           id: orderId,
@@ -212,10 +289,8 @@ const PaymentForm = ({ orderId }) => {
           billingAddress: billingAddressData,
         };
 
-        // Update billing address first
         await dispatch(updateBillingAddress(billingPayload));
 
-        // Then update payment status
         const paymentResponse = await dispatch(
           updatePaymentStatus(paymentPayload)
         );
@@ -254,13 +329,23 @@ const PaymentForm = ({ orderId }) => {
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && !paymentLoader) {
-      event.preventDefault(); // Prevent default form submission behavior
-      handleSubmit(); // Trigger Formik's handleSubmit
+      event.preventDefault();
+      handleSubmit();
     }
   };
 
   const paymentElementOptions = {
-    layout: "accordion",
+    layout: "tabs",
+    wallets: {
+      applePay: "always",
+      googlePay: "always",
+    },
+    fields: {
+      billingDetails: {
+        name: "auto",
+        email: "auto",
+      },
+    },
   };
 
   return (
@@ -270,6 +355,12 @@ const PaymentForm = ({ orderId }) => {
         All transactions are secure and encrypted.
       </h6>
       <form onKeyDown={handleKeyDown}>
+        <ExpressCheckoutElement
+          id="express-checkout"
+          options={expressCheckoutOptions}
+          onReady={onExpressCheckoutReady}
+          onConfirm={onExpressCheckoutConfirm}
+        />
         <LinkAuthenticationElement id="email" onChange={handleEmailChange} />
         {touched?.email && errors?.email && (
           <ErrorMessage message={errors?.email} />
