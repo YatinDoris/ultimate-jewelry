@@ -136,6 +136,13 @@ const navConfig = [
     children: [],
   },
   {
+    title: 'contacts',
+    pageId: 'contacts',
+    path: '/contacts',
+    icon: <Iconify icon="ic:twotone-contact-page" width={25} />,
+    children: [],
+  },
+  {
     title: 'permissions',
     pageId: 'permissions',
     path: '/permissions',

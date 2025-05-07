@@ -12,6 +12,7 @@ export const collectionUrl = process.env.REACT_APP_COLLECTION;
 export const settingStyleUrl = process.env.REACT_APP_SETTING_STYLE;
 export const diamondShapeUrl = process.env.REACT_APP_DIAMOND_SHAPE;
 export const subscribersUrl = process.env.REACT_APP_SUBSCRIBERS;
+export const contactsUrl = process.env.REACT_APP_CONTACTS;
 export const brandSliderUrl = process.env.REACT_APP_BRAND_SLIDER;
 export const appointmentsUrl = process.env.REACT_APP_APPOINTMENTS;
 export const customizationUrl = process.env.REACT_APP_CUSTOMIZATION;
@@ -46,6 +47,7 @@ export const databaseUrls = {
   productsDbUrl: process.env.REACT_APP_PRODUCTS_DATABSE_URL,
   appointmentDbUrl: process.env.REACT_APP_APPOINTMENT_DATABSE_URL,
   subscribersDbUrl: process.env.REACT_APP_SUBSCRIBERS_DATABSE_URL,
+  contactsDbUrl: process.env.REACT_APP_CONTACTS_DATABSE_URL,
   customJewelryDbUrl: process.env.REACT_APP_CUSTOM_JEWELRY_DATABSE_URL,
   reviewAndRatingsDbUrl: process.env.REACT_APP_REVIEW_AND_RATIND_DATABSE_URL,
 };

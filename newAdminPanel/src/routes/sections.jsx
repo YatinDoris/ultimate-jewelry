@@ -32,6 +32,7 @@ export const ReportAnalysis = lazy(() => import('src/pages/report-analysis'));
 export const ProductsPage = lazy(() => import('src/pages/products/products'));
 export const ForgetPassword = lazy(() => import('src/pages/forget-password'));
 export const ShowCaseBanner = lazy(() => import('src/pages/showcase-banner'));
+export const Contacts = lazy(() => import('src/pages/contacts'));
 export const ReturnList = lazy(() => import('src/sections/returns/returns-list'));
 export const ReturnRefund = lazy(() => import('src/sections/returns/return-refund'));
 
@@ -210,6 +211,14 @@ export default function Router() {
           element: (
             <ProtectedRoutes pageId={'subscribers'}>
               <Subscribers />
+            </ProtectedRoutes>
+          ),
+        },
+        {
+          path: 'contacts',
+          element: (
+            <ProtectedRoutes pageId={'subscribers'}>
+              <Contacts />
             </ProtectedRoutes>
           ),
         },
