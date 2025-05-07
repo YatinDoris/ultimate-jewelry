@@ -359,9 +359,9 @@ const ProductDetailPage = ({ customizePage }) => {
     const response = await dispatch(insertProductIntoCart(payload));
 
     if (response) {
+      router.push("/cart");
       localStorage.removeItem("customProduct");
       dispatch(setCustomProductDetails(null));
-      router.push("/cart");
       dispatch(setIsSubmitted(false));
     }
   }, [
@@ -413,7 +413,6 @@ const ProductDetailPage = ({ customizePage }) => {
     }
   }, [isInValidSelectedVariation, productDetail?.id, selectedVariations]);
 
-  //Enricehd Variations all Variations details with name and id passed in it
   const enrichedVariations =
     selectedVariations?.length &&
     selectedVariations?.map((selectedVar) => {
@@ -477,7 +476,7 @@ const ProductDetailPage = ({ customizePage }) => {
               </div> */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 auto-rows-min">
                 {productDetail?.video && (
-                  <div className="relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md">
+                  <div className="relative w-full h-60 sm:h-64 lg:h-[300px] xl:h-[350px] 4xl:h-[450px] overflow-hidden rounded-md">
                     <ProgressiveVed
                       src={productDetail?.video}
                       type={helperFunctions?.getVideoType(productDetail?.video)}
@@ -487,7 +486,7 @@ const ProductDetailPage = ({ customizePage }) => {
                 )}
 
                 {productDetail?.thumbnailImage && (
-                  <div className="zoom-container relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md">
+                  <div className="zoom-container relative w-full h-60  sm:h-64 lg:h-[300px] xl:h-[350px] 4xl:h-[450px] overflow-hidden rounded-md">
                     <ZoomImage
                       src={productDetail?.thumbnailImage}
                       alt="Product Thumbnail"
@@ -498,7 +497,7 @@ const ProductDetailPage = ({ customizePage }) => {
                 {productDetail?.images?.map((media, index) => (
                   <div
                     key={index}
-                    className="relative w-full h-60 sm:h-64 3xl:h-[450px] overflow-hidden rounded-md"
+                    className="relative w-full h-60 sm:h-64 lg:h-[300px] xl:h-[350px] 4xl:h-[450px] overflow-hidden rounded-md"
                   >
                     <ZoomImage
                       src={media?.image}
