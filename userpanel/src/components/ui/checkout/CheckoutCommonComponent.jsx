@@ -5,8 +5,6 @@ import { helperFunctions } from "@/_helper";
 import { CustomImg, ProgressiveImg } from "../../dynamiComponents";
 import stripe from "@/assets/images/cart/stripe.webp";
 import paypal from "@/assets/images/cart/paypal.webp";
-import snapFinance from "@/assets/images/cart/snapFinance.webp";
-import acima from "@/assets/images/cart/acima.webp";
 import { fetchCart } from "@/_actions/cart.action";
 import { setIsNewYorkState } from "@/store/slices/checkoutSlice";
 import { usePathname } from "next/navigation";
@@ -52,8 +50,6 @@ const CheckoutCommonComponent = () => {
   const paymentOptions = [
     { img: stripe, name: "Stripe", altAttr: "", titleAttr: "" },
     { img: paypal, name: "PayPal", altAttr: "", titleAttr: "" },
-    { img: snapFinance, name: "Snap Finance", altAttr: "", titleAttr: "" },
-    { img: acima, name: "Acima", altAttr: "", titleAttr: "" },
   ];
   const getSalesTaxAmount = useCallback(() => {
     if (isNewYorkState) {
