@@ -54,6 +54,7 @@ const PaymentForm = ({ orderId, clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [expressCheckoutElement, setExpressCheckoutElement] = useState(null);
+  const [isGooglePaySupported, setIsGooglePaySupported] = useState(false);
 
   const { cartList } = useSelector(({ cart }) => cart);
   const { isHovered } = useSelector(({ common }) => common);
@@ -65,12 +66,61 @@ const PaymentForm = ({ orderId, clientSecret }) => {
     dispatch(setIsSubmitted(false));
     dispatch(clearPaymentMessage());
 
+    // Check if Google Pay is supported in the browser
+    if (window.PaymentRequest) {
+      const paymentRequest = new PaymentRequest(
+        [
+          {
+            supportedMethods: "https://google.com/pay",
+            data: {
+              environment: "TEST", // Use "PRODUCTION" in production
+              apiVersion: 2,
+              apiVersionMinor: 0,
+              allowedPaymentMethods: [
+                {
+                  type: "CARD",
+                  parameters: {
+                    allowedAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
+                    allowedCardNetworks: [
+                      "AMEX",
+                      "DISCOVER",
+                      "MASTERCARD",
+                      "VISA",
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+        {
+          total: {
+            label: "Total",
+            amount: { currency: "USD", value: "10.99" },
+          },
+        }
+      );
+      paymentRequest
+        .canMakePayment()
+        .then((result) => {
+          setIsGooglePaySupported(result);
+          console.log("Google Pay supported:", result);
+        })
+        .catch((error) => {
+          console.error("Error checking Google Pay support:", error);
+          setIsGooglePaySupported(false);
+        });
+    } else {
+      console.log("PaymentRequest API not available in this browser");
+      setIsGooglePaySupported(false);
+    }
+
     if (stripe && elements && clientSecret && !expressCheckoutElement) {
       try {
         const expressElement = elements.create("expressCheckout", {
           buttonType: {
             applePay: "buy",
-            googlePay: "buy",
+            googlePay: isGooglePaySupported ? "buy" : undefined,
             paypal: "buynow",
             klarna: "pay",
           },
@@ -104,7 +154,14 @@ const PaymentForm = ({ orderId, clientSecret }) => {
         console.log("ExpressCheckoutElement destroyed");
       }
     };
-  }, [dispatch, stripe, elements, clientSecret, expressCheckoutElement]);
+  }, [
+    dispatch,
+    stripe,
+    elements,
+    clientSecret,
+    expressCheckoutElement,
+    isGooglePaySupported,
+  ]);
 
   const resetValue = () => {
     dispatch(setIsSubmitted(false));
@@ -156,6 +213,18 @@ const PaymentForm = ({ orderId, clientSecret }) => {
       return;
     }
     console.log("ExpressCheckoutElement ready:", element);
+  };
+
+  const onExpressCheckoutError = (event) => {
+    console.error("ExpressCheckoutElement error:", event);
+    dispatch(
+      setPaymentMessage({
+        message: `Payment method error: ${
+          event.error?.message || "Unable to load payment method."
+        }`,
+        type: messageType.ERROR,
+      })
+    );
   };
 
   const onExpressCheckoutConfirm = async () => {
