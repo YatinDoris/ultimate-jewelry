@@ -68,13 +68,15 @@ const PaymentForm = ({ orderId, clientSecret }) => {
 
     // Check if Google Pay is supported in the browser
     if (window.PaymentRequest) {
+      const totalAmount = cartList
+        .reduce((sum, item) => sum + item.price * item.quantity, 0)
+        .toFixed(2);
       const paymentRequest = new PaymentRequest(
         [
           {
             supportedMethods: "https://google.com/pay",
             data: {
-              environment: "PRODUCTION", // Use "PRODUCTION" in production
-
+              environment: "TEST",
               apiVersion: 2,
               apiVersionMinor: 0,
               allowedPaymentMethods: [
@@ -97,7 +99,7 @@ const PaymentForm = ({ orderId, clientSecret }) => {
         {
           total: {
             label: "Total",
-            amount: { currency: "USD", value: "10.99" },
+            amount: { currency: "USD", value: totalAmount },
           },
         }
       );
@@ -108,8 +110,19 @@ const PaymentForm = ({ orderId, clientSecret }) => {
           console.log("Google Pay supported:", result);
         })
         .catch((error) => {
-          console.error("Error checking Google Pay support:", error);
+          console.error(
+            "Error checking Google Pay support:",
+            error.message,
+            error
+          );
           setIsGooglePaySupported(false);
+          dispatch(
+            setPaymentMessage({
+              message:
+                "Google Pay is not available. Please try another payment method.",
+              type: messageType.ERROR,
+            })
+          );
         });
     } else {
       console.log("PaymentRequest API not available in this browser");
