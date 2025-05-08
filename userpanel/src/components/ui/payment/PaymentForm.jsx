@@ -68,9 +68,10 @@ const PaymentForm = ({ orderId, clientSecret }) => {
 
     // Check if Google Pay is supported in the browser
     if (window.PaymentRequest) {
-      const totalAmount = cartList
-        .reduce((sum, item) => sum + item.price * item.quantity, 0)
-        .toFixed(2);
+      const totalAmount = "214.39";
+      // const totalAmount = cartList
+      //   .reduce((sum, item) => sum + item.price * item.quantity, 0)
+      //   .toFixed(2);
       const paymentRequest = new PaymentRequest(
         [
           {
