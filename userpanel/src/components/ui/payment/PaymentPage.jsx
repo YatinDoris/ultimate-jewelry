@@ -21,11 +21,25 @@ import {
 } from "@/_actions/payment.action";
 import ErrorMessage from "../ErrorMessage";
 import { messageType } from "@/_helper/constants";
+// ---------- stripe -----------------------
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { stripePublishableKey } from "@/_helper";
-
 const stripePromise = loadStripe(stripePublishableKey);
+// const appearance = {
+//   theme: "night",
+//   variables: {
+//     colorPrimary: "#0570de",
+//     colorBackground: "black",
+//     colorText: "#ffffff", // label color
+//     colorDanger: "red", // error color
+//     fontFamily: "Ideal Sans, system-ui, sans-serif",
+//     spacingUnit: "4px",
+//     borderRadius: "4px",
+//     // See all possible variables below
+//   },
+// };
+// ---------- stripe -----------------------
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
@@ -33,8 +47,11 @@ const PaymentPage = () => {
   let { secretData } = params;
 
   const { cartLoading, cartList } = useSelector(({ cart }) => cart);
+
   const { checkPIStatusLoader, paymentIntentMessage, paymentIntentStatus } =
     useSelector(({ payment }) => payment);
+
+  // decode secret data
 
   const getDecodedData = useCallback((secretData) => {
     const decoded = atob(decodeURIComponent(secretData));
@@ -42,6 +59,7 @@ const PaymentPage = () => {
     return parsedDecoded;
   }, []);
 
+  // abortcontroller
   const abortControllerRef = useRef(null);
   const clearAbortController = useCallback(() => {
     if (abortControllerRef.current) {
@@ -49,6 +67,15 @@ const PaymentPage = () => {
     }
     abortControllerRef.current = null;
   }, []);
+
+  useEffect(() => {
+    verifyPaymentIntent();
+    return () => {
+      terminatePaymentIntent();
+      clearAbortController();
+    };
+  }, []);
+
   const verifyPaymentIntent = useCallback(async () => {
     try {
       const decoded = getDecodedData(secretData);
@@ -65,29 +92,22 @@ const PaymentPage = () => {
         dispatch(setPaymentIntentStatus(response.paymentIntentStatus));
       }
     } catch (error) {
-      console.error("Error checking payment intent:", error);
+      console.error("Error occurred while check payment intent:", error);
     } finally {
       clearAbortController();
     }
-  }, [clearAbortController, dispatch, getDecodedData, secretData]);
-
-  useEffect(() => {
-    console.log("Client Secret:", getDecodedData(secretData)?.clientSecret);
-    verifyPaymentIntent();
-    return () => {
-      terminatePaymentIntent();
-      clearAbortController();
-    };
-  }, [clearAbortController, secretData, verifyPaymentIntent]);
+  }, [clearAbortController, dispatch, secretData]);
 
   const terminatePaymentIntent = useCallback(async () => {
     const parsedDecoded = getDecodedData(secretData);
+
     const payload = {
       paymentIntentId: parsedDecoded?.paymentIntentId,
       orderId: parsedDecoded?.orderId,
     };
+
     dispatch(cancelPaymentIntent(payload));
-  }, [dispatch, getDecodedData, secretData]);
+  }, [dispatch, secretData]);
 
   return (
     <div className="mx-auto pt-10 lg:pt-10 2xl:pt-12">
@@ -111,6 +131,7 @@ const PaymentPage = () => {
                 </div>
               ) : null}
               <AddressSummary />
+
               {paymentIntentMessage?.message &&
               paymentIntentMessage?.type !== messageType?.SUCCESS ? (
                 <ErrorMessage message={paymentIntentMessage?.message} />
@@ -134,6 +155,7 @@ const PaymentPage = () => {
                 </div>
               )}
             </div>
+
             <div className="lg:block hidden">
               {cartList?.length ? (
                 <CheckoutCommonComponent />
@@ -153,6 +175,8 @@ const PaymentPage = () => {
     </div>
   );
 };
+
+export default PaymentPage;
 
 const PaymentSkeleton = () => {
   const skeletons = [
@@ -199,5 +223,3 @@ const PaymentFormSkeleton = () => {
     </div>
   );
 };
-
-export default PaymentPage;
