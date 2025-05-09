@@ -550,12 +550,12 @@ const ProductDetailPage = ({ customizePage }) => {
                           ).toFixed(2)}`
                         : "N/A"}
                     </span>
-                    {productDetail?.discount ? (
+                    {productDetail?.discount && selectedPrice ? (
                       <span className="text-gray-500 line-through text-xl font-chong-modern">
                         ${(selectedPrice * productQuantity).toFixed(2)}
                       </span>
                     ) : null}
-                    {productDetail?.discount ? (
+                    {productDetail?.discount && selectedPrice ? (
                       <span className="bg-primary text-white px-2 py-2 text-xs font-medium">
                         {`You Save ${productDetail?.discount}%`}
                       </span>

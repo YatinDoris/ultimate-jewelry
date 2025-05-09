@@ -8,9 +8,9 @@ import {
 export const bookNewAppointment = (payload) => async (dispatch) => {
   try {
     dispatch(setAppointmentLoading(true));
-    console.log("payload", payload);
+
     const res = await appointmentService.addNewAppointment(payload);
-    console.log("res", res);
+
     if (res) {
       dispatch(
         setAppointmentMessage({
