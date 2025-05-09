@@ -58,6 +58,7 @@ const createPaymentIntent = async (req, res) => {
         total,
         products,
         orderNumber,
+        paymentMethod
       } = createdOrder;
       console.log(createdOrder, "createdOrder");
       stripe.customers
@@ -111,6 +112,7 @@ const createPaymentIntent = async (req, res) => {
               return res.json({
                 status: 200,
                 orderId: orderId,
+                paymentMethod,
                 paymentIntentId: paymentIntent.id,
                 clientSecret: paymentIntent.client_secret,
               });
@@ -271,6 +273,7 @@ const createOrder = async (payload, activeProductsList, res) => {
       companyName,
       apartment,
       shippingCharge,
+      paymentMethod = "stripe",
     } = payload || {};
 
     // Sanitize inputs
@@ -285,6 +288,7 @@ const createOrder = async (payload, activeProductsList, res) => {
     pinCode = pinCode ? Number(pinCode) : null;
     mobile = mobile ? Number(mobile) : null;
     email = sanitizeValue(email) ? email.trim() : null;
+    paymentMethod = sanitizeValue(paymentMethod) ? paymentMethod.trim() : null;
 
     userId = sanitizeValue(userId) ? userId.trim() : "";
     companyName = sanitizeValue(companyName) ? companyName.trim() : "";
@@ -303,7 +307,8 @@ const createOrder = async (payload, activeProductsList, res) => {
       !state ||
       !pinCode ||
       !mobile ||
-      !email
+      !email ||
+      !paymentMethod
     ) {
       return res.json({
         status: 400,
@@ -421,6 +426,7 @@ const createOrder = async (payload, activeProductsList, res) => {
           price = customProductPrice + diamondPrice;
         } catch (e) {
           continue; // Skip if price calculation fails
+
         }
       } else {
         // Handle non-customized product
@@ -455,9 +461,9 @@ const createOrder = async (payload, activeProductsList, res) => {
         ...cartItem,
         diamondDetail: isCustomized
           ? {
-              ...diamondDetail,
-              price: diamondPrice, // Reuse the calculated diamond price
-            }
+            ...diamondDetail,
+            price: diamondPrice, // Reuse the calculated diamond price
+          }
           : undefined, // Set to undefined for non-customized products
         quantity: adjustedQuantity,
         quantityWiseSellingPrice: sellingPrice * adjustedQuantity,
@@ -516,6 +522,7 @@ const createOrder = async (payload, activeProductsList, res) => {
       }),
       shippingAddress,
       subTotal,
+      paymentMethod,
       // discount : ,
       salesTax,
       salesTaxPercentage: salesTaxPerc,
@@ -875,8 +882,7 @@ const refundPaymentForReturn = async (req, res) => {
             return res.json({
               status: 429,
               message: message.custom(
-                `The requested refund amount exceeds your payment amount. The maximum refundable amount is $${
-                  paymentIntent.amount / 100
+                `The requested refund amount exceeds your payment amount. The maximum refundable amount is $${paymentIntent.amount / 100
                 }.`
               ),
             });
@@ -930,7 +936,7 @@ const refundPaymentForReturn = async (req, res) => {
               if (
                 !refundsList?.length ||
                 refundsList?.filter((x) => x?.status === "canceled")?.length ===
-                  refundsList?.length
+                refundsList?.length
               ) {
                 returnUpdatePatternWithRefund.returnPaymentStatus =
                   "refund_initialization_failed";
