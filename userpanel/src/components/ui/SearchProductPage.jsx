@@ -14,6 +14,7 @@ import { fetchSearchedProducts } from "@/_actions/product.actions";
 import { IoIosSearch } from "react-icons/io";
 import searchVector from "@/assets/images/search-vector.webp";
 import {
+  resetFilters,
   setCurrentPage,
   setSearchedProductList,
 } from "@/store/slices/productSlice";
@@ -62,6 +63,7 @@ const SearchProductPage = () => {
   );
 
   useEffect(() => {
+    dispatch(resetFilters());
     const getData = setTimeout(() => {
       if (searchQuery) {
         dispatch(fetchSearchedProducts({ searchValue: searchQuery }));
@@ -82,12 +84,12 @@ const SearchProductPage = () => {
 
         <div className="flex justify-center mb-6 px-0">
           <div className="container relative">
-            <IoIosSearch className="absolute top-1/2 left-6 md:left-8 transform -translate-y-1/2 text-basegray text-xl pointer-events-none" />
+            <IoIosSearch className="absolute top-1/2 left-6  md:left-8 transform -translate-y-1/2 text-basegray text-xl pointer-events-none" />
 
             <input
               type="text"
               placeholder="Search Products By Name, Category, SKU, or Variations"
-              className="custom-input !pl-10 md:pl-12 pr-10 text-sm md:text-base"
+              className="custom-input ml-2 !pl-10 md:pl-12 pr-10 text-sm md:text-base"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
             />

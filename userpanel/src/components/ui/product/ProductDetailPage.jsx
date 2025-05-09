@@ -628,8 +628,8 @@ const ProductDetailPage = ({ customizePage }) => {
                 customProductDetails?.diamondDetails && (
                   <>
                     <div className="border-t  border-black_opacity_10 mt-10" />
-                    <div className=" text-baseblack pt-4 md:pt-6 ">
-                      <div className="flex  items-start gap-2 mb-4">
+                    <div className=" text-baseblack pt-4 md:pt-6">
+                      <div className="flex  items-start gap-2">
                         <div className="flex gap-1">
                           <CustomImg
                             srcAttr={diamondSvg}
@@ -642,14 +642,14 @@ const ProductDetailPage = ({ customizePage }) => {
                           <p className="font-semibold text-xl">
                             Diamond Detail:
                           </p>
-                          <p className="pt-2 text-xl font-medium text-baseblack">
+                          <p className="pt-2  text-sm  3xl:text-base font-medium text-baseblack">
                             Diamond Price:{" "}
                             <span className="font-bold">
                               ${diamondDetail?.price}
                             </span>
                           </p>
 
-                          <div className="mb-4 text-xl font-medium text-baseblack">
+                          <div className="mb-4  text-sm  3xl:text-base font-medium text-baseblack">
                             <div className="flex flex-col xs:flex-row xs:items-stretch">
                               {/* Left column */}
                               <div className="flex flex-col xs:gap-2 xs:pr-4 ">
@@ -695,7 +695,7 @@ const ProductDetailPage = ({ customizePage }) => {
                         </div>
                       </div>
 
-                      <p className="font-medium text-2xl">
+                      <p className="font-medium  text-lg 3xl:text-xl">
                         Final Price: $
                         {(customProductPrice + diamondDetail?.price).toFixed(2)}
                         <span className="font-semibold font-chong-modern"></span>
