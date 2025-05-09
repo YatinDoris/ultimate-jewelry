@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   useStripe,
@@ -48,13 +48,11 @@ const validationSchema = Yup.object({
     .required("Email is required"),
 });
 
-const PaymentForm = ({ orderId, clientSecret }) => {
+const PaymentForm = ({ orderId }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
-  const [expressCheckoutElement, setExpressCheckoutElement] = useState(null);
-  const [isGooglePaySupported, setIsGooglePaySupported] = useState(false);
 
   const { cartList } = useSelector(({ cart }) => cart);
   const { isHovered } = useSelector(({ common }) => common);
@@ -65,118 +63,7 @@ const PaymentForm = ({ orderId, clientSecret }) => {
   useEffect(() => {
     dispatch(setIsSubmitted(false));
     dispatch(clearPaymentMessage());
-
-    // Check if Google Pay is supported in the browser
-    if (window.PaymentRequest) {
-      const totalAmount = "214.39";
-      // const totalAmount = cartList
-      //   .reduce((sum, item) => sum + item.price * item.quantity, 0)
-      //   .toFixed(2);
-      const paymentRequest = new PaymentRequest(
-        [
-          {
-            supportedMethods: "https://google.com/pay",
-            data: {
-              environment: "TEST",
-              apiVersion: 2,
-              apiVersionMinor: 0,
-              allowedPaymentMethods: [
-                {
-                  type: "CARD",
-                  parameters: {
-                    allowedAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
-                    allowedCardNetworks: [
-                      "AMEX",
-                      "DISCOVER",
-                      "MASTERCARD",
-                      "VISA",
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-        {
-          total: {
-            label: "Total",
-            amount: { currency: "USD", value: totalAmount },
-          },
-        }
-      );
-      paymentRequest
-        .canMakePayment()
-        .then((result) => {
-          setIsGooglePaySupported(result);
-          console.log("Google Pay supported:", result);
-        })
-        .catch((error) => {
-          console.error(
-            "Error checking Google Pay support:",
-            error.message,
-            error
-          );
-          setIsGooglePaySupported(false);
-          dispatch(
-            setPaymentMessage({
-              message:
-                "Google Pay is not available. Please try another payment method.",
-              type: messageType.ERROR,
-            })
-          );
-        });
-    } else {
-      console.log("PaymentRequest API not available in this browser");
-      setIsGooglePaySupported(false);
-    }
-
-    if (stripe && elements && clientSecret && !expressCheckoutElement) {
-      try {
-        const expressElement = elements.create("expressCheckout", {
-          buttonType: {
-            applePay: "buy",
-            googlePay: isGooglePaySupported ? "buy" : undefined,
-            paypal: "buynow",
-            klarna: "pay",
-          },
-          buttonTheme: {
-            applePay: "black",
-            googlePay: "black",
-            paypal: "silver",
-          },
-          buttonHeight: 44,
-          layout: {
-            maxRows: 2,
-            maxColumns: 2,
-          },
-        });
-        setExpressCheckoutElement(expressElement);
-        console.log("ExpressCheckoutElement created successfully");
-      } catch (error) {
-        console.error("Failed to create ExpressCheckoutElement:", error);
-        dispatch(
-          setPaymentMessage({
-            message: "Failed to initialize payment component.",
-            type: messageType.ERROR,
-          })
-        );
-      }
-    }
-
-    return () => {
-      if (expressCheckoutElement) {
-        expressCheckoutElement.destroy();
-        console.log("ExpressCheckoutElement destroyed");
-      }
-    };
-  }, [
-    dispatch,
-    stripe,
-    elements,
-    clientSecret,
-    expressCheckoutElement,
-    isGooglePaySupported,
-  ]);
+  }, [dispatch]);
 
   const resetValue = () => {
     dispatch(setIsSubmitted(false));
@@ -217,40 +104,12 @@ const PaymentForm = ({ orderId, clientSecret }) => {
   };
 
   const onExpressCheckoutReady = ({ element }) => {
-    if (!element) {
-      console.error("ExpressCheckoutElement is undefined in onReady event");
-      dispatch(
-        setPaymentMessage({
-          message: "Payment component failed to load. Please try again.",
-          type: messageType.ERROR,
-        })
-      );
-      return;
-    }
     console.log("ExpressCheckoutElement ready:", element);
-  };
-
-  const onExpressCheckoutError = (event) => {
-    console.error("ExpressCheckoutElement error:", event);
-    dispatch(
-      setPaymentMessage({
-        message: `Payment method error: ${
-          event.error?.message || "Unable to load payment method."
-        }`,
-        type: messageType.ERROR,
-      })
-    );
   };
 
   const onExpressCheckoutConfirm = async () => {
     if (!stripe || !elements) {
       console.error("Stripe or Elements not initialized");
-      dispatch(
-        setPaymentMessage({
-          message: "Payment system not initialized. Please try again.",
-          type: messageType.ERROR,
-        })
-      );
       return;
     }
 
@@ -314,6 +173,19 @@ const PaymentForm = ({ orderId, clientSecret }) => {
     }
   };
 
+  const expressCheckoutOptions = {
+    buttonTheme: {
+      applePay: "black",
+      googlePay: "black",
+      paypal: "silver",
+    },
+    buttonHeight: 44,
+    layout: {
+      maxRows: 2,
+      maxColumns: 2,
+    },
+  };
+
   const onSubmit = useCallback(
     async (values) => {
       try {
@@ -321,12 +193,6 @@ const PaymentForm = ({ orderId, clientSecret }) => {
         resetValue();
         if (!stripe || !elements) {
           console.error("Stripe or Elements not initialized");
-          dispatch(
-            setPaymentMessage({
-              message: "Payment system not initialized. Please try again.",
-              type: messageType.ERROR,
-            })
-          );
           return;
         }
 
@@ -435,6 +301,7 @@ const PaymentForm = ({ orderId, clientSecret }) => {
         const paymentResponse = await dispatch(
           updatePaymentStatus(paymentPayload)
         );
+        // Fetch PaymentIntent details for card/wallet info
         if (paymentResponse?.paymentIntentId) {
           const paymentIntentResponse =
             await fetchWrapperService.getPaymentIntent(
@@ -442,9 +309,9 @@ const PaymentForm = ({ orderId, clientSecret }) => {
             );
           const paymentMethod = paymentIntentResponse?.payment_method;
           console.log("Payment Method Details:", {
-            type: paymentMethod?.type,
-            brand: paymentMethod?.card?.brand,
-            last4: paymentMethod?.card?.last4,
+            type: paymentMethod?.type, // e.g., 'card', 'google_pay', 'apple_pay'
+            brand: paymentMethod?.card?.brand, // e.g., 'visa'
+            last4: paymentMethod?.card?.last4, // e.g., '4242'
           });
         }
         if (paymentResponse) {
@@ -485,10 +352,10 @@ const PaymentForm = ({ orderId, clientSecret }) => {
   };
 
   const paymentElementOptions = {
-    layout: "accordion",
+    layout: "tabs",
     wallets: {
-      applePay: "auto",
-      googlePay: "auto",
+      applePay: "never", // Disable wallets in Payment Element
+      googlePay: "never",
     },
     fields: {
       billingDetails: {
@@ -498,37 +365,6 @@ const PaymentForm = ({ orderId, clientSecret }) => {
     },
   };
 
-  useEffect(() => {
-    if (expressCheckoutElement) {
-      try {
-        expressCheckoutElement.mount("#express-checkout-element");
-        console.log("ExpressCheckoutElement mounted successfully");
-      } catch (error) {
-        console.error("Failed to mount ExpressCheckoutElement:", error);
-        dispatch(
-          setPaymentMessage({
-            message: "Failed to initialize payment component.",
-            type: messageType.ERROR,
-          })
-        );
-      }
-    }
-  }, [expressCheckoutElement, dispatch]);
-
-  if (!stripe || !elements || !clientSecret) {
-    return (
-      <div className="bg-white p-5 mt-5">
-        <p className="text-baseblack text-lg md:text-xl font-semibold">
-          Payment
-        </p>
-        <h6 className="mb-2 text-basegray">
-          All transactions are secure and encrypted.
-        </h6>
-        <ErrorMessage message="Payment system is loading, please wait..." />
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white p-5 mt-5">
       <p className="text-baseblack text-lg md:text-xl font-semibold">Payment</p>
@@ -536,7 +372,12 @@ const PaymentForm = ({ orderId, clientSecret }) => {
         All transactions are secure and encrypted.
       </h6>
       <form onKeyDown={handleKeyDown}>
-        <div id="express-checkout-element" />
+        <ExpressCheckoutElement
+          id="express-checkout"
+          options={expressCheckoutOptions}
+          onReady={onExpressCheckoutReady}
+          onConfirm={onExpressCheckoutConfirm}
+        />
         <LinkAuthenticationElement id="email" onChange={handleEmailChange} />
         {touched?.email && errors?.email && (
           <ErrorMessage message={errors?.email} />

@@ -14,6 +14,7 @@ const {
   jwtAuth,
   allUsersAndAdminPageAuth,
   userAuth,
+  optionalJwtAuth,
 } = require("../middleware");
 const { ordersPageId } = require("../utils/pagesList");
 
@@ -23,7 +24,7 @@ router.get(
   allUsersAndAdminPageAuth(ordersPageId),
   getAllOrder
 );
-router.post("/insertOrder", jwtAuth, userAuth, insertOrder);
+router.post("/insertOrder", optionalJwtAuth, insertOrder);
 router.post("/updatePaymentStatus", updatePaymentStatus);
 router.post(
   "/sendPendingOrderMail",
