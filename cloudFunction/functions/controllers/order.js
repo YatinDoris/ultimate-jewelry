@@ -23,17 +23,18 @@ const {
 */
 const insertOrder = async (req, res) => {
   try {
-    const userData = req.userData;
-    const findPattern = {
-      key: "userId",
-      value: userData.id,
-    };
-    const userWiseCartData = await cartService.find(findPattern);
+    const userData = req?.userData;
 
     const allActiveProductsData = await productService.getAllActiveProducts();
-
-    req.body.userId = userData?.id;
-    req.body.cartList = userWiseCartData;
+    if (userData) {
+      const findPattern = {
+        key: "userId",
+        value: userData?.id,
+      };
+      const userWiseCartData = await cartService.find(findPattern);
+      req.body.userId = userData?.id;
+      req.body.cartList = userWiseCartData;
+    }
 
     const { createdOrder } = await createOrder(
       req.body,
@@ -41,9 +42,16 @@ const insertOrder = async (req, res) => {
       res
     );
     if (createdOrder) {
+
       return res.json({
         status: 200,
+        createdOrder,
         message: message.SUCCESS,
+      });
+    } else {
+      return res.json({
+        status: 500,
+        message: message.SERVER_ERROR,
       });
     }
   } catch (e) {
@@ -432,7 +440,7 @@ const cancelOrder = async (req, res) => {
               if (
                 !refundsList?.length ||
                 refundsList?.filter((x) => x?.status === "canceled")?.length ===
-                  refundsList?.length
+                refundsList?.length
               ) {
                 let orderUpdatePatternWithRefund = {
                   paymentStatus: "refund_initialization_failed",
