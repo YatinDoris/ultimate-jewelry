@@ -35,6 +35,34 @@ import {
 import { deleteOrder } from "@/_actions/order.action";
 import { setCartList } from "@/store/slices/cartSlice";
 
+const expressCheckoutOptions = {
+  // buttonType: {
+  //   applePay: "plain",
+  //   googlePay: "plain",
+  // },
+  buttonType: {
+    applePay: "buy",
+    googlePay: "buy",
+  },
+  buttonTheme: {
+    applePay: "black",
+    googlePay: "black",
+  },
+  buttonHeight: 44,
+  layout: {
+    maxRows: 2,
+    maxColumns: 2,
+  },
+};
+
+const paymentElementOptions = {
+  layout: "tabs",
+  wallets: {
+    applePay: "never",
+    googlePay: "never",
+  },
+};
+
 const paymentFormInitialValues = {
   address: null,
   email: "",
@@ -237,19 +265,6 @@ const PaymentForm = ({ orderId }) => {
     [dispatch, handlePaymentConfirmation]
   );
 
-  const expressCheckoutOptions = {
-    buttonTheme: {
-      applePay: "black",
-      googlePay: "black",
-      paypal: "silver",
-    },
-    buttonHeight: 44,
-    layout: {
-      maxRows: 2,
-      maxColumns: 2,
-    },
-  };
-
   const { setFieldValue, setFieldTouched, touched, errors, handleSubmit } =
     useFormik({
       initialValues: paymentFormInitialValues,
@@ -313,20 +328,6 @@ const PaymentForm = ({ orderId }) => {
       event.preventDefault();
       handleSubmit();
     }
-  };
-
-  const paymentElementOptions = {
-    layout: "tabs",
-    wallets: {
-      applePay: "never",
-      googlePay: "never",
-    },
-    fields: {
-      billingDetails: {
-        name: "auto",
-        email: "auto",
-      },
-    },
   };
 
   return (
