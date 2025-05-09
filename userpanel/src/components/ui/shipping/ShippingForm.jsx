@@ -106,7 +106,7 @@ const shippingForm = () => {
         city: selectedShippingAddress?.city,
         state: selectedShippingAddress?.state,
         stateCode: selectedShippingAddress?.stateCode,
-        pinCode: Number(selectedShippingAddress?.pinCode),
+        pinCode: selectedShippingAddress?.pinCode,
         mobile: Number(selectedShippingAddress?.mobile),
         email: selectedShippingAddress?.email,
         companyName: selectedShippingAddress?.companyName,
