@@ -56,7 +56,7 @@ import {
 // const db = getDatabase(defaultApp);
 
 const getDBFromUrl = (url) => {
-  if ([userUrl].includes(url)) {
+  if ([userUrl, contactsUrl].includes(url)) {
     return getDatabase(cmsApp);
   } else if (
     [
@@ -79,8 +79,6 @@ const getDBFromUrl = (url) => {
     return getDatabase(amsApp);
   } else if ([productsUrl].includes(url)) {
     return getDatabase(productsApp);
-  } else if ([contactsUrl].includes(url)) {
-    return getDatabase(cmsApp);
   } else if ([ordersUrl].includes(url)) {
     return getDatabase(ordersApp);
   } else if ([reviewAndRatingUrl].includes(url)) {
@@ -99,7 +97,7 @@ const getDBFromUrl = (url) => {
 };
 
 const getAppFromUrl = (url) => {
-  if ([userUrl].includes(url)) {
+  if ([userUrl, contactsUrl].includes(url)) {
     return cmsApp;
   } else if (
     [
