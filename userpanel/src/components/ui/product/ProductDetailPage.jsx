@@ -835,7 +835,7 @@ const ProductDetailPage = ({ customizePage }) => {
 
 export default ProductDetailPage;
 
-const ProductDetailTabs = ({ selectedVariations }) => {
+const ProductDetailTabs = ({ selectedVariations = [] }) => {
   const { productDetail } = useSelector(({ product }) => product);
 
   const [activeTab, setActiveTab] = useState("Product Detail");

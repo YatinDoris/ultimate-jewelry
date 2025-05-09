@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState, useEffect } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import Image from "next/image";
 import logo from "@/assets/images/logo.webp";
 
@@ -13,23 +13,21 @@ const ProgressiveVed = ({
   height = 240,
   ...props
 }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
 
-  useEffect(() => {
-    const video = document.createElement("video");
-    video.src = src;
-    video.oncanplay = () => setIsLoaded(true);
-  }, [src]);
+  const handleVideoLoad = useCallback(() => {
+    setIsVideoLoading(false);
+  }, []);
 
   const customClass = useMemo(() => {
-    return isLoaded
-      ? "opacity-100 w-full h-full object-contain transition-all duration-500"
-      : "w-1/2 h-1/2 animate-fade-in";
-  }, [isLoaded]);
+    return isVideoLoading
+      ? "w-1/2 h-1/2 animate-fade-in"
+      : "opacity-100 w-full h-full object-contain transition-all duration-500";
+  }, [isVideoLoading]);
 
   return (
     <div className="relative w-full h-full flex justify-center items-center">
-      {!isLoaded && (
+      {isVideoLoading && (
         <Image
           src={placeholderSrc}
           alt="Loading video"
@@ -47,7 +45,8 @@ const ProgressiveVed = ({
         preload="auto"
         width={width}
         height={height}
-        onCanPlay={() => setIsLoaded(true)}
+        onLoadedData={handleVideoLoad}
+        onCanPlay={handleVideoLoad}
         className={`${customClass} ${className}`}
         {...props}
       >

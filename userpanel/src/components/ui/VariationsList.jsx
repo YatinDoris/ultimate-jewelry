@@ -16,7 +16,7 @@ const VariationsList = ({ variations, selectedVariations, handleSelect }) => {
           key={variation?.variationId}
           className="flex items-center md:gap-x-6"
         >
-          <p className="font-medium text-baseblack text-sm  3xl:text-base w-[130px] xs:w-[135px]">
+          <p className="font-medium text-baseblack text-sm  3xl:text-base !w-[130px] xs:!w-[135px]">
             {variation?.variationName}:
           </p>
 
