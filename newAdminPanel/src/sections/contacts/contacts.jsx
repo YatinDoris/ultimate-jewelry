@@ -61,26 +61,15 @@ const Contacts = () => {
     contactsPage * rowsPerPage + rowsPerPage
   );
 
-  // const loadData = useCallback(() => {
-  //   console.log('in the load data');
-  //   dispatch(getContactsList());
-  // }, [dispatch]);
-
   const loadData = useCallback(() => {
     dispatch(getContactsList());
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   loadData();
-  //   return () => dispatch(setContactsPage(0));
-  // }, [loadData]);
-
   useEffect(() => {
-    if (!contactsList || contactsList.length === 0) {
-      loadData();
-    }
+    loadData();
     return () => dispatch(setContactsPage(0));
-  }, [loadData, contactsList]);
+  }, [loadData]);
+
   const searchValueHandler = useCallback((event) => {
     const value = event.target.value;
     setSearchedValue(value);
@@ -123,7 +112,6 @@ const Contacts = () => {
   }, [selectedContactId, currentItems, contactsPage]);
   const selectedContact = contactsList?.find((item) => item.id === selectedContactId);
 
-  console.log('contactsList', contactsList);
   const renderPopup = useMemo(() => {
     return !!open ? (
       <Popover
