@@ -58,7 +58,7 @@ const createPaymentIntent = async (req, res) => {
         total,
         products,
         orderNumber,
-        paymentMethod
+        paymentMethod,
       } = createdOrder;
       console.log(createdOrder, "createdOrder");
       stripe.customers
@@ -285,7 +285,7 @@ const createOrder = async (payload, activeProductsList, res) => {
     city = sanitizeValue(city) ? city.trim() : null;
     state = sanitizeValue(state) ? state.trim() : null;
     stateCode = sanitizeValue(stateCode) ? stateCode.trim() : null;
-    pinCode = pinCode ? Number(pinCode) : null;
+    pinCode = pinCode ? pinCode?.toString()?.trim() : null;
     mobile = mobile ? Number(mobile) : null;
     email = sanitizeValue(email) ? email.trim() : null;
     paymentMethod = sanitizeValue(paymentMethod) ? paymentMethod.trim() : null;
@@ -426,7 +426,6 @@ const createOrder = async (payload, activeProductsList, res) => {
           price = customProductPrice + diamondPrice;
         } catch (e) {
           continue; // Skip if price calculation fails
-
         }
       } else {
         // Handle non-customized product
@@ -461,9 +460,9 @@ const createOrder = async (payload, activeProductsList, res) => {
         ...cartItem,
         diamondDetail: isCustomized
           ? {
-            ...diamondDetail,
-            price: diamondPrice, // Reuse the calculated diamond price
-          }
+              ...diamondDetail,
+              price: diamondPrice, // Reuse the calculated diamond price
+            }
           : undefined, // Set to undefined for non-customized products
         quantity: adjustedQuantity,
         quantityWiseSellingPrice: sellingPrice * adjustedQuantity,
@@ -882,7 +881,8 @@ const refundPaymentForReturn = async (req, res) => {
             return res.json({
               status: 429,
               message: message.custom(
-                `The requested refund amount exceeds your payment amount. The maximum refundable amount is $${paymentIntent.amount / 100
+                `The requested refund amount exceeds your payment amount. The maximum refundable amount is $${
+                  paymentIntent.amount / 100
                 }.`
               ),
             });
@@ -936,7 +936,7 @@ const refundPaymentForReturn = async (req, res) => {
               if (
                 !refundsList?.length ||
                 refundsList?.filter((x) => x?.status === "canceled")?.length ===
-                refundsList?.length
+                  refundsList?.length
               ) {
                 returnUpdatePatternWithRefund.returnPaymentStatus =
                   "refund_initialization_failed";
