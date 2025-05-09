@@ -83,7 +83,7 @@ const productSlice = createSlice({
     },
     resetFilters: (state) => {
       state.selectedSortByValue = "date_new_to_old";
-      state.selectedVariations = {};
+      state.selectedVariations = [];
       state.openKeys = defaultOpenKeys;
       state.selectedSettingStyles = "";
       state.selectedDiamondShape = "";
