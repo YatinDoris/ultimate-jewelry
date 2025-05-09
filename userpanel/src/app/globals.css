@@ -139,48 +139,21 @@ ul {
   justify-content: center;
 }
 
-/* styles/globals.css */
 .inner-image-zoom__image {
   object-fit: cover;
   width: 100% !important;
   height: 100% !important;
 }
 
-/* Custom styles for Flatpickr */
-/* Input field styling */
-.custom-input {
-  border: 1px solid #e5e7eb;
-  /* Tailwind's border-gray-200 */
-  border-radius: 0.375rem;
-  /* Tailwind's rounded-md */
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  /* Tailwind's text-sm */
-  color: #1f2937;
-  /* Tailwind's text-gray-800 */
-  background: #ffffff;
-  /* Tailwind's bg-white */
-  outline: none;
-}
 
-.custom-input:focus {
-  border-color: #3b82f6;
-  /* Tailwind's border-blue-500 */
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-  /* Tailwind's ring-blue-500 */
-}
 
-/* Flatpickr calendar styling */
+
 .flatpickr-calendar {
   font-family: inherit;
   border: 1px solid #e5e7eb;
-  /* Tailwind's border-gray-200 */
   border-radius: 0.375rem;
-  /* Tailwind's rounded-md */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  /* Tailwind's shadow-md */
   background: #ffffff;
-  /* Tailwind's bg-white */
   padding: 0.75rem;
 }
 
@@ -196,68 +169,55 @@ ul {
 .flatpickr-weekday,
 .flatpickr-day {
   color: #1f2937;
-  /* Tailwind's text-gray-800 */
   font-size: 0.875rem;
-  /* Tailwind's text-sm */
 }
 
 .flatpickr-day:hover {
   background: #eff6ff;
-  /* Tailwind's bg-blue-100 */
   border-radius: 0.25rem;
 }
 
 .flatpickr-day.selected,
 .flatpickr-day.startRange,
 .flatpickr-day.endRange {
-  background: #3b82f6;
-  /* Tailwind's bg-blue-500 */
+  background: var(--primary);
   color: #ffffff;
   border-radius: 0.25rem;
 }
 
 .flatpickr-day.today {
   border: 1px solid #3b82f6;
-  /* Tailwind's border-blue-500 */
   background: #dbeafe;
-  /* Tailwind's bg-blue-50 */
+
 }
 
 .flatpickr-prev-month,
 .flatpickr-next-month {
   color: #4b5563;
-  /* Tailwind's text-gray-600 */
 }
 
 .flatpickr-prev-month:hover,
 .flatpickr-next-month:hover {
   background: #eff6ff;
-  /* Tailwind's bg-blue-100 */
   border-radius: 0.25rem;
 }
 
-/* Clear button styling */
 .flatpickr-clear {
   color: #ef4444;
-  /* Tailwind's text-red-500 */
   font-size: 0.875rem;
-  /* Tailwind's text-sm */
   cursor: pointer;
   padding: 0.25rem;
 }
 
 .flatpickr-clear:hover {
   color: #b91c1c;
-  /* Tailwind's text-red-700 */
 }
 
-/* Hide default arrow for popup */
 .flatpickr-calendar.arrowTop:before,
 .flatpickr-calendar.arrowTop:after {
   display: none;
 }
 
-/* Inline calendar adjustments */
 .flatpickr-calendar.inline {
   width: 100%;
   max-width: 320px;
@@ -265,38 +225,7 @@ ul {
   border: none;
 }
 
-/* Input styles */
-.custom-input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #e5e7eb;
-  /* Tailwind's border-gray-200 */
-  border-radius: 0.375rem;
-  /* Tailwind's rounded-md */
-  font-size: 1rem;
-  /* Tailwind's text-base */
-  color: #1f2937;
-  /* Tailwind's text-gray-800 */
-  background-color: white;
-  transition: border-color 0.2s ease-in-out;
-}
 
-.custom-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  /* Tailwind's border-blue-500 */
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  /* Tailwind's ring-blue-500/10 */
-}
-
-.custom-input.border-red-500 {
-  border-color: #ef4444;
-  /* Tailwind's border-red-500 */
-}
-
-.custom-input::placeholder {
-  color: #9ca3af;
-  /* Tailwind's text-gray-400 */
-}
 
 /* ZoomImage styles */
 .zoom-lens {

@@ -42,8 +42,8 @@ export default function OrderHistoryPage() {
     dispatch(fetchOrderHistory());
   }, [dispatch]);
 
-  const pageCount = Math.ceil(orderList.length / ITEMS_PER_PAGE);
-  const paginatedOrder = orderList.slice(
+  const pageCount = Math.ceil(orderList?.length / ITEMS_PER_PAGE);
+  const paginatedOrder = orderList?.slice(
     currentPage * ITEMS_PER_PAGE,
     (currentPage + 1) * ITEMS_PER_PAGE
   );
@@ -125,7 +125,7 @@ export default function OrderHistoryPage() {
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             {renderTableHeading()}
             <tbody>
-              {paginatedOrder.map((order, index) => (
+              {paginatedOrder?.map((order, index) => (
                 <tr
                   key={`order-${index}`}
                   className="bg-white border-b border-gray-200 text-baseblack"
@@ -134,13 +134,13 @@ export default function OrderHistoryPage() {
                     scope="row"
                     className="px-6 py-4 font-medium whitespace-nowrap"
                   >
-                    {order.createdDate
-                      ? moment(order.createdDate).format("DD-MM-YYYY")
+                    {order?.createdDate
+                      ? moment(order?.createdDate).format("DD-MM-YYYY")
                       : null}
                   </th>
-                  <td className="px-6 py-4">{order.orderNumber}</td>
+                  <td className="px-6 py-4">{order?.orderNumber}</td>
                   <td className="px-6 py-4">
-                    $ {helperFunctions.toFixedNumber(order.total)}
+                    $ {helperFunctions?.toFixedNumber(order?.total)}
                   </td>
                   <td className="px-6 py-4">
                     <CustomBadge status={order?.paymentStatus}>
@@ -158,33 +158,33 @@ export default function OrderHistoryPage() {
                         title="Order Detail"
                         className="cursor-pointer text-xl text-basegray"
                         onClick={() =>
-                          router.push(`/order-history/${order.id}`)
+                          router.push(`/order-history/${order?.id}`)
                         }
                       />
 
-                      {["pending", "confirmed"].includes(order.orderStatus) &&
-                      order.paymentStatus === "success" ? (
-                        <CancelOrder orderId={order.id} />
+                      {["pending", "confirmed"].includes(order?.orderStatus) &&
+                      order?.paymentStatus === "success" ? (
+                        <CancelOrder orderId={order?.id} />
                       ) : null}
 
-                      {["delivered"].includes(order.orderStatus) &&
-                      helperFunctions.isReturnValid(order.deliveryDate) &&
-                      order.hasActiveReturns ? (
+                      {["delivered"].includes(order?.orderStatus) &&
+                      helperFunctions.isReturnValid(order?.deliveryDate) &&
+                      order?.hasActiveReturns ? (
                         <CustomImg
                           srcAttr={returnRequestSvg}
                           altAttr="Return Request"
                           titleAttr="Return Request"
                           onClick={() =>
-                            router.push(`/return-request/${order.id}`)
+                            router.push(`/return-request/${order?.id}`)
                           }
                           className="cursor-pointer w-6 h-6"
                         />
                       ) : null}
 
-                      {invoiceLoading && order.id === selectedOrder ? (
+                      {invoiceLoading && order?.id === selectedOrder ? (
                         <Spinner className="h-6" />
                       ) : (
-                        <DownloadInvoice orderId={order.id} />
+                        <DownloadInvoice orderId={order?.id} />
                       )}
                     </div>
                   </td>
@@ -194,7 +194,7 @@ export default function OrderHistoryPage() {
           </table>
         )}
       </div>
-      {!orderLoading && orderList.length > ITEMS_PER_PAGE && (
+      {!orderLoading && orderList?.length > ITEMS_PER_PAGE && (
         <Pagination handlePageClick={handlePageClick} pageCount={pageCount} />
       )}
     </div>
