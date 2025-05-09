@@ -1,19 +1,11 @@
 import { memo } from 'react';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-  Typography,
-  Grid,
-  Box,
-} from '@mui/material';
+import { Dialog, Typography, Grid, Box } from '@mui/material';
 import {
   StyledDialogTitle,
   StyledDialogActions,
   StyledDialogContent,
 } from 'src/components/dialog/styles';
+import { Button } from 'src/components/button';
 // Styled components for consistent dialog styling
 
 // Helper function to render field labels
@@ -75,7 +67,7 @@ const ViewDialog = ({ open, setOpen, contact, loading }) => {
       </StyledDialogContent>
       <StyledDialogActions>
         <Button onClick={() => setOpen(false)} variant={'contained'}>
-          Close
+          Cancel
         </Button>
       </StyledDialogActions>
     </Dialog>

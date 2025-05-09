@@ -217,7 +217,7 @@ export default function Router() {
         {
           path: 'contacts',
           element: (
-            <ProtectedRoutes pageId={'subscribers'}>
+            <ProtectedRoutes pageId={'contacts'}>
               <Contacts />
             </ProtectedRoutes>
           ),
