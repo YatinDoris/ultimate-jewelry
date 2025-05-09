@@ -35,6 +35,7 @@ export default function ProductCard({
             src={video}
             autoPlay
             loop
+            playsInline
             muted
           />
         )}
