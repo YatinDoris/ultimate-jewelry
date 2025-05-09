@@ -40,6 +40,7 @@ const addressRoutes = require("./routes/address");
 const appointmentsRoutes = require("./routes/appointments");
 const returnsRoutes = require("./routes/returns");
 const contactRoutes = require("./routes/contact");
+const paypalRoutes = require("./routes/paypal");
 /*   Routes   */
 app.use("/stripe", stripeRoutes);
 app.use("/order", orderRoutes);
@@ -49,6 +50,7 @@ app.use("/address", addressRoutes);
 app.use("/appointments", appointmentsRoutes);
 app.use("/returns", returnsRoutes);
 app.use("/contact", contactRoutes);
+app.use("/paypal", paypalRoutes);
 
 exports.cloudFunctionsApi = functions.https.onRequest(app);
 
