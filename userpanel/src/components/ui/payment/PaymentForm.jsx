@@ -33,7 +33,6 @@ import {
   updatePaymentStatus,
 } from "@/_actions/payment.action";
 import { deleteOrder } from "@/_actions/order.action";
-import { fetchCart } from "@/_actions/cart.action";
 import { setCartList } from "@/store/slices/cartSlice";
 
 const paymentFormInitialValues = {
@@ -100,6 +99,7 @@ const PaymentForm = ({ orderId }) => {
       state:
         shipping?.stateCode?.toLowerCase() === billing?.state?.toLowerCase(),
     };
+
     return Object.values(matches).every((value) => value === true);
   };
 
@@ -107,105 +107,21 @@ const PaymentForm = ({ orderId }) => {
     console.log("ExpressCheckoutElement ready:", element);
   };
 
-  const onExpressCheckoutConfirm = async () => {
-    if (!stripe || !elements) {
-      console.error("Stripe or Elements not initialized");
-      return;
-    }
-
-    dispatch(setPaymentLoader(true));
-    resetValue();
-
-    try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/${checkOutSuccessUrl}`,
-        },
-        redirect: "if_required",
-      });
-
-      if (error) {
-        console.error("Express Checkout error:", error);
+  // Consolidated payment confirmation logic
+  const handlePaymentConfirmation = useCallback(
+    async (billingAddress = null) => {
+      if (!stripe || !elements) {
+        console.error("Stripe or Elements not initialized");
         dispatch(
           setPaymentMessage({
-            message: error.message,
+            message: "Stripe or Elements not initialized.",
             type: messageType.ERROR,
           })
         );
-      } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        console.log("Payment succeeded:", paymentIntent);
-        const orderData = await fetchWrapperService.findOne(ordersUrl, {
-          id: orderId,
-        });
-
-        if (!orderData) {
-          dispatch(
-            setPaymentMessage({
-              message: "Order not found.",
-              type: messageType.ERROR,
-            })
-          );
-          return;
-        }
-
-        await handleSuccessfulPayment(orderData.billingAddress || {});
-      } else if (paymentIntent && paymentIntent.status === "failed") {
-        console.error("Payment failed:", paymentIntent);
-        dispatch(
-          setPaymentMessage({
-            message: "Payment status: " + paymentIntent.status,
-            type: messageType.ERROR,
-          })
-        );
-        dispatch(deleteOrder(orderId));
+        return false;
       }
-    } catch (error) {
-      console.error("Error in Express Checkout:", error);
-      dispatch(
-        setPaymentMessage({
-          message: "An error occurred. Please try again.",
-          type: messageType.ERROR,
-        })
-      );
-    } finally {
-      dispatch(setPaymentLoader(false));
-    }
-  };
 
-  const expressCheckoutOptions = {
-    buttonTheme: {
-      applePay: "black",
-      googlePay: "black",
-      paypal: "silver",
-    },
-    buttonHeight: 44,
-    layout: {
-      maxRows: 2,
-      maxColumns: 2,
-    },
-  };
-
-  const onSubmit = useCallback(
-    async (values) => {
       try {
-        dispatch(setPaymentLoader(true));
-        resetValue();
-        if (!stripe || !elements) {
-          console.error("Stripe or Elements not initialized");
-          return;
-        }
-
-        if (!values?.address) {
-          dispatch(
-            setPaymentMessage({
-              message: "Please provide a billing address.",
-              type: messageType.ERROR,
-            })
-          );
-          return;
-        }
-
         const orderData = await fetchWrapperService.findOne(ordersUrl, {
           id: orderId,
         });
@@ -217,19 +133,21 @@ const PaymentForm = ({ orderId }) => {
               type: messageType.ERROR,
             })
           );
-          dispatch(setIsSubmitted(false));
-          return;
+          return false;
         }
 
-        if (!addressesMatch(orderData.shippingAddress, values.address)) {
+        // Validate addresses if billingAddress is provided (not for Express Checkout)
+        if (
+          billingAddress &&
+          !addressesMatch(orderData.shippingAddress, billingAddress)
+        ) {
           dispatch(
             setPaymentMessage({
               message: "The shipping address does not match the card address.",
               type: messageType.ERROR,
             })
           );
-          dispatch(setIsSubmitted(false));
-          return;
+          return false;
         }
 
         const { error, paymentIntent } = await stripe.confirmPayment({
@@ -244,14 +162,19 @@ const PaymentForm = ({ orderId }) => {
           console.error("Payment error:", error);
           dispatch(
             setPaymentMessage({
-              message: error.message,
+              message: error?.message,
               type: messageType.ERROR,
             })
           );
-        } else if (paymentIntent && paymentIntent.status === "succeeded") {
-          console.log("Payment succeeded:", paymentIntent);
-          await handleSuccessfulPayment(values.address);
-        } else if (paymentIntent && paymentIntent.status === "failed") {
+          return false;
+        }
+
+        if (paymentIntent && paymentIntent.status === "succeeded") {
+          await handleSuccessfulPayment(billingAddress || {});
+          return true;
+        }
+
+        if (paymentIntent && paymentIntent.status === "failed") {
           console.error("Payment failed:", paymentIntent);
           dispatch(
             setPaymentMessage({
@@ -260,22 +183,72 @@ const PaymentForm = ({ orderId }) => {
             })
           );
           dispatch(deleteOrder(orderId));
+          return false;
         }
+
+        return false;
       } catch (error) {
-        console.error("Error occurred during submission:", error);
+        console.error("Error in payment confirmation:", error);
         dispatch(
           setPaymentMessage({
             message: "An error occurred. Please try again.",
             type: messageType.ERROR,
           })
         );
+        return false;
+      }
+    },
+    [stripe, elements, orderId, dispatch, checkOutSuccessUrl]
+  );
+
+  const onExpressCheckoutConfirm = async () => {
+    dispatch(setPaymentLoader(true));
+    resetValue();
+
+    try {
+      await handlePaymentConfirmation();
+    } finally {
+      dispatch(setPaymentLoader(false));
+    }
+  };
+
+  const onSubmit = useCallback(
+    async (values) => {
+      dispatch(setPaymentLoader(true));
+      resetValue();
+
+      try {
+        if (!values?.address) {
+          dispatch(
+            setPaymentMessage({
+              message: "Please provide a billing address.",
+              type: messageType.ERROR,
+            })
+          );
+          return;
+        }
+
+        await handlePaymentConfirmation(values.address);
       } finally {
         dispatch(setPaymentLoader(false));
         dispatch(setIsSubmitted(false));
       }
     },
-    [dispatch, stripe, elements, orderId]
+    [dispatch, handlePaymentConfirmation]
   );
+
+  const expressCheckoutOptions = {
+    buttonTheme: {
+      applePay: "black",
+      googlePay: "black",
+      paypal: "silver",
+    },
+    buttonHeight: 44,
+    layout: {
+      maxRows: 2,
+      maxColumns: 2,
+    },
+  };
 
   const { setFieldValue, setFieldTouched, touched, errors, handleSubmit } =
     useFormik({
@@ -288,32 +261,23 @@ const PaymentForm = ({ orderId }) => {
     async (billingAddressData) => {
       try {
         const currentUser = helperFunctions?.getCurrentUser();
+
         const paymentPayload = {
           orderId: orderId,
           paymentStatus: "success",
           ...(currentUser && { cartIds: cartList.map((item) => item.id) }),
         };
+
         const billingPayload = {
           orderId: orderId,
           billingAddress: billingAddressData,
         };
+
         await dispatch(updateBillingAddress(billingPayload));
         const paymentResponse = await dispatch(
           updatePaymentStatus(paymentPayload)
         );
-        // Fetch PaymentIntent details for card/wallet info
-        if (paymentResponse?.paymentIntentId) {
-          const paymentIntentResponse =
-            await fetchWrapperService.getPaymentIntent(
-              paymentResponse.paymentIntentId
-            );
-          const paymentMethod = paymentIntentResponse?.payment_method;
-          console.log("Payment Method Details:", {
-            type: paymentMethod?.type, // e.g., 'card', 'google_pay', 'apple_pay'
-            brand: paymentMethod?.card?.brand, // e.g., 'visa'
-            last4: paymentMethod?.card?.last4, // e.g., '4242'
-          });
-        }
+
         if (paymentResponse) {
           router.push(`/order/success/${paymentResponse?.orderNumber}`);
           if (!currentUser) {
@@ -354,7 +318,7 @@ const PaymentForm = ({ orderId }) => {
   const paymentElementOptions = {
     layout: "tabs",
     wallets: {
-      applePay: "never", // Disable wallets in Payment Element
+      applePay: "never",
       googlePay: "never",
     },
     fields: {
