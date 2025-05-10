@@ -14,13 +14,12 @@ import { approveReturn } from 'src/actions/returnActions';
 import { Button, LoadingButton } from 'src/components/button';
 import { setSelectedApproveReturn, initApproveReturn } from 'src/store/slices/returnSlice';
 import { Alert, Typography } from '@mui/material';
+import { setSelectedOrder } from 'src/store/slices/ordersSlice';
 // ----------------------------------------------------------------------
 
 const validationSchema = Yup.object().shape({
   previewImage: Yup.array()
     .max(1, 'Max limit is 1!')
-    .min(1, 'Minimun 1 item is required!')
-    .required('Minimun 1 item is required!')
     .of(
       Yup.object().shape({
         type: Yup.string().required(),
@@ -44,18 +43,19 @@ const ApproveOrUpdateReturnDialog = ({
   const { returnList, crudReturnLoading, selectedApproveReturn } = useSelector(
     ({ returns }) => returns
   );
-
   const item = returnList?.find((x) => x?.id === selectedReturnId);
 
   const handleApproveOrUpdate = useCallback(
     async (val, { resetForm }) => {
       const payload = {
         returnId: selectedReturnId,
-        imageFile: val?.imageFile?.[0],
+        imageFile: val?.imageFile?.length ? val.imageFile[0] : undefined,
+        deleteShippingLabel: val?.deleteUploadedShippingLabel[0]?.image,
       };
-
       let res = await dispatch(approveReturn(payload));
       if (res) {
+        dispatch(setSelectedOrder({}));
+        dispatch(setSelectedApproveReturn(initApproveReturn));
         loadData();
         setOpenReturnDialog(false);
         resetForm();
@@ -86,7 +86,7 @@ const ApproveOrUpdateReturnDialog = ({
         handleOpen={() => setOpenReturnDialog(true)}
       >
         <StyledDialogTitle>
-          {item?.shippingLabel ? 'Update Shipping Label' : 'Approve Return Request'}
+          {item?.status === 'approved' ? 'Update Shipping Label' : 'Approve Return Request'}
         </StyledDialogTitle>
         <StyledDialogContent>
           <Typography variant="body2" sx={{ mb: 2, fontWeight: 'medium' }}>
@@ -96,8 +96,10 @@ const ApproveOrUpdateReturnDialog = ({
             mediaLimit={1}
             fileKey={'imageFile'}
             formik={approveFormik}
+            productId={selectedReturnId}
             mediaType={'pdf&image'}
             previewKey={'previewImage'}
+            deleteKey={'deleteUploadedShippingLabel'}
             loading={crudReturnLoading}
           />
           <Alert severity="info" sx={{ my: 1 }}>
@@ -114,7 +116,7 @@ const ApproveOrUpdateReturnDialog = ({
             loading={crudReturnLoading}
             onClick={approveFormik.handleSubmit}
           >
-            {item?.shippingLabel ? 'Update' : 'Approve'}
+            {item?.status === 'approved' ? 'Update' : 'Approve'}
           </LoadingButton>
         </StyledDialogActions>
       </Dialog>

@@ -85,7 +85,13 @@ const ReturnDetail = () => {
           image: selectedReturn?.shippingLabel,
         },
       ];
-      dispatch(setSelectedApproveReturn({ imageFile: [], previewImage: payload }));
+      dispatch(
+        setSelectedApproveReturn({
+          imageFile: [],
+          previewImage: payload,
+          deleteUploadedShippingLabel: [],
+        })
+      );
     }
   }, [selectedReturn]);
 

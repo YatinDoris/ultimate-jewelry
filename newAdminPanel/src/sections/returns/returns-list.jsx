@@ -270,7 +270,13 @@ const ReturnList = () => {
           image: item?.shippingLabel,
         },
       ];
-      dispatch(setSelectedApproveReturn({ imageFile: [], previewImage: payload }));
+      dispatch(
+        setSelectedApproveReturn({
+          imageFile: [],
+          previewImage: payload,
+          deleteUploadedShippingLabel: [],
+        })
+      );
     }
   }, []);
 

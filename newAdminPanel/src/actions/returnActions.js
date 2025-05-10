@@ -12,6 +12,7 @@ import {
 } from 'src/store/slices/returnSlice';
 import { helperFunctions } from 'src/_helpers';
 import { returnService, toast } from 'src/_services';
+import { setSelectedOrder } from 'src/store/slices/ordersSlice';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +40,10 @@ export const submitReturnRequest = (payload) => async (dispatch) => {
     dispatch(setCrudReturnLoading(true));
     const res = await returnService.createApprovedReturnRequest(payload);
 
-    if (res) return true;
+    if (res) {
+      toast.success(`Return request has been Submitted`);
+      return true;
+    }
   } catch (e) {
     toastError(e);
     return false;
@@ -66,9 +70,11 @@ export const approveReturn = (payload) => async (dispatch) => {
   try {
     dispatch(setCrudReturnLoading(true));
     const res = await returnService.approveReturnRequest(payload);
-
+    dispatch(setSelectedOrder({}));
     if (res) {
-      toast.success(`Return request has been ${payload?.shippingLabel ? 'updated' : 'approved'}`);
+      // In this it will now be difficult to know whether the request is been updated ot approved as shipping label is now optional so we have written submitted in this
+      // toast.success(`Return request has been ${payload?.shippingLabel ? 'updated' : 'approved'}`);
+      toast.success(`Return request has been Submitted`);
       return true;
     }
   } catch (e) {

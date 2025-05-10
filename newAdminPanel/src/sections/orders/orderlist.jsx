@@ -314,6 +314,7 @@ const OrderList = () => {
         {/* add condition for 15 return */}
 
         {['delivered'].includes(item?.orderStatus) &&
+        item?.hasActiveReturns &&
         item?.paymentStatus === 'success' &&
         helperFunctions.isReturnValid(item?.deliveryDate) ? (
           <MenuItem

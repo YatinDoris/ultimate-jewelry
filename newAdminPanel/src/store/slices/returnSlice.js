@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export const initApproveReturn = {
   imageFile: [],
   previewImage: [],
+  deleteUploadedShippingLabel: [],
 };
 
 export const initRejectReturn = {

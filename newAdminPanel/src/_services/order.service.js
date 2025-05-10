@@ -10,12 +10,36 @@ import { usersService } from './users.service';
 import { helperFunctions } from '../_helpers/helperFunctions';
 import { refundStatuses, setOrderRefundLoader } from '../store/slices/refundSlice';
 import { diamondShapeService } from './diamondShape.service';
+import { returnService } from './return.service';
 
 const getAllOrderList = () => {
   return new Promise(async (resolve, reject) => {
     try {
       const respData = await fetchWrapperService.getAll(ordersUrl);
       const orderData = respData ? Object.values(respData) : [];
+      const finalOrderData = orderData.filter((item) => item.paymentStatus !== 'pending');
+      const userReturnsData = await returnService.getAllReturnsList();
+      const updatedOrderData = finalOrderData.map((order) => {
+        const matchedReturns = userReturnsData.filter(
+          (returnOrder) => returnOrder.orderId === order.id
+        );
+        const isPendingOrApprovedOrReceivedReturnsCount = matchedReturns.filter((returnOrder) =>
+          ['pending', 'approved', 'received'].includes(returnOrder.status)
+        ).length;
+
+        const rejectedCount = matchedReturns.filter(
+          (returnOrder) => returnOrder.status === 'rejected'
+        ).length;
+        const hasActiveReturns =
+          isPendingOrApprovedOrReceivedReturnsCount || (rejectedCount > 0 && rejectedCount > 2)
+            ? false
+            : true;
+        return {
+          ...order,
+          hasActiveReturns: hasActiveReturns,
+        };
+      });
+      resolve(helperFunctions.sortByField(updatedOrderData));
       resolve(orderData);
     } catch (e) {
       reject(e);

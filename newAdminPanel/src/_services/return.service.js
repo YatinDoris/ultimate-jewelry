@@ -321,7 +321,6 @@ const createApprovedReturnRequest = (params) => {
       let insertPattern = {
         id: uuid,
         orderId,
-        userId: userData.id,
         orderNumber: orderNumber,
         products: productsArray,
         returnRequestReason,
@@ -331,6 +330,11 @@ const createApprovedReturnRequest = (params) => {
         createdDate: Date.now(),
         updatedDate: Date.now(),
       };
+      if (orderDetail?.userId) {
+        insertPattern.userId = orderDetail.userId;
+      }
+
+      console.log('insertPattern', insertPattern);
       const createPattern = {
         url: `${returnsUrl}/${uuid}`,
         insertPattern,
@@ -391,127 +395,219 @@ const rejectReturn = async (payload, abortController) => {
   }
 };
 
+// const approveReturnRequest = async (params) => {
+//   return new Promise(async (resolve, reject) => {
+//     try {
+//       let { returnId, imageFile } = sanitizeObject(params);
+//       returnId = returnId ? returnId.trim() : null;
+//       imageFile = typeof imageFile === 'object' ? [imageFile] : [];
+//       if (returnId) {
+//         const returnDetail = await fetchWrapperService.findOne(returnsUrl, {
+//           id: returnId,
+//         });
+//         if (returnDetail) {
+//           const { status, returnPaymentStatus, shippingLabel } = returnDetail;
+//           // if (!shippingLabel && status === 'approved') {
+//           //   reject(new Error('return status already exits!'));
+//           //   return;
+//           // }
+//           if (!shippingLabel && (returnPaymentStatus !== 'pending' || status !== 'pending')) {
+//             reject(
+//               new Error(
+//                 `You cannot approve return as the return payment status is ${returnPaymentStatus} and return status is ${status}`
+//               )
+//             );
+//             return;
+//           }
+//           if (shippingLabel && (returnPaymentStatus !== 'pending' || status !== 'approved')) {
+//             reject(
+//               new Error(
+//                 `You cannot update shipping label as the return payment status is ${returnPaymentStatus} and return status is ${status}`
+//               )
+//             );
+//             return;
+//           }
+//           if (!shippingLabel && !imageFile.length) {
+//             reject(new Error(`Image or pdf is required`));
+//             return;
+//           }
+//           if (
+//             !shippingLabel &&
+//             imageFile.length &&
+//             imageFile.length > fileSettings.RETURN_IMAGE_FILE_LIMIT
+//           ) {
+//             reject(
+//               new Error(
+//                 `You can only ${fileSettings.RETURN_IMAGE_FILE_LIMIT} image or pdf upload here`
+//               )
+//             );
+//             return;
+//           }
+
+//           let uploadedImage = '';
+
+//           if (imageFile.length) {
+//             const imageValidFileType = isValidFileType(
+//               fileSettings.IMAGE_AND_PDF_FILE_NAME,
+//               imageFile
+//             );
+//             if (!imageValidFileType) {
+//               reject(
+//                 new Error('Invalid file! (Only PNG, JPG, JPEG, WEBP, PDF files are allowed!)')
+//               );
+//               return;
+//             }
+
+//             const imageValidFileSize = isValidFileSize(
+//               fileSettings.IMAGE_AND_PDF_FILE_NAME,
+//               imageFile
+//             );
+//             if (!imageValidFileSize) {
+//               reject(new Error('Invalid File Size! (Only 5 MB are allowed!)'));
+//               return;
+//             }
+
+//             const filesPayload = [...imageFile];
+//             await uploadFile(returnsUrl, filesPayload)
+//               .then((fileNames) => {
+//                 uploadedImage = fileNames[0];
+//               })
+//               .catch((e) => {
+//                 reject(new Error('An error occurred during image uploading.'));
+//               });
+//           }
+
+//           let deleteShippingLabel = '';
+//           if (shippingLabel && imageFile.length) {
+//             deleteShippingLabel = shippingLabel;
+//           }
+
+//           const payload = {
+//             shippingLabel: imageFile.length ? uploadedImage : shippingLabel ?? '',
+//             status: 'approved',
+//             updatedDate: Date.now(),
+//           };
+//           const updatePattern = {
+//             url: `${returnsUrl}/${returnId}`,
+//             payload: payload,
+//           };
+//           fetchWrapperService
+//             ._update(updatePattern)
+//             .then((response) => {
+//               // Whenever a new file is uploaded for a shipping label, the old file will be deleted.
+//               if (deleteShippingLabel) {
+//                 deleteFile(returnsUrl, deleteShippingLabel);
+//               }
+//               resolve(true);
+//               // integrate send mail fuctionality
+//               axios.post('/returns/sendReturnStatusMail', sanitizeObject({ returnId: returnId }));
+//             })
+//             .catch((e) => {
+//               reject(new Error('An error occurred during approved return request.'));
+//               // whenever an error occurs for approved return request the uploaded file is deleted
+//               if (uploadedImage) {
+//                 deleteFile(returnsUrl, uploadedImage);
+//               }
+//             });
+//           // update request
+//         } else {
+//           reject(new Error('Return does not exist'));
+//         }
+//       } else {
+//         reject(new Error('Invalid data'));
+//       }
+//     } catch (e) {
+//       reject(e);
+//     }
+//   });
+// };
+
 const approveReturnRequest = async (params) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let { returnId, imageFile } = sanitizeObject(params);
+      let { returnId, imageFile, deleteShippingLabel } = sanitizeObject(params);
       returnId = returnId ? returnId.trim() : null;
       imageFile = typeof imageFile === 'object' ? [imageFile] : [];
-      if (returnId) {
-        const returnDetail = await fetchWrapperService.findOne(returnsUrl, {
-          id: returnId,
-        });
-        if (returnDetail) {
-          const { status, returnPaymentStatus, shippingLabel } = returnDetail;
-          if (!shippingLabel && status === 'approved') {
-            reject(new Error('return status already exits!'));
-            return;
-          }
-          if (!shippingLabel && (returnPaymentStatus !== 'pending' || status !== 'pending')) {
-            reject(
-              new Error(
-                `You cannot approve return as the return payment status is ${returnPaymentStatus} and return status is ${status}`
-              )
-            );
-            return;
-          }
-          if (shippingLabel && (returnPaymentStatus !== 'pending' || status !== 'approved')) {
-            reject(
-              new Error(
-                `You cannot update shipping label as the return payment status is ${returnPaymentStatus} and return status is ${status}`
-              )
-            );
-            return;
-          }
-          if (!shippingLabel && !imageFile.length) {
-            reject(new Error(`Image or pdf is required`));
-            return;
-          }
-          if (
-            !shippingLabel &&
-            imageFile.length &&
-            imageFile.length > fileSettings.RETURN_IMAGE_FILE_LIMIT
-          ) {
-            reject(
-              new Error(
-                `You can only ${fileSettings.RETURN_IMAGE_FILE_LIMIT} image or pdf upload here`
-              )
-            );
-            return;
-          }
+      deleteShippingLabel = deleteShippingLabel ? deleteShippingLabel.trim() : null;
 
-          let uploadedImage = '';
-
-          if (imageFile.length) {
-            const imageValidFileType = isValidFileType(
-              fileSettings.IMAGE_AND_PDF_FILE_NAME,
-              imageFile
-            );
-            if (!imageValidFileType) {
-              reject(
-                new Error('Invalid file! (Only PNG, JPG, JPEG, WEBP, PDF files are allowed!)')
-              );
-              return;
-            }
-
-            const imageValidFileSize = isValidFileSize(
-              fileSettings.IMAGE_AND_PDF_FILE_NAME,
-              imageFile
-            );
-            if (!imageValidFileSize) {
-              reject(new Error('Invalid File Size! (Only 5 MB are allowed!)'));
-              return;
-            }
-
-            const filesPayload = [...imageFile];
-            await uploadFile(returnsUrl, filesPayload)
-              .then((fileNames) => {
-                uploadedImage = fileNames[0];
-              })
-              .catch((e) => {
-                reject(new Error('An error occurred during image uploading.'));
-              });
-          }
-
-          let deleteShippingLabel = '';
-          if (shippingLabel && imageFile.length) {
-            deleteShippingLabel = shippingLabel;
-          }
-
-          const payload = {
-            shippingLabel: imageFile.length ? uploadedImage : shippingLabel ?? '',
-            status: 'approved',
-            updatedDate: Date.now(),
-          };
-          const updatePattern = {
-            url: `${returnsUrl}/${returnId}`,
-            payload: payload,
-          };
-          fetchWrapperService
-            ._update(updatePattern)
-            .then((response) => {
-              // Whenever a new file is uploaded for a shipping label, the old file will be deleted.
-              if (deleteShippingLabel) {
-                deleteFile(returnsUrl, deleteShippingLabel);
-              }
-              resolve(true);
-              // integrate send mail fuctionality
-              axios.post('/returns/sendReturnStatusMail', sanitizeObject({ returnId: returnId }));
-            })
-            .catch((e) => {
-              reject(new Error('An error occurred during approved return request.'));
-              // whenever an error occurs for approved return request the uploaded file is deleted
-              if (uploadedImage) {
-                deleteFile(returnsUrl, uploadedImage);
-              }
-            });
-          // update request
-        } else {
-          reject(new Error('Return does not exist'));
-        }
-      } else {
+      if (!returnId) {
         reject(new Error('Invalid data'));
+        return;
       }
+
+      const returnDetail = await fetchWrapperService.findOne(returnsUrl, { id: returnId });
+
+      if (!returnDetail) {
+        reject(new Error('Return does not exist'));
+        return;
+      }
+
+      const { status, returnPaymentStatus, shippingLabel } = returnDetail;
+
+      const hasFile = imageFile.length > 0;
+
+      // Only validate file if one is uploaded
+      if (hasFile) {
+        if (imageFile.length > fileSettings.RETURN_IMAGE_FILE_LIMIT) {
+          reject(
+            new Error(
+              `You can only upload ${fileSettings.RETURN_IMAGE_FILE_LIMIT} image or PDF file(s).`
+            )
+          );
+          return;
+        }
+
+        const validType = isValidFileType(fileSettings.IMAGE_AND_PDF_FILE_NAME, imageFile);
+        const validSize = isValidFileSize(fileSettings.IMAGE_AND_PDF_FILE_NAME, imageFile);
+
+        if (!validType) {
+          reject(new Error('Invalid file! (Only PNG, JPG, JPEG, WEBP, PDF files are allowed!)'));
+          return;
+        }
+        if (!validSize) {
+          reject(new Error('Invalid File Size! (Only 5 MB allowed!)'));
+          return;
+        }
+      }
+
+      let uploadedImage = '';
+      if (hasFile) {
+        try {
+          const fileNames = await uploadFile(returnsUrl, [...imageFile]);
+          uploadedImage = fileNames[0];
+        } catch {
+          reject(new Error('An error occurred during image uploading.'));
+          return;
+        }
+      }
+
+      const payload = {
+        shippingLabel: hasFile ? uploadedImage : deleteShippingLabel ? '' : shippingLabel ?? '',
+        status: 'approved',
+        updatedDate: Date.now(),
+      };
+
+      const updatePattern = {
+        url: `${returnsUrl}/${returnId}`,
+        payload,
+      };
+
+      fetchWrapperService
+        ._update(updatePattern)
+        .then(() => {
+          if (deleteShippingLabel) {
+            deleteFile(returnsUrl, deleteShippingLabel);
+          }
+
+          axios.post('/returns/sendReturnStatusMail', sanitizeObject({ returnId }));
+          resolve(true);
+        })
+        .catch((e) => {
+          if (uploadedImage) {
+            deleteFile(returnsUrl, uploadedImage);
+          }
+          reject(new Error('An error occurred during approved return request.'));
+        });
     } catch (e) {
       reject(e);
     }
