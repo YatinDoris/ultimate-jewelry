@@ -48,6 +48,25 @@ exportFunction.findOne = (findPattern) => {
   });
 };
 
+exportFunction.findByOrderNumber = (findPattern) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { orderNumber } = findPattern;
+
+      const orderRef = ordersDbInstance.ref(`${orderUrl}`);
+      const snapshot = await orderRef
+        .orderByChild("orderNumber")
+        .equalTo(orderNumber)
+        .once("value");
+      const orderData = snapshot.exists() ? Object.values(snapshot.val()) : [];
+      const foundData = orderData.length ? orderData[0] : null;
+      resolve(foundData);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 exportFunction.findByPaymentIntentId = (findPattern) => {
   return new Promise(async (resolve, reject) => {
     try {
