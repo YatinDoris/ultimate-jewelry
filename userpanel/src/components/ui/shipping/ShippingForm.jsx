@@ -195,12 +195,14 @@ const shippingForm = () => {
     {
       id: helperFunctions.getRandomValue(),
       name: "Priority",
-      price: 19.99,
+      // price: 19.99,
+      price: 0.0,
     },
     {
       id: helperFunctions.getRandomValue(),
       name: "Overnight",
-      price: 39.99,
+      // price: 39.99,
+      price: 0.0,
     },
   ];
 
