@@ -11,6 +11,7 @@ import {
   setInvoiceLoading,
   setTrackOrderLoading,
 } from "@/store/slices/orderSlice";
+import { setVerifyOrderLoader, setVerifyOrderMessage } from "@/store/slices/paymentSlice";
 
 // actions/orderActions.js or similar
 export const fetchOrderHistory = () => {
@@ -96,6 +97,28 @@ export const deleteOrder = (orderId) => {
       return false;
     } catch (error) {
       return false;
+    }
+  };
+};
+
+export const verifyOrder = (orderId) => {
+  return async (dispatch) => {
+    dispatch(setVerifyOrderLoader(true))
+    dispatch(setVerifyOrderMessage({ message: "", type: "" }))
+
+    try {
+      const response = await orderService.verifyOrder(orderId);
+      if (response?.success) {
+        dispatch(setOrderDetail(response?.orderDetail))
+        dispatch(setIsVerifiedOrder(true))
+        return response;
+      }
+      dispatch(setVerifyOrderMessage({ message: response.message, type: messageType.ERROR }))
+      return false;
+    } catch (error) {
+      return false;
+    } finally {
+      dispatch(setVerifyOrderLoader(false))
     }
   };
 };

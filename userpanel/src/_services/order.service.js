@@ -220,6 +220,26 @@ const deleteOrder = async (orderId) => {
   }
 };
 
+const verifyOrder = async (orderId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      orderId = sanitizeValue(orderId) ? orderId.trim() : null;
+      if (orderId) {
+        const orderDetail = await fetchWrapperService.findOne(ordersUrl, {
+          id: orderId,
+        });
+        if (orderDetail) {
+          resolve({ success: true, orderDetail });
+        } else {
+          resolve({ success: false, message: "Order does not exist" });
+        }
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 // const getTopSellingProducts = () => {
 //   return new Promise(async (resolve, reject) => {
 //     try {
@@ -345,5 +365,6 @@ export const orderService = {
   cancelOrder,
   deleteOrder,
   trackOrderByOrderNumberAndEmail,
+  verifyOrder,
   // getTopSellingProducts,
 };

@@ -170,6 +170,10 @@ export const orderModel = {
       "refund_initialization_failed",
     ],
   },
+  paymentMethod: { // Stripe or Paypal
+    type: String,
+    enum: ["stripe", "paypal"]
+  },
   cancelReason: {
     type: String,
     default: "",
