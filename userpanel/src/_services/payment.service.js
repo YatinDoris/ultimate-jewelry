@@ -17,7 +17,7 @@ const createPaymentIntent = (payload, abortController) => {
         { signal }
       );
 
-      const { orderId, status, clientSecret, message, paymentIntentId } =
+      const { orderId, status, clientSecret, message, paymentIntentId, paymentMethod } =
         response.data;
 
       if (status === 200 && clientSecret) {
@@ -25,6 +25,7 @@ const createPaymentIntent = (payload, abortController) => {
           clientSecret,
           orderId,
           paymentIntentId,
+          paymentMethod
         };
         const encoded = btoa(JSON.stringify(secretData));
         resolve({ success: true, encoded });
@@ -140,10 +141,77 @@ const updatePaymentStatus = async (payload) => {
   }
 };
 
+const createOrderForPaypal = (payload, abortController) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const signal = abortController?.signal;
+
+      const response = await axios.post(
+        `${apiUrl}/order/insertOrder`,
+        payload,
+        { signal }
+      );
+      const { status, createdOrder, message } =
+        response.data;
+      if (status == 200 && createdOrder) {
+        const secretData = {
+          orderId: createdOrder?.id,
+          total: createdOrder?.total,
+          paymentMethod: createdOrder?.paymentMethod
+        };
+        const encoded = btoa(JSON.stringify(secretData));
+        resolve({ success: true, encoded });
+        return encoded;
+      } else {
+        resolve({ success: false, message });
+      }
+    } catch (error) {
+      resolve({ success: false, message: error?.message });
+    }
+  });
+};
+
+const insertPaypalOrder = async (payload) => {
+  try {
+    if (payload) {
+      const response = await axios.post(
+        `${apiUrl}/paypal/create-paypal-order`, payload
+      );
+
+      const { status, message, paypalOrderData } = response.data;
+      if (status === 200) {
+        return { success: true, paypalOrderData };
+      }
+      return { success: false, message };
+    }
+    return { success: false, message: "Payload not found" };
+  } catch (error) {
+    console.log("update payment status error : ", error?.message);
+    return { success: false, message: error?.message };
+  }
+};
+
+const paypalCaptureOrder = async (payload) => {
+  try {
+    const captureRes = await axios.post(`${apiUrl}/paypal/capture-order`, payload);
+    const { paypalOrderCaptureResult, message } = captureRes.data
+    if (paypalOrderCaptureResult?.status === "COMPLETED") {
+      return { success: true, paypalOrderCaptureResult }
+    }
+    return { success: false, message }
+  } catch (error) {
+    console.log("update payment status error : ", error?.message);
+    return { success: false, message: error?.message };
+  }
+};
+
 export const paymentService = {
   createPaymentIntent,
   checkPaymentIntentStatus,
   cancelPaymentIntent,
   updateBillingAddress,
   updatePaymentStatus,
+  createOrderForPaypal,
+  insertPaypalOrder,
+  paypalCaptureOrder,
 };

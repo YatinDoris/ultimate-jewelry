@@ -7,8 +7,15 @@ const initialState = {
   checkPIStatusLoader: false,
   paymentIntentStatus: "", // requires_payment_method
 
+  // Stripe
   paymentLoader: false,
   paymentMessage: { type: "", message: "" },
+
+  // Paypal
+  paypalPaymentLoader: false,
+  paypalPaymentMessage: { type: "", message: "" },
+  verifyOrderLoader: false,
+  verifyOrderMessage: { type: "", message: "" },
 
   paymentStatusLoader: false,
   paymentStatusMessage: { type: "", message: "" },
@@ -32,12 +39,28 @@ const paymentSlice = createSlice({
       state.paymentIntentStatus = action.payload;
     },
 
+    // Stripe
     setPaymentLoader: (state, action) => {
       state.paymentLoader = action.payload;
     },
     setPaymentMessage: (state, action) => {
       state.paymentMessage = action.payload;
     },
+
+    // Paypal
+    setPaypalPaymentLoader: (state, action) => {
+      state.paypalPaymentLoader = action.payload;
+    },
+    setPaypalPaymentMessage: (state, action) => {
+      state.paypalPaymentMessage = action.payload;
+    },
+    setVerifyOrderLoader: (state, action) => {
+      state.verifyOrderLoader = action.payload;
+    },
+    setVerifyOrderMessage: (state, action) => {
+      state.verifyOrderMessage = action.payload;
+    },
+
     clearPaymentMessage: (state) => {
       state.paymentMessage = { type: "", message: "" };
     },
@@ -58,8 +81,16 @@ export const {
   setCheckPIStatusLoader,
   setPaymentIntentStatus,
 
+  // Stripe
   setPaymentLoader,
   setPaymentMessage,
+
+  // Paypal
+  setPaypalPaymentLoader,
+  setPaypalPaymentMessage,
+  setVerifyOrderLoader,
+  setVerifyOrderMessage,
+
   clearPaymentMessage,
 
   setPaymentStatusLoader,

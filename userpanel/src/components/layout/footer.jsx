@@ -90,12 +90,14 @@ export default function footer() {
       <div className="p-8 pt-12 md:p-12 md:pt-14 lg:p-16 lg:pt-20 2xl:p-24 2xl:pt-28 text-white">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           <div className="lg:col-span-4 ">
-            <CustomImg
-              srcAttr={whiteLogo}
-              altAttr=""
-              titleAttr=""
-              className="w-60 2xl:w-80 ps-6"
-            />
+            <Link href="/">
+              <CustomImg
+                srcAttr={whiteLogo}
+                altAttr=""
+                titleAttr=""
+                className="w-60 2xl:w-80 ps-6"
+              />
+            </Link>
             <div className="bg-offwhite p-4 md:p-6 leading-relaxed">
               <div className="w-full overflow-hidden">
                 <video

@@ -11,6 +11,7 @@ import {
   CheckoutCommonComponent,
   LatestProduct,
   PaymentForm,
+  PaypalForm,
 } from "@/components/dynamiComponents";
 import KeyFeatures from "../KeyFeatures";
 import { useCallback, useEffect, useRef } from "react";
@@ -20,11 +21,12 @@ import {
   checkPaymentIntentStatus,
 } from "@/_actions/payment.action";
 import ErrorMessage from "../ErrorMessage";
-import { messageType } from "@/_helper/constants";
+import { messageType, PAYPAL, STRIPE } from "@/_helper/constants";
 // ---------- stripe -----------------------
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { stripePublishableKey } from "@/_helper";
+import { deleteOrder, verifyOrder } from "@/_actions/order.action";
 const stripePromise = loadStripe(stripePublishableKey);
 // const appearance = {
 //   theme: "night",
@@ -44,19 +46,26 @@ const stripePromise = loadStripe(stripePublishableKey);
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const params = useParams();
-  let { secretData } = params;
-
+  const { secretData } = params;
   const { cartLoading, cartList } = useSelector(({ cart }) => cart);
-
-  const { checkPIStatusLoader, paymentIntentMessage, paymentIntentStatus } =
-    useSelector(({ payment }) => payment);
-
-  // decode secret data
+  const { orderDetail } = useSelector(({ order }) => order);
+  const {
+    checkPIStatusLoader,
+    paymentIntentMessage,
+    paymentIntentStatus,
+    paypalPaymentMessage,
+    verifyOrderLoader,
+    verifyOrderMessage,
+  } = useSelector(({ payment }) => payment);
 
   const getDecodedData = useCallback((secretData) => {
-    const decoded = atob(decodeURIComponent(secretData));
-    const parsedDecoded = JSON.parse(decoded);
-    return parsedDecoded;
+    try {
+      const decoded = atob(decodeURIComponent(secretData));
+      return JSON.parse(decoded);
+    } catch (error) {
+      console.error("Failed to decode secret data:", error);
+      return {};
+    }
   }, []);
 
   // abortcontroller
@@ -69,12 +78,26 @@ const PaymentPage = () => {
   }, []);
 
   useEffect(() => {
-    verifyPaymentIntent();
+    const decoded = getDecodedData(secretData);
+    const { paymentMethod, orderId } = decoded;
+    // verify order when payment method is paypal
+    if (paymentMethod === PAYPAL) {
+      dispatch(verifyOrder(orderId));
+    }
+    if (paymentMethod === STRIPE) {
+      verifyPaymentIntent();
+    }
     return () => {
-      terminatePaymentIntent();
-      clearAbortController();
+      if (paymentMethod === STRIPE) {
+        terminatePaymentIntent();
+        clearAbortController();
+      }
+      // delete order when payment method is paypal
+      else if (paymentMethod === PAYPAL) {
+        dispatch(deleteOrder(orderId));
+      }
     };
-  }, []);
+  }, [secretData]);
 
   const verifyPaymentIntent = useCallback(async () => {
     try {
@@ -109,6 +132,86 @@ const PaymentPage = () => {
     dispatch(cancelPaymentIntent(payload));
   }, [dispatch, secretData]);
 
+  const renderPaymentContent = useCallback(() => {
+    const decoded = getDecodedData(secretData);
+    const { clientSecret, orderId, paymentMethod } = decoded;
+
+    // Handle invalid or missing decoded data
+    if (!paymentMethod) {
+      return <ErrorMessage message="Invalid payment configuration" />;
+    }
+
+    // Handle error messages
+    if (
+      paymentMethod === STRIPE &&
+      paymentIntentMessage?.message &&
+      paymentIntentMessage?.type !== messageType.SUCCESS
+    ) {
+      return <ErrorMessage message={paymentIntentMessage.message} />;
+    }
+
+    if (
+      paymentMethod === PAYPAL &&
+      verifyOrderMessage?.message &&
+      verifyOrderMessage?.type !== messageType.SUCCESS
+    ) {
+      return <ErrorMessage message={verifyOrderMessage.message} />;
+    }
+
+    if (
+      paymentMethod === PAYPAL &&
+      paypalPaymentMessage?.message &&
+      paypalPaymentMessage?.type !== messageType.SUCCESS
+    ) {
+      return <ErrorMessage message={paypalPaymentMessage.message} />;
+    }
+
+    // Handle loading state
+    if (checkPIStatusLoader || verifyOrderLoader) {
+      return <PaymentFormSkeleton />;
+    }
+
+    // Handle Stripe payment
+    if (
+      paymentMethod === STRIPE &&
+      clientSecret &&
+      paymentIntentStatus === "requires_payment_method"
+    ) {
+      return (
+        <Elements
+          stripe={stripePromise}
+          options={{
+            clientSecret,
+          }}
+        >
+          <PaymentForm orderId={orderId} />
+        </Elements>
+      );
+    }
+
+    // Handle PayPal payment
+    if (paymentMethod === PAYPAL && orderDetail) {
+      return (
+        <div className="mt-4">
+          <PaypalForm orderId={orderId} orderData={orderDetail} />
+        </div>
+      );
+    }
+
+    // Fallback for unexpected states
+    return <ErrorMessage message="Unable to process payment at this time" />;
+  }, [
+    secretData,
+    checkPIStatusLoader,
+    verifyOrderLoader,
+    paymentIntentMessage,
+    paymentIntentStatus,
+    verifyOrderMessage,
+    paypalPaymentMessage,
+    orderDetail,
+    getDecodedData,
+  ]);
+
   return (
     <div className="mx-auto pt-10 lg:pt-10 2xl:pt-12">
       {cartLoading ? (
@@ -131,31 +234,8 @@ const PaymentPage = () => {
                 </div>
               ) : null}
               <AddressSummary />
-
-              {paymentIntentMessage?.message &&
-              paymentIntentMessage?.type !== messageType?.SUCCESS ? (
-                <ErrorMessage message={paymentIntentMessage?.message} />
-              ) : (
-                <div>
-                  {checkPIStatusLoader && <PaymentFormSkeleton />}
-                  {stripePromise &&
-                  getDecodedData(secretData)?.clientSecret &&
-                  paymentIntentStatus === "requires_payment_method" ? (
-                    <Elements
-                      stripe={stripePromise}
-                      options={{
-                        clientSecret: getDecodedData(secretData)?.clientSecret,
-                      }}
-                    >
-                      <PaymentForm
-                        orderId={getDecodedData(secretData)?.orderId}
-                      />
-                    </Elements>
-                  ) : null}
-                </div>
-              )}
+              <div>{renderPaymentContent()}</div>
             </div>
-
             <div className="lg:block hidden">
               {cartList?.length ? (
                 <CheckoutCommonComponent />

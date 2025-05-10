@@ -4,8 +4,11 @@ import {
   setCheckPIStatusLoader,
   setPaymentIntentLoader,
   setPaymentIntentMessage,
+  setPaymentMessage,
   setPaymentStatusLoader,
   setPaymentStatusMessage,
+  setPaypalPaymentLoader,
+  setPaypalPaymentMessage,
 } from "@/store/slices/paymentSlice";
 
 export const handleCreatePaymentIntentError = (message = "") => {
@@ -51,6 +54,40 @@ export const createPaymentIntent = (payload, abortController) => {
       return false;
     } finally {
       dispatch(setPaymentIntentLoader(false));
+    }
+  };
+};
+
+export const createOrderForPaypal = (payload, abortController) => {
+  return async (dispatch) => {
+    try {
+      dispatch(setPaypalPaymentMessage({ type: "", message: "" }));
+      dispatch(setPaypalPaymentLoader(true));
+      const response = await paymentService.createOrderForPaypal(
+        payload, abortController
+      );
+      if (response?.success) {
+        return response.encoded;
+      } else {
+        dispatch(
+          setPaypalPaymentMessage({
+            message: response?.message || "Something went wrong",
+            type: messageType.ERROR,
+          })
+        );
+        return false;
+      }
+    } catch (error) {
+      const errorMessage = error?.message || "Something went wrong";
+      dispatch(
+        setPaypalPaymentMessage({
+          message: errorMessage,
+          type: messageType.ERROR,
+        })
+      );
+      return false;
+    } finally {
+      dispatch(setPaypalPaymentLoader(false));
     }
   };
 };
@@ -146,5 +183,63 @@ export const updatePaymentStatus = (payload) => async (dispatch) => {
     return false;
   } finally {
     dispatch(setPaymentStatusLoader(false));
+  }
+};
+
+
+export const insertPaypalOrder = (payload) => async (dispatch) => {
+  try {
+    const response = await paymentService.insertPaypalOrder(payload)
+    if (response?.success) {
+      return response;
+    }
+
+    dispatch(
+      setPaypalPaymentMessage({
+        message: response?.message || "Failed to complete PayPal payment.",
+        type: messageType.ERROR,
+      })
+    );
+    return false
+  } catch (error) {
+    dispatch(
+      setPaymentMessage({
+        message: "Unable to create PayPal order.",
+        type: messageType.ERROR,
+      })
+    );
+    throw error;
+  }
+}
+
+
+export const paypalCaptureOrder = (payload) => async (dispatch) => {
+  try {
+    dispatch(setPaypalPaymentLoader(true));
+
+
+    const response = await paymentService.paypalCaptureOrder(payload);
+
+    if (response?.success) {
+      return response;
+    }
+    dispatch(
+      setPaymentStatusMessage({
+        message: response?.message,
+        type: messageType.ERROR,
+      })
+    );
+    return false;
+  } catch (error) {
+    console.error("PayPal approval error:", error);
+    dispatch(
+      setPaypalPaymentMessage({
+        message: "Failed to complete PayPal payment.",
+        type: messageType.ERROR,
+      })
+    );
+    return false;
+  } finally {
+    dispatch(setPaypalPaymentLoader(false));
   }
 };

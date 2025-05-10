@@ -1,9 +1,10 @@
 "use client";
 import {
+  createOrderForPaypal,
   createPaymentIntent,
   handleCreatePaymentIntentError,
 } from "@/_actions/payment.action";
-import { helperFunctions } from "@/_helper";
+import { helperFunctions, PAYPAL, STRIPE } from "@/_helper";
 import {
   setActiveIndex,
   setSelectedShippingAddress,
@@ -22,6 +23,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { LoadingPrimaryButton } from "../button";
 import { setIsHovered, setIsSubmitted } from "@/store/slices/commonSlice";
 import ErrorMessage from "../ErrorMessage";
+import {
+  setPaymentIntentMessage,
+  setPaypalPaymentMessage,
+} from "@/store/slices/paymentSlice";
+
+const paymentOptions = [
+  {
+    value: STRIPE,
+    label: "Credit Card / Apple Pay",
+  },
+  {
+    value: PAYPAL,
+    label: "PayPal",
+  },
+];
 
 const shippingForm = () => {
   const dispatch = useDispatch();
@@ -32,11 +48,15 @@ const shippingForm = () => {
     useSelector(({ checkout }) => checkout);
 
   const { cartList } = useSelector(({ cart }) => cart);
-  const { paymentIntentLoader, paymentIntentMessage } = useSelector(
-    ({ payment }) => payment
-  );
+  const {
+    paymentIntentLoader,
+    paymentIntentMessage,
+    paypalPaymentLoader,
+    paypalPaymentMessage,
+  } = useSelector(({ payment }) => payment);
 
   const [selectedMethod, setSelectedMethod] = useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(STRIPE);
 
   const abortControllerRef = useRef(null);
   const clearAbortController = useCallback(() => {
@@ -77,7 +97,6 @@ const shippingForm = () => {
         dispatch(setSelectedShippingCharge(parsedSavedMethod.price));
         dispatch(setActiveIndex(matchedIndex));
       } else {
-        // fallback to default
         setSelectedMethod(shippingOptions?.[0]?.name);
         dispatch(setSelectedShippingCharge(shippingOptions?.[0]?.price));
         dispatch(setActiveIndex(0));
@@ -87,7 +106,29 @@ const shippingForm = () => {
     return () => {
       clearAbortController();
     };
-  }, []);
+  }, [dispatch, router, cartList, clearAbortController]);
+
+  const processPayment = useCallback(
+    async (paymentAction, payload) => {
+      dispatch(setPaymentIntentMessage({ message: "", type: "" }));
+      dispatch(setPaypalPaymentMessage({ message: "", type: "" }));
+      const res = await dispatch(
+        paymentAction(payload, abortControllerRef.current)
+      );
+      const subTotal = helperFunctions.getSubTotal(cartList);
+      if (res) {
+        if (subTotal < 199) {
+          localStorage.setItem(
+            "selectedShippingMethod",
+            JSON.stringify(shippingOptions?.[activeIndex])
+          );
+        }
+        dispatch(setIsSubmitted(false));
+        router.push(`/payment/${res}`);
+      }
+    },
+    [dispatch, cartList, activeIndex, router]
+  );
 
   const submitShippingMethod = useCallback(async () => {
     try {
@@ -95,8 +136,8 @@ const shippingForm = () => {
         abortControllerRef.current = new AbortController();
       }
       dispatch(handleCreatePaymentIntentError(""));
-
       dispatch(setIsSubmitted(true));
+
       const subTotal = helperFunctions.getSubTotal(cartList);
       let payload = {
         countryName: selectedShippingAddress?.countryName,
@@ -113,51 +154,40 @@ const shippingForm = () => {
         apartment: selectedShippingAddress?.apartment,
         shippingCharge: subTotal < 199 ? selectedShippingCharge : 0,
       };
+
       if (!cartList.length) {
-        dispatch(handleCreatePaymentIntentError("cart data not found"));
+        dispatch(handleCreatePaymentIntentError("Cart is empty"));
         return;
       }
+
       const userData = helperFunctions.getCurrentUser();
       if (!userData) {
         payload.cartList = cartList;
       }
 
-      const res = await dispatch(
-        createPaymentIntent(payload, abortControllerRef.current)
-      );
-      if (res) {
-        if (subTotal < 199) {
-          localStorage.setItem(
-            "selectedShippingMethod",
-            JSON.stringify(shippingOptions?.[activeIndex])
-          );
-        }
-        dispatch(setIsSubmitted(false));
-        router.push(`/payment/${res}`);
+      if (selectedPaymentMethod === STRIPE) {
+        await processPayment(createPaymentIntent, {
+          ...payload,
+          paymentMethod: STRIPE,
+        });
+      } else if (selectedPaymentMethod === PAYPAL) {
+        await processPayment(createOrderForPaypal, {
+          ...payload,
+          paymentMethod: PAYPAL,
+        });
       }
     } catch (error) {
-      console.error("Error occurred while creating payment intent:", error);
+      console.error("Error occurred during payment:", error);
     } finally {
       clearAbortController();
     }
   }, [
     dispatch,
     cartList,
-    selectedShippingAddress?.countryName,
-    selectedShippingAddress?.firstName,
-    selectedShippingAddress?.lastName,
-    selectedShippingAddress?.address,
-    selectedShippingAddress?.city,
-    selectedShippingAddress?.state,
-    selectedShippingAddress?.stateCode,
-    selectedShippingAddress?.pinCode,
-    selectedShippingAddress?.mobile,
-    selectedShippingAddress?.email,
-    selectedShippingAddress?.companyName,
-    selectedShippingAddress?.apartment,
+    selectedShippingAddress,
     selectedShippingCharge,
-    router,
-    activeIndex,
+    selectedPaymentMethod,
+    processPayment,
     clearAbortController,
   ]);
 
@@ -179,7 +209,7 @@ const shippingForm = () => {
       <div className="bg-white px-4 lg:px-6 flex flex-col">
         <div className="flex justify-between items-center border-b py-4">
           <div>
-            <p className="text-baseblack  text-lg md:text-xl font-semibold">
+            <p className="text-baseblack text-lg md:text-xl font-semibold">
               Contact
             </p>
             <p className="text-basegray text-base md:text-lg">
@@ -194,7 +224,7 @@ const shippingForm = () => {
         </div>
         <div className="flex justify-between items-center py-4">
           <div>
-            <p className="text-baseblack  text-lg md:text-xl font-semibold">
+            <p className="text-baseblack text-lg md:text-xl font-semibold">
               Ship To:
             </p>
             <div>
@@ -243,7 +273,7 @@ const shippingForm = () => {
                     dispatch(setSelectedShippingCharge(option.price));
                     dispatch(setActiveIndex(index));
                   }}
-                  className="form-radio  w-6 h-5"
+                  className="form-radio w-6 h-5 accent-primary"
                   disabled={renderTotalAmount > 199}
                 />
                 <span className="md:text-xl text-lg text-baseblack font-semibold">
@@ -261,6 +291,42 @@ const shippingForm = () => {
         </span>
       </div>
 
+      <div>
+        <h3 className="font-semibold text-lg mb-3">Payment Method:</h3>
+        <div className="flex flex-col gap-3">
+          {paymentOptions.map(({ value, label }) => {
+            const isChecked = selectedPaymentMethod === value;
+            return (
+              <label
+                key={value}
+                className={`flex items-center gap-3 p-3 border rounded cursor-pointer ${
+                  isChecked ? "border-primary" : "border-gray-300"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value={value}
+                  checked={isChecked}
+                  disabled={paymentIntentLoader || paypalPaymentLoader}
+                  onChange={() => {
+                    dispatch(
+                      setPaymentIntentMessage({ message: "", type: "" })
+                    );
+                    dispatch(
+                      setPaypalPaymentMessage({ message: "", type: "" })
+                    );
+                    setSelectedPaymentMethod(value);
+                  }}
+                  className="form-radio w-5 h-5 text-primary accent-primary"
+                />
+                <span className="text-base font-medium">{label}</span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
       <div
         className="mt-5 2xl:mt-8 w-full"
         onMouseEnter={() => dispatch(setIsHovered(true))}
@@ -268,7 +334,7 @@ const shippingForm = () => {
       >
         <LoadingPrimaryButton
           className="w-full uppercase"
-          loading={paymentIntentLoader}
+          loading={paymentIntentLoader || paypalPaymentLoader}
           loaderType={isHovered ? "" : "white"}
           onClick={submitShippingMethod}
         >
@@ -276,6 +342,9 @@ const shippingForm = () => {
         </LoadingPrimaryButton>
         {isSubmitted && paymentIntentMessage?.message ? (
           <ErrorMessage message={paymentIntentMessage?.message} />
+        ) : null}
+        {isSubmitted && paypalPaymentMessage?.message ? (
+          <ErrorMessage message={paypalPaymentMessage?.message} />
         ) : null}
       </div>
     </div>

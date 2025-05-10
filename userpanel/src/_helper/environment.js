@@ -64,3 +64,7 @@ export const facebookUrl = process.env.NEXT_PUBLIC_FACEBOOK_URL;
 export const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL;
 export const tiktokUrl = process.env.NEXT_PUBLIC_TIKTOK_URL;
 export const pinterestUrl = process.env.NEXT_PUBLIC_PINTEREST_URL;
+
+export const paypalApiUrl = process.env.NEXT_PUBLIC_PAYPAL_API_URL;
+export const paypalClientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+export const paypalAppSecret = process.env.NEXT_PUBLIC_PAYPAL_APP_SECRET;
