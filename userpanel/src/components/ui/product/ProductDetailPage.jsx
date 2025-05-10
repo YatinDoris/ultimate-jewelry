@@ -730,7 +730,7 @@ const ProductDetailPage = ({ customizePage }) => {
                       loaderType={isHovered ? "" : "white"}
                       onClick={addToCartHandler}
                     >
-                      COMPLETE RING
+                      ADD TO BAG
                     </LoadingPrimaryButton>
                   ) : null}
 

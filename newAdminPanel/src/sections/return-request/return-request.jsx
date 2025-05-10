@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useFormik } from 'formik';
+import { useTheme } from '@mui/material/styles';
 import * as Yup from 'yup';
 
 import Grid from '@mui/material/Unstable_Grid2';
@@ -58,6 +59,7 @@ const ReturnRequestPage = () => {
   const dispatch = useDispatch();
   const { orderId } = useParams();
   const abortControllerRef = useRef(null);
+  const theme = useTheme();
 
   const { ordersLoading, selectedOrder } = useSelector(({ orders }) => orders);
   const { crudReturnLoading } = useSelector(({ returns }) => returns);
@@ -135,6 +137,7 @@ const ReturnRequestPage = () => {
           returnRequestReason: values.returnReason,
         };
         const response = await dispatch(submitReturnRequest(returnData));
+
         if (response) {
           resetForm();
           navigate('/orders/list');
@@ -272,7 +275,18 @@ const ReturnRequestPage = () => {
                                       </Stack>
                                     ))}
                                   </Stack>
-                                  <Stack direction="row" alignItems="center" gap={1}>
+
+                                  <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    gap={0.5}
+                                    sx={{
+                                      border: `1px solid ${theme.palette.grey[300]}`,
+                                      borderRadius: 0.75,
+                                      bgcolor: theme.palette.grey[50],
+                                      p: 0.25,
+                                    }}
+                                  >
                                     <IconButton
                                       onClick={() => handleQuantityChange(configId, -1)}
                                       disabled={
@@ -280,13 +294,30 @@ const ReturnRequestPage = () => {
                                         !values.returnItems[itemIndex]?.isSelected ||
                                         values.returnItems[itemIndex]?.returnQuantity <= 1
                                       }
-                                      sx={{ bgcolor: grey[200], '&:hover': { bgcolor: grey[300] } }}
+                                      size="small"
+                                      sx={{
+                                        bgcolor: theme.palette.grey[200],
+                                        '&:hover': { bgcolor: theme.palette.grey[300] },
+                                        borderRadius: 0.5,
+                                        p: 0.5,
+                                      }}
+                                      aria-label="Decrease quantity"
                                     >
-                                      <Iconify icon="mdi:minus" />
+                                      <Iconify icon="mdi:minus" sx={{ fontSize: '14px' }} />
                                     </IconButton>
-                                    <Typography sx={{ width: '40px', textAlign: 'center' }}>
+
+                                    <Typography
+                                      sx={{
+                                        width: '30px',
+                                        textAlign: 'center',
+                                        fontSize: '0.875rem',
+                                        fontWeight: 'medium',
+                                        color: theme.palette.text.primary,
+                                      }}
+                                    >
                                       {returnQuantity}
                                     </Typography>
+
                                     <IconButton
                                       onClick={() => handleQuantityChange(configId, 1)}
                                       disabled={
@@ -295,12 +326,20 @@ const ReturnRequestPage = () => {
                                         values.returnItems[itemIndex]?.returnQuantity >=
                                           product?.cartQuantity
                                       }
-                                      sx={{ bgcolor: grey[200], '&:hover': { bgcolor: grey[300] } }}
+                                      size="small"
+                                      sx={{
+                                        bgcolor: theme.palette.grey[200],
+                                        '&:hover': { bgcolor: theme.palette.grey[300] },
+                                        borderRadius: 0.5,
+                                        p: 0.5,
+                                      }}
+                                      aria-label="Increase quantity"
                                     >
-                                      <Iconify icon="mdi:plus" />
+                                      <Iconify icon="mdi:plus" sx={{ fontSize: '14px' }} />
                                     </IconButton>
                                   </Stack>
                                 </Stack>
+
                                 {!product?.diamondDetail ? (
                                   <Box sx={{ fontSize: '12px' }}>
                                     {fCurrency(product?.productPrice)} per item
