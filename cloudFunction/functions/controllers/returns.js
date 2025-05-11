@@ -1,15 +1,53 @@
-const { returnService, userService } = require("../services/index");
+const {
+  returnService,
+  userService,
+  orderService,
+} = require("../services/index");
 const sanitizeValue = require("../helpers/sanitizeParams");
 const message = require("../utils/messages");
 const { getMailTemplateForReturnStatus } = require("../utils/template");
 const { sendMail } = require("../helpers/mail");
 const dotenv = require("dotenv");
 const { getCurrentDate } = require("../helpers/common");
+
 dotenv.config();
 
 /**
-  This API is used for reject return by admin.
-*/
+ * Utility to fetch email and userName from return data.
+ * @param {Object} returnData - Return data object
+ * @returns {Promise<{email: string, userName: string}>} - Email and user name
+ */
+const getUserInfoFromReturn = async (returnData) => {
+  let email = "";
+  let userName = "";
+
+  // Try to get from order details first
+  const orderDetail = await orderService.findOne({
+    orderId: returnData?.orderId,
+  });
+  if (orderDetail) {
+    const { shippingAddress } = orderDetail;
+    email = shippingAddress?.email || "";
+    userName = shippingAddress?.name || "";
+  }
+
+  // Override with user data if available
+  if (returnData?.userId) {
+    const userData = await userService.findOne({ userId: returnData?.userId });
+    if (userData) {
+      email = userData?.email?.toLowerCase() || email;
+      userName =
+        `${userData?.firstName || ""} ${userData?.lastName || ""}`.trim() ||
+        userName;
+    }
+  }
+
+  return { email, userName };
+};
+
+/**
+ * This API is used for reject return by admin.
+ */
 const rejectReturn = async (req, res) => {
   try {
     let { returnId, adminNote } = req.body;
@@ -40,9 +78,13 @@ const rejectReturn = async (req, res) => {
             updatedDate: getCurrentDate(),
           };
           await returnService.findOneAndUpdate(findPattern, updatePattern);
+
+          const { email, userName } = await getUserInfoFromReturn(returnData);
+
           // send mail for return status
           sendReturnStatusEmail(
-            returnData.userId,
+            email,
+            userName,
             returnData.orderNumber,
             "rejected",
             adminNote,
@@ -81,8 +123,8 @@ const rejectReturn = async (req, res) => {
 };
 
 /**
-  This API is used for send return request by admin.
-*/
+ * This API is used for send return request by admin.
+ */
 const sendReturnStatusMailController = async (req, res) => {
   try {
     let { returnId } = req.body;
@@ -95,17 +137,20 @@ const sendReturnStatusMailController = async (req, res) => {
       };
       const returnData = await returnService.findOne(findPattern);
       if (returnData) {
-        const { userId, orderNumber, status, adminNote, shippingLabel } =
-          returnData;
+        const { orderNumber, status, adminNote, shippingLabel } = returnData;
+
+        const { email, userName } = await getUserInfoFromReturn(returnData);
 
         // send mail for return status
-        await sendReturnStatusEmail(
-          userId,
+        sendReturnStatusEmail(
+          email,
+          userName,
           orderNumber,
           status,
           adminNote,
           shippingLabel
         );
+
         return res.json({
           status: 200,
           message: message.SUCCESS,
@@ -131,29 +176,24 @@ const sendReturnStatusMailController = async (req, res) => {
 };
 
 const sendReturnStatusEmail = async (
-  userId,
+  email,
+  userName,
   orderNumber,
   status,
   adminNote,
   shippingLabel
 ) => {
   try {
-    const userData = await userService.findOne({
-      userId: userId,
-    });
-    if (userData?.email) {
-      const userName = `${userData.firstName} ${userData.lastName}`;
-      const { subject, description } = getMailTemplateForReturnStatus(
-        userName,
-        orderNumber,
-        status,
-        adminNote,
-        shippingLabel
-      );
+    const { subject, description } = getMailTemplateForReturnStatus(
+      userName,
+      orderNumber,
+      status,
+      adminNote,
+      shippingLabel
+    );
 
-      await sendMail(userData.email, subject, description);
-      return true;
-    }
+    await sendMail(email, subject, description);
+    return true;
   } catch (error) {
     return false;
   }

@@ -124,6 +124,7 @@ const PaypalForm = ({ orderData }) => {
         <div className="p-5">
           <h2 className="text-lg font-semibold mb-3">Pay with PayPal</h2>
           <PayPalButtons
+            fundingSource="paypal"
             createOrder={createPayPalOrder}
             onApprove={onApprove}
             onError={(err) => {
