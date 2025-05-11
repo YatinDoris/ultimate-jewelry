@@ -192,7 +192,7 @@ const PaymentPage = () => {
     // Handle PayPal payment
     if (paymentMethod === PAYPAL && orderDetail) {
       return (
-        <div className="mt-4">
+        <div className="mt-4 z-10 relative">
           <PaypalForm orderId={orderId} orderData={orderDetail} />
         </div>
       );

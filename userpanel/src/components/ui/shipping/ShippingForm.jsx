@@ -4,6 +4,18 @@ import {
   createPaymentIntent,
   handleCreatePaymentIntentError,
 } from "@/_actions/payment.action";
+import amazonPay from "@/assets/images/payment/amazon-pay.webp";
+import applePay from "@/assets/images/payment/applepay.webp";
+import gpay from "@/assets/images/payment/gpay.webp";
+import klarna from "@/assets/images/payment/klarna.webp";
+import paypal from "@/assets/images/payment/paypal.png";
+import link from "@/assets/images/payment/link.png";
+
+import mastercard from "@/assets/images/payment/mastercard.webp";
+import visa from "@/assets/images/payment/visa.webp";
+import samsungPay from "@/assets/images/payment/samsung-pay.webp";
+import americanExpress from "@/assets/images/payment/american-express.webp";
+import discover from "@/assets/images/payment/discover.webp";
 import { helperFunctions, PAYPAL, STRIPE } from "@/_helper";
 import {
   setActiveIndex,
@@ -27,17 +39,41 @@ import {
   setPaymentIntentMessage,
   setPaypalPaymentMessage,
 } from "@/store/slices/paymentSlice";
+import { CustomImg } from "@/components/dynamiComponents";
+
+// const paymentOptions = [
+//   {
+//     value: STRIPE,
+//     label: "Credit Card / Apple Pay",
+//   },
+//   {
+//     value: PAYPAL,
+//     label: "PayPal",
+//   },
+// ];
 
 const paymentOptions = [
   {
     value: STRIPE,
-    label: "Credit Card / Apple Pay",
+    label: "Credit/Debit Card",
+    logos: [americanExpress, visa, mastercard, discover],
+  },
+  {
+    value: STRIPE,
+    label: "Apple Pay, Google Pay, Amazon Pay, Link, Klarna",
+    logos: [applePay, gpay, amazonPay, link, klarna, samsungPay],
   },
   {
     value: PAYPAL,
     label: "PayPal",
+    logos: [paypal],
   },
 ];
+
+// Handle image load error by showing a placeholder
+const handleImageError = (e) => {
+  e.target.src = "https://via.placeholder.com/24?text=Logo"; // Fallback placeholder
+};
 
 const shippingForm = () => {
   const dispatch = useDispatch();
@@ -57,7 +93,9 @@ const shippingForm = () => {
 
   const [selectedMethod, setSelectedMethod] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(STRIPE);
-
+  const [selectedOption, setSelectedOption] = useState(
+    `${STRIPE}-Credit/Debit Card`
+  );
   const abortControllerRef = useRef(null);
   const clearAbortController = useCallback(() => {
     if (abortControllerRef.current) {
@@ -296,33 +334,55 @@ const shippingForm = () => {
       <div>
         <h3 className="font-semibold text-lg mb-3">Payment Method:</h3>
         <div className="flex flex-col gap-3">
-          {paymentOptions.map(({ value, label }) => {
-            const isChecked = selectedPaymentMethod === value;
+          {paymentOptions.map(({ value, label, logos }) => {
+            const isChecked = selectedOption === `${value}-${label}`;
             return (
               <label
-                key={value}
-                className={`flex items-center gap-3 p-3 border rounded cursor-pointer ${
-                  isChecked ? "border-primary" : "border-gray-300"
+                key={`${value}-${label}`}
+                className={`flex flex-wrap items-center justify-between gap-3 p-3 border rounded cursor-pointer transition-all duration-200 ${
+                  isChecked
+                    ? "border-primary bg-primary/10"
+                    : "border-gray-300 hover:bg-gray-50"
                 }`}
+                aria-checked={isChecked}
               >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={value}
-                  checked={isChecked}
-                  disabled={paymentIntentLoader || paypalPaymentLoader}
-                  onChange={() => {
-                    dispatch(
-                      setPaymentIntentMessage({ message: "", type: "" })
-                    );
-                    dispatch(
-                      setPaypalPaymentMessage({ message: "", type: "" })
-                    );
-                    setSelectedPaymentMethod(value);
-                  }}
-                  className="form-radio w-5 h-5 text-primary accent-primary"
-                />
-                <span className="text-base font-medium">{label}</span>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value={value}
+                    checked={isChecked}
+                    disabled={paymentIntentLoader || paypalPaymentLoader}
+                    onChange={() => {
+                      dispatch(
+                        setPaymentIntentMessage({ message: "", type: "" })
+                      );
+                      dispatch(
+                        setPaypalPaymentMessage({ message: "", type: "" })
+                      );
+                      setSelectedOption(`${value}-${label}`);
+                      setSelectedPaymentMethod(value);
+                    }}
+                    className="form-radio w-5 h-5 text-primary accent-primary"
+                    aria-label={`Select ${label} as payment method`}
+                  />
+                  <span className="text-base font-medium">{label}</span>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {logos && (
+                    <div className="flex gap-2">
+                      {logos.map((logoUrl, index) => (
+                        <CustomImg
+                          key={index}
+                          src={logoUrl}
+                          alt={`${label} logo ${index + 1}`}
+                          className="h-8 w-auto"
+                          onError={handleImageError}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </label>
             );
           })}
