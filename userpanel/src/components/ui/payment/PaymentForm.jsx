@@ -36,14 +36,14 @@ import { deleteOrder } from "@/_actions/order.action";
 import { setCartList } from "@/store/slices/cartSlice";
 
 const expressCheckoutOptions = {
-  // buttonType: {
-  //   applePay: "plain",
-  //   googlePay: "plain",
-  // },
   buttonType: {
-    applePay: "buy",
-    googlePay: "buy",
+    applePay: "plain",
+    googlePay: "plain",
   },
+  // buttonType: {
+  //   applePay: "buy",
+  //   googlePay: "buy",
+  // },
   buttonTheme: {
     applePay: "black",
     googlePay: "black",
