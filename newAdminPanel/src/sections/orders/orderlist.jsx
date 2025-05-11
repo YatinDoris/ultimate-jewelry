@@ -456,6 +456,7 @@ const OrderList = () => {
                     <TableCell>Mobile</TableCell>
                     <TableCell>Order Number</TableCell>
                     <TableCell>Date & Time</TableCell>
+                    <TableCell>Payment Method</TableCell>
                     <TableCell>Payment Status</TableCell>
                     <TableCell>Order Status</TableCell>
                     <TableCell></TableCell>
@@ -478,6 +479,7 @@ const OrderList = () => {
                           <TableCell sx={{ minWidth: '180px' }}>
                             {moment(x?.createdDate).format('MM-DD-YYYY hh:mm a')}
                           </TableCell>
+                          <TableCell>{x?.paymentMethod}</TableCell>
                           <TableCell>
                             <Label
                               color={helperFunctions.getStatusBg(x?.paymentStatus) || 'success'}
