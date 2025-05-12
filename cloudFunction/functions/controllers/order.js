@@ -3,6 +3,7 @@ const {
   productService,
   cartService,
   stripeService,
+  paypalService,
 } = require("../services/index");
 const sanitizeValue = require("../helpers/sanitizeParams");
 const message = require("../utils/messages");
@@ -42,7 +43,6 @@ const insertOrder = async (req, res) => {
       res
     );
     if (createdOrder) {
-
       return res.json({
         status: 200,
         createdOrder,
@@ -332,33 +332,60 @@ const updateOrderStatus = async (req, res) => {
 };
 
 /**
-  This API is used for cancel order by admin and user.
-*/
+ * API to cancel order by admin or user (full refund only)
+ */
 const cancelOrder = async (req, res) => {
   try {
     const userData = req.userData;
     let { orderId, cancelReason } = req.body;
-    // required
     orderId = sanitizeValue(orderId) ? orderId.trim() : null;
     cancelReason = sanitizeValue(cancelReason) ? cancelReason.trim() : null;
 
     if (orderId && cancelReason) {
-      const findPattern = {
-        orderId: orderId,
-      };
+      const findPattern = { orderId };
       const orderData = await orderService.findOne(findPattern);
-      if (orderData) {
-        if (orderData.orderStatus === "cancelled") {
-          return res.json({
-            status: 409,
-            message: message.alreadyExist("order status"),
-          });
-        }
+      if (!orderData) {
+        return res.json({
+          status: 404,
+          message: message.DATA_NOT_FOUND,
+        });
+      }
 
-        if (
-          orderData.paymentStatus === "success" &&
-          ["pending", "confirmed"].includes(orderData.orderStatus)
-        ) {
+      if (orderData.orderStatus === "cancelled") {
+        return res.json({
+          status: 409,
+          message: message.alreadyExist("order status"),
+        });
+      }
+
+      if (
+        orderData.paymentStatus === "success" &&
+        ["pending", "confirmed"].includes(orderData.orderStatus)
+      ) {
+        const updatePattern = {
+          cancelReason,
+          cancelledBy: userData.id,
+          orderStatus: "cancelled",
+          updatedDate: getCurrentDate(),
+        };
+        await orderService.findOneAndUpdate(findPattern, updatePattern);
+
+        // Update product quantities for non-customized products
+        const nonCustomizedProducts = getNonCustomizedProducts(
+          orderData.products
+        );
+        await updateProductQty(nonCustomizedProducts);
+
+        // Send cancellation email
+        const { subject, description } = getMailTemplateForOrderStatus(
+          orderData.shippingAddress.name,
+          orderData.orderNumber,
+          "cancelled"
+        );
+        sendMail(orderData.shippingAddress.email, subject, description);
+
+        // Handle refund based on payment method
+        if (orderData.paymentMethod === "stripe") {
           const pIFindPattern = {
             paymentIntentId: orderData.stripePaymentIntentId,
             options: {
@@ -379,99 +406,128 @@ const cancelOrder = async (req, res) => {
               ),
             });
           }
-          const updatePattern = {
-            cancelReason: cancelReason,
-            cancelledBy: userData.id,
-            orderStatus: "cancelled",
-            updatedDate: getCurrentDate(),
-          };
-          await orderService.findOneAndUpdate(findPattern, updatePattern);
-          setTimeout(() => {
-            res.json({
-              status: 200,
-              message: message.custom(
-                `Order has been cancelled and refund wil be initiated soon`
-              ),
-            });
-          }, 5000); // 5 seconds
-          // send mail for order status
-          const { subject, description } = getMailTemplateForOrderStatus(
-            orderData.shippingAddress.name,
-            orderData.orderNumber,
-            "cancelled"
-          );
-          sendMail(orderData.shippingAddress.email, subject, description);
-          //  update product qty for non-customized products
-          const nonCustomizedProducts = getNonCustomizedProducts(
-            orderData.products
-          );
 
-          await updateProductQty(nonCustomizedProducts);
-
-          // integrate refund functionality
           const refundPaymentParams = {
             paymentIntentId: paymentIntent.id,
-            amountInCents: paymentIntent.amount,
+            amountInCents: paymentIntent.amount, // Full refund
           };
-          stripeService
-            .refundAmount(refundPaymentParams)
-            .then((refundResponse) => {
-              if (refundResponse && refundResponse?.status === "pending") {
-                let orderUpdatePatternWithRefund = {
-                  stripeRefundId: refundResponse.id,
-                  paymentStatus: "pending_refund",
-                  updatedDate: Date.now(),
-                };
-                orderService.findOneAndUpdate(
-                  findPattern,
-                  orderUpdatePatternWithRefund
-                );
-                // send mail for pending refund status
-                const { subject, description } = getMailTemplateForRefundStatus(
-                  orderData.shippingAddress.name,
-                  orderData.orderNumber,
-                  "pending_refund"
-                );
-                sendMail(orderData.shippingAddress.email, subject, description);
-              }
-            })
-            .catch((e) => {
-              const refundsList = paymentIntent?.latest_charge?.refunds?.data;
-              if (
-                !refundsList?.length ||
-                refundsList?.filter((x) => x?.status === "canceled")?.length ===
+
+          try {
+            const refundResponse = await stripeService.refundAmount(
+              refundPaymentParams
+            );
+            if (refundResponse?.status === "pending") {
+              const orderUpdatePatternWithRefund = {
+                stripeRefundId: refundResponse.id,
+                paymentStatus: "pending_refund",
+                updatedDate: getCurrentDate(),
+              };
+              await orderService.findOneAndUpdate(
+                findPattern,
+                orderUpdatePatternWithRefund
+              );
+
+              const { subject, description } = getMailTemplateForRefundStatus(
+                orderData.shippingAddress.name,
+                orderData.orderNumber,
+                "pending_refund"
+              );
+              sendMail(orderData.shippingAddress.email, subject, description);
+            }
+          } catch (e) {
+            const refundsList = paymentIntent?.latest_charge?.refunds?.data;
+            if (
+              !refundsList?.length ||
+              refundsList?.filter((x) => x?.status === "canceled")?.length ===
                 refundsList?.length
-              ) {
-                let orderUpdatePatternWithRefund = {
-                  paymentStatus: "refund_initialization_failed",
-                  stripeRefundFailureReason: e?.message,
-                  updatedDate: getCurrentDate(),
-                };
-                orderService.findOneAndUpdate(
-                  findPattern,
-                  orderUpdatePatternWithRefund
-                );
-                // send mail for refund initialized failed status
-                const { subject, description } = getMailTemplateForRefundStatus(
-                  orderData.shippingAddress.name,
-                  orderData.orderNumber,
-                  "refund_initialization_failed"
-                );
-                sendMail(orderData.shippingAddress.email, subject, description);
-              }
+            ) {
+              const orderUpdatePatternWithRefund = {
+                paymentStatus: "refund_initialization_failed",
+                stripeRefundFailureReason: e?.message,
+                updatedDate: getCurrentDate(),
+              };
+              await orderService.findOneAndUpdate(
+                findPattern,
+                orderUpdatePatternWithRefund
+              );
+
+              const { subject, description } = getMailTemplateForRefundStatus(
+                orderData.shippingAddress.name,
+                orderData.orderNumber,
+                "refund_initialization_failed"
+              );
+              sendMail(orderData.shippingAddress.email, subject, description);
+            }
+          }
+        } else if (orderData.paymentMethod === "paypal") {
+          if (!orderData.paypalCaptureId) {
+            return res.json({
+              status: 409,
+              message: message.custom("PayPal capture ID not found"),
             });
-        } else {
-          return res.json({
-            status: 409,
+          }
+
+          try {
+            const refundResponse = await paypalService.refundPayment({
+              captureId: orderData.paypalCaptureId,
+              amount: orderData.total, // Full refund
+              reason: cancelReason,
+            });
+
+            if (refundResponse?.status === "COMPLETED") {
+              const orderUpdatePatternWithRefund = {
+                paypalRefundId: refundResponse.id,
+                paymentStatus: "refunded",
+                updatedDate: getCurrentDate(),
+              };
+              await orderService.findOneAndUpdate(
+                findPattern,
+                orderUpdatePatternWithRefund
+              );
+
+              const { subject, description } = getMailTemplateForRefundStatus(
+                orderData.shippingAddress.name,
+                orderData.orderNumber,
+                "refunded"
+              );
+              sendMail(orderData.shippingAddress.email, subject, description);
+            }
+          } catch (e) {
+            const orderUpdatePatternWithRefund = {
+              paymentStatus: "refund_initialization_failed",
+              paypalRefundFailureReason: e?.message,
+              updatedDate: getCurrentDate(),
+            };
+            await orderService.findOneAndUpdate(
+              findPattern,
+              orderUpdatePatternWithRefund
+            );
+
+            const { subject, description } = getMailTemplateForRefundStatus(
+              orderData.shippingAddress.name,
+              orderData.orderNumber,
+              "refund_initialization_failed"
+            );
+            sendMail(orderData.shippingAddress.email, subject, description);
+          }
+        }
+
+        // Delay response to ensure async operations complete
+        setTimeout(() => {
+          res.json({
+            status: 200,
             message: message.custom(
-              `You cannot cancel order as the payment status is ${orderData.paymentStatus} and order status is ${orderData.orderStatus}`
+              `Order has been cancelled and full refund will be initiated soon`
             ),
           });
-        }
+        }, 5000);
       } else {
         return res.json({
-          status: 404,
-          message: message.DATA_NOT_FOUND,
+          status: 409,
+          message: message.custom(
+            `You cannot cancel order as the payment status is ${orderData.paymentStatus}` +
+              ` and order status is ${orderData.orderStatus}`
+          ),
         });
       }
     } else {
