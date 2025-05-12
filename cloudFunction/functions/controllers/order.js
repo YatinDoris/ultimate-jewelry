@@ -214,9 +214,11 @@ const deleteOrder = async (req, res) => {
           );
 
           await updateProductQty(nonCustomizedProducts);
-          const paymentIntent = await stripeService.cancelPaymentIntent(
-            orderData.stripePaymentIntentId
-          );
+          if (orderData?.paymentMethod === "stripe") {
+            const paymentIntent = await stripeService.cancelPaymentIntent(
+              orderData.stripePaymentIntentId
+            );
+          }
           return res.json({
             status: 200,
             message: message.deleteMessage("order"),
