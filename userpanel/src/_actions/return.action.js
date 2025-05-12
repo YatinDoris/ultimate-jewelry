@@ -6,6 +6,7 @@ import {
   setReturnRequestLoader,
   setReturnLoader,
   setCancelReturnRequestLoader,
+  setTrackReturnLoading,
 } from "@/store/slices/returnSlice";
 
 import { returnService, orderService } from "@/_services";
@@ -23,6 +24,33 @@ export const fetchReturnsHistory = () => async (dispatch) => {
   } finally {
     dispatch(setReturnLoader(false));
   }
+};
+
+export const fetchTrackReturnByOrderNumberAndEmail = (payload) => {
+  return async (dispatch) => {
+    dispatch(setReturnLoader(true));
+    dispatch(setTrackReturnLoading(true));
+    dispatch(setReturnMessage({ message: "", type: "" }));
+    dispatch(setReturnDetail(null));
+    try {
+      const returnDetail = await returnService.trackReturnByOrderNumberAndEmail(
+        payload
+      );
+      if (returnDetail) {
+        dispatch(setReturnDetail(returnDetail));
+        return returnDetail;
+      }
+      return false;
+    } catch (e) {
+      dispatch(
+        setReturnMessage({ message: e?.message, type: messageType.ERROR })
+      );
+      return false;
+    } finally {
+      dispatch(setReturnLoader(false));
+      dispatch(setTrackReturnLoading(false));
+    }
+  };
 };
 
 export const fetchReturnDetail = (returnId) => async (dispatch) => {

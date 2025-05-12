@@ -26,13 +26,10 @@ import { CartNotFound, CustomImg, ProgressiveImg } from "../dynamiComponents";
 import { useRouter } from "next/navigation";
 import ErrorMessage from "./ErrorMessage";
 import DiamondDetailDrawer from "./customize/DiamondDetailDrawer";
+import { paymentOptions } from "@/_utils/paymentOptions";
 
 const maxQuantity = 5;
 const minQuantity = 1;
-const paymentOptions = [
-  { img: stripe, name: "Stripe", altAttr: "", titleAttr: "" },
-  { img: paypal, name: "PayPal", altAttr: "", titleAttr: "" },
-];
 
 const CartPopup = () => {
   const dispatch = useDispatch();
@@ -418,12 +415,12 @@ const CartPopup = () => {
                         Pay With:
                       </p>
                       <div className="flex gap-3 xl:gap-6 flex-wrap">
-                        {paymentOptions.map((option, index) => (
+                        {paymentOptions?.map((option, index) => (
                           <CustomImg
                             key={index}
-                            srcAttr={option.img}
-                            titleAttr={option.titleAttr}
-                            altAttr={option.altAttr}
+                            srcAttr={option?.img}
+                            titleAttr={option?.titleAttr}
+                            altAttr={option?.altAttr}
                             className="object-contain h-10 w-10 md:h-12 md:w-12 xl:h-auto xl:w-auto"
                           />
                         ))}

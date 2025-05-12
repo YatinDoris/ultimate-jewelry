@@ -201,6 +201,33 @@ const getStatusCustomBadge = (status) => {
   return statusMap[status] || "#F4C430"; // Default to yellow for unknown statuses
 };
 
+const getStatusColor = (status) => {
+  switch (status?.toLowerCase()) {
+    case "rejected":
+      return {
+        colorClass: "text-red-600",
+        filter:
+          "invert(42%) sepia(93%) saturate(1352%) hue-rotate(340deg) brightness(95%) contrast(90%)",
+      };
+    case "approved":
+      return {
+        colorClass: "text-green-600",
+        filter:
+          "invert(35%) sepia(85%) saturate(1350%) hue-rotate(85deg) brightness(95%) contrast(90%)",
+      };
+    case "received":
+      return {
+        colorClass: "text-blue-600",
+        filter:
+          "invert(35%) sepia(85%) saturate(2000%) hue-rotate(190deg) brightness(95%) contrast(90%)",
+      };
+    default:
+      return {
+        colorClass: "text-gray-600",
+        filter: "none",
+      };
+  }
+};
 const getLightShadeOfColor = (hexCode) => {
   // Function to calculate light shade
   const calculateLightShade = (hex, percent) => {
@@ -417,6 +444,21 @@ const getCustomProduct = () => {
   return customProduct;
 };
 
+const formatDate = (timestamp) => {
+  if (!timestamp) return "N/A";
+  const date = new Date(timestamp);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
+const capitalizeCamelCase = (status) => {
+  if (!status) return "N/A";
+  return status.charAt(0).toUpperCase() + status.slice(1);
+};
+
 export const helperFunctions = {
   generateUniqueId,
   stringReplacedWithUnderScore,
@@ -446,4 +488,7 @@ export const helperFunctions = {
   getCustomProduct,
   areDiamondDetailsEqual,
   getUniqueDrawerKey,
+  getStatusColor,
+  formatDate,
+  capitalizeCamelCase,
 };

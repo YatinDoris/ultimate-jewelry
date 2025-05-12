@@ -30,12 +30,9 @@ import {
 import { useRouter } from "next/navigation";
 import ErrorMessage from "../ErrorMessage";
 import DiamondDetailDrawer from "../customize/DiamondDetailDrawer";
+import { paymentOptions } from "@/_utils/paymentOptions";
 const maxQuantity = 5;
 const minQuantity = 1;
-const paymentOptions = [
-  { img: stripe, name: "Stripe", altAttr: "", titleAttr: "" },
-  { img: paypal, name: "PayPal", altAttr: "", titleAttr: "" },
-];
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -518,12 +515,12 @@ const CartPage = () => {
                     Pay With:
                   </p>
                   <div className="flex gap-2 gap2xl:gap-6 flex-wrap">
-                    {paymentOptions.map((option, index) => (
+                    {paymentOptions?.map((option, index) => (
                       <CustomImg
                         key={index}
-                        srcAttr={option.img}
-                        titleAttr={option.titleAttr}
-                        altAttr={option.altAttr}
+                        srcAttr={option?.img}
+                        titleAttr={option?.titleAttr}
+                        altAttr={option?.altAttr}
                         className="object-contain  w-12  lg:w-10 2xl:w-auto 2xl:h-auto"
                       />
                     ))}

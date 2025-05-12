@@ -31,7 +31,7 @@ export default function TrackYourOrderPage() {
       orderNumber: Yup.string().required("Order Number is required"),
       email: Yup.string()
         .email("Invalid email address")
-        .required("Order email Email is required"),
+        .required("Order Email is required"),
     }),
     onSubmit: async (values) => {
       await dispatch(fetchTrackOrderByOrderNumberAndEmail(values));
