@@ -521,7 +521,7 @@ const CartPage = () => {
                         srcAttr={option?.img}
                         titleAttr={option?.titleAttr}
                         altAttr={option?.altAttr}
-                        className="object-contain  w-12  lg:w-10 2xl:w-auto 2xl:h-auto"
+                        className="object-contain  w-12  lg:w-10 2xl:w-auto 2xl:h-12"
                       />
                     ))}
                   </div>

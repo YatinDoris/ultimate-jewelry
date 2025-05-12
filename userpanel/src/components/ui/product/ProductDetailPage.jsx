@@ -772,7 +772,7 @@ const ProductDetailPage = ({ customizePage }) => {
                       srcAttr={option?.img}
                       titleAttr={option?.titleAttr}
                       altAttr={option?.altAttr}
-                      className="object-contain 3xl:h-auto 3xl:w-auto h-12 w-10"
+                      className="object-contain  3xl:w-auto h-12 w-10"
                     />
                   ))}
                 </div>
@@ -833,7 +833,7 @@ export default ProductDetailPage;
 
 const ProductDetailTabs = ({ selectedVariations = [] }) => {
   const { productDetail } = useSelector(({ product }) => product);
-
+  console.log("productDetail", productDetail);
   const [activeTab, setActiveTab] = useState("Product Detail");
   const [open, setOpen] = useState(false);
   const getVariationValue = (key) => {
@@ -880,7 +880,9 @@ const ProductDetailTabs = ({ selectedVariations = [] }) => {
                 {renderInfoRow("Size", getVariationValue("Size"))}
                 {renderInfoRow(
                   "Approx Net Wt",
-                  `${productDetail?.netWeight} g`
+                  productDetail?.netWeight
+                    ? `${productDetail?.netWeight} g`
+                    : ""
                 )}
               </>
             ) : null}

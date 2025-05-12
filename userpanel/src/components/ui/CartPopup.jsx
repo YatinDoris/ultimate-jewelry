@@ -421,7 +421,7 @@ const CartPopup = () => {
                             srcAttr={option?.img}
                             titleAttr={option?.titleAttr}
                             altAttr={option?.altAttr}
-                            className="object-contain h-10 w-10 md:h-12 md:w-12 xl:h-auto xl:w-auto"
+                            className="object-contain h-10 w-10 md:h-12 md:w-12 xl:h-12 xl:w-auto"
                           />
                         ))}
                       </div>

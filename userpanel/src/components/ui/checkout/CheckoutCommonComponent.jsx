@@ -469,7 +469,7 @@ const CheckoutCommonComponent = () => {
                         titleAttr={option?.titleAttr}
                         altAttr={option?.altAttr}
                         alt={option}
-                        className="object-contain w-8 h-10 xs:w-10 xs:h-10 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
+                        className="object-contain w-8 h-10 xs:w-10 xs:h-10 md:h-12 md:w-12"
                       />
                     ))}
                   </div>
