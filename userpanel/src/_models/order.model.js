@@ -24,6 +24,18 @@ export const orderModel = {
   stripeRefundFailureReason: {
     type: String,
   },
+  paypalOrderId: {
+    type: String, // Store PayPal order ID
+  },
+  paypalCaptureId: {
+    type: String, // Store PayPal capture ID for refund
+  },
+  paypalRefundId: {
+    type: String, // Store PayPal refund ID
+  },
+  paypalRefundFailureReason: {
+    type: String, // Store reason for PayPal refund failure
+  },
   products: {
     type: [
       {
@@ -49,7 +61,6 @@ export const orderModel = {
           // - For non-customized products: this is the standard variation price.
           // - For customized products: this is the custom product price excluding any diamond-related pricing.
         },
-
         unitAmount: {
           type: Number,
           // Final total price after multiplying with quantity:
@@ -93,7 +104,6 @@ export const orderModel = {
       name: {
         type: String,
       },
-
       country: {
         type: String,
       },
@@ -120,6 +130,35 @@ export const orderModel = {
       },
     },
     require: true,
+  },
+  billingAddress: {
+    type: {
+      line1: {
+        type: String,
+        required: true,
+      },
+      line2: {
+        type: String,
+        required: false,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      state: {
+        type: String,
+        required: true,
+      },
+      country: {
+        type: String,
+        required: true,
+      },
+      postal_code: {
+        type: String,
+        required: true,
+      },
+    },
+    require: false,
   },
   subTotal: {
     // wihtout shipping,discount and other taxes
@@ -170,9 +209,9 @@ export const orderModel = {
       "refund_initialization_failed",
     ],
   },
-  paymentMethod: { // Stripe or Paypal
+  paymentMethod: {
     type: String,
-    enum: ["stripe", "paypal"]
+    enum: ["stripe", "paypal"],
   },
   cancelReason: {
     type: String,

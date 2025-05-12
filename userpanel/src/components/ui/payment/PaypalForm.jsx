@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useDispatch, useSelector } from "react-redux";
 import { paypalClientId } from "@/_helper";
@@ -23,46 +23,51 @@ import { messageType, PAYPAL } from "@/_helper/constants";
 const PaypalForm = ({ orderData }) => {
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const { cartList } = useSelector(({ cart }) => cart);
   const { paypalPaymentMessage } = useSelector(({ payment }) => payment);
 
   useEffect(() => {
     dispatch(setPaymentLoader(false));
   }, [dispatch]);
 
-  const handleSuccessfulPayment = async (billingAddress, paymentDetails) => {
-    try {
-      const currentUser = helperFunctions?.getCurrentUser();
-      const paymentPayload = {
-        orderId: orderData?.id,
-        paymentStatus: "success",
-        paymentMethod: PAYPAL,
-        paymentDetails,
-        ...(currentUser && { cartIds: paymentDetails.cartIds || [] }),
-      };
+  const handleSuccessfulPayment = useCallback(
+    async (billingAddressData) => {
+      try {
+        const currentUser = helperFunctions?.getCurrentUser();
 
-      const billingPayload = {
-        orderId: orderData?.id,
-        billingAddress,
-      };
+        const paymentPayload = {
+          orderId: orderData?.id,
+          paymentStatus: "success",
+          ...(currentUser && { cartIds: cartList.map((item) => item.id) }),
+        };
 
-      await dispatch(updateBillingAddress(billingPayload));
-      const paymentResponse = await dispatch(
-        updatePaymentStatus(paymentPayload)
-      );
+        const billingPayload = {
+          orderId: orderData?.id,
+          billingAddress: billingAddressData,
+        };
 
-      if (paymentResponse) {
-        router.push(`/order/success/${paymentResponse?.orderNumber}`);
-        if (!currentUser) {
-          localStorage.removeItem("cart");
+        await dispatch(updateBillingAddress(billingPayload));
+        const paymentResponse = await dispatch(
+          updatePaymentStatus(paymentPayload)
+        );
+
+        if (paymentResponse) {
+          router.push(`/order/success/${paymentResponse?.orderNumber}`);
+          if (!currentUser) {
+            localStorage.removeItem("cart");
+          }
+          localStorage.removeItem("address");
+          localStorage.removeItem("selectedShippingMethod");
+          dispatch(setCartList([]));
         }
-        localStorage.removeItem("address");
-        localStorage.removeItem("selectedShippingMethod");
-        dispatch(setCartList([]));
+      } catch (error) {
+        console.error("Error updating payment status:", error);
+        throw error;
       }
-    } catch (error) {
-      console.error("Error finalizing payment:", error);
-    }
-  };
+    },
+    [cartList, dispatch, router, orderData?.id]
+  );
 
   const createPayPalOrder = async () => {
     try {
@@ -87,16 +92,18 @@ const PaypalForm = ({ orderData }) => {
       paypalOrderId: data.orderID,
     };
     const captureRes = await dispatch(paypalCaptureOrder(payload));
-    if (captureRes.success) {
+    if (captureRes?.success) {
       if (captureRes?.paypalOrderCaptureResult?.status === "COMPLETED") {
-        const billingAddress =
-          orderData?.billingAddress || orderData?.shippingAddress;
-
-        await handleSuccessfulPayment(billingAddress, {
-          type: "paypal",
-          paypalOrderId: data.orderID,
-          paypalPayerId: data.payerID,
-        });
+        // set billing address same as shipping Address
+        const billingAddress = {
+          line1: orderData?.shippingAddress?.address || "",
+          line2: orderData?.shippingAddress?.apartment || "",
+          city: orderData?.shippingAddress?.city || "",
+          state: orderData?.shippingAddress?.state || "",
+          country: orderData?.shippingAddress?.country || "",
+          postal_code: orderData?.shippingAddress?.pinCode?.toString() || "",
+        };
+        await handleSuccessfulPayment(billingAddress);
       } else {
         dispatch(
           setPaypalPaymentMessage({

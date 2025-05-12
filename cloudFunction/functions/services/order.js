@@ -86,6 +86,25 @@ exportFunction.findByPaymentIntentId = (findPattern) => {
   });
 };
 
+exportFunction.findByPaypalOrderId = (findPattern) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { paypalOrderId } = findPattern;
+
+      const orderRef = ordersDbInstance.ref(`${orderUrl}`);
+      const snapshot = await orderRef
+        .orderByChild("paypalOrderId")
+        .equalTo(paypalOrderId)
+        .once("value");
+      const orderData = snapshot.exists() ? Object.values(snapshot.val()) : [];
+      const foundData = orderData.length ? orderData[0] : null;
+      resolve(foundData);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 exportFunction.deleteOne = (findPattern) => {
   return new Promise(async (resolve, reject) => {
     try {

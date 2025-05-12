@@ -7,6 +7,7 @@ const appointment = require("./appointment");
 const stripe = require("./stripe");
 const returns = require("./returns");
 const contact = require("./contact");
+const paypal = require("./paypal");
 
 module.exports = {
   orderService: order,
@@ -18,4 +19,5 @@ module.exports = {
   appointmentService: appointment,
   stripeService: stripe,
   contactService: contact,
+  paypalService: paypal,
 };
