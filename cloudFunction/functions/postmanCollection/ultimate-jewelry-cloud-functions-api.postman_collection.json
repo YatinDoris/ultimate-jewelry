@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "525462f2-9257-47db-9a17-f047c144b26f",
-		"name": "shop-nimbus-cloud-functions-api",
+		"_postman_id": "529bc253-a4bd-46fe-b847-e1cde41e74e2",
+		"name": "ultimate-jewelry-cloud-functions-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "35050545"
 	},
@@ -26,7 +26,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\"countryName\" : \"India\",\r\n\"firstName\" : \"test firstName\",\r\n\"lastName\" : \"test lastName\",\r\n\"address\" : \"test address\",\r\n\"city\" : \"test city\",\r\n\"state\" : \"test state\",\r\n\"pinCode\" : 12345,\r\n\"mobile\" : 1234567890,\r\n\"email\" : \"vulezappenou-1391@yopmail.com\",\r\n\"companyName\" : \"companyName\", //optional\r\n\"apartment\" : \"apartment\", //optional\r\n\"shippingCharge\":0\r\n}",
+							"raw": "{\r\n    \"cartList\" : [],\r\n\"countryName\" : \"US\",\r\n\"firstName\" : \"QA\",\r\n\"lastName\" : \"Doris\",\r\n\"address\" : \"1964 West Ridge Rd\",\r\n\"city\" : \"ROCHESTER\",\r\n\"state\" : \"New York\",\r\n\"pinCode\" : 14626,\r\n\"mobile\" : 1234567890,\r\n\"email\" : \"qadorisinfotech@gmail.com\",\r\n\"companyName\" : \"\", //optional\r\n\"apartment\" : \"\", //optional\r\n\"shippingCharge\":0, //optional\r\n\"stateCode\":\"NY\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -161,14 +161,7 @@
 					"name": "webhook",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"type": "noauth"
 						},
 						"method": "POST",
 						"header": [],
@@ -413,7 +406,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\"countryName\" : \"India\",\r\n\"firstName\" : \"test firstName\",\r\n\"lastName\" : \"test lastName\",\r\n\"address\" : \"test address\",\r\n\"city\" : \"test city\",\r\n\"state\" : \"test state\",\r\n\"pinCode\" : 12345,\r\n\"mobile\" : 1234567890,\r\n\"email\" : \"test@gmail.com\",\r\n\"companyName\" : \"companyName\", //optional\r\n\"apartment\" : \"apartment\", //optional\r\n\"shippingCharge\":0\r\n}",
+							"raw": "{\r\n\"countryName\" : \"US\",\r\n\"firstName\" : \"Utsav\",\r\n\"lastName\" : \"Garchat\",\r\n\"address\" : \"\",\r\n\"city\" : \"US\",\r\n\"state\" : \"New York\",\r\n\"pinCode\" : 10036,\r\n\"mobile\" : 1111111111,\r\n\"email\" : \"utsavdoris@gmail.com\",\r\n\"companyName\" : \"\", //optional\r\n\"apartment\" : \"\", //optional\r\n\"shippingCharge\":0,\r\n\"stateCode\":\"NY\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -774,6 +767,170 @@
 							"path": [
 								"appointments",
 								"updateAppointmentStatus"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "contact",
+			"item": [
+				{
+					"name": "contactUs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Vincent\",\r\n    \"lastName\": \"Schwartz\",\r\n    \"email\": \"parthdoris01@gmail.com\",\r\n    \"mobile\": \"2163452345322\",\r\n    \"requirement\": \"sdgfj\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/contact/contact-us",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"contact",
+								"contact-us"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "paypal",
+			"item": [
+				{
+					"name": "Create Paypal Order",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderNumber\":\"ORD211002720c7f4\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/paypal/create-paypal-order",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"paypal",
+								"create-paypal-order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAccessToken",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"orderId\":\"9b7634d4a6d\",\r\n\"value\":\"1078.44\", \r\n\"currency\": \"USD\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/paypal/access-token",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"paypal",
+								"access-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Capture Paypal Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"paypalOrderId\":\"ORD1117364896e21\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/paypal/capture-order",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"paypal",
+								"capture-order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refundPaypalPayment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"captureId\":\"\",\r\n    \"amount\":\"\",\r\n    \"currency\":\"USD\",\r\n    \"reason\":\"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/paypal/capture-order",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"paypal",
+								"capture-order"
 							]
 						}
 					},
