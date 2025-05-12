@@ -1,33 +1,7 @@
-const axios = require("axios");
 const message = require("../utils/messages");
-const dotenv = require("dotenv");
+const { orderService, paypalService } = require("../services");
 const { getNonCustomizedProducts } = require("../helpers/common");
-const { orderService } = require("../services");
 const { updateProductQty } = require("../services/product");
-dotenv.config();
-
-const base = process.env.PAYPAL_API_URL;
-
-// Utility function to get PayPal access token
-const getPaypalAccessToken = async () => {
-  try {
-    const authResponse = await axios.post(
-      `${base}/v1/oauth2/token`,
-      "grant_type=client_credentials",
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Basic ${Buffer.from(
-            `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_APP_SECRET}`
-          ).toString("base64")}`,
-        },
-      }
-    );
-    return authResponse?.data?.access_token;
-  } catch (error) {
-    throw new Error("Failed to get PayPal access token");
-  }
-};
 
 // Utility function to handle order deletion and product quantity update
 const deleteOrderAndUpdateProductQty = async ({ orderId }) => {
@@ -43,7 +17,7 @@ const deleteOrderAndUpdateProductQty = async ({ orderId }) => {
  */
 const getAccessToken = async (req, res) => {
   try {
-    const access_token = await getPaypalAccessToken();
+    const { access_token } = await paypalService.getAccessToken();
     return res.json({
       status: 200,
       message: message.SUCCESS,
@@ -80,67 +54,29 @@ const createPaypalOrder = async (req, res) => {
     }
 
     try {
-      const { orderNumber, total, shippingAddress } = orderData;
-      const access_token = await getPaypalAccessToken();
-      const bodyData = {
-        intent: "CAPTURE",
-        purchase_units: [
-          {
-            reference_id: orderNumber,
-            description: `Payment for Order Number ${orderNumber}`,
-            shipping: {
-              name: {
-                full_name: shippingAddress?.name || "",
-              },
-              email_address: shippingAddress?.email || "",
-              // phone_number: {
-              //   country_code: shippingAddress?.country || "",
-              //   national_number: shippingAddress?.mobile?.toString() || "",
-              // },
-              address: {
-                address_line_1: shippingAddress?.address || "",
-                address_line_2: shippingAddress?.apartment || "",
-                admin_area_1: shippingAddress?.state || "",
-                admin_area_2: shippingAddress?.city || "",
-                postal_code: shippingAddress?.pinCode || "",
-                country_code: shippingAddress?.country || "",
-              },
-            },
-            amount: {
-              currency_code: "USD",
-              value: total?.toString(),
-            },
-          },
-        ],
-      };
+      const paypalOrderData = await paypalService.createOrder({ orderData });
 
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
-      };
-
-      const paypalOrderResponse = await axios.post(
-        `${base}/v2/checkout/orders`,
-        bodyData,
-        { headers }
-      );
-
-      if (paypalOrderResponse?.data) {
+      if (paypalOrderData) {
+        // Save paypalOrderId to order document
+        await orderService.findOneAndUpdate(
+          { orderId: orderData?.id },
+          { paypalOrderId: paypalOrderData?.id }
+        );
         return res.json({
           status: 200,
           message: message.SUCCESS,
-          paypalOrderData: paypalOrderResponse?.data,
+          paypalOrderData,
         });
       } else {
-        deleteOrderAndUpdateProductQty({ orderId: orderData?.id });
+        await deleteOrderAndUpdateProductQty({ orderId: orderData?.id });
         return res.json({
           status: 200,
           message: message.SUCCESS,
-          paypalOrderData: paypalOrderResponse?.data,
+          paypalOrderData,
         });
       }
     } catch (error) {
-      deleteOrderAndUpdateProductQty({ orderId: orderData?.id });
+      await deleteOrderAndUpdateProductQty({ orderId: orderData?.id });
       console.error("Error creating PayPal order:", error?.message);
       return res.json({
         status: 500,
@@ -169,23 +105,38 @@ const capturePaypalOrder = async (req, res) => {
       });
     }
 
-    const access_token = await getPaypalAccessToken();
+    const paypalOrderCaptureResult = await paypalService.captureOrder({
+      paypalOrderId,
+    });
 
-    const paypalOrderCaptureResponse = await fetch(
-      `${base}/v2/checkout/orders/${paypalOrderId}/capture`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${access_token}`,
-        },
+    if (paypalOrderCaptureResult?.status === "COMPLETED") {
+      // Find order by paypalOrderId
+      const order = await orderService.findByPaypalOrderId({ paypalOrderId });
+
+      if (!order) {
+        return res.json({
+          status: 404,
+          message: message.custom(
+            "Order not found for the provided paypalOrderId"
+          ),
+        });
       }
-    );
-    const paypalOrderCaptureResult = await paypalOrderCaptureResponse.json();
+
+      // Save paypalCaptureId to order document
+      const captureId =
+        paypalOrderCaptureResult?.purchase_units?.[0]?.payments?.captures?.[0]
+          ?.id;
+      await orderService.findOneAndUpdate(
+        { orderId: order?.id },
+        {
+          paypalCaptureId: captureId,
+        }
+      );
+    }
 
     return res.json({
       status: 200,
-      message: message.SUCCESS,
+      message: message.custom("Order captured successfully"),
       paypalOrderCaptureResult,
     });
   } catch (error) {
@@ -197,8 +148,44 @@ const capturePaypalOrder = async (req, res) => {
   }
 };
 
+/**
+ * API to refund a PayPal payment
+ */
+const refundPaypalPayment = async (req, res) => {
+  try {
+    const { captureId, amount, currency, reason } = req.body;
+
+    if (!captureId || !amount) {
+      return res.json({
+        status: 400,
+        message: message.custom("Missing captureId or amount parameter"),
+      });
+    }
+
+    const refundResult = await paypalService.refundPayment({
+      captureId,
+      amount,
+      currency,
+      reason,
+    });
+
+    return res.json({
+      status: 200,
+      message: message.custom("Refund processed successfully"),
+      refundResult,
+    });
+  } catch (error) {
+    console.error("Error processing PayPal refund:", error.message);
+    return res.json({
+      status: 500,
+      message: error.message || "Failed to process refund",
+    });
+  }
+};
+
 module.exports = {
   getAccessToken,
   createPaypalOrder,
   capturePaypalOrder,
+  refundPaypalPayment,
 };
