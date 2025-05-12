@@ -8,8 +8,8 @@ import amazonPay from "@/assets/images/payment/amazon-pay.webp";
 import applePay from "@/assets/images/payment/applepay.webp";
 import gpay from "@/assets/images/payment/gpay.webp";
 import klarna from "@/assets/images/payment/klarna.webp";
-import paypal from "@/assets/images/payment/paypal.png";
-import link from "@/assets/images/payment/link.png";
+import paypal from "@/assets/images/payment/paypal.webp";
+import link from "@/assets/images/payment/link.webp";
 
 import mastercard from "@/assets/images/payment/mastercard.webp";
 import visa from "@/assets/images/payment/visa.webp";
@@ -40,17 +40,6 @@ import {
   setPaypalPaymentMessage,
 } from "@/store/slices/paymentSlice";
 import { CustomImg } from "@/components/dynamiComponents";
-
-// const paymentOptions = [
-//   {
-//     value: STRIPE,
-//     label: "Credit Card / Apple Pay",
-//   },
-//   {
-//     value: PAYPAL,
-//     label: "PayPal",
-//   },
-// ];
 
 const paymentOptions = [
   {
@@ -334,7 +323,7 @@ const shippingForm = () => {
       <div>
         <h3 className="font-semibold text-lg mb-3">Payment Method:</h3>
         <div className="flex flex-col gap-3">
-          {paymentOptions.map(({ value, label, logos }) => {
+          {paymentOptions?.map(({ value, label, logos }) => {
             const isChecked = selectedOption === `${value}-${label}`;
             return (
               <label

@@ -48,6 +48,7 @@ import {
   messageType,
 } from "@/_helper/constants";
 import ZoomImage from "../ZoomImage";
+import { paymentOptions } from "@/_utils/paymentOptions";
 
 export const minProductQuantity = 1;
 export const maxProductQuantity = 5;
@@ -71,11 +72,6 @@ const shippingInfo = [
     titleAttr: "",
     text: "We inspect & verify authenticity before shipping. 100% Money-Back Guarantee.",
   },
-];
-
-const paymentOptions = [
-  { img: stripe, name: "Stripe", altAttr: "", titleAttr: "" },
-  { img: paypal, name: "PayPal", altAttr: "", titleAttr: "" },
 ];
 
 const shippingReturnContent = [
@@ -770,7 +766,7 @@ const ProductDetailPage = ({ customizePage }) => {
                   Pay With:
                 </p>
                 <div className="flex flex-wrap gap-3 md:gap-6">
-                  {paymentOptions.map((option, index) => (
+                  {paymentOptions?.map((option, index) => (
                     <CustomImg
                       key={index}
                       srcAttr={option?.img}

@@ -1,34 +1,17 @@
 import { ProductNotFound, ProgressiveImg } from "@/components/dynamiComponents";
 import CustomBadge from "@/components/ui/CustomBadge";
 import { helperFunctions } from "@/_helper";
-import DownloadInvoice from "@/components/ui/order-history/downloadInvoice";
 import SkeletonLoader from "../skeletonLoader";
 import moment from "moment";
 import DiamondDetailDrawer from "@/components/ui/customize/DiamondDetailDrawer";
-import Spinner from "@/components/ui/spinner";
 
-import {
-  setOpenDiamondDetailDrawer,
-  setShowModal,
-} from "@/store/slices/commonSlice";
+import { setOpenDiamondDetailDrawer } from "@/store/slices/commonSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "next/navigation";
-import { fetchReturnDetail } from "@/_actions/return.action";
-import { useEffect } from "react";
+
 import CancelReturnRequest from "./CancelReturnRequest";
 
-const ReturnDetails = () => {
-  const params = useParams();
-
-  const { returnId } = params;
-
+const ReturnDetails = ({ returnDetail, returnLoader = false }) => {
   const { openDiamondDetailDrawer } = useSelector(({ common }) => common);
-  const { invoiceLoading } = useSelector(({ order }) => order);
-  const { returnDetail, returnLoader } = useSelector(({ returns }) => returns);
-  useEffect(() => {
-    dispatch(setShowModal(false));
-    dispatch(fetchReturnDetail(returnId));
-  }, [returnId]);
   const dispatch = useDispatch();
   const orderMetaFields = [
     {
@@ -53,10 +36,6 @@ const ReturnDetails = () => {
       label: "Return Status",
       value: returnDetail?.status,
       render: (val) => <CustomBadge status={val}>{val}</CustomBadge>,
-    },
-    {
-      label: "Created By",
-      value: returnDetail?.createdBy,
     },
     {
       label: "Return Request Reason",
@@ -115,8 +94,9 @@ const ReturnDetails = () => {
                   </>
                 ) : null}
 
-                {returnDetail?.returnPaymentStatus == "refunded" ? (
+                {/* {returnDetail?.returnPaymentStatus == "refunded" ? (
                   <>
+                
                     {invoiceLoading ? (
                       <Spinner className="h-6" />
                     ) : (
@@ -125,7 +105,7 @@ const ReturnDetails = () => {
                   </>
                 ) : (
                   ""
-                )}
+                )} */}
               </div>
             </div>
 
@@ -254,7 +234,7 @@ const ReturnDetails = () => {
                   ))}
 
                   {returnDetail?.refundAmount ? (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-sm md:text-base">
                       <h4 className="font-medium">Refund Amount</h4>
                       <p className="font-semibold">
                         {" "}
@@ -274,18 +254,6 @@ const ReturnDetails = () => {
                 {/* Order Info Section */}
                 <div className="bg-white p-4 lg:p-6">
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 text-sm md:text-base">
-                    {/* {orderMetaFields.map(
-                      ({ label, value, render, isOptional }) =>
-                        (!isOptional || value) && (
-                          <div key={`meta-${label}`}>
-                            <p className="text-basegray">{label}</p>
-                            <span className="font-medium break-words mt-1 inline-block">
-                              {render ? render(value) : value}
-                            </span>
-                          </div>
-                        )
-                    )} */}
-
                     {orderMetaFields.map(
                       ({ label, value, render, isOptional }) => {
                         const isEmpty =
@@ -297,16 +265,21 @@ const ReturnDetails = () => {
                         if (isOptional && isEmpty) return null;
 
                         return (
-                          <div key={`meta-${label}`} className="mb-4">
+                          <div
+                            key={`meta-${label}`}
+                            className="mb-4 flex flex-col flex-wrap w-full"
+                          >
                             <p className="text-basegray">{label}</p>
 
                             {typeof value === "string" ||
                             typeof value === "number" ? (
-                              <span className="font-medium break-words mt-1 inline-block">
+                              <span className="font-medium break-words mt-1 w-full">
                                 {render ? render(value) : value}
                               </span>
                             ) : (
-                              <div className="mt-1">{value}</div>
+                              <div className="mt-1 break-words w-full">
+                                {value}
+                              </div>
                             )}
                           </div>
                         );

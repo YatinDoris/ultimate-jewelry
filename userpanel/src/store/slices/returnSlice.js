@@ -4,6 +4,7 @@ const initialState = {
   returnLoader: false,
   returnsList: [],
   detailLoader: false,
+  trackReturnLoading: false,
   returnDetail: {},
   currentPage: 0,
   returnReqLoader: false,
@@ -51,6 +52,9 @@ const returnSlice = createSlice({
     setReturnOrder: (state, action) => {
       state.returnOrder = action.payload;
     },
+    setTrackReturnLoading: (state, action) => {
+      state.trackReturnLoading = action.payload;
+    },
   },
 });
 
@@ -66,6 +70,7 @@ export const {
   setCurrentPage,
   setSelectedProducts,
   setReturnOrder,
+  setTrackReturnLoading,
 } = returnSlice.actions;
 
 export default returnSlice.reducer;

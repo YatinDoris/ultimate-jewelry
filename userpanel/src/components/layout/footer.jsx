@@ -58,6 +58,10 @@ export default function footer() {
           href: "/track-your-order",
         },
         {
+          title: "Track Your Return",
+          href: "/track-your-return",
+        },
+        {
           title: "Payment and Financing",
           href: "/payment-financing",
         },

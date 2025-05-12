@@ -457,6 +457,72 @@ const getReturnDetailByReturnId = (returnId) => {
   });
 };
 
+export const trackReturnByOrderNumberAndEmail = (params) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let { orderNumber, email } = sanitizeObject(params);
+      orderNumber = orderNumber ? orderNumber.trim() : null;
+      email = email ? email.trim().toLowerCase() : null;
+
+      if (!orderNumber || !email) {
+        reject(new Error("Invalid order number or email"));
+        return;
+      }
+      const orderDetail = await fetchWrapperService.findOne(ordersUrl, {
+        orderNumber,
+      });
+
+      if (!orderDetail) {
+        reject(new Error("Order does not exist"));
+        return;
+      }
+
+      if (orderDetail.shippingAddress?.email?.toLowerCase() !== email) {
+        reject(new Error("Unauthorized: Email does not match order"));
+        return;
+      }
+      const returnFindPattern = {
+        url: returnsUrl,
+        key: "orderId",
+        value: orderDetail.id,
+      };
+      const returnDetails = await fetchWrapperService.find(returnFindPattern);
+
+      if (!returnDetails?.length) {
+        reject(new Error("No return requests found for this order"));
+        return;
+      }
+
+      const productFindPattern = {
+        url: productsUrl,
+        key: "active",
+        value: true,
+      };
+      const allActiveProductsData = await fetchWrapperService.find(
+        productFindPattern
+      );
+      const customizations = await productService.getAllCustomizations();
+      const diamondShapeList = await diamondShapeService.getAllDiamondShapes();
+
+      const enrichedReturns = returnDetails.map((returnItem) => ({
+        ...returnItem,
+        products: returnItem.products?.map((product) =>
+          processReturnProductItem({
+            returnProductItem: product,
+            allActiveProductsData,
+            customizations,
+            diamondShapeList,
+          })
+        ),
+      }));
+
+      resolve(helperFunctions.sortByField(enrichedReturns, "createdAt"));
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 const processReturnProductItem = ({
   returnProductItem,
   allActiveProductsData,
@@ -508,4 +574,5 @@ export const returnService = {
   deleteReturnRequest,
   getReturnsByOrderId,
   getReturnDetailByReturnId,
+  trackReturnByOrderNumberAndEmail,
 };
