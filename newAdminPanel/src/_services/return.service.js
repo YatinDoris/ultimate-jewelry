@@ -333,8 +333,6 @@ const createApprovedReturnRequest = (params) => {
       if (orderDetail?.userId) {
         insertPattern.userId = orderDetail.userId;
       }
-
-      console.log('insertPattern', insertPattern);
       const createPattern = {
         url: `${returnsUrl}/${uuid}`,
         insertPattern,

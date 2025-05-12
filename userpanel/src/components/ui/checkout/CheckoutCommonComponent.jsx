@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { HiChevronUp, HiChevronDown } from "react-icons/hi";
 import { setOpenDiamondDetailDrawer } from "@/store/slices/commonSlice";
 import DiamondDetailDrawer from "../customize/DiamondDetailDrawer";
+import { paymentOptions } from "@/_utils/paymentOptions";
 
 const salesTaxPerc = 0.08; // 8%
 
@@ -46,11 +47,6 @@ const CheckoutCommonComponent = () => {
     return helperFunctions.toFixedNumber(total);
   }, [cartList]);
 
-  // const grandTotal = getSubTotal();
-  const paymentOptions = [
-    { img: stripe, name: "Stripe", altAttr: "", titleAttr: "" },
-    { img: paypal, name: "PayPal", altAttr: "", titleAttr: "" },
-  ];
   const getSalesTaxAmount = useCallback(() => {
     if (isNewYorkState) {
       const subTotal = Number(getSubTotal(cartList));
@@ -270,7 +266,7 @@ const CheckoutCommonComponent = () => {
               <div className="flex items-center gap-3">
                 <p className="font-medium text-lg text-gray-500">Pay With:</p>
                 <div className="flex gap-3 xl:gap-6 flex-wrap">
-                  {paymentOptions.map((option, index) => (
+                  {paymentOptions?.map((option, index) => (
                     <CustomImg
                       key={index}
                       srcAttr={option?.img}
@@ -466,7 +462,7 @@ const CheckoutCommonComponent = () => {
                     Pay With:
                   </p>
                   <div className="flex gap-3 xl:gap-6 flex-wrap">
-                    {paymentOptions.map((option, index) => (
+                    {paymentOptions?.map((option, index) => (
                       <CustomImg
                         key={`payment-${index}`}
                         srcAttr={option?.img}
