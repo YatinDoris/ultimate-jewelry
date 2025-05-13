@@ -324,13 +324,13 @@ and look forward to completing your order soon.</p>
       orderStatus === "cancelled"
         ? `<p>We regret to inform you that your
 ${boldOrderNumber}
-has been canceled. We understand this may be disappointing, and we apologize for any inconvenience caused.</p>
+has been cancelled. We understand this may be disappointing, and we apologize for any inconvenience caused.</p>
 			<div style="margin : 10px;">
 				<p style="color : #58a4bd; margin : 0px;">Order Summary</p>
 				<ul>
 					<li>Order Number : ${orderNumber}</li>
-					<li>Payment Status : Canceled</li>
-					<li>Order Status : In Process</li>
+					<li>Payment Status : In Process</li>
+					<li>Order Status : cancelled</li>
 				</ul>
 			</div>
 			<p>A full refund will be processed to your original payment method within
@@ -532,7 +532,7 @@ const getMailTemplateForRefundStatus = (
       subject = `Your Refund for Order Order #${orderNumber} is Successful`;
       break;
     case "cancelled_refund":
-      subject = `Refund Request Canceled`;
+      subject = `Refund Request cancelled`;
       break;
     case "refund_initialization_failed":
       subject = `Refund Initialization Failed for Order #${orderNumber}`;
@@ -556,7 +556,7 @@ has been successfully processed. The refunded amount will be credited back to yo
   } else if (refundStatus === "pending_refund") {
     description += `<p> We want to let you know that we are currently processing your refund request for ${boldOrderNumber}.</p> `;
   } else if (refundStatus === "cancelled_refund") {
-    description += `<p> We want to inform you that your refund request for ${boldOrderNumber} has been canceled.</p> `;
+    description += `<p> We want to inform you that your refund request for ${boldOrderNumber} has been cancelled.</p> `;
   } else if (refundStatus === "refund_initialization_failed") {
     description += `<p>We regret to inform you that we encountered an issue while attempting to process your refund for
 Order ${boldOrderNumber}.</p>`;

@@ -153,4 +153,30 @@ exportFunction.refundPayment = (params) => {
   });
 };
 
+exportFunction.getCaptureDetails = (params) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { captureId } = params;
+      if (!captureId) {
+        throw new Error("Missing captureId parameter");
+      }
+
+      const access_token = await getPaypalAccessToken();
+      const captureResponse = await axios.get(
+        `${paypalBaseApiUrl}/v2/payments/captures/${captureId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      resolve(captureResponse?.data);
+    } catch (error) {
+      reject(new Error(`Failed to fetch capture details: ${error.message}`));
+    }
+  });
+};
+
 module.exports = exportFunction;

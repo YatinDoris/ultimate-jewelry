@@ -823,180 +823,24 @@ const refundPayment = async (req, res) => {
 };
 
 /**
-  This API is used for refund Payment For Return.
-*/
-const refundPaymentForReturn = async (req, res) => {
-  try {
-    let { returnId, refundAmount, refundDescription } = req.body;
-    returnId = sanitizeValue(returnId) ? returnId.trim() : "";
-    refundAmount = refundAmount ? Number(refundAmount) : 0;
-
-    if (returnId && refundAmount) {
-      const findPattern = {
-        returnId: returnId,
-      };
-      const returnData = await returnService.findOne(findPattern);
-      if (returnData) {
-        if (
-          [
-            "pending",
-            "failed_refund",
-            "refund_initialization_failed",
-            "cancelled_refund",
-          ].includes(returnData.returnPaymentStatus) &&
-          ["received"].includes(returnData.status)
-        ) {
-          const orderFindPattern = {
-            orderId: returnData.orderId,
-          };
-          const orderData = await orderService.findOne(orderFindPattern);
-          if (!orderData) {
-            return res.json({
-              status: 404,
-              message: message.notFound("order"),
-            });
-          }
-          const pIFindPattern = {
-            paymentIntentId: orderData.stripePaymentIntentId,
-            options: {
-              expand: [
-                "latest_charge.balance_transaction",
-                "latest_charge.refunds",
-              ],
-            },
-          };
-          const paymentIntent = await stripeService.retrivePaymentIntent(
-            pIFindPattern
-          );
-          if (!paymentIntent || paymentIntent.status !== "succeeded") {
-            return res.json({
-              status: 409,
-              message: message.custom(
-                `You cannot refund payment as the payment intent is not successful`
-              ),
-            });
-          }
-          const refundAmountInCent = Math.round(refundAmount * 100); // in cents
-          if (paymentIntent.amount < refundAmountInCent) {
-            return res.json({
-              status: 429,
-              message: message.custom(
-                `The requested refund amount exceeds your payment amount. The maximum refundable amount is $${
-                  paymentIntent.amount / 100
-                }.`
-              ),
-            });
-          }
-          let returnUpdatePatternWithRefund = {
-            refundDescription: sanitizeValue(refundDescription)
-              ? refundDescription.trim()
-              : returnData?.refundDescription || "",
-            updatedDate: Date.now(),
-          };
-          // integrate refund functionality
-          const refundPaymentParams = {
-            paymentIntentId: paymentIntent.id,
-            amountInCents: refundAmountInCent,
-          };
-
-          stripeService
-            .refundAmount(refundPaymentParams)
-            .then(async (refundResponse) => {
-              if (refundResponse) {
-                returnUpdatePatternWithRefund.stripeRefundId =
-                  refundResponse.id;
-                returnUpdatePatternWithRefund.refundAmount = refundAmount;
-                if (refundResponse?.status === "pending") {
-                  returnUpdatePatternWithRefund.returnPaymentStatus =
-                    "pending_refund";
-
-                  // send mail for pending refund status
-                  sendRefundStatusEmail("pending_refund", orderData);
-                }
-
-                await returnService.findOneAndUpdate(
-                  findPattern,
-                  returnUpdatePatternWithRefund
-                );
-                setTimeout(() => {
-                  return res.json({
-                    status: 200,
-                    message: message.custom("Refund processed successfully"),
-                  });
-                }, 5000); // 5 seconds
-              } else {
-                return res.json({
-                  status: 404,
-                  message: message.notFound(),
-                });
-              }
-            })
-            .catch(async (e) => {
-              const refundsList = paymentIntent?.latest_charge?.refunds?.data;
-              if (
-                !refundsList?.length ||
-                refundsList?.filter((x) => x?.status === "canceled")?.length ===
-                  refundsList?.length
-              ) {
-                returnUpdatePatternWithRefund.returnPaymentStatus =
-                  "refund_initialization_failed";
-                returnUpdatePatternWithRefund.stripeRefundFailureReason =
-                  e?.message;
-
-                await returnService.findOneAndUpdate(
-                  findPattern,
-                  returnUpdatePatternWithRefund
-                );
-                // send mail for refund initialized failed status
-                sendRefundStatusEmail(
-                  "refund_initialization_failed",
-                  orderData
-                );
-              }
-              res.json({
-                status: 302,
-                message: message.custom(
-                  `Your refund initialization failed due to ${e?.message}`
-                ),
-              });
-            });
-        } else {
-          return res.json({
-            status: 409,
-            message: message.custom(
-              `You cannot refund payment as the return payment status is ${returnData.returnPaymentStatus} and return status is ${returnData.status}`
-            ),
-          });
-        }
-      } else {
-        return res.json({
-          status: 404,
-          message: message.notFound("return"),
-        });
-      }
-    } else {
-      return res.json({
-        status: 400,
-        message: message.INVALID_DATA,
-      });
-    }
-  } catch (e) {
-    return res.json({
-      status: 500,
-      message: message.SERVER_ERROR,
-    });
-  }
-};
-
-// Function to handle sending refund status emails
-const sendRefundStatusEmail = (evenyStatus, orderData) => {
+ * Sends an email to notify the customer about the refund status based on the event status.
+ * @param {string} eventStatus - The status of the refund event (e.g., 'pending_refund', 'succeeded', 'refunded', 'failed', etc.).
+ * @param {Object} orderData - The order data containing customer and order details.
+ * @param {Object} orderData.shippingAddress - The customer's shipping address details.
+ * @param {string} orderData.shippingAddress.name - The customer's name.
+ * @param {string} orderData.shippingAddress.email - The customer's email address.
+ * @param {string} orderData.orderNumber - The order number associated with the refund.
+ * @returns {void}
+ */
+const sendRefundStatusEmail = (eventStatus, orderData) => {
   let statusKey;
 
-  switch (evenyStatus) {
+  switch (eventStatus) {
     case "pending_refund":
       statusKey = "pending_refund";
       break;
     case "succeeded":
+    case "refunded": // Both succeeded and refunded statuses map to 'refunded' template
       statusKey = "refunded";
       break;
     case "refund_initialization_failed":
@@ -1009,7 +853,6 @@ const sendRefundStatusEmail = (evenyStatus, orderData) => {
       statusKey = "cancelled_refund";
       break;
     default:
-      // If the status is not recognized, do not proceed with sending an email
       return;
   }
 
@@ -1029,5 +872,4 @@ module.exports = {
   createOrder,
   stripeWebhook,
   refundPayment,
-  refundPaymentForReturn,
 };
