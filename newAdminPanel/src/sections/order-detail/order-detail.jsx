@@ -419,6 +419,12 @@ const OrderDetail = () => {
                         </Stack>
                         {selectedOrder?.paymentMethod === 'paypal' ? (
                           <>
+                            {selectedOrder?.paypalCaptureId ? (
+                              <Stack direction={'row'} sx={font14} gap={1}>
+                                <Box sx={sx}>Paypal Capture ID </Box>
+                                <Box sx={sxPrimaryColor}>{selectedOrder?.paypalCaptureId}</Box>
+                              </Stack>
+                            ) : null}
                             {selectedOrder?.paypalOrderId ? (
                               <Stack direction={'row'} sx={font14} gap={1}>
                                 <Box sx={sx}>Paypal Order ID </Box>
@@ -432,20 +438,24 @@ const OrderDetail = () => {
                                 <Box sx={sxPrimaryColor}>{selectedOrder?.paypalRefundId}</Box>
                               </Stack>
                             ) : null}
-                            {selectedOrder?.paypalCaptureId ? (
+                            {selectedOrder?.paypalRefundFailureReason ? (
                               <Stack direction={'row'} sx={font14} gap={1}>
-                                <Box sx={sx}>Paypal Refund ID </Box>
-                                <Box sx={sxPrimaryColor}>{selectedOrder?.paypalCaptureId}</Box>
+                                <Box sx={sx}>Paypal Refund Failure Reason </Box>
+                                <Box sx={sxPrimaryColor}>
+                                  {selectedOrder?.paypalRefundFailureReason}
+                                </Box>
                               </Stack>
                             ) : null}
                           </>
                         ) : null}
                         {selectedOrder?.paymentMethod === 'stripe' ? (
                           <>
-                            {selectedOrder?.stripeARNNumber ? (
+                            {selectedOrder?.stripePaymentIntentId ? (
                               <Stack direction={'row'} sx={font14} gap={1}>
-                                <Box sx={sx}>Stripe ARN Number </Box>
-                                <Box sx={sxPrimaryColor}>{selectedOrder?.stripeARNNumber}</Box>
+                                <Box sx={sx}>Stripe Payment Intent ID </Box>
+                                <Box sx={sxPrimaryColor}>
+                                  {selectedOrder?.stripePaymentIntentId}
+                                </Box>
                               </Stack>
                             ) : null}
                             {selectedOrder?.stripeCustomerId ? (
@@ -454,18 +464,23 @@ const OrderDetail = () => {
                                 <Box sx={sxPrimaryColor}>{selectedOrder?.stripeCustomerId}</Box>
                               </Stack>
                             ) : null}
-
+                            {selectedOrder?.stripeARNNumber ? (
+                              <Stack direction={'row'} sx={font14} gap={1}>
+                                <Box sx={sx}>Stripe ARN Number </Box>
+                                <Box sx={sxPrimaryColor}>{selectedOrder?.stripeARNNumber}</Box>
+                              </Stack>
+                            ) : null}
                             {selectedOrder?.stripeRefundId ? (
                               <Stack direction={'row'} sx={font14} gap={1}>
                                 <Box sx={sx}>Stripe Refund ID </Box>
                                 <Box sx={sxPrimaryColor}>{selectedOrder?.stripeRefundId}</Box>
                               </Stack>
                             ) : null}
-                            {selectedOrder?.stripePaymentIntentId ? (
+                            {selectedOrder?.stripeRefundFailureReason ? (
                               <Stack direction={'row'} sx={font14} gap={1}>
-                                <Box sx={sx}>Stripe Payment Intent ID </Box>
+                                <Box sx={sx}>Refund Failure Reason</Box>
                                 <Box sx={sxPrimaryColor}>
-                                  {selectedOrder?.stripePaymentIntentId}
+                                  {selectedOrder?.stripeRefundFailureReason}
                                 </Box>
                               </Stack>
                             ) : null}
@@ -508,20 +523,6 @@ const OrderDetail = () => {
                               <Stack direction={'row'} sx={font14} gap={1}>
                                 <Box sx={sx}>Refund Description</Box>
                                 <Box sx={sxPrimaryColor}>{selectedOrder?.refundDescription}</Box>
-                              </Stack>
-                            ) : null}
-                            {selectedOrder?.stripeRefundFailureReason ? (
-                              <Stack direction={'row'} sx={font14} gap={1}>
-                                <Box sx={sx}>Refund Failure Reason</Box>
-                                <Box sx={sxPrimaryColor}>
-                                  {selectedOrder?.stripeRefundFailureReason}
-                                </Box>
-                              </Stack>
-                            ) : null}
-                            {selectedOrder?.stripeARNNumber ? (
-                              <Stack direction={'row'} sx={font14} gap={1}>
-                                <Box sx={sx}>ARN Number</Box>
-                                <Box sx={sxPrimaryColor}>{selectedOrder?.stripeARNNumber}</Box>
                               </Stack>
                             ) : null}
                           </Stack>

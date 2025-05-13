@@ -330,7 +330,7 @@ const ReturnDetail = () => {
                         ))}
                         <Stack alignItems={'end'} my={2} sx={{ minWidth: '550px' }}>
                           <Stack width={'250px'} direction={'row'} justifyContent={'space-between'}>
-                            <Typography variant="body2">Stripe Service Fee (3.5%)</Typography>
+                            <Typography variant="body2">Service Fee (3.5%)</Typography>
                             <Typography variant="body2" color={'error.main'}>
                               -
                               {fCurrency(
