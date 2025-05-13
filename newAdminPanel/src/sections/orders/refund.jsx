@@ -218,6 +218,7 @@ const Refund = () => {
     setFilterByPaymentStatus('all');
   }, []);
 
+  console.log('filteredItems', filteredItems);
   return (
     <>
       {orderRefundLoader ? (
@@ -311,11 +312,10 @@ const Refund = () => {
                     <TableCell>Mobile</TableCell>
                     <TableCell>Order Number</TableCell>
                     <TableCell>Date & Time</TableCell>
+                    <TableCell>Payment Method</TableCell>
                     <TableCell>Payment Status</TableCell>
                     <TableCell>Order Status</TableCell>
                     <TableCell>Refund Failure Reason</TableCell>
-                    <TableCell>ARN Number</TableCell>
-                    <TableCell>Customer ID</TableCell>
                     <TableCell></TableCell>
                   </TableRow>
                 </TableHead>
@@ -335,6 +335,9 @@ const Refund = () => {
                           <TableCell>{x?.orderNumber}</TableCell>
                           <TableCell sx={{ minWidth: '180px' }}>
                             {moment(x?.createdDate).format('MM-DD-YYYY hh:mm a')}
+                          </TableCell>
+                          <TableCell>
+                            {helperFunctions?.capitalizeCamelCase(x?.paymentMethod)}
                           </TableCell>
                           <TableCell>
                             <Label
@@ -364,12 +367,6 @@ const Refund = () => {
                               )}
                             </Box>
                           </TableCell>
-                          <TableCell>
-                            {x?.stripeARNNumber || (
-                              <p style={{ textAlign: 'center', width: '100%' }}>-</p>
-                            )}
-                          </TableCell>
-                          <TableCell>{x?.stripeCustomerId}</TableCell>
                           <TableCell sx={{ width: '40px' }}>
                             <Iconify
                               className={'cursor-pointer'}
