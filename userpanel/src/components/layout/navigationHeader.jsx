@@ -13,6 +13,8 @@ import { useCallback, useEffect, useState } from "react";
 import { IoIosArrowDown, IoIosSearch } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import miniLogo from "@/assets/images/logo-2.webp";
+import textLogo from "@/assets/images/logo-text.webp";
+
 import { CustomImg, ProgressiveImg } from "../dynamiComponents";
 import CartPopup from "../ui/CartPopup";
 import { helperFunctions } from "@/_helper";
@@ -106,13 +108,23 @@ export default function NavigationHeader() {
           lastScrollY > 100 ? "justify-between" : "justify-center"
         }  w-full container items-center gap-6`}
       >
-        {lastScrollY > 100 ? (
+        {/* {lastScrollY > 100 ? (
           <Link href={"/"}>
             <CustomImg
               className={` ${
                 lastScrollY > 100 ? "block w-28 2xl:w-32" : "hidden"
               }`}
               srcAttr={miniLogo}
+            />
+          </Link>
+        ) : null} */}
+        {lastScrollY > 100 ? (
+          <Link href={"/"}>
+            <CustomImg
+              className={` ${
+                lastScrollY > 100 ? "block w-32 2xl:w-40" : "hidden"
+              }`}
+              srcAttr={textLogo}
             />
           </Link>
         ) : null}
