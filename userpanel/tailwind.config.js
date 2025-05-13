@@ -18,6 +18,7 @@ module.exports = {
     },
 
     fontFamily: {
+      benne: ["Benne", "sans-serif"],
       "chong-modern": ["Chong Modern W01", "sans-serif"],
     },
     animation: {

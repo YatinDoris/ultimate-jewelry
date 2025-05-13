@@ -53,25 +53,25 @@ const HeroBanner = ({
 
       {isHomePage ? (
         <>
-          <div className=" absolute inset-0 flex items-center justify-center w-full">
-            <div className="md:w-[80%] lg:w-[50%] 2x:w-[50%] text-white text-center">
-              <h1 className="text-3xl md:text-4xl 2xl:text-5xl  leading-tight font-chong-modern">
+          <div className=" absolute inset-0 flex items-center  w-full">
+            <div className="md:w-[60%] lg:w-[45%] 2xl:w-[35%] text-baseblack text-center">
+              <h1 className="text-3xl md:text-4xl 2xl:text-4xl  leading-tight font-benne">
                 Diamonds that <br />
                 Deserve You.
               </h1>
-              <p className="mt-2 md:mt-4 text-sm md:text-base 2xl:text-lg">
+              {/* <p className="mt-2 md:mt-4 text-sm md:text-base 2xl:text-lg">
                 Free 1ct Diamond Pendant with Purchase<sup>*</sup>
-              </p>
+              </p> */}
               <div className="mt-4 md:mt-6 flex  items-center md:justify-center gap-2.5 md:gap-4">
                 <LinkButton
                   href="/customize/start-with-setting"
-                  className="lg:!h-0 w-fit lg:py-[20px] 2xl:py-[22px] 2xl:!min-w-[240px] lg:!text-sm 2xl:!text-base rounded-none !bg-transparent hover:!border-white hover:!bg-white hover:!text-black"
+                  className="lg:!h-0 w-fit lg:py-[20px] 2xl:py-[22px] 2xl:!min-w-[170px] lg:!text-sm 2xl:!text-base rounded-none !border-black !border-2 !font-medium !text-black !bg-transparent hover:!border-baseblack hover:!bg-baseBborder-baseblack hover:!text-black"
                 >
                   SHOP ENGAGEMENT
                 </LinkButton>
                 <LinkButton
                   href="/collections/categories/Jewelry"
-                  className="lg:!h-0 w-fit lg:py-[20px] 2xl:py-[22px] 2xl:!min-w-[240px] lg:!text-sm 2xl:!text-base rounded-none !bg-transparent hover:!border-white hover:!bg-white hover:!text-black"
+                  className="lg:!h-0 w-fit lg:py-[20px] 2xl:py-[22px] 2xl:!min-w-[170px] lg:!text-sm 2xl:!text-base rounded-none !border-black !border-2 !font-medium !text-black !bg-transparent hover:!border-baseblack hover:!bg-baseBborder-baseblack hover:!text-black"
                 >
                   SHOP ALL JEWELRY
                 </LinkButton>
@@ -88,7 +88,7 @@ const HeroBanner = ({
             >
               {title && description ? (
                 <>
-                  <h1 className="text-3xl md:text-5xl  2xl:text-6xl text-white font-chong-modern capitalize">
+                  <h1 className="text-3xl md:text-5xl  2xl:text-6xl text-white font-benne capitalize">
                     {title}
                   </h1>
 
