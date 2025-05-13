@@ -146,7 +146,7 @@ const Home = () => {
               altAttr=""
               className="w-40 md:w-48 2xl:w-64"
             />
-            <h2 className="text-2xl 2xl:text-3xl font-chong-modern mt-4 text-center">
+            <h2 className="text-2xl 2xl:text-3xl font-benne mt-4 text-center">
               SHOP FOR LAB GROWN
               <span className="lg:hidden"> </span>
               <br className="hidden lg:block" />
@@ -212,7 +212,7 @@ const Home = () => {
           </div>
 
           <div className="flex flex-col items-center justify-center text-center px-4">
-            <p className="pt-2 text-base md:text-lg lg:text-xl 2xl:text-2xl font-chong-modern">
+            <p className="pt-2 text-base md:text-lg lg:text-xl 2xl:text-2xl font-benne">
               Get a Complimentary Matching Wedding Band
             </p>
             <p className="pt-6 text-base 2xl:text-lg mb-6">
@@ -250,7 +250,7 @@ const Home = () => {
           <h3 className="text-sm lg:text-base font-medium">
             DISCOVER OUR WORLD
           </h3>
-          <h2 className="text-2xl lg:text-4xl font-normal font-chong-modern mt-2">
+          <h2 className="text-2xl lg:text-4xl font-normal font-benne mt-2">
             Diamonds as Exceptional as You
           </h2>
         </div>

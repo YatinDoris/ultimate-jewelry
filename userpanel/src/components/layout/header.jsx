@@ -8,6 +8,7 @@ import { setIsMenuOpen, setLastScrollY } from "@/store/slices/commonSlice";
 import { IoMenu } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import logo from "@/assets/images/logo-2.webp";
+import textLogo from "@/assets/images/logo-text.webp";
 import diamondIcon from "@/assets/icons/diamond.svg";
 import CartPopup from "../ui/CartPopup";
 import { fetchCart } from "@/_actions/cart.action";
@@ -109,10 +110,10 @@ export default function Header() {
         transparenHeadertBg ? "lg:bg-offwhite" : "lg:bg-white"
       } bg-white z-50 shadow transition-all duration-300`}
     >
-      <div className="flex justify-between items-center py-4 lg:pt-4 lg:pb-0 px-6 lg:px-20">
+      <div className="flex justify-between items-center py-4 lg:py-6 px-6 lg:px-16">
         <Link
           href={"/appointment-and-custom-jewelry"}
-          className="hidden lg:flex gap-1 lg:w-64"
+          className="hidden lg:flex gap-1 lg:w-80"
         >
           <CustomImg
             srcAttr={diamondIcon}
@@ -120,7 +121,7 @@ export default function Header() {
             altAttr=""
             titleAttr=""
           />
-          <h3 className="text-base">Appointment & Custom Jewelry</h3>
+          <h3 className="text-base uppercase">Appointment & Custom Jewelry</h3>
         </Link>
         <button
           className="lg:hidden p-1.5 xxs:p-2 hover:bg-black/10 rounded-full text-black transition-colors"
@@ -133,8 +134,11 @@ export default function Header() {
             <IoMenu className="w-5 h-5 xxs:w-6 xxs:h-6" />
           )}
         </button>
-        <Link href={"/"}>
+        {/* <Link href={"/"}>
           <CustomImg srcAttr={logo} className="w-28 lg:w-40" />
+        </Link> */}
+        <Link href={"/"}>
+          <CustomImg srcAttr={textLogo} className="w-32 xs:w-48 lg:w-60" />
         </Link>
 
         <div className="text-xl flex items-center gap-5 lg:w-64 justify-end">
