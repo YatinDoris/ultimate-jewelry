@@ -375,6 +375,11 @@ const isReturnValid = (timestamp) => {
   return today <= returnWindow;
 };
 
+const capitalizeCamelCase = (status) => {
+  if (!status) return 'N/A';
+  return status.charAt(0).toUpperCase() + status.slice(1);
+};
+
 export const helperFunctions = {
   getCurrentUser,
   getVariationsArray,
@@ -409,4 +414,5 @@ export const helperFunctions = {
   capitalizeTitle,
   getDiamondDetailArray,
   isReturnValid,
+  capitalizeCamelCase,
 };
