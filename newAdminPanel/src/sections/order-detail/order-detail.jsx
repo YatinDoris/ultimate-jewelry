@@ -412,9 +412,65 @@ const OrderDetail = () => {
                           </Label>
                         </Stack>
                         <Stack direction={'row'} sx={font14} gap={1}>
-                          <Box sx={sx}>Customer ID </Box>
-                          <Box sx={sxPrimaryColor}>{selectedOrder?.stripeCustomerId}</Box>
+                          <Box sx={sx}>Payment Method </Box>
+                          <Box sx={sxPrimaryColor}>
+                            {helperFunctions?.capitalizeCamelCase(selectedOrder?.paymentMethod)}
+                          </Box>
                         </Stack>
+                        {selectedOrder?.paymentMethod === 'paypal' ? (
+                          <>
+                            {selectedOrder?.paypalOrderId ? (
+                              <Stack direction={'row'} sx={font14} gap={1}>
+                                <Box sx={sx}>Paypal Order ID </Box>
+                                <Box sx={sxPrimaryColor}>{selectedOrder?.paypalOrderId}</Box>
+                              </Stack>
+                            ) : null}
+
+                            {selectedOrder?.paypalRefundId ? (
+                              <Stack direction={'row'} sx={font14} gap={1}>
+                                <Box sx={sx}>Paypal Refund ID </Box>
+                                <Box sx={sxPrimaryColor}>{selectedOrder?.paypalRefundId}</Box>
+                              </Stack>
+                            ) : null}
+                            {selectedOrder?.paypalCaptureId ? (
+                              <Stack direction={'row'} sx={font14} gap={1}>
+                                <Box sx={sx}>Paypal Refund ID </Box>
+                                <Box sx={sxPrimaryColor}>{selectedOrder?.paypalCaptureId}</Box>
+                              </Stack>
+                            ) : null}
+                          </>
+                        ) : null}
+                        {selectedOrder?.paymentMethod === 'stripe' ? (
+                          <>
+                            {selectedOrder?.stripeARNNumber ? (
+                              <Stack direction={'row'} sx={font14} gap={1}>
+                                <Box sx={sx}>Stripe ARN Number </Box>
+                                <Box sx={sxPrimaryColor}>{selectedOrder?.stripeARNNumber}</Box>
+                              </Stack>
+                            ) : null}
+                            {selectedOrder?.stripeCustomerId ? (
+                              <Stack direction={'row'} sx={font14} gap={1}>
+                                <Box sx={sx}>Stripe Customer ID </Box>
+                                <Box sx={sxPrimaryColor}>{selectedOrder?.stripeCustomerId}</Box>
+                              </Stack>
+                            ) : null}
+
+                            {selectedOrder?.stripeRefundId ? (
+                              <Stack direction={'row'} sx={font14} gap={1}>
+                                <Box sx={sx}>Stripe Refund ID </Box>
+                                <Box sx={sxPrimaryColor}>{selectedOrder?.stripeRefundId}</Box>
+                              </Stack>
+                            ) : null}
+                            {selectedOrder?.stripePaymentIntentId ? (
+                              <Stack direction={'row'} sx={font14} gap={1}>
+                                <Box sx={sx}>Stripe Payment Intent ID </Box>
+                                <Box sx={sxPrimaryColor}>
+                                  {selectedOrder?.stripePaymentIntentId}
+                                </Box>
+                              </Stack>
+                            ) : null}
+                          </>
+                        ) : null}
                         <Stack direction={'row'} sx={font14} gap={1}>
                           <Box sx={sxPrimaryColor}>
                             {selectedOrder?.billingAddress ? (
