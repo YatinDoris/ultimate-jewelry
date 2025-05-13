@@ -47,80 +47,6 @@
 					"response": []
 				},
 				{
-					"name": "refundPayment",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"orderId\":\"\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{cloudFunctionsUrl}}/stripe/refundPayment",
-							"host": [
-								"{{cloudFunctionsUrl}}"
-							],
-							"path": [
-								"stripe",
-								"refundPayment"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "refundPaymentForReturn",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"returnId\":\"\",\r\n    \"refundDescription\":\"\",\r\n    \"refundAmount\":12 // in USD\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{cloudFunctionsUrl}}/stripe/refundPaymentForReturn",
-							"host": [
-								"{{cloudFunctionsUrl}}"
-							],
-							"path": [
-								"stripe",
-								"refundPaymentForReturn"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "cancelPaymentIntent",
 					"request": {
 						"auth": {
@@ -650,6 +576,43 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "refundPayment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/order/refundPayment",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"order",
+								"refundPayment"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -688,6 +651,43 @@
 							"path": [
 								"returns",
 								"rejectReturn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refundPaymentForReturn",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"returnId\":\"47715b72a2a\",\r\n    \"refundAmount\" :\"\",\r\n    \"refundDescription\" :\" i am not interested in this product\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cloudFunctionsUrl}}/returns/refundPaymentForReturn",
+							"host": [
+								"{{cloudFunctionsUrl}}"
+							],
+							"path": [
+								"returns",
+								"refundPaymentForReturn"
 							]
 						}
 					},
