@@ -575,6 +575,245 @@ const getAllOrder = async (req, res) => {
   }
 };
 
+/**
+ * This API is used for refund payment for an order (supports both Stripe and PayPal).
+ */
+const refundPayment = async (req, res) => {
+  try {
+    let { orderId, refundDescription } = req.body;
+    orderId = sanitizeValue(orderId) ? orderId.trim() : "";
+    refundDescription = sanitizeValue(refundDescription)
+      ? refundDescription.trim()
+      : "";
+
+    if (orderId) {
+      const findPattern = {
+        orderId: orderId,
+      };
+      const orderData = await orderService.findOne(findPattern);
+      if (!orderData) {
+        return res.json({
+          status: 404,
+          message: message.notFound("order"),
+        });
+      }
+
+      if (
+        ![
+          "success",
+          "failed_refund",
+          "refund_initialization_failed",
+          "cancelled_refund",
+        ].includes(orderData.paymentStatus) ||
+        !["confirmed", "cancelled"].includes(orderData.orderStatus)
+      ) {
+        return res.json({
+          status: 409,
+          message: message.custom(
+            `You cannot refund payment as the payment status is ${orderData.paymentStatus} and order status is ${orderData.orderStatus}`
+          ),
+        });
+      }
+
+      const refundAmountInCents = Math.round(orderData.total * 100); // Full refund in cents
+      const updatePattern = {
+        refundDescription:
+          refundDescription || orderData?.refundDescription || "",
+        updatedDate: getCurrentDate(),
+      };
+
+      if (orderData.paymentMethod === "stripe") {
+        const pIFindPattern = {
+          paymentIntentId: orderData.stripePaymentIntentId,
+          options: {
+            expand: [
+              "latest_charge.balance_transaction",
+              "latest_charge.refunds",
+            ],
+          },
+        };
+        const paymentIntent = await stripeService.retrivePaymentIntent(
+          pIFindPattern
+        );
+        if (!paymentIntent || paymentIntent.status !== "succeeded") {
+          return res.json({
+            status: 409,
+            message: message.custom(
+              `You cannot refund payment as the payment intent is not successful`
+            ),
+          });
+        }
+
+        if (paymentIntent.amount < refundAmountInCents) {
+          return res.json({
+            status: 429,
+            message: message.custom(
+              `The requested refund amount exceeds your payment amount. The maximum refundable amount is $${
+                paymentIntent.amount / 100
+              }.`
+            ),
+          });
+        }
+
+        const refundPaymentParams = {
+          paymentIntentId: paymentIntent.id,
+          amountInCents: refundAmountInCents,
+        };
+
+        try {
+          const refundResponse = await stripeService.refundAmount(
+            refundPaymentParams
+          );
+          if (refundResponse) {
+            updatePattern.stripeRefundId = refundResponse.id;
+            if (refundResponse.status === "pending") {
+              updatePattern.paymentStatus = "pending_refund";
+              const { subject, description } = getMailTemplateForRefundStatus(
+                orderData.shippingAddress.name,
+                orderData.orderNumber,
+                "pending_refund"
+              );
+              sendMail(orderData.shippingAddress.email, subject, description);
+            }
+            await orderService.findOneAndUpdate(findPattern, updatePattern);
+            setTimeout(() => {
+              return res.json({
+                status: 200,
+                message: message.custom("Refund processed successfully"),
+              });
+            }, 5000); // 5 seconds delay to ensure async operations complete
+          } else {
+            return res.json({
+              status: 404,
+              message: message.notFound(),
+            });
+          }
+        } catch (e) {
+          const refundsList = paymentIntent?.latest_charge?.refunds?.data;
+          if (
+            !refundsList?.length ||
+            refundsList?.filter((x) => x?.status === "canceled")?.length ===
+              refundsList?.length
+          ) {
+            updatePattern.paymentStatus = "refund_initialization_failed";
+            updatePattern.stripeRefundFailureReason = e?.message;
+            await orderService.findOneAndUpdate(findPattern, updatePattern);
+            const { subject, description } = getMailTemplateForRefundStatus(
+              orderData.shippingAddress.name,
+              orderData.orderNumber,
+              "refund_initialization_failed"
+            );
+            sendMail(orderData.shippingAddress.email, subject, description);
+          }
+          return res.json({
+            status: 302,
+            message: message.custom(
+              `Your refund initialization failed due to ${e?.message}`
+            ),
+          });
+        }
+      } else if (orderData.paymentMethod === "paypal") {
+        if (!orderData.paypalCaptureId) {
+          return res.json({
+            status: 409,
+            message: message.custom(
+              `You cannot refund payment as no PayPal capture ID is associated with this order`
+            ),
+          });
+        }
+
+        // Fetch capture details to validate refund amount
+        const captureDetails = await paypalService.getCaptureDetails({
+          captureId: orderData.paypalCaptureId,
+        });
+
+        const capturedAmount = parseFloat(captureDetails.amount.value) * 100; // Convert to cents
+        if (capturedAmount < refundAmountInCents) {
+          return res.json({
+            status: 429,
+            message: message.custom(
+              `The requested refund amount exceeds your payment amount. The maximum refundable amount is $${
+                capturedAmount / 100
+              }.`
+            ),
+          });
+        }
+
+        const refundParams = {
+          captureId: orderData.paypalCaptureId,
+          amount: orderData.total,
+          reason: refundDescription,
+        };
+
+        try {
+          const refundResult = await paypalService.refundPayment(refundParams);
+          if (refundResult && refundResult?.status === "COMPLETED") {
+            updatePattern.paypalRefundId = refundResult.id;
+            updatePattern.paymentStatus = "refunded";
+            await orderService.findOneAndUpdate(findPattern, updatePattern);
+            const { subject, description } = getMailTemplateForRefundStatus(
+              orderData.shippingAddress.name,
+              orderData.orderNumber,
+              "refunded"
+            );
+            sendMail(orderData.shippingAddress.email, subject, description);
+            return res.json({
+              status: 200,
+              message: message.custom("Refund processed successfully"),
+            });
+          } else {
+            updatePattern.paymentStatus = "refund_initialization_failed";
+            updatePattern.paypalRefundFailureReason =
+              "PayPal refund did not complete";
+            await orderService.findOneAndUpdate(findPattern, updatePattern);
+            const { subject, description } = getMailTemplateForRefundStatus(
+              orderData.shippingAddress.name,
+              orderData.orderNumber,
+              "refund_initialization_failed"
+            );
+            sendMail(orderData.shippingAddress.email, subject, description);
+            return res.json({
+              status: 302,
+              message: message.custom("PayPal refund initialization failed"),
+            });
+          }
+        } catch (e) {
+          updatePattern.paymentStatus = "refund_initialization_failed";
+          updatePattern.paypalRefundFailureReason = e?.message;
+          await orderService.findOneAndUpdate(findPattern, updatePattern);
+          const { subject, description } = getMailTemplateForRefundStatus(
+            orderData.shippingAddress.name,
+            orderData.orderNumber,
+            "refund_initialization_failed"
+          );
+          sendMail(orderData.shippingAddress.email, subject, description);
+          return res.json({
+            status: 302,
+            message: message.custom(
+              `Your refund initialization failed due to ${e?.message}`
+            ),
+          });
+        }
+      } else {
+        return res.json({
+          status: 400,
+          message: message.custom("Invalid payment method"),
+        });
+      }
+    } else {
+      return res.json({
+        status: 400,
+        message: message.INVALID_DATA,
+      });
+    }
+  } catch (e) {
+    return res.json({
+      status: 500,
+      message: message.SERVER_ERROR,
+    });
+  }
+};
+
 module.exports = {
   insertOrder,
   updatePaymentStatus,
@@ -583,4 +822,5 @@ module.exports = {
   updateOrderStatus,
   getAllOrder,
   cancelOrder,
+  refundPayment,
 };

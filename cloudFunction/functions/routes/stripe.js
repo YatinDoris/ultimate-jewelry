@@ -5,15 +5,12 @@ const {
   cancelPaymentIntent,
   checkPaymentIntentStatus,
   stripeWebhook,
-  refundPayment,
 } = require("../controllers/stripe");
 const { jwtAuth, adminAuth, optionalJwtAuth } = require("../middleware");
-const { ordersPageId } = require("../utils/pagesList");
 
 router.post("/create-payment-intent", optionalJwtAuth, createPaymentIntent);
 // router.post("/create-payment-intent", jwtAuth, userAuth, createPaymentIntent);
 router.post("/check-payment-intent-status", checkPaymentIntentStatus);
 router.post("/cancel-payment-intent", cancelPaymentIntent);
-router.post("/refundPayment", jwtAuth, adminAuth(ordersPageId), refundPayment);
 router.post("/webhook", stripeWebhook);
 module.exports = router;

@@ -708,7 +708,7 @@ const refundPayment = async (payload, abortController) => {
   try {
     if (Object.values(payload).length) {
       const signal = abortController && abortController.signal;
-      const response = await axios.post('/stripe/refundPayment', sanitizeObject(payload), {
+      const response = await axios.post('/order/refundPayment', sanitizeObject(payload), {
         signal,
       });
       const { status, message } = response.data;
