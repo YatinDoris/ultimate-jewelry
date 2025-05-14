@@ -43,6 +43,10 @@ const ProductGrid = memo(
 
     const handlePageClick = ({ selected }) => {
       dispatch(setCurrentPage(selected));
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     };
 
     let filteredItemsList = productList;

@@ -13,7 +13,6 @@ import diamondIcon from "@/assets/icons/diamond.svg";
 import CartPopup from "../ui/CartPopup";
 import { fetchCart } from "@/_actions/cart.action";
 import { IoIosSearch } from "react-icons/io";
-import { GoHeart } from "react-icons/go";
 import ProfileDropdown from "../ui/ProfileDropdown";
 import { usePathname } from "next/navigation";
 
