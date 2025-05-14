@@ -108,16 +108,6 @@ export default function NavigationHeader() {
           lastScrollY > 100 ? "justify-between" : "justify-center"
         }  w-full container items-center gap-6`}
       >
-        {/* {lastScrollY > 100 ? (
-          <Link href={"/"}>
-            <CustomImg
-              className={` ${
-                lastScrollY > 100 ? "block w-28 2xl:w-32" : "hidden"
-              }`}
-              srcAttr={miniLogo}
-            />
-          </Link>
-        ) : null} */}
         {lastScrollY > 100 ? (
           <Link href={"/"}>
             <CustomImg
@@ -883,6 +873,32 @@ export default function NavigationHeader() {
                           </div>
                         </div>
                       ) : null}
+                      <div className="ms-4 flex flex-col gap-1 border-gray-e2">
+                        <div className="mb-2">
+                          <p className="text-sm 2xl:text-base block !font-semibold capitalize text-primary !px-0 mb-1">
+                            Shop Pre-Designed Rings
+                          </p>
+                          <div className="w-5 h-[2px] rounded-full bg-primary bottom-0"></div>
+                        </div>
+                        <CustomImg srcAttr={preDesignedRing} />
+                        <div className="text-sm mt-3">
+                          <Link
+                            href={"/customize/start-with-setting"}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              dispatch(
+                                setOpenDropdownMobile(
+                                  openDropdownMobile ? null : ENGAGEMENT
+                                )
+                              );
+                              dispatch(setIsMenuOpen(false));
+                            }}
+                            className="underline hover:text-primary transition-all duration-300"
+                          >
+                            Shop Now
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
