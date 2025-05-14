@@ -202,15 +202,25 @@ const CartPopup = () => {
                               {cartItem?.productName}
                             </Link>
                             {cartItem?.diamondDetail ? (
-                              <p className="font-chong-modern text-base md:text-xl lg:text-2xl font-medium text-baseblack">
-                                $
-                                {(
-                                  helperFunctions?.calculateCustomProductPrice({
-                                    netWeight: cartItem?.netWeight,
-                                    variations: cartItem?.variations,
-                                  }) * (cartItem?.quantity || 1)
-                                ).toFixed(2)}
-                              </p>
+                              (() => {
+                                const netWeight = Number(cartItem?.netWeight);
+                                const quantity = cartItem?.quantity || 1;
+                                const unitPrice =
+                                  netWeight > 0
+                                    ? helperFunctions.calculateCustomProductPrice(
+                                        {
+                                          netWeight,
+                                          variations: cartItem?.variations,
+                                        }
+                                      )
+                                    : 0;
+
+                                return (
+                                  <p className="font-castoro text-base md:text-xl lg:text-2xl font-medium text-baseblack">
+                                    ${(unitPrice * quantity).toFixed(2)}
+                                  </p>
+                                );
+                              })()
                             ) : (
                               <p className="text-base md:text-xl lg:text-2xl font-medium font-chong-modern">
                                 {cartItem?.productDiscount ? (
